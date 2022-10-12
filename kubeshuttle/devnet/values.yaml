@@ -1,0 +1,116 @@
+# Default values for devnet.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: anmol1696
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+exposer:
+  image: anmol1696/exposer:latest
+  port: 8081
+
+# API for interacting with the charts for devnet
+chains:
+  osmosis:
+    name: osmosis
+    image: anmol1696/osmosis:latest
+    home: /root/.osmosisd
+    binary: osmosisd
+    prefix: osmo
+    denom: uosmo
+    coins: 100000000000000uosmo,100000000000000uion
+    numValidators: 1
+    wasm:
+      enabled: true
+      permissionless: true
+  juno:
+    name: juno
+    image: anmol1696/juno:latest
+    home: /root/.juno
+    binary: junod
+    prefix: juno
+    denom: ujuno
+    coins: 100000000000000ujuno
+    numValidators: 1
+    hdPath: m/44'/118'/0'/0/0
+    wasm:
+      enabled: true
+      permissionless: true
+  #persistence:
+  #  name: persistence
+  #  image: anmol1696/persistence:latest
+  #  binary: persistenceCore
+  #  prefix: persistence
+  #  denom: uxprt
+  #  coins: 100000000000000uxprt
+  #  numValidators: 5 # number of unique validator nodes
+  #  wasm:
+  #    enabled: true
+  #    permissionless: false
+  #cosmos:
+  #  name: cosmos
+  #  image: anmol1696/gaia:latest
+  #  binary: gaiad
+  #  prefix: cosmos
+  #  denom: stake
+  #  coins: 100000000000000uxprt
+  #  numValidators: 3
+  #  wasm:
+  #    enabled: false
+
+relayers:
+  rly1:
+    name: osmo-juno
+    kind: ts-relayer
+    image: anmol1696/ts-relayer:latest
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - osmosis
+      - juno
+  #rly2:
+  #  name: osmo-juno
+  #  kind: hermes
+  #  image: anmol1696/hermes:latest
+  #  replicas: 1
+  #  chains:
+  #    - osmosis
+  #    - juno
+
+explorer:
+  enabled: true # Flag to enable disable explorer
+  type: ping-pub
+
+faucet:
+  enabled: false # will create faucet for all chains

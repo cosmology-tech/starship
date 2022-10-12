@@ -1,0 +1,148 @@
+{{- range $chain, $value := .Values.chains }}
+{{- if gt $value.numValidators 1.0 }}
+{{ $data := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $chain }}-validator
+spec:
+  serviceName: {{ $chain }}-validator
+  podManagementPolicy: "Parallel"
+  replicas: {{ sub $value.numValidators 1 }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $chain }}
+      app.kubernetes.io/name: {{ $chain }}-validator
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: {{ $chain }}
+        app.kubernetes.io/type: {{ $chain }}
+        app.kubernetes.io/name: {{ $chain }}-validator
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      initContainers:
+        {{- include "devnet.init.wait" $data | indent 8 }}
+        - name: init-validator
+          image: {{ $value.image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.evnVars" $value | indent 12 }}
+            {{- include "devnet.genesisVars" $data | indent 12}}
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
+
+              rm -rf $HOME_DIR
+
+              VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/validators.json)
+              echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+
+              jq -r ".validators[$VAL_INDEX].mnemonic" /configs/keys.json | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
+              jq -r ".validators[$VAL_INDEX].mnemonic" /configs/keys.json | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
+
+              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
+              echo "Genesis file that we got....."
+              cat $CHAIN_DIR/config/genesis.json
+
+              echo "Setup config files"
+              chmod +x /scripts/setup_config.sh
+              ./scripts/setup_config.sh
+
+              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id)@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
+              echo "Node P2P: $GENESIS_NODE_P2P"
+              sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
+
+              echo "Printing the whole config.toml file"
+              cat $CHAIN_DIR/config/config.toml
+          resources:
+            limits:
+              cpu: "0.2"
+              memory: "200M"
+            requests:
+              cpu: "0.1"
+              memory: "200M"
+          volumeMounts:
+            - mountPath: {{ $value.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+      containers:
+        - name: validator
+          image: {{ $value.image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.evnVars" $value | indent 12 }}
+            {{- include "devnet.genesisVars" $data | indent 12}}
+          command:
+            - bash
+            - "-c"
+            - |
+              # Starting the chain
+              $CHAIN_BIN start
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - bash
+                  - "-c"
+                  - |
+                    VAL_INDEX=${HOSTNAME##*-}
+                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+
+                    chmod +x /scripts/create_validator.sh
+                    ./scripts/create_validator.sh
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1G"
+            requests:
+              cpu: "0.5"
+              memory: "500M"
+          volumeMounts:
+            - mountPath: /osmosis
+              name: osmosis
+            - mountPath: /configs
+              name: addresses
+        - name: exposer
+          image: {{ $.Values.exposer.image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.evnVars" $value | indent 12 }}
+            {{- include "devnet.genesisVars" $data | indent 12}}
+            - name: GENESIS_FILE
+              value: {{ $value.home }}/config/genesis.json
+          command: [ "exposer" ]
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: "100M"
+            requests:
+              cpu: "0.1"
+              memory: "100M"
+          volumeMounts:
+            - mountPath: {{ $value.home }}
+              name: node
+      volumes:
+        - name: node
+          emptyDir: { }
+        - name: addresses
+          configMap:
+            name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
+---
+{{- end }}
+{{- end }}

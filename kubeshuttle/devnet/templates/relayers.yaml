@@ -1,0 +1,91 @@
+---
+{{- range $relayer, $value := .Values.relayers }}
+{{- if eq $value.kind "ts-relayer" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $value.name }}
+spec:
+  replicas: {{ $value.replicas }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: relayer
+      app.kubernetes.io/type: {{ $value.kind }}
+      app.kubernetes.io/name: {{ $value.name }}
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: relayer
+        app.kubernetes.io/type: {{ $value.kind }}
+        app.kubernetes.io/name: {{ $value.name }}
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      initContainers:
+        {{- range $chain := $value.chains  }}
+        {{- $initData := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
+        {{- include "devnet.init.wait" $initData | indent 8 }}
+        {{- end }}
+        - name: init-relayer
+          image: {{ $value.image }}
+          imagePullPolicy: Always
+          env:
+            - name: RELAYER_DIR
+              value: /root/.ibc-setup
+          command:
+            - bash
+            - "-c"
+            - |
+              mkdir -p $RELAYER_DIR
+              cp /configs/registry.yaml $RELAYER_DIR/registry.yaml
+              cp /configs/app.yaml $RELAYER_DIR/app.yaml
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+      containers:
+        - name: relayer
+          image: {{ $value.image }}
+          imagePullPolicy: Always
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Fetching balances for inital balances"
+              ibc-setup balances
+
+              echo "Setting up default ics20 channel"
+              echo ibc-setup ics20
+
+              echo ibc-relayer start -v
+              sleep 10000000000
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "0.5"
+              memory: 0.5Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+      volumes:
+        - name: relayer
+          emptyDir: { }
+        - name: relayer-config
+          configMap:
+            name: "{{ $value.kind }}-{{ $value.name }}-{{ $relayer }}"
+{{- end}}
+{{- end }}
+---

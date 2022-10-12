@@ -1,0 +1,165 @@
+{
+  "genesis": [
+    {
+      "name": "val0",
+      "type": "local",
+      "mnemonic": "razor dog gown public private couple ecology paper flee connect local robot diamond stay rude join sound win ribbon soup kidney glass robot vehicle"
+    }
+  ],
+  "validators": [
+    {
+      "name": "val1",
+      "type": "local",
+      "mnemonic": "issue have volume expire shoe year finish poem alien urban license undo rural endless food host opera fix forum crack wide example firm learn"
+    },
+    {
+      "name": "val2",
+      "type": "local",
+      "mnemonic": "broccoli robot upon blush rabbit squeeze fruit still lady antique detect can spice clay magic monster zebra solution dry salute stay wet arena matrix"
+    },
+    {
+      "name": "val3",
+      "type": "local",
+      "mnemonic": "tornado modify spring arm title double bulk other recall decide table fun caught buyer bring once knife sphere arctic text zoo swim visual patient"
+    },
+    {
+      "name": "val4",
+      "type": "local",
+      "mnemonic": "warm marine rent lift siege tool artwork home curious film blade trophy flush angry exact athlete edge combine weasel hour marriage grocery lake famous"
+    },
+    {
+      "name": "val5",
+      "type": "local",
+      "mnemonic": "album rely rack torch eye leopard position pumpkin foil salmon intact path near apart whale arrange immense stove bright cook border hunt mail spike"
+    },
+    {
+      "name": "val6",
+      "type": "local",
+      "mnemonic": "blouse task clinic dumb symbol clean dragon royal theory ill loyal human dream cement brown venture fury wild clog aunt welcome exotic radio diet"
+    },
+    {
+      "name": "val7",
+      "type": "local",
+      "mnemonic": "faculty eagle pause trash punch grit valley chair digital group forward scrap answer boss opinion sock thought issue derive color survey track ritual ring"
+    },
+    {
+      "name": "val8",
+      "type": "local",
+      "mnemonic": "party potato master immune current report venture lunch ring year quit diamond crowd ensure hammer nurse gym husband flat all drama lobster misery pepper"
+    },
+    {
+      "name": "val9",
+      "type": "local",
+      "mnemonic": "top burden step elbow hint song swing vacuum someone intact crew actual rent belt ignore misery hybrid amount number move park between robust enable"
+    },
+    {
+      "name": "val10",
+      "type": "local",
+      "mnemonic": "seat license entire dice vendor bone skull build silent path sauce price spare anchor endless guess crush sunny please estate divide energy hour unfair"
+    }
+  ],
+  "keys": [
+    {
+      "name": "test1",
+      "type": "local",
+      "mnemonic": "opinion knife other balcony surge more bamboo canoe romance ask argue teach anxiety adjust spike mystery wolf alone torch tail six decide wash alley"
+    },
+    {
+      "name": "test2",
+      "type": "local",
+      "mnemonic": "logic help only text door wealth hurt always remove glory viable income agent olive trial female couch old offer crash menu zero pencil thrive"
+    },
+    {
+      "name": "test3",
+      "type": "local",
+      "mnemonic": "middle weather hip ghost quick oxygen awful library broken chicken tackle animal crunch appear fee indoor fitness enough orphan trend tackle faint eyebrow all"
+    },
+    {
+      "name": "test4",
+      "type": "local",
+      "mnemonic": "tag apart multiply food bleak isolate describe stand guide field session design cable combine excess shrug abuse pause course ketchup umbrella program labor ripple"
+    },
+    {
+      "name": "test5",
+      "type": "local",
+      "mnemonic": "pyramid gesture seminar nasty transfer problem october siege history clump tragic view heavy armor advice sand hybrid nothing acid silly hello canvas defense sand"
+    },
+    {
+      "name": "test6",
+      "type": "local",
+      "mnemonic": "youth gift where between bid dose gentle seek welcome dolphin zero clump move warm weapon race target consider myself marriage range reveal diesel chase"
+    },
+    {
+      "name": "test7",
+      "type": "local",
+      "mnemonic": "effort zoo raccoon bag index steak syrup rebuild test noble erupt adjust glimpse expose twist island yellow voyage potato kingdom tray theme market boss"
+    },
+    {
+      "name": "test8",
+      "type": "local",
+      "mnemonic": "refuse rich mosquito help grace meat casino web order segment open grain cup awake steak collect kind valid pyramid excess other awesome few search"
+    },
+    {
+      "name": "test9",
+      "type": "local",
+      "mnemonic": "month brown enter gossip panda bike bid base mimic armor gather sign office useless wine leisure electric voyage cancel february begin video total rude"
+    },
+    {
+      "name": "test10",
+      "type": "local",
+      "mnemonic": "birth tool ring metal topple pottery dinner later digital shoe buffalo despair year broom toe when skirt brain advance fever sea twelve whisper dish"
+    }
+  ],
+  "relayers": [
+    {
+      "name": "rly1",
+      "type": "local",
+      "mnemonic": "pen quit web pill hunt hobby tonight base wine black era cereal veteran trouble december method diet orbit copper nephew into badge olympic repair"
+    },
+    {
+      "name": "rly2",
+      "type": "local",
+      "mnemonic": "rally area annual range egg solid paper kick cabbage relax grow ginger axis tone penalty swing marine endless vendor dinner guilt echo stable system"
+    },
+    {
+      "name": "rly3",
+      "type": "local",
+      "mnemonic": "arena elevator helmet truly pencil early balcony aim flash dawn weather noble machine wear exile snow vast armor spring collect spy glue nuclear scrub"
+    },
+    {
+      "name": "rly4",
+      "type": "local",
+      "mnemonic": "giraffe whale loan lizard prosper across lawsuit call behind round magic symptom plunge dress because object people people drama awesome inhale appear shed ocean"
+    },
+    {
+      "name": "rly5",
+      "type": "local",
+      "mnemonic": "north delay present draw sausage mystery vendor series blast universe move burger pull antique offer hole question maze scrub object much away champion frozen"
+    },
+    {
+      "name": "rly6",
+      "type": "local",
+      "mnemonic": "measure limb bird ridge crash switch virtual flight various forward inhale treat pluck squirrel foot vanish twice shiver clump code brain plunge clean plunge"
+    },
+    {
+      "name": "rly7",
+      "type": "local",
+      "mnemonic": "evoke beach maze quote ghost sail empty coffee domain garden gorilla seek tell tenant copper this chronic loud winner impulse crew deposit cradle dignity"
+    },
+    {
+      "name": "rly8",
+      "type": "local",
+      "mnemonic": "corn text lift garden option hedgehog mimic glance inspire crush rug degree language video pool tower roof share soda depart sock convince display option"
+    },
+    {
+      "name": "rly9",
+      "type": "local",
+      "mnemonic": "burger cake luggage flip hazard humor across strong either enter equip box woman almost steel mobile avocado cherry radar hard author learn top spend"
+    },
+    {
+      "name": "rly10",
+      "type": "local",
+      "mnemonic": "answer twin lunch tourist army guard feature tuna sign junk thunder inch post penalty hotel express rocket cabbage reduce patient anchor pony finish method"
+    }
+  ]
+}

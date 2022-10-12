@@ -1,0 +1,35 @@
+{{- range $chain, $_ := .Values.chains }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $chain }}-genesis
+  labels:
+    app.kubernetes.io/name: {{ $chain }}-genesis
+spec:
+  clusterIP: None
+  ports:
+    - name: p2p
+      port: 26656
+      protocol: TCP
+      targetPort: 26656
+    - name: rpc
+      port: 26657
+      protocol: TCP
+      targetPort: 26657
+    - name: grpc
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    - name: rest
+      port: 1317
+      protocol: TCP
+      targetPort: 1317
+    - name: http
+      port: {{ $.Values.exposer.port | default 8081 }}
+      protocol: TCP
+      targetPort: {{ $.Values.exposer.port | default 8081 }}
+  selector:
+    app.kubernetes.io/name: {{ $chain }}-genesis
+---
+{{- end }}
