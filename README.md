@@ -4,6 +4,8 @@ A k8s based testing setup framework built with helm
 ## Next steps
 * 12/10/2022: 
   * Run ibc txns from outside the system
+  * Cleanup values.yaml interface
+  * Add default values for all chains
 
 ## Improvements
 * Need not build all the docker images, the docker requirements are to have jq and bash in alpine
