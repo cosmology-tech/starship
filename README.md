@@ -4,6 +4,9 @@ A k8s based testing setup framework built with helm
 ## Improvements
 * Need not build all the docker images, the docker requirements are to have jq and bash in alpine
 * Can look into using strangelove-ventures/heighliner for docker images creation instead of having self hosted
+* Key initialization and recovery takes the most amount of time, could see if we can do this
+  * in parallel
+  * or precompute the keyring-test directory itself for each of the cases
 
 ## How to test upgrades
 * Run chain in current state, need to install cosmovisor on all nodes
