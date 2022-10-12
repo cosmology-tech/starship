@@ -1,6 +1,10 @@
 # kubeshuttle
 A k8s based testing setup framework built with helm
 
+## Next steps
+* 12/10/2022: 
+  * Run ibc txns from outside the system
+
 ## Improvements
 * Need not build all the docker images, the docker requirements are to have jq and bash in alpine
 * Can look into using strangelove-ventures/heighliner for docker images creation instead of having self hosted
