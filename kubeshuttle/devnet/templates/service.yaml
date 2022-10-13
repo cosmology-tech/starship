@@ -1,3 +1,4 @@
+{{ $portMap := dict "p2p" 26656 "rpc" 26657 "grpc" 9090 "rest" 1317 }}
 {{- range $chain, $_ := .Values.chains }}
 ---
 apiVersion: v1
@@ -9,22 +10,12 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - name: p2p
-      port: 26656
+    {{- range $name, $port := $portMap }}
+    - name: {{ $name }}
+      port: {{ $port }}
       protocol: TCP
-      targetPort: 26656
-    - name: rpc
-      port: 26657
-      protocol: TCP
-      targetPort: 26657
-    - name: grpc
-      port: 9090
-      protocol: TCP
-      targetPort: 9090
-    - name: rest
-      port: 1317
-      protocol: TCP
-      targetPort: 1317
+      targetPort: {{ $port }}
+    {{- end }}
     - name: http
       port: {{ $.Values.exposer.port | default 8081 }}
       protocol: TCP

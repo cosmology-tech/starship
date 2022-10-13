@@ -40,13 +40,10 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
-              cp /scripts/setup_genesis.sh /opt/
-              cp /scripts/setup_config.sh /opt/
-              chmod +x /opt/setup_genesis.sh /opt/setup_config.sh
 
               echo "Running setup and config files..."
-              bash -e /opt/setup_genesis.sh
-              bash -e /opt/setup_config.sh
+              bash -e /scripts/setup_genesis.sh
+              bash -e /scripts/setup_config.sh
           resources:
             limits:
               cpu: "0.2"

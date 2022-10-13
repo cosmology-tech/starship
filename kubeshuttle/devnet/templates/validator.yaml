@@ -36,6 +36,8 @@ spec:
           env:
             {{- include "devnet.evnVars" $value | indent 12 }}
             {{- include "devnet.genesisVars" $data | indent 12}}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
           command:
             - bash
             - "-c"
@@ -45,19 +47,18 @@ spec:
 
               rm -rf $HOME_DIR
 
-              VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/validators.json)
+              VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" $KEYS_CONFIG)
               echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-              jq -r ".validators[$VAL_INDEX].mnemonic" /configs/keys.json | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
-              jq -r ".validators[$VAL_INDEX].mnemonic" /configs/keys.json | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
+              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
+              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
 
               echo "Setup config files"
-              chmod +x /scripts/setup_config.sh
-              ./scripts/setup_config.sh
+              bash -e /scripts/setup_config.sh
 
               GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id)@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
@@ -77,6 +78,8 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+            - mountPath: /scripts
+              name: scripts
       containers:
         - name: validator
           image: {{ $value.image }}
@@ -96,13 +99,15 @@ spec:
                 command:
                   - bash
                   - "-c"
+                  - "-e"
                   - |
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-                    chmod +x /scripts/create_validator.sh
-                    ./scripts/create_validator.sh
+                    $CHAIN_BIN keys list | jq
+
+                    VAL_NAME=$VAL_NAME bash -e /scripts/create_validator.sh
           resources:
             limits:
               cpu: "1"
@@ -111,10 +116,12 @@ spec:
               cpu: "0.5"
               memory: "500M"
           volumeMounts:
-            - mountPath: /osmosis
-              name: osmosis
+            - mountPath: {{ $value.home }}
+              name: node
             - mountPath: /configs
               name: addresses
+            - mountPath: /scripts
+              name: scripts
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: Always

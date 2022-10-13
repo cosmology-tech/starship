@@ -14,6 +14,9 @@ debug:
 install:
 	helm install --replace --debug $(HELM_NAME) . $(HELM_ARGS)
 
+upgrade:
+	helm upgrade --debug $(HELM_NAME) . $(HELM_ARGS)
+
 delete:
 	helm delete --debug $(HELM_NAME)
 
