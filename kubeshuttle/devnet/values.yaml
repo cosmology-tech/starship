@@ -51,7 +51,7 @@ chains:
     prefix: osmo
     denom: uosmo
     coins: 100000000000000uosmo,100000000000000uion
-    numValidators: 5
+    numValidators: 3
     wasm:
       enabled: true
       permissionless: true
@@ -63,7 +63,20 @@ chains:
     prefix: juno
     denom: ujuno
     coins: 100000000000000ujuno
-    numValidators: 5
+    numValidators: 3
+    hdPath: m/44'/118'/0'/0/0
+    wasm:
+      enabled: true
+      permissionless: true
+  wasmd:
+    name: wasmd
+    image: anmol1696/wasmd:latest
+    home: /root/.wasmd
+    binary: wasmd
+    prefix: wasm
+    denom: ujuno
+    coins: 100000000000000ujuno,100000000000000ucosm
+    numValidators: 2
     hdPath: m/44'/118'/0'/0/0
     wasm:
       enabled: true
@@ -99,6 +112,14 @@ relayers:
     chains:
       - osmosis
       - juno
+  rly2:
+    name: osmo-wasm
+    kind: ts-relayer
+    image: anmol1696/ts-relayer:latest
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - osmosis
+      - wasmd
   #rly2:
   #  name: osmo-juno
   #  kind: hermes

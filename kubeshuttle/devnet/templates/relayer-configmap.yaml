@@ -1,8 +1,8 @@
----
 # Configmap for ts-relayer
 {{- $keys := .Files.Get "configs/keys.json" | fromJson }}
 {{- range $relayer, $value := .Values.relayers }}
 {{- if eq $value.kind "ts-relayer" }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -38,6 +38,6 @@ data:
           - http://{{ .name }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
         {{- end }}
       {{- end }}
-{{- end}}
-{{- end}}
 ---
+{{- end}}
+{{- end}}
