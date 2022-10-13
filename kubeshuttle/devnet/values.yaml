@@ -51,7 +51,7 @@ chains:
     prefix: osmo
     denom: uosmo
     coins: 100000000000000uosmo,100000000000000uion
-    numValidators: 1
+    numValidators: 5
     wasm:
       enabled: true
       permissionless: true
@@ -63,7 +63,7 @@ chains:
     prefix: juno
     denom: ujuno
     coins: 100000000000000ujuno
-    numValidators: 1
+    numValidators: 5
     hdPath: m/44'/118'/0'/0/0
     wasm:
       enabled: true

@@ -8,14 +8,11 @@ kind: ConfigMap
 metadata:
   name: "{{ $value.kind }}-{{ $value.name }}-{{ $relayer }}"
 data:
-  app.yaml: |-
-    src: {{ index $value.chains 0 }}
-    dest: {{ index $value.chains 1 }}
-    {{- range $i, $rlyKey := $keys.relayers }}
-    {{- if eq $rlyKey.name $relayer }}
-    mnemonic: {{ $rlyKey.mnemonic }}
-    {{- end }}
-    {{- end }}
+  template-app.yaml: |-
+    src: <SRC>
+    dest: <DEST>
+    mnemonic: <MNEMONIC>
+
   registry.yaml: |-
     version: 1
     chains:

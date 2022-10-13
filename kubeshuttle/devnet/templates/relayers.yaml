@@ -1,12 +1,14 @@
----
 {{- range $relayer, $value := .Values.relayers }}
 {{- if eq $value.kind "ts-relayer" }}
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ $value.name }}
 spec:
+  serviceName: {{ $value.name }}-{{ $value.kind }}
   replicas: {{ $value.replicas }}
+  podManagementPolicy: "Parallel"
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -27,6 +29,7 @@ spec:
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
+        {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
         {{- range $chain := $value.chains  }}
         {{- $initData := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
         {{- include "devnet.init.wait" $initData | indent 8 }}
@@ -35,20 +38,83 @@ spec:
           image: {{ $value.image }}
           imagePullPolicy: Always
           env:
+            - name: SRC_CHAIN
+              value: {{ index $value.chains 0 }}
+            - name: DEST_CHAIN
+              value: {{ index $value.chains 1 }}
             - name: RELAYER_DIR
               value: /root/.ibc-setup
+            - name: KEYS_CONFIG
+              value: /keys/keys.json
           command:
             - bash
             - "-c"
             - |
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
               mkdir -p $RELAYER_DIR
               cp /configs/registry.yaml $RELAYER_DIR/registry.yaml
-              cp /configs/app.yaml $RELAYER_DIR/app.yaml
+              cp /configs/template-app.yaml $RELAYER_DIR/app.yaml
+
+              MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
+              sed -i -e "s/<SRC>/$SRC_CHAIN/g" $RELAYER_DIR/app.yaml
+              sed -i -e "s/<DEST>/$DEST_CHAIN/g" $RELAYER_DIR/app.yaml
+              sed -i -e "s/<MNEMONIC>/$MNEMONIC/g" $RELAYER_DIR/app.yaml
+
+              if [ $RLY_INDEX -eq 0 ]; then
+                echo "Setting up default ics20 channel"
+                ibc-setup ics20 -v --log-level debug
+              fi
           volumeMounts:
             - mountPath: /root
               name: relayer
             - mountPath: /configs
               name: relayer-config
+            - mountPath: /keys
+              name: keys
+        - name: init-wait-connection
+          image: {{ $value.image }}
+          imagePullPolicy: Always
+          env:
+            - name: SRC_CHAIN
+              value: {{ index $value.chains 0 }}
+            - name: DEST_CHAIN
+              value: {{ index $value.chains 1 }}
+            - name: RELAYER_DIR
+              value: /root/.ibc-setup
+            - name: KEYS_CONFIG
+              value: /keys/keys.json
+            - name: CONNECTION_NAME
+              value: connection-0
+          command:
+            - bash
+            - "-c"
+            - |
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
+              echo "Waiting till a connection exists between 2 chains"
+
+              while true; do
+                src_conns=$(ibc-setup connections --chain $SRC_CHAIN | grep "Open")
+                dest_conns=$(ibc-setup connections --chain $DEST_CHAIN | grep "Open")
+                echo "src connection: $src_conns"
+                echo "dest connection: $dest_conns"
+
+                if [[ $src_conns == *"$CONNECTION_NAME"* ]] && [[ $dest_conns == *"$CONNECTION_NAME"* ]]; then
+                  echo "Connection seems to exist... continue with starting relayer";
+                  exit 0;
+                fi
+
+                echo "Still waiting for ibc connection to be established...";
+                sleep 2;
+              done
+
+              exit 1
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
       containers:
         - name: relayer
           image: {{ $value.image }}
@@ -57,11 +123,11 @@ spec:
             - bash
             - "-c"
             - |
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
               echo "Fetching balances for inital balances"
               ibc-setup balances
-
-              echo "Setting up default ics20 channel"
-              ibc-setup ics20 -v --log-level debug
 
               echo "Starting the relayer..."
               ibc-relayer start -v
@@ -86,6 +152,9 @@ spec:
         - name: relayer-config
           configMap:
             name: "{{ $value.kind }}-{{ $value.name }}-{{ $relayer }}"
+        - name: keys
+          configMap:
+            name: keys
+---
 {{- end}}
 {{- end }}
----
