@@ -16,13 +16,17 @@ A k8s based testing setup framework built with helm
 
 ## Issues
 * Relayer, when we have multi-node setup, then how to setup the inital connection
-  * Can we use the same connection betwwen different chains? What is connection and client connection
+  * Can we use the same connection betwwen different chains? What is connection 
+    and client connection
   * Might not scale with multi-node setups
 
 ## Improvements
-* Need not build all the docker images, the docker requirements are to have jq and bash in alpine
-* Can look into using strangelove-ventures/heighliner for docker images creation instead of having self hosted
-* Key initialization and recovery takes the most amount of time, could see if we can do this
+* Need not build all the docker images, the docker requirements are to have jq 
+  and bash in alpine
+* Can look into using strangelove-ventures/heighliner for docker images creation 
+  instead of having self hosted
+* Key initialization and recovery takes the most amount of time, could see if
+  we can do this
   * in parallel
   * or precompute the keyring-test directory itself for each of the cases
 
@@ -34,3 +38,5 @@ A k8s based testing setup framework built with helm
 * run some pre-upgrade txns state
 * create upgrade proposal
 * cosmovisor will do the upgrade automatically
+* After upgrade, we loose the touch with ability to update `genesis.json`
+  directly, 
