@@ -74,8 +74,8 @@ chains:
     home: /root/.wasmd
     binary: wasmd
     prefix: wasm
-    denom: ujuno
-    coins: 100000000000000ujuno,100000000000000ucosm
+    denom: ustake
+    coins: 100000000000000ucosm,100000000000000ustake
     numValidators: 2
     hdPath: m/44'/118'/0'/0/0
     wasm:

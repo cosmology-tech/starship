@@ -156,5 +156,5 @@ spec:
           configMap:
             name: keys
 ---
-{{- end}}
+{{- end }}
 {{- end }}
