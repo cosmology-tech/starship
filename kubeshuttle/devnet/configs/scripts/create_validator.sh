@@ -5,6 +5,8 @@ CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 VAL_NAME="${VAL_NAME:=osmosis}"
 
+set -eu
+
 # Wait for the node to be synced
 max_tries=10
 while [[ $($CHAIN_BIN status 2>&1 | jq ".SyncInfo.catching_up") == true ]]
@@ -30,3 +32,5 @@ $CHAIN_BIN tx staking create-validator \
   --min-self-delegation="1000000" \
   --gas="auto" \
   --gas-adjustment 1.5 --yes > /validator.log
+
+cat /validator.log | jq

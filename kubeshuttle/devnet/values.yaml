@@ -42,6 +42,8 @@ exposer:
   port: 8081
 
 # API for interacting with the charts for devnet
+# TODO: need a way to create state reaching jobs, those will run user bash scripts
+# after the chain has been initialized, get the chain to a state and then complete
 chains:
   osmosis:
     name: osmosis
@@ -55,14 +57,27 @@ chains:
     wasm:
       enabled: true
       permissionless: true
-  juno:
-    name: juno
-    image: anmol1696/juno:latest
-    home: /root/.juno
-    binary: junod
-    prefix: juno
-    denom: ujuno
-    coins: 100000000000000ujuno
+  #juno:
+  #  name: juno
+  #  image: anmol1696/juno:latest
+  #  home: /root/.juno
+  #  binary: junod
+  #  prefix: juno
+  #  denom: ujuno
+  #  coins: 100000000000000ujuno
+  #  numValidators: 0
+  #  hdPath: m/44'/118'/0'/0/0
+  #  wasm:
+  #    enabled: true
+  #    permissionless: true
+  wasmd:
+    name: wasmd
+    image: anmol1696/wasmd:latest
+    home: /root/.wasmd
+    binary: wasmd
+    prefix: wasm
+    denom: stake
+    coins: 100000000000000ucosm,100000000000000stake
     numValidators: 1
     hdPath: m/44'/118'/0'/0/0
     wasm:
@@ -90,15 +105,24 @@ chains:
   #  wasm:
   #    enabled: false
 
+# TODO: ability to check the srcConnection and destConnection to use
 relayers:
-  rly1:
-    name: osmo-juno
+  #rly1:
+  #  name: osmo-juno
+  #  kind: ts-relayer
+  #  image: anmol1696/ts-relayer:latest
+  #  replicas: 1 # these are unique replicas, currently only support a single replica
+  #  chains:
+  #    - osmosis
+  #    - juno
+  rly2:
+    name: osmo-wasm
     kind: ts-relayer
     image: anmol1696/ts-relayer:latest
     replicas: 1 # these are unique replicas, currently only support a single replica
     chains:
       - osmosis
-      - juno
+      - wasmd
   #rly2:
   #  name: osmo-juno
   #  kind: hermes
