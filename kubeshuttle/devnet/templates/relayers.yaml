@@ -73,48 +73,6 @@ spec:
               name: relayer-config
             - mountPath: /keys
               name: keys
-        - name: init-wait-connection
-          image: {{ $value.image }}
-          imagePullPolicy: Always
-          env:
-            - name: SRC_CHAIN
-              value: {{ index $value.chains 0 }}
-            - name: DEST_CHAIN
-              value: {{ index $value.chains 1 }}
-            - name: RELAYER_DIR
-              value: /root/.ibc-setup
-            - name: KEYS_CONFIG
-              value: /keys/keys.json
-            - name: CONNECTION_NAME
-              value: connection-0
-          command:
-            - bash
-            - "-c"
-            - |
-              RLY_INDEX=${HOSTNAME##*-}
-              echo "Relayer Index: $RLY_INDEX"
-
-              echo "Waiting till a connection exists between 2 chains"
-
-              while true; do
-                src_conns=$(ibc-setup connections --chain $SRC_CHAIN | grep "Open")
-                dest_conns=$(ibc-setup connections --chain $DEST_CHAIN | grep "Open")
-                echo "src connection: $src_conns"
-                echo "dest connection: $dest_conns"
-
-                if [[ $src_conns == *"$CONNECTION_NAME"* ]] && [[ $dest_conns == *"$CONNECTION_NAME"* ]]; then
-                  echo "Connection seems to exist... continue with starting relayer";
-                  exit 0;
-                fi
-
-                echo "Still waiting for ibc connection to be established...";
-                sleep 2;
-              done
-
-              exit 1
-          volumeMounts:
-            - mountPath: /root
-              name: relayer
       containers:
         - name: relayer
           image: {{ $value.image }}

@@ -18,7 +18,6 @@ do
   do
     echo "Adding key...." $(jq -r ".$type[$i].name" $KEYS_CONFIG)
     jq -r ".$type[$i].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".$type[$i].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-    echo "Add genesis account"
     $CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .$type[$i].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
   done
 done
