@@ -53,23 +53,23 @@ chains:
     prefix: osmo
     denom: uosmo
     coins: 100000000000000uosmo,100000000000000uion
-    numValidators: 1
+    numValidators: 4
     wasm:
       enabled: true
       permissionless: true
-  #juno:
-  #  name: juno
-  #  image: anmol1696/juno:latest
-  #  home: /root/.juno
-  #  binary: junod
-  #  prefix: juno
-  #  denom: ujuno
-  #  coins: 100000000000000ujuno
-  #  numValidators: 0
-  #  hdPath: m/44'/118'/0'/0/0
-  #  wasm:
-  #    enabled: true
-  #    permissionless: true
+  juno:
+    name: juno
+    image: anmol1696/juno:latest
+    home: /root/.juno
+    binary: junod
+    prefix: juno
+    denom: ujuno
+    coins: 100000000000000ujuno
+    numValidators: 0
+    hdPath: m/44'/118'/0'/0/0
+    wasm:
+      enabled: true
+      permissionless: true
   wasmd:
     name: wasmd
     image: anmol1696/wasmd:latest
@@ -78,7 +78,7 @@ chains:
     prefix: wasm
     denom: stake
     coins: 100000000000000ucosm,100000000000000stake
-    numValidators: 1
+    numValidators: 4
     hdPath: m/44'/118'/0'/0/0
     wasm:
       enabled: true
@@ -107,14 +107,14 @@ chains:
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers:
-  #rly1:
-  #  name: osmo-juno
-  #  kind: ts-relayer
-  #  image: anmol1696/ts-relayer:latest
-  #  replicas: 1 # these are unique replicas, currently only support a single replica
-  #  chains:
-  #    - osmosis
-  #    - juno
+  rly1:
+    name: osmo-juno
+    kind: ts-relayer
+    image: anmol1696/ts-relayer:latest
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - osmosis
+      - juno
   rly2:
     name: osmo-wasm
     kind: ts-relayer

@@ -40,3 +40,11 @@ A k8s based testing setup framework built with helm
 * cosmovisor will do the upgrade automatically
 * After upgrade, we loose the touch with ability to update `genesis.json`
   directly, 
+
+## Productized
+* Serviceify this, blaze tests, run all the test for any language
+  * Bazal integrates with remote test runner
+* Service running that listens to commands, and run commands on the cluster
+  * Test RPC: takes test request and spits out an output
+  * Create a web frontend that displays your results
+
