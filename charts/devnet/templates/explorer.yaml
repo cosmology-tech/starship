@@ -1,0 +1,109 @@
+{{- if .Values.explorer.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: explorer
+  labels:
+    app.kubernetes.io/name: explorer
+spec:
+  clusterIP: None
+  ports:
+    - name: explorer
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: explorer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: explorer
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: explorer
+      app.kubernetes.io/name: explorer
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: explorer
+        app.kubernetes.io/type: {{ .Values.explorer.type }}
+        app.kubernetes.io/name: explorer
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      containers:
+        - name: explorer
+          image: {{ .Values.explorer.image }}
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: 4Gi
+            requests:
+              cpu: "0.5"
+              memory: 2Gi
+          volumeMounts:
+            - mountPath: /home/explorer/src/chains/mainnet
+              name: explorer-configs
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        - name: explorer-configs
+          configMap:
+            name: explorer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: explorer
+data:
+  {{- range $chain, $value := .Values.chains }}
+  {{ $host := "localhost" }}
+  {{- if not $.Values.explorer.localhost }}
+  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain $.Release.Namespace }}
+  {{- end }}
+  {{ $chain }}.json: |-
+    {
+      "chain_name": "{{ $chain }}",
+      "coingecko": "{{ $value.name }}",
+      "api": "http://{{ $host }}:{{ $value.localPorts.rest }}",
+      "rpc": [
+        "http://{{ $host }}:{{ $value.localPorts.rpc }}",
+        "http://{{ $host }}:{{ $value.localPorts.rpc }}"
+      ],
+      "snapshot_provider": "",
+      "sdk_version": "0.45.6",
+      "coin_type": "{{ $value.coinType }}",
+      "min_tx_fee": "3000",
+      "addr_prefix": "{{ $value.prefix }}",
+      "logo": "",
+      "assets": [
+        {
+          "base": "{{ $value.denom }}",
+          "symbol": "{{ $value.prefix | upper }}",
+          "exponent": "6",
+          "coingecko_id": "{{ $value.name }}",
+          "logo": ""
+        }
+      ]
+    }
+  {{- end }}
+---
+{{- end }}

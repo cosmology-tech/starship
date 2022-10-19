@@ -14,7 +14,7 @@ docker-build-push: docker-build
 	$(DOCKER) push $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
 
 docker-run:
-	$(DOCKER) run --rm -it $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME) /bin/bash
+	$(DOCKER) run --rm -it --entrypoint /bin/bash $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
 
 ## Handy commands for all
 process_dir = .

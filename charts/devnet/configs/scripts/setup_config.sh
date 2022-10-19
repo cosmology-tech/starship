@@ -24,6 +24,9 @@ sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/clien
 echo "Update app.toml file"
 sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0.025$DENOM\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e "s#pruning = \".*\"#pruning = \"default\"#g" $CHAIN_DIR/config/app.toml
+sed -i -z -e 's/Enable defines if the API server should be enabled.\nenable = false/Enable defines if the API server should be enabled.\nenable = true/g' $CHAIN_DIR/config/app.toml
+sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DIR/config/app.toml
+sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
 
 echo "Update consensus params in config.toml"
 sed -i -e "s#timeout_propose = \".*\"#timeout_propose = \"500ms\"#g" $CHAIN_DIR/config/config.toml

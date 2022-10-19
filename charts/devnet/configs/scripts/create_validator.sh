@@ -30,6 +30,7 @@ $CHAIN_BIN tx staking create-validator \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
+  --fees 100000$DENOM \
   --gas="auto" \
   --gas-adjustment 1.5 --yes > /validator.log
 

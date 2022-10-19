@@ -53,7 +53,7 @@ ENV CHAIN_VERSION=${CHAIN_VERSION:-"10.0.2"}
 COPY --from=go-builder /usr/local/app/bin/$CHAIN_BIN /usr/bin/$CHAIN_BIN
 
 # Set up dependencies
-ENV PACKAGES curl make bash jq
+ENV PACKAGES curl make bash jq sed
 ENV CHAIN_BIN /usr/bin/$CHAIN_BIN
 
 # Install minimum necessary dependencies

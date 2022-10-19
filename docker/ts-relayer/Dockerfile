@@ -1,7 +1,7 @@
 FROM node:18-alpine3.16
 
 # Set up dependencies
-ENV PACKAGES curl make bash jq
+ENV PACKAGES curl make bash jq sed
 
 # Install minimum necessary dependencies
 RUN apk add --no-cache $PACKAGES
