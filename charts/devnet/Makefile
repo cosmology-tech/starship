@@ -94,3 +94,32 @@ add-n-mnemonic:
 	i=1; while [ "$$i" -le $(N) ]; do \
 		$(MAKE) add-mnemonic; i=$$((i + 1));\
 	done
+
+###############################################################################
+###                              Port forward                              ###
+###############################################################################
+
+VALUES_FILE = values.yaml
+
+.PHONY: port-forward port-forward-all
+.port-forward:
+	kubectl port-forward pods/$(chain)-genesis-0 $(localrpc):26657 &
+	kubectl port-forward pods/$(chain)-genesis-0 $(localrest):1317 &
+
+port-forward-all:
+	for chain in $$(yq -r ".chains | keys[]" $(VALUES_FILE)); do \
+  		$(MAKE) .port-forward chain=$$chain \
+  			localrpc=$$(yq -r ".chains[\"$$chain\"].localPorts.rpc" $(VALUES_FILE)) \
+  			localrest=$$(yq -r ".chains[\"$$chain\"].localPorts.rest" $(VALUES_FILE)); \
+	done
+	kubectl port-forward service/explorer 8080:8080 &
+
+.PHONY: stop-forward
+stop-forward:
+	-pkill -f "port-forward"
+
+.PHONY: check-forward
+check-forward-all:
+	while true ; do nc -vz 127.0.0.1 26653 && nc -vz 127.0.0.1 26659 ; sleep 10 ; done
+
+clean: stop-forward
