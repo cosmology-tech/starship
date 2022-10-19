@@ -1,10 +1,11 @@
 # Set helm args based on only file to show
 HELM_NAME = kubeshuttle
+HELM_CHART = devnet
 ifneq ($(FILE),)
 HELM_ARGS += --show-only $(FILE)
 endif
 
-KEYS_CONFIG = configs/keys.json
+KEYS_CONFIG = charts/$(HELM_CHART)/configs/keys.json
 
 ###############################################################################
 ###                              Helm commands                              ###
@@ -13,19 +14,19 @@ KEYS_CONFIG = configs/keys.json
 all: delete install
 
 debug:
-	helm template --dry-run --debug --generate-name . $(HELM_ARGS)
+	helm template --dry-run --debug --generate-name ./charts/$(HELM_CHART) $(HELM_ARGS)
 
 install:
-	helm install --replace --debug $(HELM_NAME) . $(HELM_ARGS)
+	helm install --replace --debug $(HELM_NAME) ./charts/$(HELM_CHART) $(HELM_ARGS)
 
 upgrade:
-	helm upgrade --debug $(HELM_NAME) . $(HELM_ARGS)
+	helm upgrade --debug $(HELM_NAME) ./charts/$(HELM_CHART) $(HELM_ARGS)
 
 delete:
 	helm delete --debug $(HELM_NAME)
 
 ###############################################################################
-###                              Local Setup                                ###
+###                          Local Kind Setup                               ###
 ###############################################################################
 
 KIND_CLUSTER=kubeshuttle
@@ -99,7 +100,7 @@ add-n-mnemonic:
 ###                              Port forward                              ###
 ###############################################################################
 
-VALUES_FILE = values.yaml
+VALUES_FILE = "charts/$(HELM_CHART)/values.yaml"
 
 .PHONY: port-forward port-forward-all
 .port-forward:
@@ -107,11 +108,13 @@ VALUES_FILE = values.yaml
 	kubectl port-forward pods/$(chain)-genesis-0 $(localrest):1317 &
 
 port-forward-all:
+	echo "Port forwarding all chains to localhost"
 	for chain in $$(yq -r ".chains | keys[]" $(VALUES_FILE)); do \
   		$(MAKE) .port-forward chain=$$chain \
   			localrpc=$$(yq -r ".chains[\"$$chain\"].localPorts.rpc" $(VALUES_FILE)) \
   			localrest=$$(yq -r ".chains[\"$$chain\"].localPorts.rest" $(VALUES_FILE)); \
 	done
+	echo "Port forwarding explorer to localhost"
 	kubectl port-forward service/explorer 8080:8080 &
 
 .PHONY: stop-forward
