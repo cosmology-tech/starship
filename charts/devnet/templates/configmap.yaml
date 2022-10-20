@@ -6,7 +6,7 @@ metadata:
 data:
   {{- range $path, $_ := .Files.Glob "scripts/*.sh" }}
   {{ base $path }}: |-
-    {{- $.Files.Get $path | nindent 4}}
+    {{- $.Files.Get $path | nindent 4 }}
   {{- end }}
 ---
 apiVersion: v1

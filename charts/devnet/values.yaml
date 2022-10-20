@@ -41,6 +41,16 @@ exposer:
   image: anmol1696/exposer:latest
   port: 8081
 
+# Chain timeouts
+timeouts:
+  timeout_propose: 400ms
+  timeout_propose_delta: 400ms
+  timeout_prevote: 400ms
+  timeout_prevote_delta: 400ms
+  timeout_precommit: 400ms
+  timeout_precommit_delta: 400ms
+  timeout_commit: 800ms
+
 # API for interacting with the charts for devnet
 # TODO: need a way to create state reaching jobs, those will run user bash scripts
 # after the chain has been initialized, get the chain to a state and then complete
@@ -60,8 +70,8 @@ chains:
       enabled: true
       permissionless: true
     localPorts:
-      rpc: 26659
-      rest: 1319
+      rpc: 26653
+      rest: 1313
   juno:
     name: juno
     image: anmol1696/juno:latest
@@ -94,8 +104,8 @@ chains:
       enabled: true
       permissionless: true
     localPorts:
-      rpc: 26653
-      rest: 1313
+      rpc: 26659
+      rest: 1319
   #persistence:
   #  name: persistence
   #  image: anmol1696/persistence:latest

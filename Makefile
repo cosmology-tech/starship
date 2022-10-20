@@ -70,9 +70,6 @@ setup: setup-kubectl setup-kind
 clean-kind:
 	kind delete cluster
 
-clean: clean-kind
-	-@rm ./kind ./kubectl 2> /dev/null
-
 ###############################################################################
 ###                              Keys config                                ###
 ###############################################################################
@@ -100,7 +97,7 @@ add-n-mnemonic:
 ###                              Port forward                              ###
 ###############################################################################
 
-VALUES_FILE = "charts/$(HELM_CHART)/values.yaml"
+VALUES_FILE = charts/$(HELM_CHART)/values.yaml
 
 .PHONY: port-forward port-forward-all
 .port-forward:
@@ -123,6 +120,9 @@ stop-forward:
 
 .PHONY: check-forward
 check-forward-all:
-	while true ; do nc -vz 127.0.0.1 26653 && nc -vz 127.0.0.1 26659 ; sleep 10 ; done
-
-clean: stop-forward
+	while true ; do \
+		for port in $$(yq -r "(.chains[] | .localPorts | .rpc, .rest), .explorer.localPorts.rest" $(VALUES_FILE)); do \
+			nc -vz 127.0.0.1 $$port; \
+		done; \
+		sleep 10; \
+	done

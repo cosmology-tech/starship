@@ -29,12 +29,12 @@ sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DI
 sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
 
 echo "Update consensus params in config.toml"
-sed -i -e "s#timeout_propose = \".*\"#timeout_propose = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_propose_delta = \".*\"#timeout_propose_delta = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_prevote = \".*\"#timeout_prevote = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_prevote_delta = \".*\"#timeout_prevote_delta = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_precommit = \".*\"#timeout_precommit = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_precommit_delta = \".*\"#timeout_precommit_delta = \"500ms\"#g" $CHAIN_DIR/config/config.toml
-sed -i -e "s#timeout_commit = \".*\"#timeout_commit = \"1000ms\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_propose = \".*\"#timeout_propose = \"$TIMEOUT_PROPOSE\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_propose_delta = \".*\"#timeout_propose_delta = \"$TIMEOUT_PROPOSE_DELTA\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_prevote = \".*\"#timeout_prevote = \"$TIMEOUT_PREVOTE\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_prevote_delta = \".*\"#timeout_prevote_delta = \"$TIMEOUT_PREVOTE_DELTA\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_precommit = \".*\"#timeout_precommit = \"$TIMEOUT_PRECOMMIT\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_precommit_delta = \".*\"#timeout_precommit_delta = \"$TIMEOUT_PRECOMMIT_DELTA\"#g" $CHAIN_DIR/config/config.toml
+sed -i -e "s#timeout_commit = \".*\"#timeout_commit = \"$TIMEOUT_COMMIT\"#g" $CHAIN_DIR/config/config.toml
 
 $CHAIN_BIN tendermint show-node-id

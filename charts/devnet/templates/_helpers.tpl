@@ -71,6 +71,16 @@ Environment variables for chain from configmaps
 {{- end }}
 
 {{/*
+Environment variables for timeouts
+*/}}
+{{- define "devnet.timeoutVars" }}
+{{- range $key, $value := .timeouts }}
+- name: {{ $key | upper }}
+  value: {{ $value }}
+{{- end }}
+{{- end }}
+
+{{/*
 Environment variables for genesis chain
 */}}
 {{- define "devnet.genesisVars" }}

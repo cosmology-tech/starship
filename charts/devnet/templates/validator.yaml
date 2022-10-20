@@ -35,6 +35,7 @@ spec:
           imagePullPolicy: Always
           env:
             {{- include "devnet.evnVars" $value | indent 12 }}
+            {{- include "devnet.timeoutVars" $.Values | indent 12 }}
             {{- include "devnet.genesisVars" $data | indent 12}}
             - name: KEYS_CONFIG
               value: /configs/keys.json
