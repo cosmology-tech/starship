@@ -120,14 +120,6 @@ chains:
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers:
-  #rly1:
-  #  name: osmo-juno
-  #  kind: ts-relayer
-  #  image: anmol1696/ts-relayer:latest
-  #  replicas: 1 # these are unique replicas, currently only support a single replica
-  #  chains:
-  #    - osmosis
-  #    - juno
   rly1:
     name: osmo-wasm
     kind: ts-relayer

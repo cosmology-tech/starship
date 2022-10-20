@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: setup-scripts
 data:
-  {{- range $path, $_ := .Files.Glob "configs/scripts/*.sh" }}
+  {{- range $path, $_ := .Files.Glob "scripts/*.sh" }}
   {{ base $path }}: |-
     {{- $.Files.Get $path | nindent 4}}
   {{- end }}
