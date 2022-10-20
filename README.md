@@ -1,36 +1,147 @@
 # kubeshuttle
-A k8s based testing setup framework built with helm
+Universal interchain development environment in k8s. The vision of this project
+is to have a single easy to use developer environment with full testing support
+for multichain use cases
 
-## Next steps
-* 12/10/2022: 
-  * Run ibc txns from outside the system
-  * Cleanup values.yaml interface
-  * Add default values for all chains
-* 13/10/2022:
-  * Depriotize multi-relayer setup, single relayer working
+## Installation
+Inorder to get started with kubeshuttle, one needs to install the following
+* `kubectl`: https://kubernetes.io/docs/tasks/tools/
+* `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
+* `helm`: https://helm.sh/docs/intro/install/
+* `jq`: https://stedolan.github.io/jq/download/
+* `yq`: https://github.com/mikefarah/yq/#install
 
-## Work done
-* 13/10/2022:
-  * Values.yaml fixed for relayer to have seperate mnemonics for scaling
-  * Need to make decision about running validators on same connections vs others
+## Getting started
+Update the `vaules.yaml` in `charts/devnet/templates`. Recommeded one creates a copy
+of the values file and update it as per your requirements.
 
-## Issues
-* Relayer, when we have multi-node setup, then how to setup the inital connection
-  * Can we use the same connection betwwen different chains? What is connection 
-    and client connection
-  * Might not scale with multi-node setups
+### Setup local k8s cluster (optional)
+Create a local k8s cluster using `kind`. Can be setup with `minikube` or
+docker-desktop as well.
+One can use the handy make commands in the `Makefile` like following
+```bash
+make setup-kind
+```
+This will create a local kind cluster in docker and set the correct context in
+your current kubectl. Check the kubectl context with
+```bash
+kubectl config current-context
+# check: kind-kubeshuttle
+```
+
+### Setup k8s cluster
+1. Connect to a k8s cluster, make sure you are able to access following command
+   ```bash
+   kubectl get pods
+   ```
+2. Create a namespace in which the setup will be deployed.
+   ```bash
+   kubectl create namespace <namespace-name>
+   # example
+   kubectl create namespace kubeshuttle
+   ```
+3. Make sure you have set the namespace in the current context, so the devnet is deployed
+   without conflict to your current workloads
+
+### Start
+1. Debug the k8s yaml configuration files
+   ```bash
+   make debug VALUES_NAME=<custom-filename>
+   # output all yaml files that will be deployed 
+   # default values file run
+   make debug
+   ```
+2. Start the cluster
+   ```bash
+   make install VALUES_NAME=<custom-filename>
+   # default values file run
+   make install
+   ```
+   Optionally you can use k9s, to watch all the fun
+3. Once you make any changes to the system or values, run
+   ```bash
+   make upgrade VALUES_NAME=<custom-filename>
+   # default values file run
+   make upgrade
+   ```
+4. Run local port forwarding based on local port info in the `values.yaml`
+   ```bash
+   # port-forward all the local ports locally, runs in background
+   make port-forward-all
+   
+   # Run following to stop port forwarding once done
+   make stop-forward
+   ```
+   Sometime one might need to run connection updates so the port-forward does not
+   get timed out. Run `make check-forward-all`
+5. Open the explorer at `http://localhost:8080`
+6. To clean up everything run
+   ```bash
+   # Kill any portforwarding
+   make stop-forward
+   # Delete current helm chart deployment
+   make delete
+   # If running local kind cluster, cleanup
+   make clean-kind
+   ```
+
+## Custom setup
+When one wants to change the configuration for setting up the devnet.
+1. Copy the `charts/devnet/values.yaml` to `custom-values.yaml` file.
+2. Update the yaml file
+3. Install chart `make install VALUES_FILE=custom-values.yaml`
+
+While making changes to the `vaules.yaml` file here are the modifications one
+can perform
+* Add chains to setup at `.chains` key, copy and paste an existing chain and make changes
+* Update how many validators per chain at `.chains[].numValidators`
+* Add relayer between chains with adding dict to `.relayers`, mention the chains to
+  connect between in `.relayers[].chains`, use the chain name defined in `.chains`
+* Toggle explorer with `.explorer.enabled` boolen flag
+
+**NOTE: `values.yaml` still needs to be optimized with default values and less user inputs**
+
+## Using helm chart
+Inorder to use the helm chart externally without this repo.
+```bash
+helm repo add kubeshuttle https://github.com/Anmol1696/kubeshuttle
+helm repo update
+
+helm search repo kubeshuttle/devnet
+```
+Fetch the values.yaml file and update them before installing the chart
+```bash
+helm show values kubeshuttle/devnet > custom-vaules.yaml
+# change custom-values.yaml file
+
+helm install -f custom-values.yaml kubeshuttle/devnet --generate-name
+```
+
+**NOTE: It is recommended to still copy the Makefile from the repo to use the handy commands**
+
+# Future works
+Some features that are to be added
+* Default values for each chain, addition of `type` for chains
+* Move scripts directly to configmaps
 
 ## Improvements
-* Need not build all the docker images, the docker requirements are to have jq 
-  and bash in alpine
-* Can look into using strangelove-ventures/heighliner for docker images creation 
-  instead of having self hosted
-* Key initialization and recovery takes the most amount of time, could see if
-  we can do this
-  * in parallel
-  * or precompute the keyring-test directory itself for each of the cases
+* Make faster kye initialization, currently most time at startup is taken by adding
+  keys to keyring from mnemonics
+* Add comments to `values.yaml`
 
-## How to test upgrades
+## Major design considerations
+### Docker images
+Currently, for each chain, the docker image needs to be built stored in `docker/`
+directory. Most of the docker images just need `jq`, `bash` and `sed`.
+Can look into using strangelove-ventures/heighliner for docker images creation
+instead of having self-hosted
+
+### Chain binary
+The docker images also require the chain binary to be already part of the container.
+Need the ability for users to either pass the binary as input, or to build binary on
+the fly, so that we can use a standard base docker image, and add binaries on top.
+
+### Upgrade testing: ToDo
 * Run chain in current state, need to install cosmovisor on all nodes
   * Might neeed to binary pre-installed for both upgrades
   * Can fetch binary via a wget in init-containers
@@ -41,10 +152,9 @@ A k8s based testing setup framework built with helm
 * After upgrade, we loose the touch with ability to update `genesis.json`
   directly, 
 
-## Productized
+### Bazel: Servicify
 * Serviceify this, blaze tests, run all the test for any language
   * Bazal integrates with remote test runner
 * Service running that listens to commands, and run commands on the cluster
   * Test RPC: takes test request and spits out an output
   * Create a web frontend that displays your results
-

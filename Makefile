@@ -6,6 +6,7 @@ HELM_ARGS += --show-only $(FILE)
 endif
 
 KEYS_CONFIG = charts/$(HELM_CHART)/configs/keys.json
+VALUES_FILE = charts/$(HELM_CHART)/values.yaml
 
 ###############################################################################
 ###                              Helm commands                              ###
@@ -14,13 +15,13 @@ KEYS_CONFIG = charts/$(HELM_CHART)/configs/keys.json
 all: delete install
 
 debug:
-	helm template --dry-run --debug --generate-name ./charts/$(HELM_CHART) $(HELM_ARGS)
+	helm template --dry-run --debug --generate-name ./charts/$(HELM_CHART) -f $(VALUES_FILE) $(HELM_ARGS)
 
 install:
-	helm install --replace --debug $(HELM_NAME) ./charts/$(HELM_CHART) $(HELM_ARGS)
+	helm install --replace --debug $(HELM_NAME) ./charts/$(HELM_CHART) -f $(VALUES_FILE) $(HELM_ARGS)
 
 upgrade:
-	helm upgrade --debug $(HELM_NAME) ./charts/$(HELM_CHART) $(HELM_ARGS)
+	helm upgrade --debug $(HELM_NAME) ./charts/$(HELM_CHART) -f $(VALUES_FILE) $(HELM_ARGS)
 
 delete:
 	helm delete --debug $(HELM_NAME)
@@ -96,8 +97,6 @@ add-n-mnemonic:
 ###############################################################################
 ###                              Port forward                              ###
 ###############################################################################
-
-VALUES_FILE = charts/$(HELM_CHART)/values.yaml
 
 .PHONY: port-forward port-forward-all
 .port-forward:
