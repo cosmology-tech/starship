@@ -101,6 +101,11 @@ can perform
 
 **NOTE: `values.yaml` still needs to be optimized with default values and less user inputs**
 
+### ProTip: Local setup
+* Set `.chains[].numValidators` to `1` when using local cluster
+* Comment out chains and relayers not needed
+* Disable explorer for local setup
+
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
 ```bash
