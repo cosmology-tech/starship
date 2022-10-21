@@ -128,6 +128,9 @@ helm install -f custom-values.yaml kubeshuttle/devnet --generate-name
 Some features that are to be added
 * Default values for each chain, addition of `type` for chains
 * Move scripts directly to configmaps
+* Add support for hermes and go relayers
+* How to perform ingress for local or cluster to get traffic to the system, this will
+  remove the need for any sort of local port forwarding
 
 ## Improvements
 * Make faster kye initialization, currently most time at startup is taken by adding
@@ -172,3 +175,7 @@ and spread it out to all the following validator nodes.
 * Service running that listens to commands, and run commands on the cluster
   * Test RPC: takes test request and spits out an output
   * Create a web frontend that displays your results
+* If we provide any sort of devnet service, we need to figure out **Authn** for all the
+  calls, knowing that for local debugging there is no authn for actual blockchains.
+  Port-forwarding does not sound like a bad idea, since the burden of authn is on
+  `kubectl`.
