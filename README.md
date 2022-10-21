@@ -179,3 +179,13 @@ and spread it out to all the following validator nodes.
   calls, knowing that for local debugging there is no authn for actual blockchains.
   Port-forwarding does not sound like a bad idea, since the burden of authn is on
   `kubectl`.
+
+### Stress testing and profiling
+Inorder to understand the topology and deeper insights into how the system works, it
+would make sense to try and use a simulated environment and perform stress tests as
+a blackbox testing.
+We can create new binaries with pprof or profiling tool embedded, run test workflow
+and look at the analytics.
+
+Currently, the way to do this, is very manual and some tools are being built for local
+profiling, but large scale profiling still needs to happen.
