@@ -133,6 +133,8 @@ Some features that are to be added
 * Make faster kye initialization, currently most time at startup is taken by adding
   keys to keyring from mnemonics
 * Add comments to `values.yaml`
+* Currently, the setup runs well for 12hrs before hitting the memory limits and the
+  storage limits. Need to set proper pruning setup for optimal devnet
 
 ## Major design considerations
 ### Docker images
@@ -145,6 +147,13 @@ instead of having self-hosted
 The docker images also require the chain binary to be already part of the container.
 Need the ability for users to either pass the binary as input, or to build binary on
 the fly, so that we can use a standard base docker image, and add binaries on top.
+
+### Mainnet exports
+Ability to get an exported state on a mainnet/testnet for a chain, and update locally.
+LocalOsmosis has some functions and scripts to perform the state change.
+
+Ideally we will spin up a new type of container, fetch the data, perform transformations 
+and spread it out to all the following validator nodes.
 
 ### Upgrade testing: ToDo
 * Run chain in current state, need to install cosmovisor on all nodes
