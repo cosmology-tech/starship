@@ -76,7 +76,7 @@ Environment variables for timeouts
 {{- define "devnet.timeoutVars" }}
 {{- range $key, $value := .timeouts }}
 - name: {{ $key | upper }}
-  value: {{ $value }}
+  value: {{ $value | quote }}
 {{- end }}
 {{- end }}
 
