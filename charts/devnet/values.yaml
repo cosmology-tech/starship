@@ -43,6 +43,7 @@ exposer:
 
 # Chain timeouts
 timeouts:
+  time_iota_ms: 100
   timeout_propose: 400ms
   timeout_propose_delta: 400ms
   timeout_prevote: 400ms
