@@ -63,7 +63,7 @@ chains:
     prefix: osmo
     denom: uosmo
     coins: 100000000000000uosmo,100000000000000uion
-    numValidators: 4
+    numValidators: 2
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     wasm:
@@ -72,23 +72,6 @@ chains:
     localPorts:
       rpc: 26653
       rest: 1313
-  juno:
-    name: juno
-    image: anmol1696/juno:latest
-    home: /root/.juno
-    binary: junod
-    prefix: juno
-    denom: ujuno
-    coins: 100000000000000ujuno
-    numValidators: 2
-    hdPath: m/44'/118'/0'/0/0
-    coinType: 118
-    wasm:
-      enabled: true
-      permissionless: true
-    localPorts:
-      rpc: 26654
-      rest: 1314
   wasmd:
     name: wasmd
     image: anmol1696/wasmd:latest
@@ -97,7 +80,7 @@ chains:
     prefix: wasm
     denom: stake
     coins: 100000000000000ucosm,100000000000000stake
-    numValidators: 4
+    numValidators: 2
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     wasm:
@@ -106,27 +89,6 @@ chains:
     localPorts:
       rpc: 26659
       rest: 1319
-  #persistence:
-  #  name: persistence
-  #  image: anmol1696/persistence:latest
-  #  binary: persistenceCore
-  #  prefix: persistence
-  #  denom: uxprt
-  #  coins: 100000000000000uxprt
-  #  numValidators: 5 # number of unique validator nodes
-  #  wasm:
-  #    enabled: true
-  #    permissionless: false
-  #cosmos:
-  #  name: cosmos
-  #  image: anmol1696/gaia:latest
-  #  binary: gaiad
-  #  prefix: cosmos
-  #  denom: stake
-  #  coins: 100000000000000uxprt
-  #  numValidators: 3
-  #  wasm:
-  #    enabled: false
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers:
@@ -138,14 +100,6 @@ relayers:
     chains:
       - osmosis
       - wasmd
-  rly2:
-    name: osmo-juno
-    kind: ts-relayer
-    image: anmol1696/ts-relayer:latest
-    replicas: 1
-    chains:
-      - osmosis
-      - juno
 
 explorer:
   enabled: true # Flag to enable disable explorer
