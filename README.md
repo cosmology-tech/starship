@@ -140,6 +140,12 @@ Some features that are to be added
   storage limits. Need to set proper pruning setup for optimal devnet
 
 ## Major design considerations
+### GH Actions
+Run this in CI/CD.
+
+### E2E tests
+The actual tests we can run.
+
 ### Docker images
 Currently, for each chain, the docker image needs to be built stored in `docker/`
 directory. Most of the docker images just need `jq`, `bash` and `sed`.
