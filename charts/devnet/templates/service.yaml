@@ -1,12 +1,12 @@
 {{ $portMap := dict "p2p" 26656 "rpc" 26657 "grpc" 9090 "rest" 1317 }}
-{{- range $chain, $_ := .Values.chains }}
+{{- range $chain := .Values.chains }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $chain }}-genesis
+  name: {{ $chain.name }}-genesis
   labels:
-    app.kubernetes.io/name: {{ $chain }}-genesis
+    app.kubernetes.io/name: {{ $chain.name }}-genesis
 spec:
   clusterIP: None
   ports:
@@ -21,6 +21,6 @@ spec:
       protocol: TCP
       targetPort: {{ $.Values.exposer.port | default 8081 }}
   selector:
-    app.kubernetes.io/name: {{ $chain }}-genesis
+    app.kubernetes.io/name: {{ $chain.name }}-genesis
 ---
 {{- end }}

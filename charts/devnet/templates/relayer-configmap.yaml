@@ -1,12 +1,11 @@
-# Configmap for ts-relayer
 {{- $keys := .Files.Get "configs/keys.json" | fromJson }}
-{{- range $relayer, $value := .Values.relayers }}
-{{- if eq $value.kind "ts-relayer" }}
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "ts-relayer" }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ $value.kind }}-{{ $value.name }}-{{ $relayer }}"
+  name: "{{ $relayer.type }}-{{ $relayer.name }}"
 data:
   template-app.yaml: |-
     src: <SRC>
@@ -16,10 +15,16 @@ data:
   registry.yaml: |-
     version: 1
     chains:
-      {{- range $i, $chain := $value.chains }}
+      {{- range $i, $chain := $relayer.chains }}
       {{ $chain }}:
-        {{- with index $.Values.chains $chain }}
-        chain_id: {{ .name }}
+        {{- range $fullchain := $.Values.chains }}
+        {{- if eq $fullchain.name $chain }}
+        chain_id: {{ $chain }}
+        # You can include multiple RPC endpoints and it will rotate through them if
+        # one is down (TODO)
+        rpc:
+          - http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
+        {{- with index $.Values.defaultChains $fullchain.type }}
         # Bech32 prefix for addresses
         prefix: {{ .prefix }}
         # This determines the gas payments we make (and defines the fee token)
@@ -32,10 +37,8 @@ data:
         ics20_port: 'transfer'
         estimated_block_time: 2000
         estimated_indexer_time: 10
-        # You can include multiple RPC endpoints and it will rotate through them if
-        # one is down (TODO)
-        rpc:
-          - http://{{ .name }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
+        {{- end }}
+        {{- end }}
         {{- end }}
       {{- end }}
 ---
