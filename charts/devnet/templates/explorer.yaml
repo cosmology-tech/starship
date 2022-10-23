@@ -74,32 +74,33 @@ kind: ConfigMap
 metadata:
   name: explorer
 data:
-  {{- range $chain, $value := .Values.chains }}
+  {{- range $chain := .Values.chains }}
+  {{ $defaultChain := get $.Values.defaultChains $chain.type }}
   {{ $host := "localhost" }}
   {{- if not $.Values.explorer.localhost }}
-  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain $.Release.Namespace }}
+  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
   {{- end }}
-  {{ $chain }}.json: |-
+  {{ $chain.name }}.json: |-
     {
-      "chain_name": "{{ $chain }}",
-      "coingecko": "{{ $value.name }}",
-      "api": "http://{{ $host }}:{{ $value.localPorts.rest }}",
+      "chain_name": "{{ $chain.name }}",
+      "coingecko": "{{ $chain.type }}",
+      "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
       "rpc": [
-        "http://{{ $host }}:{{ $value.localPorts.rpc }}",
-        "http://{{ $host }}:{{ $value.localPorts.rpc }}"
+        "http://{{ $host }}:{{ $chain.ports.rpc }}",
+        "http://{{ $host }}:{{ $chain.ports.rpc }}"
       ],
       "snapshot_provider": "",
       "sdk_version": "0.45.6",
-      "coin_type": "{{ $value.coinType }}",
+      "coin_type": "{{ $defaultChain.coinType }}",
       "min_tx_fee": "3000",
-      "addr_prefix": "{{ $value.prefix }}",
+      "addr_prefix": "{{ $defaultChain.prefix }}",
       "logo": "",
       "assets": [
         {
-          "base": "{{ $value.denom }}",
-          "symbol": "{{ $value.prefix | upper }}",
+          "base": "{{ $defaultChain.denom }}",
+          "symbol": "{{ $defaultChain.prefix | upper }}",
           "exponent": "6",
-          "coingecko_id": "{{ $value.name }}",
+          "coingecko_id": "{{ $chain.name }}",
           "logo": ""
         }
       ]

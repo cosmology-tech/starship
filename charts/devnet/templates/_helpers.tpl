@@ -53,21 +53,23 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Environment variables for chain from configmaps
 */}}
-{{- define "devnet.evnVars" }}
+{{- define "devnet.defaultEvnVars" }}
 - name: DENOM
   value: {{ .denom }}
 - name: COINS
   value: {{ .coins }}
-- name: CHAIN_ID
-  value: {{ .name }}
 - name: CHAIN_BIN
   value: {{ .binary }}
-{{- if .wasm.enabled }}
-- name: WASM_PERMISSIONLESS
-  value: "{{ .wasm.permissionless | default false }}"
-{{- end}}
 - name: CHAIN_DIR
   value: {{ .home }}
+{{- end }}
+
+{{/*
+Environment variables for chain from configmaps
+*/}}
+{{- define "devnet.evnVars" }}
+- name: CHAIN_ID
+  value: {{ .name }}
 {{- end }}
 
 {{/*

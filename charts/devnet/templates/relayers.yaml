@@ -1,20 +1,21 @@
-{{- range $relayer, $value := .Values.relayers }}
-{{- if eq $value.kind "ts-relayer" }}
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "ts-relayer" }}
+{{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $value.name }}
+  name: {{ $relayer.name }}
 spec:
-  serviceName: {{ $value.name }}-{{ $value.kind }}
-  replicas: {{ $value.replicas }}
+  serviceName: {{ $relayer.type }}-{{ $relayer.name }}
+  replicas: {{ $relayer.replicas }}
   podManagementPolicy: "Parallel"
   revisionHistoryLimit: 3
   selector:
     matchLabels:
       app.kubernetes.io/instance: relayer
-      app.kubernetes.io/type: {{ $value.kind }}
-      app.kubernetes.io/name: {{ $value.name }}
+      app.kubernetes.io/type: {{ $relayer.type }}
+      app.kubernetes.io/name: {{ $relayer.name }}
   template:
     metadata:
       annotations:
@@ -24,24 +25,24 @@ spec:
         tier: gateway
       labels:
         app.kubernetes.io/instance: relayer
-        app.kubernetes.io/type: {{ $value.kind }}
-        app.kubernetes.io/name: {{ $value.name }}
+        app.kubernetes.io/type: {{ $relayer.type }}
+        app.kubernetes.io/name: {{ $relayer.name }}
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
         {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
-        {{- range $chain := $value.chains  }}
+        {{- range $chain := $relayer.chains  }}
         {{- $initData := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
         {{- include "devnet.init.wait" $initData | indent 8 }}
         {{- end }}
         - name: init-relayer
-          image: {{ $value.image }}
+          image: {{ $relayer.image | default $defaultRelayer.image }}
           imagePullPolicy: Always
           env:
             - name: SRC_CHAIN
-              value: {{ index $value.chains 0 }}
+              value: {{ index $relayer.chains 0 }}
             - name: DEST_CHAIN
-              value: {{ index $value.chains 1 }}
+              value: {{ index $relayer.chains 1 }}
             - name: RELAYER_DIR
               value: /root/.ibc-setup
             - name: KEYS_CONFIG
@@ -75,7 +76,7 @@ spec:
               name: keys
       containers:
         - name: relayer
-          image: {{ $value.image }}
+          image: {{ $relayer.image | default $defaultRelayer.image }}
           imagePullPolicy: Always
           env:
             - name: RELAYER_DIR
@@ -118,7 +119,7 @@ spec:
           emptyDir: { }
         - name: relayer-config
           configMap:
-            name: "{{ $value.kind }}-{{ $value.name }}-{{ $relayer }}"
+            name: "{{ $relayer.type }}-{{ $relayer.name }}"
         - name: keys
           configMap:
             name: keys

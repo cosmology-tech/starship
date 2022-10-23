@@ -1,20 +1,21 @@
-{{- range $chain, $value := .Values.chains }}
-{{- if gt $value.numValidators 1.0 }}
-{{ $data := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
+{{- range $chain := .Values.chains }}
+{{- if gt $chain.numValidators 1.0 }}
+{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain }}-validator
+  name: {{ $chain.name }}-validator
 spec:
-  serviceName: {{ $chain }}-validator
+  serviceName: {{ $chain.name }}-validator
   podManagementPolicy: "Parallel"
-  replicas: {{ sub $value.numValidators 1 }}
+  replicas: {{ sub $chain.numValidators 1 }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $chain }}
-      app.kubernetes.io/name: {{ $chain }}-validator
+      app.kubernetes.io/instance: {{ $chain.type }}
+      app.kubernetes.io/name: {{ $chain.name }}-validator
   template:
     metadata:
       annotations:
@@ -23,20 +24,21 @@ spec:
         sla: high
         tier: gateway
       labels:
-        app.kubernetes.io/instance: {{ $chain }}
-        app.kubernetes.io/type: {{ $chain }}
-        app.kubernetes.io/name: {{ $chain }}-validator
+        app.kubernetes.io/instance: {{ $chain.type }}
+        app.kubernetes.io/type: {{ $chain.name }}
+        app.kubernetes.io/name: {{ $chain.name }}-validator
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
-        {{- include "devnet.init.wait" $data | indent 8 }}
+        {{- include "devnet.init.wait" $dataExposer | indent 8 }}
         - name: init-validator
-          image: {{ $value.image }}
+          image: {{ $chain.image | default $defaultChain.image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.evnVars" $value | indent 12 }}
+            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.timeoutVars" $.Values | indent 12 }}
-            {{- include "devnet.genesisVars" $data | indent 12}}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: KEYS_CONFIG
               value: /configs/keys.json
           command:
@@ -75,7 +77,7 @@ spec:
               cpu: "0.1"
               memory: "200M"
           volumeMounts:
-            - mountPath: {{ $value.home }}
+            - mountPath: {{ $defaultChain.home }}
               name: node
             - mountPath: /configs
               name: addresses
@@ -83,11 +85,12 @@ spec:
               name: scripts
       containers:
         - name: validator
-          image: {{ $value.image }}
+          image: {{ $chain.image | default $defaultChain.image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.evnVars" $value | indent 12 }}
-            {{- include "devnet.genesisVars" $data | indent 12}}
+            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12}}
           command:
             - bash
             - "-c"
@@ -117,7 +120,7 @@ spec:
               cpu: "0.5"
               memory: "500M"
           volumeMounts:
-            - mountPath: {{ $value.home }}
+            - mountPath: {{ $defaultChain.home }}
               name: node
             - mountPath: /configs
               name: addresses
@@ -127,10 +130,11 @@ spec:
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.evnVars" $value | indent 12 }}
-            {{- include "devnet.genesisVars" $data | indent 12}}
+            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: GENESIS_FILE
-              value: {{ $value.home }}/config/genesis.json
+              value: {{ $defaultChain.home }}/config/genesis.json
           command: [ "exposer" ]
           resources:
             limits:
@@ -140,7 +144,7 @@ spec:
               cpu: "0.1"
               memory: "100M"
           volumeMounts:
-            - mountPath: {{ $value.home }}
+            - mountPath: {{ $defaultChain.home }}
               name: node
       volumes:
         - name: node

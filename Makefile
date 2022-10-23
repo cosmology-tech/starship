@@ -103,12 +103,14 @@ add-n-mnemonic:
 	kubectl port-forward pods/$(chain)-genesis-0 $(localrpc):26657 &
 	kubectl port-forward pods/$(chain)-genesis-0 $(localrest):1317 &
 
+num_chains = $(shell yq -r ".chains | length" $(VALUES_FILE))
 port-forward-all:
 	echo "Port forwarding all chains to localhost"
-	for chain in $$(yq -r ".chains | keys[]" $(VALUES_FILE)); do \
-  		$(MAKE) .port-forward chain=$$chain \
-  			localrpc=$$(yq -r ".chains[\"$$chain\"].localPorts.rpc" $(VALUES_FILE)) \
-  			localrest=$$(yq -r ".chains[\"$$chain\"].localPorts.rest" $(VALUES_FILE)); \
+	for i in $(shell seq 0 $(num_chains)); do \
+  		$(MAKE) .port-forward \
+  			chain=$$(yq -r ".chains[$$i].name" $(VALUES_FILE)) \
+  			localrpc=$$(yq -r ".chains[$$i].ports.rpc" $(VALUES_FILE)) \
+  			localrest=$$(yq -r ".chains[$$i].ports.rest" $(VALUES_FILE)); \
 	done
 	echo "Port forwarding explorer to localhost"
 	kubectl port-forward service/explorer 8080:8080 &
@@ -120,7 +122,7 @@ stop-forward:
 .PHONY: check-forward
 check-forward-all:
 	while true ; do \
-		for port in $$(yq -r "(.chains[] | .localPorts | .rpc, .rest), .explorer.localPorts.rest" $(VALUES_FILE)); do \
+		for port in $$(yq -r "(.chains[] | .ports | .rpc, .rest), .explorer.localPorts.rest" $(VALUES_FILE)); do \
 			nc -vz 127.0.0.1 $$port; \
 		done; \
 		sleep 10; \
