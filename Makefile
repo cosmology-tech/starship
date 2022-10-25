@@ -1,5 +1,5 @@
 # Set helm args based on only file to show
-HELM_NAME = kubeshuttle
+HELM_NAME = shuttle
 HELM_CHART = devnet
 ifneq ($(FILE),)
 HELM_ARGS += --show-only $(FILE)
@@ -30,7 +30,7 @@ delete:
 ###                          Local Kind Setup                               ###
 ###############################################################################
 
-KIND_CLUSTER=kubeshuttle
+KIND_CLUSTER=shuttle
 
 install-kind:
 ifeq ($(shell uname -s), Linux)

@@ -4,7 +4,7 @@ is to have a single easy to use developer environment with full testing support
 for multichain use cases
 
 ## Installation
-Inorder to get started with kubeshuttle, one needs to install the following
+Inorder to get started with shuttle, one needs to install the following
 * `kubectl`: https://kubernetes.io/docs/tasks/tools/
 * `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 * `helm`: https://helm.sh/docs/intro/install/
@@ -26,7 +26,7 @@ This will create a local kind cluster in docker and set the correct context in
 your current kubectl. Check the kubectl context with
 ```bash
 kubectl config current-context
-# check: kind-kubeshuttle
+# check: kind-shuttle
 ```
 
 ### Setup k8s cluster
@@ -38,7 +38,7 @@ kubectl config current-context
    ```bash
    kubectl create namespace <namespace-name>
    # example
-   kubectl create namespace kubeshuttle
+   kubectl create namespace shuttle
    ```
 3. Make sure you have set the namespace in the current context, so the devnet is deployed
    without conflict to your current workloads
@@ -109,17 +109,17 @@ can perform
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
 ```bash
-helm repo add kubeshuttle https://github.com/Anmol1696/kubeshuttle
+helm repo add shuttle https://github.com/Anmol1696/shuttle
 helm repo update
 
-helm search repo kubeshuttle/devnet
+helm search repo shuttle/devnet
 ```
 Fetch the values.yaml file and update them before installing the chart
 ```bash
-helm show values kubeshuttle/devnet > custom-vaules.yaml
+helm show values shuttle/devnet > custom-vaules.yaml
 # change custom-values.yaml file
 
-helm install -f custom-values.yaml kubeshuttle/devnet --generate-name
+helm install -f custom-values.yaml shuttle/devnet --generate-name
 ```
 
 **NOTE: It is recommended to still copy the Makefile from the repo to use the handy commands**

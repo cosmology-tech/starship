@@ -1,11 +1,11 @@
 # Demo
 
 For the demo we will run the [mesh-security](https://github.com/CosmWasm/mesh-security) tests against a setup
-creted with kubeshuttle.
+creted with shuttle.
 
-1. Clone 2 repos, mesh-security clone and kubeshuttle
+1. Clone 2 repos, mesh-security clone and shuttle
    ```bash
-   git clone git@github.com:Anmol1696/kubeshuttle.git
+   git clone git@github.com:Anmol1696/shuttle.git
    
    # Mesh security repo, containing the tests
    git clone git@github.com:Anmol1696/mesh-security.git
@@ -14,17 +14,17 @@ creted with kubeshuttle.
    ```
    Note: We used the forked mesh-security repo since there are minor changes made to the testing repo. We will remove
    this dependency soon
-2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/Anmol1696/kubeshuttle#setup-local-k8s-cluster-optional)
-3. Optionally if you are resource constrained on your k8s cluster, you checkout kubeshuttle to a local branch, which will
+2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/Anmol1696/shuttle#setup-local-k8s-cluster-optional)
+3. Optionally if you are resource constrained on your k8s cluster, you checkout shuttle to a local branch, which will
    spin up less resources. If you have a beefy machine, no need... try it out
    ```bash
-   cd kubeshuttle
+   cd shuttle
    git checkout anmol/local
    ```
    Note: In this branch, we just change the `values.yaml` files to spin up only 2 chains, 1 relayer and explorer
-4. Create the setup with kubeshuttle and port-forward ports
+4. Create the setup with shuttle and port-forward ports
    ```bash
-   cd kubeshuttle
+   cd shuttle
    # Output all k8s yaml configurations
    make debug
    # Install cluster
@@ -36,7 +36,7 @@ creted with kubeshuttle.
    hopefully properly. This is a known issue, we are working on it. Use `kubectl delete pods <pod-name>`
 5. Once the pods are running, run port-forward command
    ```bash
-   cd kubeshuttle
+   cd shuttle
    make port-forward-all
    ```
 6. Now you can check the explorer locally at [http://localhost:8080](http://localhost:8080)
