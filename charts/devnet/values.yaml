@@ -103,40 +103,42 @@ defaultRelayers:
 chains:
   - name: osmosis-1
     type: osmosis
-    numValidators: 4
+    numValidators: 2
     ports:
-      rest: 1313
       rpc: 26653
+      rest: 1313
   - name: juno-1
     type: juno
-    numValidators: 4
+    numValidators: 2
     ports:
       rpc: 26654
       rest: 1314
   - name: wasmd
     type: wasmd
-    numValidators: 3
+    numValidators: 2
     ports:
       rpc: 26659
       rest: 1319
 
 # TODO: ability to check the srcConnection and destConnection to use
-relayers:
-  - name: osmo-wasm
-    type: ts-relayer
-    replicas: 1 # these are unique replicas, currently only support a single replica
-    chains:
-      - osmosis-1
-      - wasmd
-  - name: osmo-juno
-    type: ts-relayer
-    replicas: 1
-    chains:
-      - osmosis-1
-      - juno-1
+relayers: []
+# Example relayers, default is set to none
+#  - name: osmo-wasm
+#    type: ts-relayer
+#    replicas: 1 # these are unique replicas, currently only support a single replica
+#    chains:
+#      - osmosis-1
+#      - wasmd
+#  - name: osmo-juno
+#    type: ts-relayer
+#    replicas: 1
+#    chains:
+#      - osmosis-1
+#      - juno-1
 
 explorer:
-  enabled: true # Flag to enable disable explorer
+  # Flag to enable explorer for cluster
+  enabled: false
   type: ping-pub
   image: anmol1696/explorer
   localhost: true

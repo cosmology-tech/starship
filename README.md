@@ -109,7 +109,7 @@ can perform
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
 ```bash
-helm repo add shuttle https://github.com/Anmol1696/shuttle
+helm repo add shuttle https://anmol1696.github.io/shuttle
 helm repo update
 
 helm search repo shuttle/devnet
