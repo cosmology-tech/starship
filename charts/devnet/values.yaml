@@ -40,6 +40,13 @@ affinity: {}
 exposer:
   image: anmol1696/exposer:latest
   port: 8081
+  resources:
+    limits:
+      cpu: "0.1"
+      memory: "100M"
+    requests:
+      cpu: "0.1"
+      memory: "100M"
 
 # Chain timeouts
 timeouts:
@@ -146,7 +153,7 @@ explorer:
     rest: 8080
 
 faucet:
-  enabled: false # will create faucet for all chains
+  enabled: false
 
 chainRegistry:
   enabled: false

@@ -116,3 +116,31 @@ Init container for waiting on a url to respond
       echo "Ready to start"
       exit 0
 {{- end }}
+
+{{/*
+Returns resources for a validator
+*/}}
+{{- define "devnet.validator.resources" }}
+{{- if hasKey . "resources" }}
+{{ toYaml .resources }}
+{{- else }}
+limits:
+  cpu: "1"
+  memory: "1G"
+requests:
+  cpu: "0.5"
+  memory: "500m"
+{{- end }}
+{{- end }}
+
+{{/*
+Returns resources for a validator
+*/}}
+{{- define "devnet.init.resources" }}
+limits:
+  cpu: "0.2"
+  memory: "200M"
+requests:
+  cpu: "0.1"
+  memory: "100M"
+{{- end }}

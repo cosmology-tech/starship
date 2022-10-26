@@ -18,21 +18,16 @@ jobs:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.0
 
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
 
       - name: Install chart-testing
-        uses: helm/chart-testing-action@v2.0.1
+        uses: helm/chart-testing-action@v2.3.1
 
       - name: Run chart-testing (lint)
-        run: ct lint
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.0.0
-        if: steps.list-changed.outputs.changed == 'true'
-
-      - name: Run chart-testing (install)
-        run: ct install
+        run: ct lint --chart-dirs charts --charts charts/devnet
