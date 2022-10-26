@@ -153,7 +153,7 @@ explorer:
     rest: 8080
 
 faucet:
-  enabled: false # will create faucet for all chains
+  enabled: false
 
 chainRegistry:
   enabled: false
