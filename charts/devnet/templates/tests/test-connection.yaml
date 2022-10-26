@@ -1,5 +1,6 @@
 {{- range $chain := .Values.chains }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -15,4 +16,5 @@ spec:
       command: ['wget']
       args: ['http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id']
   restartPolicy: Never
+---
 {{- end }}
