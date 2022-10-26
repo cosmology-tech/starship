@@ -28,7 +28,7 @@ jobs:
         uses: helm/chart-testing-action@v2.0.1
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs charts
+        run: ct lint --chart-dirs charts --charts .
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.0.0
