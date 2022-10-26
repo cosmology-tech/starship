@@ -1,0 +1,13 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    ports:
+      rest: 1313
+      rpc: 26653
+  - name: wasmd
+    type: wasmd
+    numValidators: 1
+    ports:
+      rpc: 26659
+      rest: 1319
