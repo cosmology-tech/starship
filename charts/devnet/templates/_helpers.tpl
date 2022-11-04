@@ -62,6 +62,12 @@ Environment variables for chain from configmaps
   value: {{ .binary }}
 - name: CHAIN_DIR
   value: {{ .home }}
+- name: CODE_REPO
+  value: {{ .repo }}
+- name: DAEMON_HOME
+  value: {{ .home }}
+- name: DAEMON_NAME
+  value: {{ .binary }}
 {{- end }}
 
 {{/*

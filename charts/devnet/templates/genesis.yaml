@@ -1,6 +1,10 @@
 {{- range $chain := .Values.chains }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $image := $chain.image | default $defaultChain.image }}
+{{- if hasKey $chain "upgrade" }}
+{{ $image = "anmol1696/runner:latest" }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -28,8 +32,42 @@ spec:
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
+        {{- if $chain.upgrade.enabled }}
+        - name: init-build-images
+          image: anmol1696/builder:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - "-c"
+            - |
+              # Install cosmovisor
+              go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+
+              # Build genesis
+              UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build_chain.sh
+              {{- range $upgrade := $chain.upgrade.upgrades }}
+              UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build_chain.sh
+              {{- end }}
+          env:
+            - name: CODE_REF
+              value: {{ $defaultChain.repo }}
+            - name: UPGRADE_DIR
+              value: {{ $defaultChain.home }}/cosmovisor
+            - name: GOBIN
+              value: /go/bin
+            - name: CHAIN_NAME
+              value: {{ $chain.name }}
+            {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+          volumeMounts:
+            - mountPath: {{ $defaultChain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        {{- end }}
         - name: init-genesis
-          image: {{ $chain.image | default $defaultChain.image }}
+          image: {{ $image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
@@ -43,6 +81,7 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
+              cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
 
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
@@ -57,16 +96,16 @@ spec:
               name: scripts
       containers:
         - name: validator
-          image: {{ $chain.image | default $defaultChain.image }}
+          image: {{ $image }}
           imagePullPolicy: Always
           env:
-            - name: CHAIN_BIN
-              value: {{ $defaultChain.binary }}
+            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
           command:
             - bash
             - "-c"
             - |
-              $CHAIN_BIN start
+              /usr/bin/cosmovisor start
           resources: {{- include "devnet.validator.resources" $chain | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}

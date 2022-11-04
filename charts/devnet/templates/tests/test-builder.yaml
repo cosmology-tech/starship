@@ -1,0 +1,67 @@
+{{- range $chain := .Values.chains }}
+{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $chain.name }}-test-builder"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: init-build-images
+      image: anmol1696/builder:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - bash
+        - "-c"
+        - |
+          # Install cosmovisor
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+
+          # Build genesis
+          UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build_chain.sh
+          {{- range $upgrade := $chain.upgrade.upgrades }}
+          UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build_chain.sh
+          {{- end }}
+
+          mkdir -p $CHAIN_DIR/bin
+          cp $GOBIN/cosmovisor $CHAIN_DIR/bin
+          cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN $CHAIN_DIR/bin
+
+          sleep 10000000000
+      env:
+        {{ include "devnet.defaultEvnVars" $defaultChain | indent 8 }}
+        - name: CODE_REF
+          value: {{ $defaultChain.repo }}
+        - name: CODE_TAG
+          value: {{ $chain.genesis }}
+        - name: CHAIN_TARGET_DIR
+          value: {{ $defaultChain.home }}/bin
+        - name: UPGRADE_DIR
+          value: {{ $defaultChain.home }}/cosmovisor
+        - name: GOBIN
+          value: /go/bin
+        - name: CHAIN_NAME
+          value: {{ $chain.name }}
+      volumeMounts:
+        - mountPath: {{ $defaultChain.home }}
+          name: node
+        - mountPath: /configs
+          name: addresses
+        - mountPath: /scripts
+          name: scripts
+  restartPolicy: Never
+  volumes:
+    - name: node
+      emptyDir: { }
+    - name: addresses
+      configMap:
+        name: keys
+    - name: scripts
+      configMap:
+        name: setup-scripts
+---
+{{- end }}
+
