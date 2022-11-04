@@ -22,9 +22,12 @@ install:
 
 upgrade:
 	helm upgrade --debug $(HELM_NAME) ./charts/$(HELM_CHART) -f $(VALUES_FILE) $(HELM_ARGS)
+	
+test:
+	helm test --debug $(HELM_NAME)
 
 delete:
-	helm delete --debug $(HELM_NAME)
+	-helm delete --debug $(HELM_NAME)
 
 ###############################################################################
 ###                          Local Kind Setup                               ###
