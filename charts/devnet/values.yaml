@@ -125,49 +125,49 @@ defaultRelayers:
 
 chains: []
   # Examples running chains
-  #- name: osmosis-1
-  #  type: osmosis
-  #  numValidators: 4
-  #  upgrade:
-  #    enabled: true
-  #    # type will indicate the way in which the upgrade binaries is supposed to be handled
-  #    # can be build, docker, fetch
-  #    # build: run build scripts for various versions
-  #    # docker: copy binaries from docker images
-  #    # fetch: fetch binaries directly from github releases
-  #    type: build
-  #    genesis: v11.0.1
-  #    upgrades:
-  #      - name: v12
-  #        version: v12.2.0
-  #  ports:
-  #    rpc: 26653
-  #    rest: 1313
-  #- name: core-1
-  #  type: persistencecore
-  #  numValidators: 3
-  #  upgrade:
-  #    enabled: true
-  #    type: build
-  #    genesis: v3.2.0
-  #    upgrades:
-  #      - name: v4
-  #        version: v4.0.0
-  #  ports:
-  #    rpc: 26657
-  #    rest: 1317
-  #- name: juno-1
-  #  type: juno
-  #  numValidators: 2
-  #  ports:
-  #    rpc: 26654
-  #    rest: 1314
-  #- name: wasmd
-  #  type: wasmd
-  #  numValidators: 3
-  #  ports:
-  #    rpc: 26659
-  #    rest: 1319
+  # - name: osmosis-1
+  #   type: osmosis
+  #   numValidators: 4
+  #   upgrade:
+  #     enabled: true
+  #     # type will indicate the way in which the upgrade binaries is supposed to be handled
+  #     # can be build, docker, fetch
+  #     # build: run build scripts for various versions
+  #     # docker: copy binaries from docker images
+  #     # fetch: fetch binaries directly from github releases
+  #     type: build
+  #     genesis: v11.0.1
+  #     upgrades:
+  #       - name: v12
+  #         version: v12.2.0
+  #   ports:
+  #     rpc: 26653
+  #     rest: 1313
+  # - name: core-1
+  #   type: persistencecore
+  #   numValidators: 3
+  #   upgrade:
+  #     enabled: true
+  #     type: build
+  #     genesis: v3.2.0
+  #     upgrades:
+  #       - name: v4
+  #         version: v4.0.0
+  #   ports:
+  #     rpc: 26657
+  #     rest: 1317
+  # - name: juno-1
+  #   type: juno
+  #   numValidators: 2
+  #   ports:
+  #     rpc: 26654
+  #     rest: 1314
+  # - name: wasmd
+  #   type: wasmd
+  #   numValidators: 3
+  #   ports:
+  #     rpc: 26659
+  #     rest: 1319
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers: []
