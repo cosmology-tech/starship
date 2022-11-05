@@ -1,4 +1,7 @@
 # shuttle
+![Lint](https://github.com/Anmol1696/shuttle/actions/workflows/lint-check.yaml/badge.svg)
+![Deploy](https://github.com/Anmol1696/shuttle/actions/workflows/release.yaml/badge.svg)
+
 Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
 for multichain use cases
