@@ -1,8 +1,14 @@
 {{- range $chain := .Values.chains }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+
+{{ $upgrade := get $chain "upgrade" }}
+{{- if not $upgrade }}
+{{ $upgrade = dict "enabled" false }}
+{{- end }}
+
 {{ $image := $chain.image | default $defaultChain.image }}
-{{- if hasKey $chain "upgrade" }}
+{{- if $upgrade.enabled }}
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
 ---
@@ -32,7 +38,7 @@ spec:
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
-        {{- if $chain.upgrade.enabled }}
+        {{- if $upgrade.enabled }}
         - name: init-build-images
           image: anmol1696/builder:latest
           imagePullPolicy: IfNotPresent
@@ -81,7 +87,9 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
+              {{- if $upgrade.enabled }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+              {{- end }}
 
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
@@ -105,7 +113,11 @@ spec:
             - bash
             - "-c"
             - |
+              {{- if $upgrade.enabled }}
               /usr/bin/cosmovisor start
+              {{- else }}
+              $CHAIN_BIN start
+              {{- end }}
           resources: {{- include "devnet.validator.resources" $chain | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
