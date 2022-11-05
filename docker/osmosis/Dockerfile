@@ -51,6 +51,9 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
       -o /usr/local/app/build/osmosisd \
       /usr/local/app/cmd/osmosisd/main.go
 
+# Install cosmovisor
+RUN go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+
 FROM alpine:3.16
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"osmosis"}
@@ -58,6 +61,7 @@ ENV CHAIN_BIN=${CHAIN_BIN:-"osmosisd"}
 ENV CHAIN_VERSION=${CHAIN_VERSION:-"12.1.0"}
 
 COPY --from=go-builder /usr/local/app/build/$CHAIN_BIN /usr/bin/$CHAIN_BIN
+COPY --from=go-builder /go/bin/cosmovisor /usr/bin/cosmovisor
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed

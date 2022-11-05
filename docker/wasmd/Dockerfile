@@ -38,6 +38,9 @@ RUN cd /tmp && unzip v$CHAIN_VERSION.zip && mv /tmp/${CHAIN_NAME}-${CHAIN_VERSIO
 # Force it to use static lib (from above) not standard libgo_cosmwasm.so file
 RUN LEDGER_ENABLED=false BUILD_TAGS="muslc linkstatic" LINK_STATICALLY=true make build
 
+# Install cosmovisor
+RUN go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+
 FROM alpine:3.16
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"wasmd"}
@@ -45,6 +48,7 @@ ENV CHAIN_BIN=${CHAIN_BIN:-"wasmd"}
 ENV CHAIN_VERSION=${CHAIN_VERSION:-"0.28.0"}
 
 COPY --from=go-builder /usr/local/app/build/$CHAIN_BIN /usr/bin/$CHAIN_BIN
+COPY --from=go-builder /go/bin/cosmovisor /usr/bin/cosmovisor
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed

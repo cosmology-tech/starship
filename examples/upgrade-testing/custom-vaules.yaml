@@ -1,0 +1,27 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    upgrade:
+      enabled: true
+      type: build
+      genesis: v11.0.1
+      upgrades:
+        - name: v12
+          version: v12.2.0
+    ports:
+      rpc: 26653
+      rest: 1313
+  - name: core-1
+    type: persistencecore
+    numValidators: 1
+    upgrade:
+      enabled: true
+      type: build
+      genesis: v3.2.0
+      upgrades:
+        - name: v4
+          version: v4.0.0
+    ports:
+      rpc: 26657
+      rest: 1317
