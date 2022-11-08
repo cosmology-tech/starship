@@ -1,0 +1,42 @@
+{
+  "name": "chain",
+  "version": "1.0.0",
+  "description": "running multiple chains and runnign tests against shuttle devnet",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "fix": "run-s fix:*",
+    "fix:prettier": "prettier \"**/*.{ts,md}\" --write",
+    "fix:lint": "eslint src --ext .ts --fix",
+    "test": "ava",
+    "test:lint": "eslint src --ext .ts",
+    "test:prettier": "prettier \"**/*.{ts,md}\" --list-different",
+    "test:unit": "nyc --silent ava --serial"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ava/typescript": "^3.0.1",
+    "@confio/relayer": "^0.7.0",
+    "@cosmjs/amino": "^0.29.3",
+    "@cosmjs/cosmwasm-stargate": "^0.29.3",
+    "@cosmjs/proto-signing": "^0.29.3",
+    "@cosmjs/stargate": "^0.29.3",
+    "ava": "^5.0.1",
+    "run-s": "^0.0.0",
+    "run-script": "^0.1.1",
+    "@types/sinon": "^10.0.13",
+    "sinon": "^14.0.0",
+    "typescript": "^4.7.4"
+  },
+  "ava": {
+    "failFast": true,
+    "timeout": "120s",
+    "typescript": {
+      "rewritePaths": {
+        "src/": "build/"
+      },
+      "compile": false
+    }
+  }
+}

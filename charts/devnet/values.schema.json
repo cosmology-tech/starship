@@ -1,0 +1,1707 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/Anmol1696/shuttle/values.schema.json",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": [
+    "nameOverride",
+    "fullnameOverride",
+    "resources",
+    "nodeSelector",
+    "tolerations",
+    "affinity",
+    "exposer",
+    "timeouts",
+    "defaultChains",
+    "defaultRelayers",
+    "chains",
+    "relayers",
+    "explorer",
+    "faucet",
+    "chainRegistry"
+  ],
+  "properties": {
+    "nameOverride": {
+      "type": "string",
+      "default": "",
+      "title": "The nameOverride Schema",
+      "examples": [
+        ""
+      ]
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "default": "",
+      "title": "The fullnameOverride Schema",
+      "examples": [
+        ""
+      ]
+    },
+    "resources": {
+      "type": "object",
+      "default": {},
+      "title": "The resources Schema",
+      "required": [],
+      "properties": {},
+      "examples": [{}]
+    },
+    "nodeSelector": {
+      "type": "object",
+      "default": {},
+      "title": "The nodeSelector Schema",
+      "required": [],
+      "properties": {},
+      "examples": [{}]
+    },
+    "tolerations": {
+      "type": "array",
+      "default": [],
+      "title": "The tolerations Schema",
+      "items": {},
+      "examples": [
+        []
+      ]
+    },
+    "affinity": {
+      "type": "object",
+      "default": {},
+      "title": "The affinity Schema",
+      "required": [],
+      "properties": {},
+      "examples": [{}]
+    },
+    "exposer": {
+      "type": "object",
+      "default": {},
+      "title": "The exposer Schema",
+      "required": [
+        "image",
+        "port",
+        "resources"
+      ],
+      "properties": {
+        "image": {
+          "type": "string",
+          "default": "",
+          "title": "The image Schema",
+          "examples": [
+            "anmol1696/exposer:latest"
+          ]
+        },
+        "port": {
+          "type": "integer",
+          "default": 0,
+          "title": "The port Schema",
+          "examples": [
+            8081
+          ]
+        },
+        "resources": {
+          "type": "object",
+          "default": {},
+          "title": "The resources Schema",
+          "required": [
+            "limits",
+            "requests"
+          ],
+          "properties": {
+            "limits": {
+              "type": "object",
+              "default": {},
+              "title": "The limits Schema",
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "",
+                  "title": "The cpu Schema",
+                  "examples": [
+                    "0.1"
+                  ]
+                },
+                "memory": {
+                  "type": "string",
+                  "default": "",
+                  "title": "The memory Schema",
+                  "examples": [
+                    "100M"
+                  ]
+                }
+              },
+              "examples": [{
+                "cpu": "0.1",
+                "memory": "100M"
+              }]
+            },
+            "requests": {
+              "type": "object",
+              "default": {},
+              "title": "The requests Schema",
+              "required": [
+                "cpu",
+                "memory"
+              ],
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "default": "",
+                  "title": "The cpu Schema",
+                  "examples": [
+                    "0.1"
+                  ]
+                },
+                "memory": {
+                  "type": "string",
+                  "default": "",
+                  "title": "The memory Schema",
+                  "examples": [
+                    "100M"
+                  ]
+                }
+              },
+              "examples": [{
+                "cpu": "0.1",
+                "memory": "100M"
+              }]
+            }
+          },
+          "examples": [{
+            "limits": {
+              "cpu": "0.1",
+              "memory": "100M"
+            },
+            "requests": {
+              "cpu": "0.1",
+              "memory": "100M"
+            }
+          }]
+        }
+      },
+      "examples": [{
+        "image": "anmol1696/exposer:latest",
+        "port": 8081,
+        "resources": {
+          "limits": {
+            "cpu": "0.1",
+            "memory": "100M"
+          },
+          "requests": {
+            "cpu": "0.1",
+            "memory": "100M"
+          }
+        }
+      }]
+    },
+    "timeouts": {
+      "type": "object",
+      "default": {},
+      "title": "The timeouts Schema",
+      "required": [
+        "time_iota_ms",
+        "timeout_propose",
+        "timeout_propose_delta",
+        "timeout_prevote",
+        "timeout_prevote_delta",
+        "timeout_precommit",
+        "timeout_precommit_delta",
+        "timeout_commit"
+      ],
+      "properties": {
+        "time_iota_ms": {
+          "type": "integer",
+          "default": 0,
+          "title": "The time_iota_ms Schema",
+          "examples": [
+            10
+          ]
+        },
+        "timeout_propose": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_propose Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_propose_delta": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_propose_delta Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_prevote": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_prevote Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_prevote_delta": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_prevote_delta Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_precommit": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_precommit Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_precommit_delta": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_precommit_delta Schema",
+          "examples": [
+            "400ms"
+          ]
+        },
+        "timeout_commit": {
+          "type": "string",
+          "default": "",
+          "title": "The timeout_commit Schema",
+          "examples": [
+            "800ms"
+          ]
+        }
+      },
+      "examples": [{
+        "time_iota_ms": 10,
+        "timeout_propose": "400ms",
+        "timeout_propose_delta": "400ms",
+        "timeout_prevote": "400ms",
+        "timeout_prevote_delta": "400ms",
+        "timeout_precommit": "400ms",
+        "timeout_precommit_delta": "400ms",
+        "timeout_commit": "800ms"
+      }]
+    },
+    "defaultChains": {
+      "type": "object",
+      "default": {},
+      "title": "The defaultChains Schema",
+      "required": [
+        "osmosis",
+        "juno",
+        "wasmd",
+        "cosmos",
+        "persistencecore"
+      ],
+      "properties": {
+        "osmosis": {
+          "type": "object",
+          "default": {},
+          "title": "The osmosis Schema",
+          "required": [
+            "image",
+            "home",
+            "binary",
+            "prefix",
+            "denom",
+            "coins",
+            "hdPath",
+            "coinType",
+            "repo"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/osmosis:latest"
+              ]
+            },
+            "home": {
+              "type": "string",
+              "default": "",
+              "title": "The home Schema",
+              "examples": [
+                "/root/.osmosisd"
+              ]
+            },
+            "binary": {
+              "type": "string",
+              "default": "",
+              "title": "The binary Schema",
+              "examples": [
+                "osmosisd"
+              ]
+            },
+            "prefix": {
+              "type": "string",
+              "default": "",
+              "title": "The prefix Schema",
+              "examples": [
+                "osmo"
+              ]
+            },
+            "denom": {
+              "type": "string",
+              "default": "",
+              "title": "The denom Schema",
+              "examples": [
+                "uosmo"
+              ]
+            },
+            "coins": {
+              "type": "string",
+              "default": "",
+              "title": "The coins Schema",
+              "examples": [
+                "100000000000000uosmo,100000000000000uion"
+              ]
+            },
+            "hdPath": {
+              "type": "string",
+              "default": "",
+              "title": "The hdPath Schema",
+              "examples": [
+                "m/44'/118'/0'/0/0"
+              ]
+            },
+            "coinType": {
+              "type": "integer",
+              "default": 0,
+              "title": "The coinType Schema",
+              "examples": [
+                118
+              ]
+            },
+            "repo": {
+              "type": "string",
+              "default": "",
+              "title": "The repo Schema",
+              "examples": [
+                "https://github.com/osmosis-labs/osmosis"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/osmosis:latest",
+            "home": "/root/.osmosisd",
+            "binary": "osmosisd",
+            "prefix": "osmo",
+            "denom": "uosmo",
+            "coins": "100000000000000uosmo,100000000000000uion",
+            "hdPath": "m/44'/118'/0'/0/0",
+            "coinType": 118,
+            "repo": "https://github.com/osmosis-labs/osmosis"
+          }]
+        },
+        "juno": {
+          "type": "object",
+          "default": {},
+          "title": "The juno Schema",
+          "required": [
+            "image",
+            "home",
+            "binary",
+            "prefix",
+            "denom",
+            "coins",
+            "hdPath",
+            "coinType",
+            "repo"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/juno:latest"
+              ]
+            },
+            "home": {
+              "type": "string",
+              "default": "",
+              "title": "The home Schema",
+              "examples": [
+                "/root/.juno"
+              ]
+            },
+            "binary": {
+              "type": "string",
+              "default": "",
+              "title": "The binary Schema",
+              "examples": [
+                "junod"
+              ]
+            },
+            "prefix": {
+              "type": "string",
+              "default": "",
+              "title": "The prefix Schema",
+              "examples": [
+                "juno"
+              ]
+            },
+            "denom": {
+              "type": "string",
+              "default": "",
+              "title": "The denom Schema",
+              "examples": [
+                "ujuno"
+              ]
+            },
+            "coins": {
+              "type": "string",
+              "default": "",
+              "title": "The coins Schema",
+              "examples": [
+                "100000000000000ujuno"
+              ]
+            },
+            "hdPath": {
+              "type": "string",
+              "default": "",
+              "title": "The hdPath Schema",
+              "examples": [
+                "m/44'/118'/0'/0/0"
+              ]
+            },
+            "coinType": {
+              "type": "integer",
+              "default": 0,
+              "title": "The coinType Schema",
+              "examples": [
+                118
+              ]
+            },
+            "repo": {
+              "type": "string",
+              "default": "",
+              "title": "The repo Schema",
+              "examples": [
+                "https://github.com/CosmosContracts/juno"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/juno:latest",
+            "home": "/root/.juno",
+            "binary": "junod",
+            "prefix": "juno",
+            "denom": "ujuno",
+            "coins": "100000000000000ujuno",
+            "hdPath": "m/44'/118'/0'/0/0",
+            "coinType": 118,
+            "repo": "https://github.com/CosmosContracts/juno"
+          }]
+        },
+        "wasmd": {
+          "type": "object",
+          "default": {},
+          "title": "The wasmd Schema",
+          "required": [
+            "image",
+            "home",
+            "binary",
+            "prefix",
+            "denom",
+            "coins",
+            "hdPath",
+            "coinType",
+            "repo"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "",
+              "title": "The name Schema",
+              "examples": [
+                "wasmd"
+              ]
+            },
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/wasmd:latest"
+              ]
+            },
+            "home": {
+              "type": "string",
+              "default": "",
+              "title": "The home Schema",
+              "examples": [
+                "/root/.wasmd"
+              ]
+            },
+            "binary": {
+              "type": "string",
+              "default": "",
+              "title": "The binary Schema",
+              "examples": [
+                "wasmd"
+              ]
+            },
+            "prefix": {
+              "type": "string",
+              "default": "",
+              "title": "The prefix Schema",
+              "examples": [
+                "wasm"
+              ]
+            },
+            "denom": {
+              "type": "string",
+              "default": "",
+              "title": "The denom Schema",
+              "examples": [
+                "stake"
+              ]
+            },
+            "coins": {
+              "type": "string",
+              "default": "",
+              "title": "The coins Schema",
+              "examples": [
+                "100000000000000ucosm,100000000000000stake"
+              ]
+            },
+            "hdPath": {
+              "type": "string",
+              "default": "",
+              "title": "The hdPath Schema",
+              "examples": [
+                "m/44'/118'/0'/0/0"
+              ]
+            },
+            "coinType": {
+              "type": "integer",
+              "default": 0,
+              "title": "The coinType Schema",
+              "examples": [
+                118
+              ]
+            },
+            "repo": {
+              "type": "string",
+              "default": "",
+              "title": "The repo Schema",
+              "examples": [
+                "https://github.com/CosmWasm/wasmd"
+              ]
+            }
+          },
+          "examples": [{
+            "name": "wasmd",
+            "image": "anmol1696/wasmd:latest",
+            "home": "/root/.wasmd",
+            "binary": "wasmd",
+            "prefix": "wasm",
+            "denom": "stake",
+            "coins": "100000000000000ucosm,100000000000000stake",
+            "hdPath": "m/44'/118'/0'/0/0",
+            "coinType": 118,
+            "repo": "https://github.com/CosmWasm/wasmd"
+          }]
+        },
+        "cosmos": {
+          "type": "object",
+          "default": {},
+          "title": "The cosmos Schema",
+          "required": [
+            "image",
+            "binary",
+            "home",
+            "prefix",
+            "denom",
+            "coins",
+            "hdPath",
+            "coinType",
+            "repo"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "",
+              "title": "The name Schema",
+              "examples": [
+                "cosmos"
+              ]
+            },
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/gaia:latest"
+              ]
+            },
+            "binary": {
+              "type": "string",
+              "default": "",
+              "title": "The binary Schema",
+              "examples": [
+                "gaiad"
+              ]
+            },
+            "prefix": {
+              "type": "string",
+              "default": "",
+              "title": "The prefix Schema",
+              "examples": [
+                "cosmos"
+              ]
+            },
+            "denom": {
+              "type": "string",
+              "default": "",
+              "title": "The denom Schema",
+              "examples": [
+                "stake"
+              ]
+            },
+            "coins": {
+              "type": "string",
+              "default": "",
+              "title": "The coins Schema",
+              "examples": [
+                "100000000000000stake"
+              ]
+            },
+            "hdPath": {
+              "type": "string",
+              "default": "",
+              "title": "The hdPath Schema",
+              "examples": [
+                "m/44'/118'/0'/0/0"
+              ]
+            },
+            "coinType": {
+              "type": "integer",
+              "default": 0,
+              "title": "The coinType Schema",
+              "examples": [
+                118
+              ]
+            },
+            "repo": {
+              "type": "string",
+              "default": "",
+              "title": "The repo Schema",
+              "examples": [
+                "https://github.com/cosmos/gaia"
+              ]
+            }
+          },
+          "examples": [{
+            "name": "cosmos",
+            "image": "anmol1696/gaia:latest",
+            "binary": "gaiad",
+            "prefix": "cosmos",
+            "denom": "stake",
+            "coins": "100000000000000stake",
+            "hdPath": "m/44'/118'/0'/0/0",
+            "coinType": 118,
+            "repo": "https://github.com/cosmos/gaia"
+          }]
+        },
+        "persistencecore": {
+          "type": "object",
+          "default": {},
+          "title": "The persistencecore Schema",
+          "required": [
+            "image",
+            "home",
+            "binary",
+            "prefix",
+            "denom",
+            "coins",
+            "hdPath",
+            "coinType",
+            "repo"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/persistencecore:latest"
+              ]
+            },
+            "home": {
+              "type": "string",
+              "default": "",
+              "title": "The home Schema",
+              "examples": [
+                "/root/.persistenceCore"
+              ]
+            },
+            "binary": {
+              "type": "string",
+              "default": "",
+              "title": "The binary Schema",
+              "examples": [
+                "persistenceCore"
+              ]
+            },
+            "prefix": {
+              "type": "string",
+              "default": "",
+              "title": "The prefix Schema",
+              "examples": [
+                "persistence"
+              ]
+            },
+            "denom": {
+              "type": "string",
+              "default": "",
+              "title": "The denom Schema",
+              "examples": [
+                "uxprt"
+              ]
+            },
+            "coins": {
+              "type": "string",
+              "default": "",
+              "title": "The coins Schema",
+              "examples": [
+                "100000000000000uxprt"
+              ]
+            },
+            "hdPath": {
+              "type": "string",
+              "default": "",
+              "title": "The hdPath Schema",
+              "examples": [
+                "m/44'/118'/0'/0/0"
+              ]
+            },
+            "coinType": {
+              "type": "integer",
+              "default": 0,
+              "title": "The coinType Schema",
+              "examples": [
+                118
+              ]
+            },
+            "repo": {
+              "type": "string",
+              "default": "",
+              "title": "The repo Schema",
+              "examples": [
+                "https://github.com/persistenceOne/persistenceCore"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/persistencecore:latest",
+            "home": "/root/.persistenceCore",
+            "binary": "persistenceCore",
+            "prefix": "persistence",
+            "denom": "uxprt",
+            "coins": "100000000000000uxprt",
+            "hdPath": "m/44'/118'/0'/0/0",
+            "coinType": 118,
+            "repo": "https://github.com/persistenceOne/persistenceCore"
+          }]
+        }
+      },
+      "examples": [{
+        "osmosis": {
+          "image": "anmol1696/osmosis:latest",
+          "home": "/root/.osmosisd",
+          "binary": "osmosisd",
+          "prefix": "osmo",
+          "denom": "uosmo",
+          "coins": "100000000000000uosmo,100000000000000uion",
+          "hdPath": "m/44'/118'/0'/0/0",
+          "coinType": 118,
+          "repo": "https://github.com/osmosis-labs/osmosis"
+        },
+        "juno": {
+          "image": "anmol1696/juno:latest",
+          "home": "/root/.juno",
+          "binary": "junod",
+          "prefix": "juno",
+          "denom": "ujuno",
+          "coins": "100000000000000ujuno",
+          "hdPath": "m/44'/118'/0'/0/0",
+          "coinType": 118,
+          "repo": "https://github.com/CosmosContracts/juno"
+        },
+        "wasmd": {
+          "name": "wasmd",
+          "image": "anmol1696/wasmd:latest",
+          "home": "/root/.wasmd",
+          "binary": "wasmd",
+          "prefix": "wasm",
+          "denom": "stake",
+          "coins": "100000000000000ucosm,100000000000000stake",
+          "hdPath": "m/44'/118'/0'/0/0",
+          "coinType": 118,
+          "repo": "https://github.com/CosmWasm/wasmd"
+        },
+        "cosmos": {
+          "name": "cosmos",
+          "image": "anmol1696/gaia:latest",
+          "binary": "gaiad",
+          "prefix": "cosmos",
+          "denom": "stake",
+          "coins": "100000000000000stake",
+          "hdPath": "m/44'/118'/0'/0/0",
+          "coinType": 118,
+          "repo": "https://github.com/cosmos/gaia"
+        },
+        "persistencecore": {
+          "image": "anmol1696/persistencecore:latest",
+          "home": "/root/.persistenceCore",
+          "binary": "persistenceCore",
+          "prefix": "persistence",
+          "denom": "uxprt",
+          "coins": "100000000000000uxprt",
+          "hdPath": "m/44'/118'/0'/0/0",
+          "coinType": 118,
+          "repo": "https://github.com/persistenceOne/persistenceCore"
+        }
+      }]
+    },
+    "defaultRelayers": {
+      "type": "object",
+      "default": {},
+      "title": "The defaultRelayers Schema",
+      "required": [
+        "ts-relayer",
+        "hermes",
+        "go-relayer"
+      ],
+      "properties": {
+        "ts-relayer": {
+          "type": "object",
+          "default": {},
+          "title": "The ts-relayer Schema",
+          "required": [
+            "image"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/ts-relayer:latest"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/ts-relayer:latest"
+          }]
+        },
+        "hermes": {
+          "type": "object",
+          "default": {},
+          "title": "The hermes Schema",
+          "required": [
+            "image"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/hermes:latest"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/hermes:latest"
+          }]
+        },
+        "go-relayer": {
+          "type": "object",
+          "default": {},
+          "title": "The go-relayer Schema",
+          "required": [
+            "image"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "default": "",
+              "title": "The image Schema",
+              "examples": [
+                "anmol1696/go-relayer:latest"
+              ]
+            }
+          },
+          "examples": [{
+            "image": "anmol1696/go-relayer:latest"
+          }]
+        }
+      },
+      "examples": [{
+        "ts-relayer": {
+          "image": "anmol1696/ts-relayer:latest"
+        },
+        "hermes": {
+          "image": "anmol1696/hermes:latest"
+        },
+        "go-relayer": {
+          "image": "anmol1696/go-relayer:latest"
+        }
+      }]
+    },
+    "chains": {
+      "type": "array",
+      "default": [],
+      "title": "The chains Schema",
+      "items": {
+        "type": "object",
+        "title": "A Schema",
+        "required": [
+          "name",
+          "type",
+          "numValidators"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "The name Schema",
+            "examples": [
+              "osmosis-1",
+              "core-1",
+              "juno-1",
+              "wasmd"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "title": "The type Schema",
+            "examples": [
+              "osmosis",
+              "persistencecore",
+              "juno",
+              "wasmd"
+            ]
+          },
+          "numValidators": {
+            "type": "integer",
+            "title": "The numValidators Schema",
+            "examples": [
+              4,
+              3,
+              2
+            ]
+          },
+          "upgrade": {
+            "type": "object",
+            "title": "The upgrade Schema",
+            "required": [
+              "enabled",
+              "type",
+              "genesis",
+              "upgrades"
+            ],
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "title": "The enabled Schema",
+                "examples": [
+                  true
+                ]
+              },
+              "type": {
+                "type": "string",
+                "title": "The type Schema",
+                "examples": [
+                  "build"
+                ]
+              },
+              "genesis": {
+                "type": "string",
+                "title": "The genesis Schema",
+                "examples": [
+                  "v11.0.1",
+                  "v3.2.0"
+                ]
+              },
+              "upgrades": {
+                "type": "array",
+                "title": "The upgrades Schema",
+                "items": {
+                  "type": "object",
+                  "title": "A Schema",
+                  "required": [
+                    "name",
+                    "version"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "title": "The name Schema",
+                      "examples": [
+                        "v12",
+                        "v4"
+                      ]
+                    },
+                    "version": {
+                      "type": "string",
+                      "title": "The version Schema",
+                      "examples": [
+                        "v12.2.0",
+                        "v4.0.0"
+                      ]
+                    }
+                  },
+                  "examples": [{
+                    "name": "v12",
+                    "version": "v12.2.0"
+                  },
+                    {
+                      "name": "v4",
+                      "version": "v4.0.0"
+                    }]
+                },
+                "examples": [
+                  [{
+                    "name": "v12",
+                    "version": "v12.2.0"
+                  }],
+                  [{
+                    "name": "v4",
+                    "version": "v4.0.0"
+                  }]
+                ]
+              }
+            },
+            "examples": [{
+              "enabled": true,
+              "type": "build",
+              "genesis": "v11.0.1",
+              "upgrades": [{
+                "name": "v12",
+                "version": "v12.2.0"
+              }]
+            },
+              {
+                "enabled": true,
+                "type": "build",
+                "genesis": "v3.2.0",
+                "upgrades": [{
+                  "name": "v4",
+                  "version": "v4.0.0"
+                }]
+              }]
+          },
+          "ports": {
+            "type": "object",
+            "title": "The ports Schema",
+            "required": [
+              "rpc",
+              "rest"
+            ],
+            "properties": {
+              "rpc": {
+                "type": "integer",
+                "title": "The rpc Schema",
+                "examples": [
+                  26653,
+                  26657,
+                  26654,
+                  26659
+                ]
+              },
+              "rest": {
+                "type": "integer",
+                "title": "The rest Schema",
+                "examples": [
+                  1313,
+                  1317,
+                  1314,
+                  1319
+                ]
+              }
+            },
+            "examples": [{
+              "rpc": 26653,
+              "rest": 1313
+            },
+              {
+                "rpc": 26657,
+                "rest": 1317
+              },
+              {
+                "rpc": 26654,
+                "rest": 1314
+              },
+              {
+                "rpc": 26659,
+                "rest": 1319
+              }]
+          }
+        },
+        "examples": [{
+          "name": "osmosis-1",
+          "type": "osmosis",
+          "numValidators": 4,
+          "upgrade": {
+            "enabled": true,
+            "type": "build",
+            "genesis": "v11.0.1",
+            "upgrades": [{
+              "name": "v12",
+              "version": "v12.2.0"
+            }]
+          },
+          "ports": {
+            "rpc": 26653,
+            "rest": 1313
+          }
+        },
+          {
+            "name": "core-1",
+            "type": "persistencecore",
+            "numValidators": 3,
+            "upgrade": {
+              "enabled": true,
+              "type": "build",
+              "genesis": "v3.2.0",
+              "upgrades": [{
+                "name": "v4",
+                "version": "v4.0.0"
+              }]
+            },
+            "ports": {
+              "rpc": 26657,
+              "rest": 1317
+            }
+          },
+          {
+            "name": "juno-1",
+            "type": "juno",
+            "numValidators": 2,
+            "ports": {
+              "rpc": 26654,
+              "rest": 1314
+            }
+          },
+          {
+            "name": "wasmd",
+            "type": "wasmd",
+            "numValidators": 3,
+            "ports": {
+              "rpc": 26659,
+              "rest": 1319
+            }
+          }]
+      },
+      "examples": [
+        [{
+          "name": "osmosis-1",
+          "type": "osmosis",
+          "numValidators": 4,
+          "upgrade": {
+            "enabled": true,
+            "type": "build",
+            "genesis": "v11.0.1",
+            "upgrades": [{
+              "name": "v12",
+              "version": "v12.2.0"
+            }]
+          },
+          "ports": {
+            "rpc": 26653,
+            "rest": 1313
+          }
+        },
+          {
+            "name": "core-1",
+            "type": "persistencecore",
+            "numValidators": 3,
+            "upgrade": {
+              "enabled": true,
+              "type": "build",
+              "genesis": "v3.2.0",
+              "upgrades": [{
+                "name": "v4",
+                "version": "v4.0.0"
+              }]
+            },
+            "ports": {
+              "rpc": 26657,
+              "rest": 1317
+            }
+          },
+          {
+            "name": "juno-1",
+            "type": "juno",
+            "numValidators": 2,
+            "ports": {
+              "rpc": 26654,
+              "rest": 1314
+            }
+          },
+          {
+            "name": "wasmd",
+            "type": "wasmd",
+            "numValidators": 3,
+            "ports": {
+              "rpc": 26659,
+              "rest": 1319
+            }
+          }]
+      ]
+    },
+    "relayers": {
+      "type": "array",
+      "default": [],
+      "title": "The relayers Schema",
+      "items": {
+        "type": "object",
+        "title": "A Schema",
+        "required": [
+          "name",
+          "type",
+          "replicas",
+          "chains"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "The name Schema",
+            "examples": [
+              "osmo-wasm",
+              "osmo-juno"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "title": "The type Schema",
+            "examples": [
+              "ts-relayer"
+            ]
+          },
+          "replicas": {
+            "type": "integer",
+            "title": "The replicas Schema",
+            "examples": [
+              1
+            ]
+          },
+          "chains": {
+            "type": "array",
+            "title": "The chains Schema",
+            "items": {
+              "type": "string",
+              "title": "A Schema",
+              "examples": [
+                "osmosis-1",
+                "wasmd",
+                "juno-1"
+              ]
+            },
+            "examples": [
+              ["osmosis-1",
+                "wasmd"
+              ],
+              ["osmosis-1",
+                "juno-1"
+              ]
+            ]
+          }
+        },
+        "examples": [{
+          "name": "osmo-wasm",
+          "type": "ts-relayer",
+          "replicas": 1,
+          "chains": [
+            "osmosis-1",
+            "wasmd"
+          ]
+        },
+          {
+            "name": "osmo-juno",
+            "type": "ts-relayer",
+            "replicas": 1,
+            "chains": [
+              "osmosis-1",
+              "juno-1"
+            ]
+          }]
+      },
+      "examples": [
+        [{
+          "name": "osmo-wasm",
+          "type": "ts-relayer",
+          "replicas": 1,
+          "chains": [
+            "osmosis-1",
+            "wasmd"
+          ]
+        },
+          {
+            "name": "osmo-juno",
+            "type": "ts-relayer",
+            "replicas": 1,
+            "chains": [
+              "osmosis-1",
+              "juno-1"
+            ]
+          }]
+      ]
+    },
+    "explorer": {
+      "type": "object",
+      "default": {},
+      "title": "The explorer Schema",
+      "required": [
+        "enabled",
+        "type",
+        "image",
+        "localhost",
+        "ports"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "title": "The enabled Schema",
+          "examples": [
+            false
+          ]
+        },
+        "type": {
+          "type": "string",
+          "default": "",
+          "title": "The type Schema",
+          "examples": [
+            "ping-pub"
+          ]
+        },
+        "image": {
+          "type": "string",
+          "default": "",
+          "title": "The image Schema",
+          "examples": [
+            "anmol1696/explorer"
+          ]
+        },
+        "localhost": {
+          "type": "boolean",
+          "default": false,
+          "title": "The localhost Schema",
+          "examples": [
+            true
+          ]
+        },
+        "ports": {
+          "type": "object",
+          "default": {},
+          "title": "The ports Schema",
+          "required": [
+            "rest"
+          ],
+          "properties": {
+            "rest": {
+              "type": "integer",
+              "default": 0,
+              "title": "The rest Schema",
+              "examples": [
+                8080
+              ]
+            }
+          },
+          "examples": [{
+            "rest": 8080
+          }]
+        }
+      },
+      "examples": [{
+        "enabled": false,
+        "type": "ping-pub",
+        "image": "anmol1696/explorer",
+        "localhost": true,
+        "ports": {
+          "rest": 8080
+        }
+      }]
+    },
+    "faucet": {
+      "type": "object",
+      "default": {},
+      "title": "The faucet Schema",
+      "required": [
+        "enabled"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "title": "The enabled Schema",
+          "examples": [
+            false
+          ]
+        }
+      },
+      "examples": [{
+        "enabled": false
+      }]
+    },
+    "chainRegistry": {
+      "type": "object",
+      "default": {},
+      "title": "The chainRegistry Schema",
+      "required": [
+        "enabled",
+        "image",
+        "ports"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "title": "The enabled Schema",
+          "examples": [
+            false
+          ]
+        },
+        "image": {
+          "type": "string",
+          "default": "",
+          "title": "The image Schema",
+          "examples": [
+            "anmol1696/chain-registry"
+          ]
+        },
+        "ports": {
+          "type": "object",
+          "default": {},
+          "title": "The ports Schema",
+          "required": [
+            "rest"
+          ],
+          "properties": {
+            "rest": {
+              "type": "integer",
+              "default": 0,
+              "title": "The rest Schema",
+              "examples": [
+                8090
+              ]
+            }
+          },
+          "examples": [{
+            "rest": 8090
+          }]
+        }
+      },
+      "examples": [{
+        "enabled": false,
+        "image": "anmol1696/chain-registry",
+        "ports": {
+          "rest": 8090
+        }
+      }]
+    }
+  },
+  "examples": [{
+    "nameOverride": "",
+    "fullnameOverride": "",
+    "resources": {},
+    "nodeSelector": {},
+    "tolerations": [],
+    "affinity": {},
+    "exposer": {
+      "image": "anmol1696/exposer:latest",
+      "port": 8081,
+      "resources": {
+        "limits": {
+          "cpu": "0.1",
+          "memory": "100M"
+        },
+        "requests": {
+          "cpu": "0.1",
+          "memory": "100M"
+        }
+      }
+    },
+    "timeouts": {
+      "time_iota_ms": 10,
+      "timeout_propose": "400ms",
+      "timeout_propose_delta": "400ms",
+      "timeout_prevote": "400ms",
+      "timeout_prevote_delta": "400ms",
+      "timeout_precommit": "400ms",
+      "timeout_precommit_delta": "400ms",
+      "timeout_commit": "800ms"
+    },
+    "defaultChains": {
+      "osmosis": {
+        "image": "anmol1696/osmosis:latest",
+        "home": "/root/.osmosisd",
+        "binary": "osmosisd",
+        "prefix": "osmo",
+        "denom": "uosmo",
+        "coins": "100000000000000uosmo,100000000000000uion",
+        "hdPath": "m/44'/118'/0'/0/0",
+        "coinType": 118,
+        "repo": "https://github.com/osmosis-labs/osmosis"
+      },
+      "juno": {
+        "image": "anmol1696/juno:latest",
+        "home": "/root/.juno",
+        "binary": "junod",
+        "prefix": "juno",
+        "denom": "ujuno",
+        "coins": "100000000000000ujuno",
+        "hdPath": "m/44'/118'/0'/0/0",
+        "coinType": 118,
+        "repo": "https://github.com/CosmosContracts/juno"
+      },
+      "wasmd": {
+        "name": "wasmd",
+        "image": "anmol1696/wasmd:latest",
+        "home": "/root/.wasmd",
+        "binary": "wasmd",
+        "prefix": "wasm",
+        "denom": "stake",
+        "coins": "100000000000000ucosm,100000000000000stake",
+        "hdPath": "m/44'/118'/0'/0/0",
+        "coinType": 118,
+        "repo": "https://github.com/CosmWasm/wasmd"
+      },
+      "cosmos": {
+        "name": "cosmos",
+        "image": "anmol1696/gaia:latest",
+        "binary": "gaiad",
+        "prefix": "cosmos",
+        "denom": "stake",
+        "coins": "100000000000000stake",
+        "hdPath": "m/44'/118'/0'/0/0",
+        "coinType": 118,
+        "repo": "https://github.com/cosmos/gaia"
+      },
+      "persistencecore": {
+        "image": "anmol1696/persistencecore:latest",
+        "home": "/root/.persistenceCore",
+        "binary": "persistenceCore",
+        "prefix": "persistence",
+        "denom": "uxprt",
+        "coins": "100000000000000uxprt",
+        "hdPath": "m/44'/118'/0'/0/0",
+        "coinType": 118,
+        "repo": "https://github.com/persistenceOne/persistenceCore"
+      }
+    },
+    "defaultRelayers": {
+      "ts-relayer": {
+        "image": "anmol1696/ts-relayer:latest"
+      },
+      "hermes": {
+        "image": "anmol1696/hermes:latest"
+      },
+      "go-relayer": {
+        "image": "anmol1696/go-relayer:latest"
+      }
+    },
+    "chains": [{
+      "name": "osmosis-1",
+      "type": "osmosis",
+      "numValidators": 4,
+      "upgrade": {
+        "enabled": true,
+        "type": "build",
+        "genesis": "v11.0.1",
+        "upgrades": [{
+          "name": "v12",
+          "version": "v12.2.0"
+        }]
+      },
+      "ports": {
+        "rpc": 26653,
+        "rest": 1313
+      }
+    },
+      {
+        "name": "core-1",
+        "type": "persistencecore",
+        "numValidators": 3,
+        "upgrade": {
+          "enabled": true,
+          "type": "build",
+          "genesis": "v3.2.0",
+          "upgrades": [{
+            "name": "v4",
+            "version": "v4.0.0"
+          }]
+        },
+        "ports": {
+          "rpc": 26657,
+          "rest": 1317
+        }
+      },
+      {
+        "name": "juno-1",
+        "type": "juno",
+        "numValidators": 2,
+        "ports": {
+          "rpc": 26654,
+          "rest": 1314
+        }
+      },
+      {
+        "name": "wasmd",
+        "type": "wasmd",
+        "numValidators": 3,
+        "ports": {
+          "rpc": 26659,
+          "rest": 1319
+        }
+      }],
+    "relayers": [{
+      "name": "osmo-wasm",
+      "type": "ts-relayer",
+      "replicas": 1,
+      "chains": [
+        "osmosis-1",
+        "wasmd"
+      ]
+    },
+      {
+        "name": "osmo-juno",
+        "type": "ts-relayer",
+        "replicas": 1,
+        "chains": [
+          "osmosis-1",
+          "juno-1"
+        ]
+      }],
+    "explorer": {
+      "enabled": false,
+      "type": "ping-pub",
+      "image": "anmol1696/explorer",
+      "localhost": true,
+      "ports": {
+        "rest": 8080
+      }
+    },
+    "faucet": {
+      "enabled": false
+    },
+    "chainRegistry": {
+      "enabled": false,
+      "image": "anmol1696/chain-registry",
+      "ports": {
+        "rest": 8090
+      }
+    }
+  }]
+}
