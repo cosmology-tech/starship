@@ -4,7 +4,8 @@ export interface Network {
   chainId: string;
   rpcEndpoint: string;
   prefix: string;
-  gasPrice: GasPrice;
+  denom: string;
+  gasPrice: string;
   feeToken: string;
 }
 
@@ -14,6 +15,7 @@ const chainRegistry = {
     chainId: "osmosis-1",
     rpcEndpoint: "http://localhost:26657",
     prefix: "osmo",
+    denom: "uosmo",
     gasPrice: "0.025uosmo",
     feeToken: "uosmo",
   },
@@ -21,6 +23,7 @@ const chainRegistry = {
     chainId: "cosmos-2",
     rpcEndpoint: "http://localhost:26653",
     prefix: "cosmos",
+    denom: "stake",
     gasPrice: "0.025stake",
     feeToken: "stake",
   },
@@ -28,6 +31,7 @@ const chainRegistry = {
     chainId: "juno-0",
     rpcEndpoint: "http://localhost:26655",
     prefix: "juno",
+    denom: "ujuno",
     gasPrice: "0.025ujuno",
     feeToken: "ujuno",
   },
