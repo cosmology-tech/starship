@@ -1,4 +1,4 @@
-EXAMPLE = chain
+EXAMPLE = upgrade-testing
 FILE = custom-values.yaml
 
 HELM_REPO = shuttle
