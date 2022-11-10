@@ -506,7 +506,6 @@
           "default": {},
           "title": "The wasmd Schema",
           "required": [
-            "name",
             "image",
             "home",
             "binary",
@@ -617,9 +616,9 @@
           "default": {},
           "title": "The cosmos Schema",
           "required": [
-            "name",
             "image",
             "binary",
+            "home",
             "prefix",
             "denom",
             "coins",
@@ -970,9 +969,7 @@
         "required": [
           "name",
           "type",
-          "numValidators",
-          "upgrade",
-          "ports"
+          "numValidators"
         ],
         "properties": {
           "name": {

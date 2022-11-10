@@ -135,7 +135,7 @@ limits:
   memory: "1G"
 requests:
   cpu: "0.5"
-  memory: "500m"
+  memory: "500M"
 {{- end }}
 {{- end }}
 

@@ -70,7 +70,6 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmosContracts/juno
   wasmd:
-    name: wasmd
     image: anmol1696/wasmd:latest
     home: /root/.wasmd
     binary: wasmd
@@ -81,8 +80,8 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmos:
-    name: cosmos
-    image: anmol1696/gaia:latest
+    image: anmol1696/gaiad:latest
+    home: /root/.gaia
     binary: gaiad
     prefix: cosmos
     denom: stake
