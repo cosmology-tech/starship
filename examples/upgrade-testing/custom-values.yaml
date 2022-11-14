@@ -14,7 +14,7 @@ chains:
       genesis: v4.0.0
       upgrades:
         - name: v5
-          version: v5.0.0-rc1
+          version: v5.0.0-rc2
     ports:
       rpc: 26657
       rest: 1317
@@ -26,3 +26,6 @@ relayers:
     chains:
       - gaia-4
       - core-1
+
+explorer:
+  enabled: true
