@@ -35,8 +35,8 @@ data:
         hd_path: {{ .hdPath }}
         # You can optionally define a default ics20_port that will be used instead of transfer if no flags set
         ics20_port: 'transfer'
-        estimated_block_time: 2000
-        estimated_indexer_time: 10
+        estimated_block_time: {{ $.Values.timeouts.timeout_commit | toString | replace "ms" "" | float64 }}
+        estimated_indexer_time: {{ $.Values.timeouts.time_iota_ms | toString | replace "ms" "" | float64 }}
         {{- end }}
         {{- end }}
         {{- end }}

@@ -91,7 +91,7 @@ spec:
               echo "Fetching balances for inital balances"
               ibc-setup balances
 
-              CONNECTION = $(cat $RELAYER_DIR/app.yaml | grep "srcConnection")
+              CONNECTION=$(cat $RELAYER_DIR/app.yaml | grep "srcConnection")
               if [[ -z $CONNECTION ]]; then
                 echo "Setting up new ics20 channel"
                 ibc-setup ics20 -v --log-level debug
