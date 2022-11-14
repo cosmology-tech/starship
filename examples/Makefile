@@ -1,4 +1,4 @@
-EXAMPLE = chain
+EXAMPLE = upgrade-testing
 FILE = custom-values.yaml
 
 HELM_REPO = shuttle
@@ -11,6 +11,9 @@ setup:
 
 install:
 	helm install -f $(EXAMPLE)/$(FILE) $(EXAMPLE) ../charts/$(HELM_CHART)
+
+upgrade:
+	helm upgrade --debug $(EXAMPLE) ../charts/$(HELM_CHART) -f $(EXAMPLE)/$(FILE)
 
 debug:
 	helm install --dry-run --debug -f $(EXAMPLE)/$(FILE) $(EXAMPLE) ../charts/$(HELM_CHART)
