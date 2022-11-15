@@ -21,7 +21,7 @@ chains:
 
 relayers:
   - name: persistence-gaia
-    type: ts-relayer
+    type: hermes
     replicas: 1
     chains:
       - gaia-4

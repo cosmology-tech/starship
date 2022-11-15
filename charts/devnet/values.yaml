@@ -84,7 +84,7 @@ defaultChains:
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
-    denom: stake
+    denom: uatom
     coins: 100000000000000stake,100000000000000uatom
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
