@@ -26,6 +26,12 @@ relayers:
     chains:
       - gaia-4
       - core-1
+  - name: persistence-gaia
+    type: hermes
+    replicas: 1
+    chains:
+      - gaia-4
+      - core-1
 
 explorer:
   enabled: true
