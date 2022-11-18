@@ -25,7 +25,7 @@ test.before(async (t) => {
     client: osmoClient,
     address: osmoAddress,
     chainInfo: chainInfo,
-  }
+  };
 
   t.pass();
 });
