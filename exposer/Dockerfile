@@ -7,7 +7,7 @@ ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 WORKDIR /usr/local/share/app
 
 # Add source files
-COPY exposer/ .
+COPY . .
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apk add --no-cache $PACKAGES && GO111MODULE=off go build -o exposer ./...
