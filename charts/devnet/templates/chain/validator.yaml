@@ -173,13 +173,19 @@ spec:
             {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
-            - name: GENESIS_FILE
+            - name: EXPOSER_ADDR
+              value: ":8081"
+            - name: EXPOSER_GENESIS_FILE
               value: {{ $defaultChain.home }}/config/genesis.json
+            - name: EXPOSER_MNEMONIC_FILE
+              value: /configs/keys.json
           command: [ "exposer" ]
           resources: {{- toYaml $.Values.exposer.resources | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
+            - mountPath: /configs
+              name: addresses
       volumes:
         - name: node
           emptyDir: { }
