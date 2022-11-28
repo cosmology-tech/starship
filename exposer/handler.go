@@ -39,7 +39,9 @@ func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, fileP
 
 	byteValue, _ := io.ReadAll(jsonFile)
 
-	render.JSON(w, r, byteValue)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(byteValue)
 }
 
 func (a *AppServer) GetNodeID(w http.ResponseWriter, r *http.Request) {
@@ -72,5 +74,5 @@ func (a *AppServer) GetGenesisFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AppServer) GetKeysFile(w http.ResponseWriter, r *http.Request) {
-	a.renderJSONFile(w, r, a.config.GenesisFile)
+	a.renderJSONFile(w, r, a.config.MnemonicFile)
 }

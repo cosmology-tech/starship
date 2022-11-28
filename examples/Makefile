@@ -1,4 +1,4 @@
-EXAMPLE = upgrade-testing
+EXAMPLE = mesh-security
 FILE = custom-values.yaml
 
 HELM_REPO = shuttle
