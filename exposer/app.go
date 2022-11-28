@@ -37,7 +37,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	// Setup routes
 	router, err := app.Router()
 	if err != nil {
-		log.Fatal("Error setting up routes", zap.Error(err))
+		log.Error("Error setting up routes", zap.Error(err))
 		return nil, err
 	}
 	app.router = router
@@ -91,7 +91,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 				if !ok {
 					err = fmt.Errorf("panic: %v", rc)
 				}
-				a.logger.Fatal("panic error",
+				a.logger.Error("panic error",
 					zap.String("request-id", middleware.GetReqID(r.Context())),
 					zap.Error(err))
 
@@ -117,7 +117,7 @@ func (a *AppServer) Run() error {
 	// Start http server as long-running go routine
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			a.logger.Fatal("failed to start the App HTTP server", zap.Error(err))
+			a.logger.Error("failed to start the App HTTP server", zap.Error(err))
 		}
 	}()
 

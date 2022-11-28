@@ -30,7 +30,7 @@ func fetchNodeStatus(url string) (StatusResponse, error) {
 func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, filePath string) {
 	jsonFile, err := os.Open(filePath)
 	if err != nil {
-		a.logger.Fatal("Error opening file",
+		a.logger.Error("Error opening file",
 			zap.String("file", filePath),
 			zap.Error(err))
 		a.renderError(w, r, fmt.Errorf("error opening json file: %s", filePath))
