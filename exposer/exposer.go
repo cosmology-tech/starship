@@ -10,32 +10,33 @@ import (
 )
 
 const (
-	genesisFileKey = "GENESIS_FILE"
-	portKey        = "GENESIS_PORT"
+	genesisFileKey  = "GENESIS_FILE"
+	portKey         = "GENESIS_PORT"
+	mnemonicFileKey = "KEYS_FILE"
 )
 
 var statusURL = "http://0.0.0.0:26657/status"
 
-type StatusResponse struct {
+type aStatusResponse struct {
 	Result Result `json:"result"`
 }
 
-type Result struct {
+type aResult struct {
 	NodeInfo      NodeInfo      `json:"node_info"`
 	ValidatorInfo ValidatorInfo `json:"validator_info"`
 }
 
-type NodeInfo struct {
+type aNodeInfo struct {
 	ID      string `json:"id"`
 	Network string `json:"network"`
 }
 
-type ValidatorInfo struct {
+type aValidatorInfo struct {
 	Address string `json:"address"`
 	PubKey  PubKey `json:"pub_key"`
 }
 
-type PubKey struct {
+type aPubKey struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
 }
@@ -55,13 +56,13 @@ func getNodeStatus() StatusResponse {
 	return statusResp
 }
 
-func getNodeIDHandler(w http.ResponseWriter, r *http.Request) {
+func NodeIDHandler(w http.ResponseWriter, r *http.Request) {
 	status := getNodeStatus()
 
 	_, _ = io.WriteString(w, status.Result.NodeInfo.ID)
 }
 
-func getPubKeyHandler(w http.ResponseWriter, r *http.Request) {
+func PubKeyHandler(w http.ResponseWriter, r *http.Request) {
 	status := getNodeStatus()
 
 	response := map[string]string{
@@ -73,11 +74,10 @@ func getPubKeyHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, string(data))
 }
 
-func getGenesisHandler(w http.ResponseWriter, r *http.Request) {
-	genesisFile := os.Getenv(genesisFileKey)
-	jsonFile, err := os.Open(genesisFile)
+func handleJSONFile(w http.ResponseWriter, r *http.Request, file string) {
+	jsonFile, err := os.Open(file)
 	if err != nil {
-		log.Fatalf("Error opening genesis file at %s", genesisFile)
+		log.Fatalf("Error opening file at %s, err: %s", file, err)
 	}
 	defer jsonFile.Close()
 
@@ -88,11 +88,28 @@ func getGenesisHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(byteValue)
 }
 
+func GenesisHandler(w http.ResponseWriter, r *http.Request) {
+	genesisFile := os.Getenv(genesisFileKey)
+	handleJSONFile(w, r, genesisFile)
+}
+
+func KeysHandler(w http.ResponseWriter, r *http.Request) {
+	mnemonicFile := os.Getenv(mnemonicFileKey)
+	handleJSONFile(w, r, mnemonicFile)
+}
+
+func Routes() {
+	http.HandleFunc("/node_id", NodeIDHandler)
+	http.HandleFunc("/pub_key", PubKeyHandler)
+	http.HandleFunc("/genesis", GenesisHandler)
+	http.HandleFunc("/keys", KeysHandler)
+}
+
 func main() {
 	fmt.Println("Server started ...")
-	http.HandleFunc("/node_id", getNodeIDHandler)
-	http.HandleFunc("/pub_key", getPubKeyHandler)
-	http.HandleFunc("/genesis", getGenesisHandler)
+
+	Routes()
+
 	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv(portKey)), nil)
 	if err != nil {
 		log.Fatalf("Fail to start server, %s\n", err)
