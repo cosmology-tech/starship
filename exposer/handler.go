@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
 
 	"github.com/go-chi/render"
+	"go.uber.org/zap"
 )
 
 func fetchNodeStatus(url string) (StatusResponse, error) {

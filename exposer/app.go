@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
 )
 
 type AppServer struct {
