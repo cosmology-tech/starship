@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/urfave/cli"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
+
+	"github.com/urfave/cli"
 )
 
 func init() {
