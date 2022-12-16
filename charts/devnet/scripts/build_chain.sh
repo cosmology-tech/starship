@@ -1,17 +1,27 @@
 #!/bin/bash
 
-set -eu
+set -euxo pipefail
 
 mkdir -p /tmp/chains $UPGRADE_DIR
 
 echo "Fetching code from tag"
 mkdir -p /tmp/chains/$CHAIN_NAME
 cd /tmp/chains/$CHAIN_NAME
-curl -LO $CODE_REPO/archive/refs/tags/$CODE_TAG.zip
-unzip $CODE_TAG.zip
-cd ${CODE_REPO##*/}-${CODE_TAG#"v"}
+
+if [[ $CODE_TAG = v* ]]; then
+  echo "Trying to fetch code from tag"
+  curl -LO $CODE_REPO/archive/refs/tags/$CODE_TAG.zip
+  unzip $CODE_TAG.zip
+  code_dir=${CODE_REPO##*/}-${CODE_TAG#"v"}
+else
+  echo "Trying to fetch code from branch"
+  curl -LO $CODE_REPO/archive/refs/heads/$CODE_TAG.zip
+  unzip $(echo $CODE_TAG | rev | cut -d "/" -f 1 | rev).zip
+  code_dir=${CODE_REPO##*/}-${CODE_TAG/\//-}
+fi
 
 echo "Fetch wasmvm if needed"
+cd /tmp/chains/$CHAIN_NAME/$code_dir
 WASM_VERSION=$(cat go.mod | grep -oe "github.com/CosmWasm/wasmvm v[0-9.]*" | cut -d ' ' -f 2)
 if [[ WASM_VERSION != "" ]]; then
   mkdir -p /tmp/chains/libwasmvm_muslc
@@ -21,8 +31,8 @@ if [[ WASM_VERSION != "" ]]; then
 fi
 
 echo "Build chain binary"
-cd /tmp/chains/$CHAIN_NAME/${CODE_REPO##*/}-${CODE_TAG#"v"}
-BUILD_TAGS="muslc linkstatic" LINK_STATICALLY=true LEDGER_ENABLED=false make install
+cd /tmp/chains/$CHAIN_NAME/$code_dir
+CGO_ENABLED=1 BUILD_TAGS="muslc linkstatic" LINK_STATICALLY=true LEDGER_ENABLED=false make install
 
 echo "Copy created binary to the upgrade directories"
 if [[ $UPGRADE_NAME == "genesis" ]]; then
