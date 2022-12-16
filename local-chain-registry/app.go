@@ -56,8 +56,10 @@ func (a *AppServer) Router() (*chi.Mux, error) {
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// Setup routes
+	router.Get("/chain_ids", a.GetChainIDs)
 	router.Get("/chains", a.GetChains)
 	router.Get("/chains/{chain}", a.GetChain)
+	router.Get("/chains/{chain}/assets", a.GetChainAssets)
 
 	return router, nil
 }
