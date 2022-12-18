@@ -76,3 +76,31 @@ func (a *AppServer) GetGenesisFile(w http.ResponseWriter, r *http.Request) {
 func (a *AppServer) GetKeysFile(w http.ResponseWriter, r *http.Request) {
 	a.renderJSONFile(w, r, a.config.MnemonicFile)
 }
+
+func (a *AppServer) GetPrivKeysFile(w http.ResponseWriter, r *http.Request) {
+	a.renderJSONFile(w, r, a.config.PrivValFile)
+}
+
+// SetPrivKeysFile sets a priv keys json file at the place
+func (a *AppServer) SetPrivKeysFile(w http.ResponseWriter, r *http.Request) {
+	var privKey PrivValKey
+	if err := render.DecodeJSON(r.Body, &privKey); err != nil {
+		a.logger.Warn(ErrRequestBind.MessageText)
+		render.Render(w, r, ErrRequestBind)
+		return
+	}
+
+	// Write request body as priv_validator_json key
+	file, err := json.MarshalIndent(privKey, "", " ")
+	if err != nil {
+		a.renderError(w, r, fmt.Errorf("unable to marshal struct to file, err: %s", err))
+		return
+	}
+	err = os.WriteFile(a.config.PrivValFile, file, 0644)
+	if err != nil {
+		a.renderError(w, r, fmt.Errorf("unable to write file, err: %s", err))
+		return
+	}
+
+	render.NoContent(w, r)
+}

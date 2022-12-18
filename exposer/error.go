@@ -33,6 +33,7 @@ var (
 	ErrNotFound         = &ErrResponse{HTTPStatusCode: http.StatusNotFound, MessageText: "Resource not found."}
 	ErrNotImplemented   = &ErrResponse{HTTPStatusCode: http.StatusNotImplemented, MessageText: "Not Implemented."}
 	ErrMethodNotAllowed = &ErrResponse{HTTPStatusCode: http.StatusMethodNotAllowed, MessageText: "Method not allowed."}
+	ErrRequestBind      = &ErrResponse{HTTPStatusCode: http.StatusBadRequest, MessageText: "Unable to bind request body."}
 	ErrInternalServer   = &ErrResponse{HTTPStatusCode: http.StatusInternalServerError, MessageText: "Internal server error."}
 )
 
