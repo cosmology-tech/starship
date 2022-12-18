@@ -13,6 +13,7 @@ func NewDefaultConfig() *Config {
 		Addr:         ":8081",
 		GenesisFile:  "",
 		MnemonicFile: "",
+		PrivValFile:  "",
 		StatusURL:    "http://0.0.0.0:26657/status",
 	}
 }
@@ -24,6 +25,8 @@ type Config struct {
 	GenesisFile string `name:"genesis-file" json:"genesis_file" env:"GENESIS_FILE" usage:"Path of genesis file"`
 	// MnemonicFile is full path to the keys file
 	MnemonicFile string `name:"mnemonic-file" json:"mnemonic_file" env:"MNEMONIC_FILE" usage:"Path of mnemonic file"`
+	// PrivValFile is full path of the node validator private key file
+	PrivValFile string `name:"priv-val-file" json:"priv_val_file" env:"PRIV_VAL_FILE" usage:"Path of priv_validator_key.json file for node"`
 	// StatusURL is used to fetch status info from blockchain node
 	StatusURL string `name:"status-url" json:"status_url" env:"STATUS_URL" usage:"URL to fetch chain status"`
 	// Verbose switches on debug logging

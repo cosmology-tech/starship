@@ -60,6 +60,8 @@ func (a *AppServer) Router() (*chi.Mux, error) {
 	router.Get("/pub_key", a.GetPubKey)
 	router.Get("/genesis", a.GetGenesisFile)
 	router.Get("/keys", a.GetKeysFile)
+	router.Get("/priv_validator_keys", a.GetPrivKeysFile)
+	router.Patch("/priv_validator_keys", a.SetPrivKeysFile)
 
 	return router, nil
 }
