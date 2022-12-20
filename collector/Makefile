@@ -1,6 +1,6 @@
 DOCKER := $(shell which docker)
 DOCKER_REPO_NAME := anmol1696
-DOCKER_IMAGE := exposer
+DOCKER_IMAGE := collector
 DOCKER_TAG_NAME := latest
 
 DOCKER_ARGS += --platform linux/amd64
