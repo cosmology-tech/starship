@@ -62,11 +62,11 @@ func (a *AppServer) Router() (*chi.Mux, error) {
 	router.Get("/chains", a.GetChains)
 	router.Route("/chains/{chain}/validators/{validator}", func(r chi.Router) {
 		r.Get("/exports", a.GetChainExports)
-		r.Post("/exports", a.SetChainExport)
 		r.Get("/exports/{id}", a.GetChainExport)
+		r.Post("/exports/{id}", a.SetChainExport)
 		r.Get("/snapshots", a.GetChainSnapshots)
-		r.Post("/snapshots", a.SetChainSnapshot)
 		r.Get("/snapshots/{id}", a.GetChainSnapshot)
+		r.Post("/snapshots/{id}", a.SetChainSnapshot)
 	})
 
 	return router, nil

@@ -108,11 +108,12 @@ func (f *FileDB) IsChain(name string) bool {
 }
 
 func (f *FileDB) CreateChain(name string) error {
-	if f.IsChain(name) {
-		return fmt.Errorf("chain %s already exists", name)
+	err := os.Mkdir(filepath.Join(f.path, name), os.ModeDir)
+	if os.IsExist(err) {
+		return nil
 	}
 
-	return os.Mkdir(filepath.Join(f.path, name), os.ModeDir)
+	return err
 }
 
 // GetChainValidators will return a list of validators in the chain
@@ -149,11 +150,12 @@ func (f *FileDB) IsValidator(chain string, name string) bool {
 }
 
 func (f *FileDB) CreateValidator(chain string, name string) error {
-	if f.IsValidator(chain, name) {
-		return fmt.Errorf("validator %s already exists", name)
+	err := os.Mkdir(filepath.Join(f.path, chain, name), os.ModeDir)
+	if os.IsExist(err) {
+		return nil
 	}
 
-	return os.Mkdir(filepath.Join(f.path, chain, name), os.ModeDir)
+	return err
 }
 
 func (f *FileDB) ListSnapshots(chain string, validator string) ([]string, error) {
@@ -172,7 +174,7 @@ func (f *FileDB) ListSnapshots(chain string, validator string) ([]string, error)
 	return files, nil
 }
 
-// Return snapshot stored
+// GetSnapshot return snapshot stored for the chain and validator
 func (f *FileDB) GetSnapshot(chain string, validator string, snapshot string) ([]byte, error) {
 	filePath := filepath.Join(f.path, chain, validator, "snapshots", snapshot)
 	data, err := os.ReadFile(filePath)
@@ -184,15 +186,55 @@ func (f *FileDB) GetSnapshot(chain string, validator string, snapshot string) ([
 }
 
 func (f *FileDB) StoreSnapshot(chain string, validator string, snapshot string, data []byte) error {
-	if !f.IsChain(chain) {
-		return fmt.Errorf("chain %s does not exists", chain)
-	}
-	if !f.IsValidator(chain, validator) {
-		return fmt.Errorf("validator %s does not exists for %s", chain, validator)
+	err := os.MkdirAll(filepath.Join(f.path, chain, validator, "snapshots"), os.ModeDir)
+	if err != nil {
+		return err
 	}
 
 	filePath := filepath.Join(f.path, chain, validator, "snapshots", snapshot)
-	err := os.WriteFile(filePath, data, 0644)
+	err = os.WriteFile(filePath, data, 0644)
+	if err != nil {
+		return fmt.Errorf("unable to write snapshot to %s, with err: %s", filePath, err)
+	}
+
+	return nil
+}
+
+func (f *FileDB) ListExports(chain string, validator string) ([]string, error) {
+	if !f.IsChain(chain) {
+		return nil, fmt.Errorf("chain %s does not exists", chain)
+	}
+	if !f.IsValidator(chain, validator) {
+		return nil, fmt.Errorf("validator %s does not exists for %s", chain, validator)
+	}
+
+	files, err := f.getFiles(chain, validator, "exports")
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
+}
+
+// GetExport return snapshot stored for the chain and validator
+func (f *FileDB) GetExport(chain string, validator string, export string) ([]byte, error) {
+	filePath := filepath.Join(f.path, chain, validator, "exports", export)
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (f *FileDB) StoreExport(chain string, validator string, export string, data []byte) error {
+	err := os.MkdirAll(filepath.Join(f.path, chain, validator, "exports"), os.ModeDir)
+	if err != nil {
+		return err
+	}
+
+	filePath := filepath.Join(f.path, chain, validator, "exports", export)
+	err = os.WriteFile(filePath, data, 0644)
 	if err != nil {
 		return fmt.Errorf("unable to write snapshot to %s, with err: %s", filePath, err)
 	}

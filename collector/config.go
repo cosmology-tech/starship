@@ -10,8 +10,10 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Addr:    ":8071",
-		DirPath: "/opt/collector",
+		Addr:        ":8071",
+		DirPath:     "/opt/collector",
+		SnapshotExt: "tar.gz",
+		ExportExt:   "json",
 	}
 }
 
@@ -19,7 +21,11 @@ type Config struct {
 	// Addr is the interface and port to bind the HTTP service on
 	Addr string `name:"addr" json:"addr" env:"ADDR" usage:"IP address and port to listen on"`
 	// DirPath is the directory which is used by the fileserver to store files
-	DirPath string `name:"dir-path" json:"dir_path" env:"DIR_PATH" usages:"directory where the files are stored"`
+	DirPath string `name:"dir-path" json:"dir_path" env:"DIR_PATH" usage:"directory where the files are stored"`
+	// SnapshotExt is the extensions of the snapshot
+	SnapshotExt string `name:"snapshot-ext" json:"snapshot_ext" env:"SNAPSHOT_EXT" usage:"extenstion of the snapshots"`
+	// ExportExt is the extensions of the exports
+	ExportExt string `name:"export-ext" json:"export_ext" env:"EXPORT_EXT" usage:"extenstion of the exports"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
