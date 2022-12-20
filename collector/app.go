@@ -34,7 +34,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app := &AppServer{
 		config: config,
 		logger: log,
-		db:     NewFileDB("/opt"),
+		db:     NewFileDB(log, config.DirPath),
 	}
 
 	// Setup routes

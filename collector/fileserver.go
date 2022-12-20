@@ -1,17 +1,28 @@
 package main
 
 import (
+	"fmt"
+	"go.uber.org/zap"
 	"os"
 	"path/filepath"
 )
 
 type FileDB struct {
-	path string
+	logger *zap.Logger
+	path   string
 }
 
-func NewFileDB(path string) *FileDB {
+func NewFileDB(logger *zap.Logger, path string) *FileDB {
+	dirPath := filepath.Dir(path)
+	if err := os.MkdirAll(dirPath, os.ModeDir); err != nil {
+		panic(fmt.Sprintf("Unable to create root directory at: %s", dirPath))
+	}
+	logger.Info("Initialized directory used for storing files",
+		zap.String("path", dirPath))
+
 	return &FileDB{
-		path: filepath.Dir(path),
+		path:   dirPath,
+		logger: logger,
 	}
 }
 
@@ -45,18 +56,146 @@ func (f *FileDB) getFiles(paths ...string) ([]string, error) {
 		return nil, err
 	}
 
-	var dirNames []string
+	var fileNames []string
 	for _, file := range files {
 		fileInfo, err := file.Info()
 		if err != nil {
 			return nil, err
 		}
 		if !fileInfo.IsDir() {
-			dirNames = append(dirNames, fileInfo.Name())
+			fileNames = append(fileNames, fileInfo.Name())
 		}
 	}
 
-	return dirNames, nil
+	return fileNames, nil
 }
 
-func GetChains()
+// GetChains will return a list of chains reading from files
+func (f *FileDB) GetChains() ([]Chain, error) {
+	chainDirs, err := f.getDirs("/")
+	if err != nil {
+		return nil, err
+	}
+
+	var chains []Chain
+	for _, chainDir := range chainDirs {
+		validators, err := f.GetChainValidators(chainDir)
+		if err != nil {
+			return nil, err
+		}
+		chains = append(chains, Chain{
+			Name:       chainDir,
+			Validators: validators,
+		})
+	}
+
+	return chains, nil
+}
+
+func (f *FileDB) IsChain(name string) bool {
+	chains, err := f.GetChains()
+	if err != nil {
+		return false
+	}
+
+	for _, chain := range chains {
+		if chain.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (f *FileDB) CreateChain(name string) error {
+	if f.IsChain(name) {
+		return fmt.Errorf("chain %s already exists", name)
+	}
+
+	return os.Mkdir(filepath.Join(f.path, name), os.ModeDir)
+}
+
+// GetChainValidators will return a list of validators in the chain
+func (f *FileDB) GetChainValidators(chain string) ([]Validator, error) {
+	valDirs, err := f.getDirs(chain)
+	if err != nil {
+		return nil, err
+	}
+
+	var vals []Validator
+	for _, valDir := range valDirs {
+		vals = append(vals, Validator{
+			Name:    valDir,
+			Moniker: valDir,
+		})
+	}
+
+	return vals, nil
+}
+
+func (f *FileDB) IsValidator(chain string, name string) bool {
+	vals, err := f.GetChainValidators(chain)
+	if err != nil {
+		return false
+	}
+
+	for _, val := range vals {
+		if val.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (f *FileDB) CreateValidator(chain string, name string) error {
+	if f.IsValidator(chain, name) {
+		return fmt.Errorf("validator %s already exists", name)
+	}
+
+	return os.Mkdir(filepath.Join(f.path, chain, name), os.ModeDir)
+}
+
+func (f *FileDB) ListSnapshots(chain string, validator string) ([]string, error) {
+	if !f.IsChain(chain) {
+		return nil, fmt.Errorf("chain %s does not exists", chain)
+	}
+	if !f.IsValidator(chain, validator) {
+		return nil, fmt.Errorf("validator %s does not exists for %s", chain, validator)
+	}
+
+	files, err := f.getFiles(chain, validator, "snapshots")
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
+}
+
+// Return snapshot stored
+func (f *FileDB) GetSnapshot(chain string, validator string, snapshot string) ([]byte, error) {
+	filePath := filepath.Join(f.path, chain, validator, "snapshots", snapshot)
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (f *FileDB) StoreSnapshot(chain string, validator string, snapshot string, data []byte) error {
+	if !f.IsChain(chain) {
+		return fmt.Errorf("chain %s does not exists", chain)
+	}
+	if !f.IsValidator(chain, validator) {
+		return fmt.Errorf("validator %s does not exists for %s", chain, validator)
+	}
+
+	filePath := filepath.Join(f.path, chain, validator, "snapshots", snapshot)
+	err := os.WriteFile(filePath, data, 0644)
+	if err != nil {
+		return fmt.Errorf("unable to write snapshot to %s, with err: %s", filePath, err)
+	}
+
+	return nil
+}

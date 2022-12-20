@@ -10,13 +10,16 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Addr: ":8071",
+		Addr:    ":8071",
+		DirPath: "/opt/collector",
 	}
 }
 
 type Config struct {
 	// Addr is the interface and port to bind the HTTP service on
 	Addr string `name:"addr" json:"addr" env:"ADDR" usage:"IP address and port to listen on"`
+	// DirPath is the directory which is used by the fileserver to store files
+	DirPath string `name:"dir-path" json:"dir_path" env:"DIR_PATH" usages:"directory where the files are stored"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
