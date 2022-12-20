@@ -1,31 +1,35 @@
 package main
 
-type StatusResponse struct {
-	Result Result `json:"result"`
+type Chain struct {
+	Name       string      `json:"name,omitempty"`
+	Type       string      `json:"type,omitempty"`
+	Validators []Validator `json:"validators,omitempty"`
 }
 
-type Result struct {
-	NodeInfo      NodeInfo      `json:"node_info"`
-	ValidatorInfo ValidatorInfo `json:"validator_info"`
-}
-
-type NodeInfo struct {
-	ID      string `json:"id"`
-	Network string `json:"network"`
-}
-
-type ValidatorInfo struct {
-	Address string `json:"address"`
-	PubKey  Key    `json:"pub_key"`
-}
-
-type PrivValKey struct {
+type Validator struct {
+	Name    string `json:"name,omitempty"`
+	Moniker string `json:"moniker,omitempty"`
 	Address string `json:"address,omitempty"`
-	PubKey  Key    `json:"pub_key,omitempty"`
-	Priv    Key    `json:"priv_key,omitempty"`
 }
 
-type Key struct {
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value,omitempty"`
+type State struct {
+	ID       string `json:"id,omitempty"`
+	Height   string `json:"height,omitempty"`
+	DataType string `json:"data_type,omitempty"`
+}
+
+func NewExportState(id string, height string) State {
+	return State{
+		ID:       id,
+		Height:   height,
+		DataType: "json",
+	}
+}
+
+func NewSnapshotState(id string, height string) State {
+	return State{
+		ID:       id,
+		Height:   height,
+		DataType: "tar",
+	}
 }

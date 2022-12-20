@@ -13,6 +13,7 @@ import (
 
 type AppServer struct {
 	config *Config
+	db     *FileDB
 	logger *zap.Logger
 	server *http.Server
 	router http.Handler
@@ -33,6 +34,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app := &AppServer{
 		config: config,
 		logger: log,
+		db:     NewFileDB("/opt"),
 	}
 
 	// Setup routes

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,22 +8,6 @@ import (
 
 	"go.uber.org/zap"
 )
-
-func fetchNodeStatus(url string) (StatusResponse, error) {
-	var statusResp StatusResponse
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return statusResp, fmt.Errorf("unable to fetch status, err: %d", err)
-	}
-
-	defer resp.Body.Close()
-	if err := json.NewDecoder(resp.Body).Decode(&statusResp); err != nil {
-		return statusResp, fmt.Errorf("unable to parse status response, err: %d", err)
-	}
-
-	return statusResp, nil
-}
 
 func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, filePath string) {
 	jsonFile, err := os.Open(filePath)
