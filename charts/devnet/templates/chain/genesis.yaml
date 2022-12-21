@@ -124,6 +124,22 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+          {{- if $.Values.collector.enabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - bash
+                  - "-c"
+                  - "-e"
+                  - |
+                    VAL_INDEX=${HOSTNAME##*-}
+                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+
+                    COLLECTOR_HOST=http://$COLLECTOR_SERVICE.$NAMESPACE.svc.cluster.local:$COLLECTOR_PORT
+                    VAL_NAME=$VAL_NAME COLLECTOR_HOST=$COLLECTOR_HOST bash -e /scripts/register_snapshots.sh
+          {{- end }}
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: Always
