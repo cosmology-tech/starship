@@ -73,14 +73,14 @@ func (a *AppServer) SetChainSnapshot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data []byte
-	if err := render.Decode(r, &data); err != nil {
-		a.logger.Warn(ErrRequestBind.MessageText)
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		a.logger.Warn(ErrRequestBind.MessageText, zap.Error(err))
 		render.Render(w, r, ErrRequestBind)
 		return
 	}
 
-	err := a.db.StoreSnapshot(chainID, valID, snapshotID, data)
+	err = a.db.StoreSnapshot(chainID, valID, snapshotID, data)
 	if err != nil {
 		a.logger.Warn("unable to store snapshot",
 			zap.String("snapshotID", snapshotID),

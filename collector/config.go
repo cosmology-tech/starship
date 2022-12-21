@@ -10,7 +10,7 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Addr:        ":8071",
+		Addr:        ":8070",
 		DirPath:     "/opt/collector",
 		SnapshotExt: "tar.gz",
 		ExportExt:   "json",
