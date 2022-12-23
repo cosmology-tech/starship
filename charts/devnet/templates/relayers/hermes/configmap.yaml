@@ -89,10 +89,10 @@ data:
     websocket_addr = "ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
     {{- with index $.Values.defaultChains $fullchain.type }}
     account_prefix = "{{ .prefix }}"
-    gas_price = { price = 0.025, denom = "{{ .denom }}" }
+    gas_price = { price = 0.25, denom = "{{ .denom }}" }
     {{- end }}
-    default_gas = 50000000
-    max_gas = 100000000
+    default_gas = 500000000
+    max_gas = 1000000000
     rpc_timeout = "10s"
     store_prefix = "ibc"
     gas_multiplier = 1.5

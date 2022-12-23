@@ -35,7 +35,6 @@ func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, fileP
 			zap.Error(err))
 		a.renderError(w, r, fmt.Errorf("error opening json file: %s", filePath))
 	}
-	defer jsonFile.Close()
 
 	byteValue, _ := io.ReadAll(jsonFile)
 
