@@ -23,7 +23,9 @@ do
 done
 
 echo "Sleeping before all keys are added"
-sleep 10
+sleep 5
+NUM_KEYS=$($CHAIN_BIN keys list --keyring-backend test --output json | jq -r ". | length")
+echo "Number of keys added to keyring: $NUM_KEYS"
 
 echo "Creating gentx..."
 $CHAIN_BIN gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 5000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
