@@ -13,6 +13,7 @@ import (
 
 type AppServer struct {
 	config *Config
+	db     *FileDB
 	logger *zap.Logger
 	server *http.Server
 	router http.Handler
@@ -33,6 +34,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app := &AppServer{
 		config: config,
 		logger: log,
+		db:     NewFileDB(log, config.DirPath),
 	}
 
 	// Setup routes
@@ -56,12 +58,16 @@ func (a *AppServer) Router() (*chi.Mux, error) {
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// Setup routes
-	router.Get("/node_id", a.GetNodeID)
-	router.Get("/pub_key", a.GetPubKey)
-	router.Get("/genesis", a.GetGenesisFile)
-	router.Get("/keys", a.GetKeysFile)
-	router.Get("/priv_validator_keys", a.GetPrivKeysFile)
-	router.Patch("/priv_validator_keys", a.SetPrivKeysFile)
+	// handler of export states
+	router.Get("/chains", a.GetChains)
+	router.Route("/chains/{chain}/validators/{validator}", func(r chi.Router) {
+		r.Get("/exports", a.GetChainExports)
+		r.Get("/exports/{id}", a.GetChainExport)
+		r.Post("/exports/{id}", a.SetChainExport)
+		r.Get("/snapshots", a.GetChainSnapshots)
+		r.Get("/snapshots/{id}", a.GetChainSnapshot)
+		r.Post("/snapshots/{id}", a.SetChainSnapshot)
+	})
 
 	return router, nil
 }

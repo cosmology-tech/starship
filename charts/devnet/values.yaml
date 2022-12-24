@@ -187,3 +187,10 @@ chainRegistry:
   image: anmol1696/chain-registry
   ports:
     rest: 8090
+
+collector:
+  enabled: false
+  image: anmol1696/collector:latest
+  localhost: true
+  ports:
+    rest: 8070

@@ -1,7 +1,7 @@
-FROM golang:1.18-alpine3.16
+FROM golang:1.19-alpine3.16
 
 # Set up dependencies
-ENV PACKAGES curl unzip make git libusb-dev libc-dev bash gcc linux-headers eudev-dev python3 musl-dev build-base
+ENV PACKAGES curl unzip make git libusb-dev libc-dev bash gcc linux-headers eudev-dev python3 musl-dev
 
 # Install ca-certificates
 RUN set -eux; apk add --no-cache ca-certificates build-base;

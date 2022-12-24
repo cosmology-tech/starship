@@ -132,6 +132,10 @@ spec:
             {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
+            - name: COLLECTOR_SERVICE
+              value: collector
+            - name: COLLECTOR_PORT
+              value: "8070"
           command:
             - bash
             - "-c"
@@ -158,6 +162,21 @@ spec:
                     $CHAIN_BIN keys list | jq
 
                     VAL_NAME=$VAL_NAME bash -e /scripts/create_validator.sh
+            {{- if $.Values.collector.enabled }}
+            preStop:
+              exec:
+                command:
+                  - bash
+                  - "-c"
+                  - "-e"
+                  - |
+                    VAL_INDEX=${HOSTNAME##*-}
+                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+
+                    COLLECTOR_HOST=http://$COLLECTOR_SERVICE.$NAMESPACE.svc.cluster.local:$COLLECTOR_PORT
+                    VAL_NAME=$VAL_NAME COLLECTOR_HOST=$COLLECTOR_HOST bash -e /scripts/register_snapshots.sh
+            {{- end }}
           resources: {{- include "devnet.validator.resources" $chain | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
@@ -179,6 +198,8 @@ spec:
               value: {{ $defaultChain.home }}/config/genesis.json
             - name: EXPOSER_MNEMONIC_FILE
               value: /configs/keys.json
+            - name: EXPOSER_PRIV_VAL_FILE
+              value: {{ $defaultChain.home }}/config/priv_validator_key.json
           command: [ "exposer" ]
           resources: {{- toYaml $.Values.exposer.resources | nindent 12 }}
           volumeMounts:

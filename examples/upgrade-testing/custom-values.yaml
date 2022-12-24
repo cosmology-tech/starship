@@ -15,6 +15,8 @@ chains:
       upgrades:
         - name: v5
           version: v5.0.0-rc2
+        - name: v6
+          version: anmol/v6
     ports:
       rpc: 26657
       rest: 1317

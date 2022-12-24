@@ -16,10 +16,16 @@ type NodeInfo struct {
 
 type ValidatorInfo struct {
 	Address string `json:"address"`
-	PubKey  PubKey `json:"pub_key"`
+	PubKey  Key    `json:"pub_key"`
 }
 
-type PubKey struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
+type PrivValKey struct {
+	Address string `json:"address,omitempty"`
+	PubKey  Key    `json:"pub_key,omitempty"`
+	Priv    Key    `json:"priv_key,omitempty"`
+}
+
+type Key struct {
+	Type  string `json:"type,omitempty"`
+	Value string `json:"value,omitempty"`
 }
