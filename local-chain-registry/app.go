@@ -57,9 +57,18 @@ func (a *AppServer) Router() (*chi.Mux, error) {
 
 	// Setup routes
 	router.Get("/chain_ids", a.GetChainIDs)
-	router.Get("/chains", a.GetChains)
-	router.Get("/chains/{chain}", a.GetChain)
-	router.Get("/chains/{chain}/assets", a.GetChainAssets)
+	router.Route("/chains", func(r chi.Router) {
+		r.Get("/", a.GetChains)
+		r.Get("/{chain}", a.GetChain)
+		r.Get("/{chain}/assets", a.GetChainAssets)
+	})
+	router.Route("/ibc", func(r chi.Router) {
+		r.Get("/", a.GetAllIBC)
+		r.Get("/{chain-a}/{chain-b}", a.GetIBCChainsData)
+		r.Post("/{chain-a}/{chain-b}", a.SetIBCChainsData)
+		r.Get("/{chain-a}/{chain-b}/channels", a.GetIBCChainsChannels)
+		r.Patch("/{chain-a}/{chain-b}/channels", a.AddIBCChainChannel)
+	})
 
 	return router, nil
 }

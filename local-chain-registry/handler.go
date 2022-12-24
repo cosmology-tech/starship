@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,7 +22,6 @@ func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, fileP
 			zap.Error(err))
 		a.renderError(w, r, fmt.Errorf("error opening json file: %s", filePath))
 	}
-	defer jsonFile.Close()
 
 	byteValue, _ := io.ReadAll(jsonFile)
 
@@ -37,9 +35,8 @@ func readJSONFile(file string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer jsonFile.Close()
 
-	byteValue, err := ioutil.ReadAll(jsonFile)
+	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +48,7 @@ func readJSONFile(file string) (map[string]interface{}, error) {
 }
 
 func (a *AppServer) GetChains(w http.ResponseWriter, r *http.Request) {
-	files, err := ioutil.ReadDir(a.config.ChainRegistry)
+	files, err := os.ReadDir(a.config.ChainRegistry)
 	if err != nil {
 		a.renderError(w, r, err)
 		return
@@ -68,11 +65,11 @@ func (a *AppServer) GetChains(w http.ResponseWriter, r *http.Request) {
 		chains = append(chains, info)
 	}
 
-	render.JSON(w, r, NewItemsResponse(chains...))
+	render.JSON(w, r, NewItemsResponse(chains))
 }
 
 func (a *AppServer) GetChainIDs(w http.ResponseWriter, r *http.Request) {
-	files, err := ioutil.ReadDir(a.config.ChainRegistry)
+	files, err := os.ReadDir(a.config.ChainRegistry)
 	if err != nil {
 		a.renderError(w, r, err)
 		return
@@ -94,7 +91,7 @@ func (a *AppServer) GetChainIDs(w http.ResponseWriter, r *http.Request) {
 		chainIDs = append(chainIDs, chainID)
 	}
 
-	render.JSON(w, r, NewItemsResponse(chainIDs...))
+	render.JSON(w, r, NewItemsResponse(chainIDs))
 }
 
 // GetChain handles the incoming request for a single chain given the chain id
@@ -132,4 +129,24 @@ func (a *AppServer) GetChainAssets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, info)
+}
+
+func (a *AppServer) GetAllIBC(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotImplemented)
+}
+
+func (a *AppServer) GetIBCChainsData(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotImplemented)
+}
+
+func (a *AppServer) SetIBCChainsData(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotImplemented)
+}
+
+func (a *AppServer) GetIBCChainsChannels(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotImplemented)
+}
+
+func (a *AppServer) AddIBCChainChannel(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotImplemented)
 }
