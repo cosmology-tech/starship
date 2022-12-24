@@ -7,22 +7,13 @@ type ItemsResponse struct {
 
 func NewItemsResponse(items interface{}) ItemsResponse {
 	if items == nil {
-		return ItemsResponse{
-			Items:      []string{},
-			TotalItems: 0,
-		}
+		return ItemsResponse{[]string{}, 0}
 	}
 
 	listItems, ok := items.([]interface{})
 	if !ok {
-		return ItemsResponse{
-			Items:      []interface{}{items},
-			TotalItems: 1,
-		}
+		return ItemsResponse{[]interface{}{items}, 1}
 	}
 
-	return ItemsResponse{
-		Items:      listItems,
-		TotalItems: len(listItems),
-	}
+	return ItemsResponse{listItems, len(listItems)}
 }
