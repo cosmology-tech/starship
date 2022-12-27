@@ -6,7 +6,7 @@
 # Be aware that this setup will still create a bazel-out symlink in
 # your project directory, which you must exclude from version control and your
 # editor's search path.
-build --symlink_prefix=dist/
+build --symlink_prefix=build/
 
 ###############################
 # Output                      #
