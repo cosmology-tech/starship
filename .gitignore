@@ -1,10 +1,11 @@
- General files for the project
+# General files for the project
 pkg/*
 *.pyc
 bin/*
 .project
 /.bin
 /_test/secrets/*.json
+dist/
 
 # OSX leaves these everywhere on SMB shares
 ._*
