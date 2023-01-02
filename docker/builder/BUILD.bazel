@@ -1,0 +1,24 @@
+load("@io_bazel_rules_docker//contrib:dockerfile_build.bzl", "dockerfile_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push", "container_pull")
+
+dockerfile_image(
+    name = "image",
+    dockerfile = "Dockerfile",
+)
+
+container_pull(
+    name = "alpine_linux_amd64",
+    digest = "sha256:954b378c375d852eb3c63ab88978f640b4348b01c1b3456a024a81536dafbbf4",
+    registry = "index.docker.io",
+    repository = "library/alpine",
+    # tag field is ignored since digest is set
+    tag = "3.8",
+)
+
+container_push(
+    name = "image-push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "anmol1696/builder",
+)

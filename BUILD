@@ -11,3 +11,18 @@ gazelle(
     ],
     command = "update-repos",
 )
+
+# rule for helm charts
+genrule(
+    name = "helm-chart",
+    srcs = [
+        "charts/devnet/",
+    ],
+    outs = ["manifests"],
+    cmd = """
+        helm template \
+        --values charts/devnet/values.yaml \
+        --output $@ \
+        charts/devnet/
+    """,
+)
