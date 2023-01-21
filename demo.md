@@ -1,11 +1,11 @@
 # Demo
 
 For the demo we will run the [mesh-security](https://github.com/CosmWasm/mesh-security) tests against a setup
-creted with shuttle.
+creted with starship.
 
-1. Clone 2 repos, mesh-security clone and shuttle
+1. Clone 2 repos, mesh-security clone and starship
    ```bash
-   git clone git@github.com:Anmol1696/shuttle.git
+   git clone git@github.com:Anmol1696/starship.git
    
    # Mesh security repo, containing the tests
    git clone git@github.com:Anmol1696/mesh-security.git
@@ -14,17 +14,17 @@ creted with shuttle.
    ```
    Note: We used the forked mesh-security repo since there are minor changes made to the testing repo. We will remove
    this dependency soon
-2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/Anmol1696/shuttle#setup-local-k8s-cluster-optional)
-3. Optionally if you are resource constrained on your k8s cluster, you checkout shuttle to a local branch, which will
+2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/Anmol1696/starship#setup-local-k8s-cluster-optional)
+3. Optionally if you are resource constrained on your k8s cluster, you checkout starship to a local branch, which will
    spin up less resources. If you have a beefy machine, no need... try it out
    ```bash
-   cd shuttle
+   cd starship
    git checkout anmol/local
    ```
    Note: In this branch, we just change the `values.yaml` files to spin up only 2 chains, 1 relayer and explorer
-4. Create the setup with shuttle and port-forward ports
+4. Create the setup with starship and port-forward ports
    ```bash
-   cd shuttle
+   cd starship
    # Output all k8s yaml configurations
    make debug
    # Install cluster
@@ -36,7 +36,7 @@ creted with shuttle.
    hopefully properly. This is a known issue, we are working on it. Use `kubectl delete pods <pod-name>`
 5. Once the pods are running, run port-forward command
    ```bash
-   cd shuttle
+   cd starship
    make port-forward-all
    ```
 6. Now you can check the explorer locally at [http://localhost:8080](http://localhost:8080)
