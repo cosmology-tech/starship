@@ -1,0 +1,78 @@
+syntax = "proto3";
+package registry;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/Anmol1696/shuttle/local-chain-registry";
+
+message Fee_tokens {
+  string denom = 1;
+  uint32 fixed_min_gas_price = 2;
+  uint32 low_gas_price = 3;
+  double average_gas_price = 4;
+  double high_gas_price = 5;
+}
+
+message Fees {
+  repeated Fee_tokens fee_tokens = 1;
+}
+
+message Staking_tokens {
+  string denom = 1;
+}
+
+message Staking {
+  repeated Staking_tokens staking_tokens = 1;
+}
+
+message Genesis {
+  string name = 1;
+  string genesis_url = 2;
+}
+
+message Versions {
+  string name = 1;
+  string tag = 2;
+  uint32 height = 3;
+  optional string next_version_name = 4;
+}
+
+message Codebase {
+  string git_repo = 1;
+  optional string recommended_version = 2;
+  repeated string compatible_versions = 3;
+  map<string,string> binaries = 4;
+  optional string cosmos_sdk_version = 5;
+  optional string tendermint_version = 6;
+  optional string cosmwasm_version = 7;
+  optional bool cosmwasm_enabled = 8;
+  optional string ibc_go_version = 9;
+  repeated string ics_enabled = 10;
+  optional Genesis genesis = 11;
+  repeated Versions versions = 12;
+}
+
+message LogoURIs {
+  string png = 1;
+}
+
+message ChainRegistry {
+  string chain_name = 1;
+  string chain_id = 2;
+  string pretty_name = 3;
+  optional string status = 4;
+  optional string network_type = 5;
+  optional string website = 6;
+  optional string bech32_prefix = 7;
+  optional string daemon_name = 8;
+  optional string node_home = 9;
+  repeated string key_algos = 10;
+  uint32 slip44 = 11;
+  optional Fees fees = 12;
+  optional Staking staking = 13;
+  optional Codebase codebase = 14;
+  optional LogoURIs logo_URIs = 17;
+  repeated string keywords = 18;
+}
