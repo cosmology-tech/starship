@@ -143,7 +143,7 @@ spec:
               # Starting the chain
               {{- if $upgrade.enabled }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-              /usr/bin/cosmovisor start
+              DAEMON_ALLOW_DOWNLOAD_BINARIES=true /usr/bin/cosmovisor start
               {{- else }}
               $CHAIN_BIN start
               {{- end }}

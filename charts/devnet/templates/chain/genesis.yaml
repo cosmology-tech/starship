@@ -118,7 +118,7 @@ spec:
             - "-c"
             - |
               {{- if $upgrade.enabled }}
-              /usr/bin/cosmovisor start
+              DAEMON_ALLOW_DOWNLOAD_BINARIES=true /usr/bin/cosmovisor start
               {{- else }}
               $CHAIN_BIN start
               {{- end }}
