@@ -5,7 +5,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/Anmol1696/shuttle/local-chain-registry";
+option go_package = "github.com/Anmol1696/starship/local-chain-registry";
 
 message Fee_tokens {
   string denom = 1;
@@ -56,6 +56,7 @@ message Codebase {
 
 message LogoURIs {
   string png = 1;
+  string svg = 2;
 }
 
 message ChainRegistry {
@@ -75,4 +76,27 @@ message ChainRegistry {
   optional Codebase codebase = 14;
   optional LogoURIs logo_URIs = 17;
   repeated string keywords = 18;
+}
+
+message DenomUnit {
+  string denom = 1;
+  int64 exponent = 2;
+  repeated string aliases = 3;
+}
+
+message ChainAsset {
+  string description = 1;
+  repeated DenomUnit denom_units = 2;
+  string base = 3;
+  string name = 4;
+  optional string display = 5;
+  optional string symbol = 6;
+  optional string coingecko_id = 7;
+  repeated string keywords = 8;
+  optional LogoURIs logo_URIs = 9;
+}
+
+message AssetList {
+  string chain_name = 1;
+  repeated ChainAsset assets = 2;
 }
