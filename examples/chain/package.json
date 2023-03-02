@@ -1,7 +1,7 @@
 {
   "name": "chain",
   "version": "1.0.0",
-  "description": "running multiple chains and runnign tests against shuttle devnet",
+  "description": "running multiple chains and runnign tests against starship devnet",
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",

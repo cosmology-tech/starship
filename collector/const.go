@@ -7,7 +7,7 @@ var (
 
 const (
 	Prog        = "collector"
-	Description = "is a service that aggregates the information of shuttle"
+	Description = "is a service that aggregates the information of starship"
 	envPrefix   = "COLLECTOR_"
 )
 

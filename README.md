@@ -1,13 +1,13 @@
-# shuttle
-![Lint](https://github.com/Anmol1696/shuttle/actions/workflows/lint-check.yaml/badge.svg)
-![Deploy](https://github.com/Anmol1696/shuttle/actions/workflows/release.yaml/badge.svg)
+# starship
+![Lint](https://github.com/Anmol1696/starship/actions/workflows/lint-check.yaml/badge.svg)
+![Deploy](https://github.com/Anmol1696/starship/actions/workflows/release.yaml/badge.svg)
 
 Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
 for multichain use cases
 
 ## Installation
-Inorder to get started with shuttle, one needs to install the following
+Inorder to get started with starship, one needs to install the following
 * `kubectl`: https://kubernetes.io/docs/tasks/tools/
 * `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 * `helm`: https://helm.sh/docs/intro/install/
@@ -29,7 +29,7 @@ This will create a local kind cluster in docker and set the correct context in
 your current kubectl. Check the kubectl context with
 ```bash
 kubectl config current-context
-# check: kind-shuttle
+# check: kind-starship
 ```
 
 ### Setup k8s cluster
@@ -41,7 +41,7 @@ kubectl config current-context
    ```bash
    kubectl create namespace <namespace-name>
    # example
-   kubectl create namespace shuttle
+   kubectl create namespace starship
    ```
 3. Make sure you have set the namespace in the current context, so the devnet is deployed
    without conflict to your current workloads
@@ -112,17 +112,17 @@ can perform
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
 ```bash
-helm repo add shuttle https://anmol1696.github.io/shuttle
+helm repo add starship https://anmol1696.github.io/starship
 helm repo update
 
-helm search repo shuttle/devnet
+helm search repo starship/devnet
 ```
 Fetch the values.yaml file and update them before installing the chart
 ```bash
-helm show values shuttle/devnet > custom-vaules.yaml
+helm show values starship/devnet > custom-vaules.yaml
 # change custom-values.yaml file
 
-helm install -f custom-values.yaml shuttle/devnet --generate-name
+helm install -f custom-values.yaml starship/devnet --generate-name
 ```
 
 **NOTE: It is recommended to still copy the Makefile from the repo to use the handy commands**
