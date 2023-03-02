@@ -1,0 +1,54 @@
+syntax = "proto3";
+package registry;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/descriptor.proto";
+
+import "registry/chain.proto";
+
+option go_package = "github.com/Anmol1696/starship/registry";
+
+// Interface for service
+service Registry {
+  // ListChainIDs will return all the ids for registered chains
+  rpc ListChainIDs(google.protobuf.Empty) returns (ResponseChainIDs) {
+    option (google.api.http) = { get: "/chain_ids" };
+  }
+  // ListChains will fetch all the current chain.json for
+  // the registered chains in registry
+  rpc ListChains(google.protobuf.Empty) returns (ResponseChains) {
+    option (google.api.http) = { get: "/chains" };
+  }
+  rpc GetChain(RequestChain) returns (ResponseChain) {
+    option (google.api.http) = { get: "/chains/{chain}" };
+  }
+  rpc GetChainAssets(RequestChain) returns (ResponseChainAssets) {
+    option (google.api.http) = { get: "/chains/{chain}/assets" };
+  }
+  // ListIBCs will fetch all the current IBC connections
+  //rpc ListIBC(google.protobuf.Empty) returns (ResponseIBC) {
+  //  option (google.api.http) = { get: "/ibc" };
+  //}
+}
+
+message ResponseChains {
+  repeated ChainRegistry chains = 1;
+}
+
+message ResponseChainIDs {
+  repeated string chain_ids = 1;
+}
+
+message RequestChain {
+  string chain_id = 1;
+}
+
+message ResponseChain {
+  ChainRegistry chain = 1;
+}
+
+message ResponseChainAssets {
+  string chain_name = 1;
+  repeated ChainAsset assets = 2;
+}

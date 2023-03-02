@@ -9,12 +9,14 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type AppServer struct {
 	config *Config
 	logger *zap.Logger
-	server *http.Server
+	server *grpc.Server
 	router http.Handler
 }
 
@@ -34,6 +36,9 @@ func NewAppServer(config *Config) (*AppServer, error) {
 		config: config,
 		logger: log,
 	}
+
+	server := grpc.NewServer()
+	reflection.Register(server)
 
 	// Setup routes
 	router, err := app.Router()
