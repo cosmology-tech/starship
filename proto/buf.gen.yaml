@@ -5,5 +5,5 @@ managed:
     default: github.com/bufbuild/buf-tour/gen
 plugins:
   - plugin: buf.build/protocolbuffers/go
-    out: gen
+    out: .
     opt: paths=source_relative

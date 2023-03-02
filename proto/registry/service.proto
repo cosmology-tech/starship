@@ -7,7 +7,7 @@ import "google/protobuf/descriptor.proto";
 
 import "registry/chain.proto";
 
-option go_package = "github.com/Anmol1696/starship/local-chain-registry";
+option go_package = "github.com/Anmol1696/starship/registry";
 
 // Interface for service
 service Registry {
