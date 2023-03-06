@@ -10,7 +10,9 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Addr:         ":8081",
+		Host:         "0.0.0.0",
+		HTTPPort:     "8080",
+		GRPCPort:     "9090",
 		GenesisFile:  "",
 		MnemonicFile: "",
 		PrivValFile:  "",
@@ -19,8 +21,12 @@ func NewDefaultConfig() *Config {
 }
 
 type Config struct {
-	// Addr is the interface and port to bind the HTTP service on
-	Addr string `name:"addr" json:"addr" env:"ADDR" usage:"IP address and port to listen on"`
+	// Host is the interface to bind the HTTP service on
+	Host string `name:"host" json:"host" env:"HOST" usage:"Host address to listen on"`
+	// HTTPPort is the port for the http server
+	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
+	// GRPCPort is the port for the grpc server
+	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
 	// GenesisFile is full path to the genesis file
 	GenesisFile string `name:"genesis-file" json:"genesis_file" env:"GENESIS_FILE" usage:"Path of genesis file"`
 	// MnemonicFile is full path to the keys file

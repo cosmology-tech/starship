@@ -30,10 +30,6 @@ service Exposer {
   rpc GetPrivKeysFile(google.protobuf.Empty) returns (ResponseFileData) {
     option (google.api.http) = { get: "/priv_keys" };
   }
-  // SetPrivKeysFile returns the keys of the node
-  //rpc SetPrivKeysFile(google.protobuf.Empty) returns (ResponseFileData) {
-  //  option (google.api.http) = { post: "/priv_keys" };
-  //}
 }
 
 message ResponseNodeID {
@@ -46,5 +42,5 @@ message ResponsePubKey {
 }
 
 message ResponseFileData {
-  google.protobuf.Any data = 1;
+  bytes data = 1;
 }

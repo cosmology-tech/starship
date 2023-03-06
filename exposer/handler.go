@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	pb "exposer/exposer"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 
-	"github.com/go-chi/render"
 	"go.uber.org/zap"
 )
 
@@ -27,79 +28,64 @@ func fetchNodeStatus(url string) (StatusResponse, error) {
 	return statusResp, nil
 }
 
-func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, filePath string) {
+func (a *AppServer) readJSONFile(filePath string) ([]byte, error) {
 	jsonFile, err := os.Open(filePath)
 	if err != nil {
 		a.logger.Error("Error opening file",
 			zap.String("file", filePath),
 			zap.Error(err))
-		a.renderError(w, r, fmt.Errorf("error opening json file: %s", filePath))
+		return nil, fmt.Errorf("error opening json file: %s", filePath)
 	}
 
-	byteValue, _ := io.ReadAll(jsonFile)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(byteValue)
+	return io.ReadAll(jsonFile)
 }
 
-func (a *AppServer) GetNodeID(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) GetNodeID(ctx context.Context) (*pb.ResponseNodeID, error) {
 	status, err := fetchNodeStatus(a.config.StatusURL)
 	if err != nil {
-		a.renderError(w, r, err)
-		return
+		return nil, err
 	}
 
-	render.PlainText(w, r, status.Result.NodeInfo.ID)
+	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.ID}, nil
 }
 
-func (a *AppServer) GetPubKey(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) GetPubKey(ctx context.Context) (*pb.ResponsePubKey, error) {
 	status, err := fetchNodeStatus(a.config.StatusURL)
 	if err != nil {
-		a.renderError(w, r, err)
-		return
+		return nil, err
 	}
 
-	response := map[string]string{
-		"@type": "/cosmos.crypto.ed25519.PubKey",
-		"key":   status.Result.ValidatorInfo.PubKey.Value,
+	resPubKey := &pb.ResponsePubKey{
+		Type: "/cosmos.crypto.ed25519.PubKey",
+		Key:  status.Result.ValidatorInfo.PubKey.Value,
 	}
 
-	render.JSON(w, r, response)
+	return resPubKey, nil
 }
 
-func (a *AppServer) GetGenesisFile(w http.ResponseWriter, r *http.Request) {
-	a.renderJSONFile(w, r, a.config.GenesisFile)
-}
-
-func (a *AppServer) GetKeysFile(w http.ResponseWriter, r *http.Request) {
-	a.renderJSONFile(w, r, a.config.MnemonicFile)
-}
-
-func (a *AppServer) GetPrivKeysFile(w http.ResponseWriter, r *http.Request) {
-	a.renderJSONFile(w, r, a.config.PrivValFile)
-}
-
-// SetPrivKeysFile sets a priv keys json file at the place
-func (a *AppServer) SetPrivKeysFile(w http.ResponseWriter, r *http.Request) {
-	var privKey PrivValKey
-	if err := render.DecodeJSON(r.Body, &privKey); err != nil {
-		a.logger.Warn(ErrRequestBind.MessageText)
-		render.Render(w, r, ErrRequestBind)
-		return
-	}
-
-	// Write request body as priv_validator_json key
-	file, err := json.MarshalIndent(privKey, "", " ")
+func (a *AppServer) GetGenesisFile(ctx context.Context) (*pb.ResponseFileData, error) {
+	data, err := a.readJSONFile(a.config.GenesisFile)
 	if err != nil {
-		a.renderError(w, r, fmt.Errorf("unable to marshal struct to file, err: %s", err))
-		return
-	}
-	err = os.WriteFile(a.config.PrivValFile, file, 0644)
-	if err != nil {
-		a.renderError(w, r, fmt.Errorf("unable to write file, err: %s", err))
-		return
+		return nil, err
 	}
 
-	render.NoContent(w, r)
+	return &pb.ResponseFileData{Data: data}, nil
+}
+
+func (a *AppServer) GetKeysFile(ctx context.Context) (*pb.ResponseFileData, error) {
+	data, err := a.readJSONFile(a.config.MnemonicFile)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ResponseFileData{Data: data}, nil
+}
+
+func (a *AppServer) GetPrivKeysFile(ctx context.Context) (*pb.ResponseFileData, error) {
+	data, err := a.readJSONFile(a.config.PrivValFile)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ResponseFileData{Data: data}, nil
 }
