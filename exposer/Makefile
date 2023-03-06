@@ -23,6 +23,7 @@ run:
 docker-build:
 	$(DOCKER) buildx build $(DOCKER_ARGS) \
 		-t $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME) .
+	echo "Docker image: $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME)"
 
 docker-build-push: docker-build
 	$(DOCKER) push $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME)
