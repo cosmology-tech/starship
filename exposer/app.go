@@ -18,9 +18,11 @@ import (
 )
 
 type AppServer struct {
-	config     *Config
-	logger     *zap.Logger
-	exposer    pb.ExposerServer
+	pb.UnimplementedExposerServer
+
+	config *Config
+	logger *zap.Logger
+
 	grpcServer *grpc.Server
 	httpServer *http.Server
 }
@@ -44,7 +46,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 
 	// Create grpc server
 	grpcServer := grpc.NewServer()
-	pb.RegisterExposerServer(grpcServer, app.exposer)
+	pb.RegisterExposerServer(grpcServer, app)
 	app.grpcServer = grpcServer
 
 	// Create http server

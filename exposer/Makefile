@@ -8,12 +8,15 @@ DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
 DOCKER_ARGS += --platform linux/amd64
 
+all: update build
+
 ## Go commands
 update:
 	(cd $(CURDIR)/../proto && $(MAKE) build-$(BINARY_NAME))
 	go mod tidy
 
-build: update
+build:
+	@mkdir -p $(BINARY_DIR)
 	go build -o $(BINARY_DIR) ./...
 
 run:

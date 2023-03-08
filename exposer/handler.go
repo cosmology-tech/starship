@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	pb "exposer/exposer"
 	"fmt"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
 	"net/http"
 	"os"
@@ -40,7 +41,7 @@ func (a *AppServer) readJSONFile(filePath string) ([]byte, error) {
 	return io.ReadAll(jsonFile)
 }
 
-func (a *AppServer) GetNodeID(ctx context.Context) (*pb.ResponseNodeID, error) {
+func (a *AppServer) GetNodeID(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseNodeID, error) {
 	status, err := fetchNodeStatus(a.config.StatusURL)
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (a *AppServer) GetNodeID(ctx context.Context) (*pb.ResponseNodeID, error) {
 	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.ID}, nil
 }
 
-func (a *AppServer) GetPubKey(ctx context.Context) (*pb.ResponsePubKey, error) {
+func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.ResponsePubKey, error) {
 	status, err := fetchNodeStatus(a.config.StatusURL)
 	if err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func (a *AppServer) GetPubKey(ctx context.Context) (*pb.ResponsePubKey, error) {
 	return resPubKey, nil
 }
 
-func (a *AppServer) GetGenesisFile(ctx context.Context) (*pb.ResponseFileData, error) {
+func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
 	data, err := a.readJSONFile(a.config.GenesisFile)
 	if err != nil {
 		return nil, err
@@ -72,7 +73,7 @@ func (a *AppServer) GetGenesisFile(ctx context.Context) (*pb.ResponseFileData, e
 	return &pb.ResponseFileData{Data: data}, nil
 }
 
-func (a *AppServer) GetKeysFile(ctx context.Context) (*pb.ResponseFileData, error) {
+func (a *AppServer) GetKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
 	data, err := a.readJSONFile(a.config.MnemonicFile)
 	if err != nil {
 		return nil, err
@@ -81,7 +82,7 @@ func (a *AppServer) GetKeysFile(ctx context.Context) (*pb.ResponseFileData, erro
 	return &pb.ResponseFileData{Data: data}, nil
 }
 
-func (a *AppServer) GetPrivKeysFile(ctx context.Context) (*pb.ResponseFileData, error) {
+func (a *AppServer) GetPrivKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
 	data, err := a.readJSONFile(a.config.PrivValFile)
 	if err != nil {
 		return nil, err

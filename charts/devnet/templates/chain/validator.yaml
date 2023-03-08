@@ -192,8 +192,10 @@ spec:
             {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
-            - name: EXPOSER_ADDR
-              value: ":8081"
+            - name: EXPOSER_HTTP_PORT
+              value: "8081"
+            - name: EXPOSER_GRPC_PORT
+              value: "9091"
             - name: EXPOSER_GENESIS_FILE
               value: {{ $defaultChain.home }}/config/genesis.json
             - name: EXPOSER_MNEMONIC_FILE
