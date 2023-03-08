@@ -36,4 +36,4 @@ explorer:
   enabled: true
 
 exposer:
-  image: anmol1696/exposer:20230308-113ab07
+  image: anmol1696/exposer:20230308-f3d5451
