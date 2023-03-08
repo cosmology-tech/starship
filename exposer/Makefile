@@ -6,7 +6,7 @@ DOCKER_REPO_NAME := anmol1696
 DOCKER_IMAGE := exposer
 DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
-DOCKER_ARGS += --platform linux/amd64
+DOCKER_ARGS += --platform linux/amd64 --no-cache
 
 all: update build
 
@@ -20,7 +20,11 @@ build:
 	go build -o $(BINARY_DIR) ./...
 
 run:
-	$(BINARY_DIR)/$(BINARY_NAME)
+	$(BINARY_DIR)/$(BINARY_NAME) \
+		--genesis-file $(CURDIR)/testdata/genesis.json \
+		--mnemonic-file $(CURDIR)/testdata/keys.json \
+		--priv-val-file $(CURDIR)/testdata/priv_validator_key.json \
+		--status-url https://rpc.osmosis.zone/status
 
 ## Docker commands
 docker-build:

@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"go.uber.org/zap"
@@ -67,18 +66,6 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app.httpServer = httpServer
 
 	return app, err
-}
-
-func (a *AppServer) Router() (*chi.Mux, error) {
-	router := chi.NewRouter()
-	router.MethodNotAllowed(MethodNotAllowed)
-	router.NotFound(NotFound)
-
-	// Set middleware
-	router.Use(a.panicRecovery)
-	router.Use(render.SetContentType(render.ContentTypeJSON))
-
-	return router, nil
 }
 
 func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {

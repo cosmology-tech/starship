@@ -23,7 +23,7 @@ const (
 	Exposer_GetNodeID_FullMethodName       = "/exposer.Exposer/GetNodeID"
 	Exposer_GetPubKey_FullMethodName       = "/exposer.Exposer/GetPubKey"
 	Exposer_GetGenesisFile_FullMethodName  = "/exposer.Exposer/GetGenesisFile"
-	Exposer_GetKeysFile_FullMethodName     = "/exposer.Exposer/GetKeysFile"
+	Exposer_GetKeys_FullMethodName         = "/exposer.Exposer/GetKeys"
 	Exposer_GetPrivKeysFile_FullMethodName = "/exposer.Exposer/GetPrivKeysFile"
 )
 
@@ -38,7 +38,7 @@ type ExposerClient interface {
 	// GetGenesisFile returns the genesis file of the node
 	GetGenesisFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error)
 	// GetKeysFile returns the keys of the node
-	GetKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error)
+	GetKeys(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Keys, error)
 	// GetPrivKeysFile returns the keys of the node
 	GetPrivKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error)
 }
@@ -78,9 +78,9 @@ func (c *exposerClient) GetGenesisFile(ctx context.Context, in *emptypb.Empty, o
 	return out, nil
 }
 
-func (c *exposerClient) GetKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error) {
-	out := new(ResponseFileData)
-	err := c.cc.Invoke(ctx, Exposer_GetKeysFile_FullMethodName, in, out, opts...)
+func (c *exposerClient) GetKeys(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Keys, error) {
+	out := new(Keys)
+	err := c.cc.Invoke(ctx, Exposer_GetKeys_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ type ExposerServer interface {
 	// GetGenesisFile returns the genesis file of the node
 	GetGenesisFile(context.Context, *emptypb.Empty) (*ResponseFileData, error)
 	// GetKeysFile returns the keys of the node
-	GetKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error)
+	GetKeys(context.Context, *emptypb.Empty) (*Keys, error)
 	// GetPrivKeysFile returns the keys of the node
 	GetPrivKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error)
 	mustEmbedUnimplementedExposerServer()
@@ -126,8 +126,8 @@ func (UnimplementedExposerServer) GetPubKey(context.Context, *emptypb.Empty) (*R
 func (UnimplementedExposerServer) GetGenesisFile(context.Context, *emptypb.Empty) (*ResponseFileData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGenesisFile not implemented")
 }
-func (UnimplementedExposerServer) GetKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetKeysFile not implemented")
+func (UnimplementedExposerServer) GetKeys(context.Context, *emptypb.Empty) (*Keys, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetKeys not implemented")
 }
 func (UnimplementedExposerServer) GetPrivKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivKeysFile not implemented")
@@ -199,20 +199,20 @@ func _Exposer_GetGenesisFile_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Exposer_GetKeysFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Exposer_GetKeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExposerServer).GetKeysFile(ctx, in)
+		return srv.(ExposerServer).GetKeys(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Exposer_GetKeysFile_FullMethodName,
+		FullMethod: Exposer_GetKeys_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExposerServer).GetKeysFile(ctx, req.(*emptypb.Empty))
+		return srv.(ExposerServer).GetKeys(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -255,8 +255,8 @@ var Exposer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Exposer_GetGenesisFile_Handler,
 		},
 		{
-			MethodName: "GetKeysFile",
-			Handler:    _Exposer_GetKeysFile_Handler,
+			MethodName: "GetKeys",
+			Handler:    _Exposer_GetKeys_Handler,
 		},
 		{
 			MethodName: "GetPrivKeysFile",

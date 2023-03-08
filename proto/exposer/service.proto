@@ -6,6 +6,8 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
+import "exposer/mnemonic.proto";
+
 option go_package = "github.com/Anmol1696/starship/exposer";
 
 // Interface for service
@@ -23,7 +25,7 @@ service Exposer {
     option (google.api.http) = { get: "/genesis" };
   }
   // GetKeysFile returns the keys of the node
-  rpc GetKeysFile(google.protobuf.Empty) returns (ResponseFileData) {
+  rpc GetKeys(google.protobuf.Empty) returns (Keys) {
     option (google.api.http) = { get: "/keys" };
   }
   // GetPrivKeysFile returns the keys of the node

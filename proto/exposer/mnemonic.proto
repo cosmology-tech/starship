@@ -1,0 +1,17 @@
+syntax = "proto3";
+package exposer;
+
+option go_package = "github.com/Anmol1696/starship/exposer";
+
+message Mnemonic {
+  string name = 1;
+  string type = 2;
+  string mnemonic = 3;
+}
+
+message Keys {
+  repeated Mnemonic genesis = 1;
+  repeated Mnemonic validators = 2;
+  repeated Mnemonic keys = 3;
+  repeated Mnemonic relayers = 4;
+}

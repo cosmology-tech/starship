@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	pb "exposer/exposer"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
 	"net/http"
@@ -73,13 +74,19 @@ func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.R
 	return &pb.ResponseFileData{Data: data}, nil
 }
 
-func (a *AppServer) GetKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
-	data, err := a.readJSONFile(a.config.MnemonicFile)
+func (a *AppServer) GetKeys(ctx context.Context, _ *emptypb.Empty) (*pb.Keys, error) {
+	jsonFile, err := os.Open(a.config.MnemonicFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResponseFileData{Data: data}, nil
+	keys := &pb.Keys{}
+	err = jsonpb.Unmarshal(jsonFile, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
 }
 
 func (a *AppServer) GetPrivKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
