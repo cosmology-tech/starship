@@ -65,13 +65,25 @@ func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.Respon
 	return resPubKey, nil
 }
 
-func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
-	data, err := a.readJSONFile(a.config.GenesisFile)
+func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.GenesisState, error) {
+	//data, err := a.readJSONFile(a.config.GenesisFile)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//return &pb.ResponseFileData{Data: data}, nil
+	jsonFile, err := os.Open(a.config.GenesisFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResponseFileData{Data: data}, nil
+	state := &pb.GenesisState{}
+	err = jsonpb.Unmarshal(jsonFile, state)
+	if err != nil {
+		return nil, err
+	}
+
+	return state, nil
 }
 
 func (a *AppServer) GetKeys(ctx context.Context, _ *emptypb.Empty) (*pb.Keys, error) {
@@ -89,11 +101,17 @@ func (a *AppServer) GetKeys(ctx context.Context, _ *emptypb.Empty) (*pb.Keys, er
 	return keys, nil
 }
 
-func (a *AppServer) GetPrivKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseFileData, error) {
-	data, err := a.readJSONFile(a.config.PrivValFile)
+func (a *AppServer) GetPrivKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
+	jsonFile, err := os.Open(a.config.PrivValFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResponseFileData{Data: data}, nil
+	keys := &pb.PrivValidatorKey{}
+	err = jsonpb.Unmarshal(jsonFile, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
 }

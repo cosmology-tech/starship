@@ -36,11 +36,11 @@ type ExposerClient interface {
 	// GetPubKey returns the public key of the current node
 	GetPubKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponsePubKey, error)
 	// GetGenesisFile returns the genesis file of the node
-	GetGenesisFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error)
+	GetGenesisFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GenesisState, error)
 	// GetKeysFile returns the keys of the node
 	GetKeys(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Keys, error)
 	// GetPrivKeysFile returns the keys of the node
-	GetPrivKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error)
+	GetPrivKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorKey, error)
 }
 
 type exposerClient struct {
@@ -69,8 +69,8 @@ func (c *exposerClient) GetPubKey(ctx context.Context, in *emptypb.Empty, opts .
 	return out, nil
 }
 
-func (c *exposerClient) GetGenesisFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error) {
-	out := new(ResponseFileData)
+func (c *exposerClient) GetGenesisFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GenesisState, error) {
+	out := new(GenesisState)
 	err := c.cc.Invoke(ctx, Exposer_GetGenesisFile_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (c *exposerClient) GetKeys(ctx context.Context, in *emptypb.Empty, opts ...
 	return out, nil
 }
 
-func (c *exposerClient) GetPrivKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseFileData, error) {
-	out := new(ResponseFileData)
+func (c *exposerClient) GetPrivKeysFile(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorKey, error) {
+	out := new(PrivValidatorKey)
 	err := c.cc.Invoke(ctx, Exposer_GetPrivKeysFile_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -105,11 +105,11 @@ type ExposerServer interface {
 	// GetPubKey returns the public key of the current node
 	GetPubKey(context.Context, *emptypb.Empty) (*ResponsePubKey, error)
 	// GetGenesisFile returns the genesis file of the node
-	GetGenesisFile(context.Context, *emptypb.Empty) (*ResponseFileData, error)
+	GetGenesisFile(context.Context, *emptypb.Empty) (*GenesisState, error)
 	// GetKeysFile returns the keys of the node
 	GetKeys(context.Context, *emptypb.Empty) (*Keys, error)
 	// GetPrivKeysFile returns the keys of the node
-	GetPrivKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error)
+	GetPrivKeysFile(context.Context, *emptypb.Empty) (*PrivValidatorKey, error)
 	mustEmbedUnimplementedExposerServer()
 }
 
@@ -123,13 +123,13 @@ func (UnimplementedExposerServer) GetNodeID(context.Context, *emptypb.Empty) (*R
 func (UnimplementedExposerServer) GetPubKey(context.Context, *emptypb.Empty) (*ResponsePubKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPubKey not implemented")
 }
-func (UnimplementedExposerServer) GetGenesisFile(context.Context, *emptypb.Empty) (*ResponseFileData, error) {
+func (UnimplementedExposerServer) GetGenesisFile(context.Context, *emptypb.Empty) (*GenesisState, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGenesisFile not implemented")
 }
 func (UnimplementedExposerServer) GetKeys(context.Context, *emptypb.Empty) (*Keys, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKeys not implemented")
 }
-func (UnimplementedExposerServer) GetPrivKeysFile(context.Context, *emptypb.Empty) (*ResponseFileData, error) {
+func (UnimplementedExposerServer) GetPrivKeysFile(context.Context, *emptypb.Empty) (*PrivValidatorKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivKeysFile not implemented")
 }
 func (UnimplementedExposerServer) mustEmbedUnimplementedExposerServer() {}

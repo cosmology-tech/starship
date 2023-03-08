@@ -103,14 +103,14 @@ spec:
               jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
               jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
 
-              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis | jq -r ".data | @base64d" > $CHAIN_DIR/config/genesis.json
+              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
 
               echo "Setup config files"
               bash -e /scripts/setup_config.sh
 
-              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".nodeId")@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
+              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
 

@@ -7,6 +7,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
 import "exposer/mnemonic.proto";
+import "exposer/genesis.proto";
 
 option go_package = "github.com/Anmol1696/starship/exposer";
 
@@ -21,7 +22,7 @@ service Exposer {
     option (google.api.http) = { get: "/pub_key" };
   }
   // GetGenesisFile returns the genesis file of the node
-  rpc GetGenesisFile(google.protobuf.Empty) returns (ResponseFileData) {
+  rpc GetGenesisFile(google.protobuf.Empty) returns (GenesisState) {
     option (google.api.http) = { get: "/genesis" };
   }
   // GetKeysFile returns the keys of the node
@@ -29,13 +30,13 @@ service Exposer {
     option (google.api.http) = { get: "/keys" };
   }
   // GetPrivKeysFile returns the keys of the node
-  rpc GetPrivKeysFile(google.protobuf.Empty) returns (ResponseFileData) {
+  rpc GetPrivKeysFile(google.protobuf.Empty) returns (PrivValidatorKey) {
     option (google.api.http) = { get: "/priv_keys" };
   }
 }
 
 message ResponseNodeID {
-  string node_id = 1;
+  string node_id = 1 [ json_name = "node_id" ];
 }
 
 message ResponsePubKey {
