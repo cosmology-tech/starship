@@ -3,15 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/render"
 	"net"
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
+	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpcctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pb "exposer/exposer"
 )
@@ -44,7 +50,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	}
 
 	// Create grpc server
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(app.grpcMiddleware()...)
 	pb.RegisterExposerServer(grpcServer, app)
 	app.grpcServer = grpcServer
 
@@ -61,11 +67,38 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	}
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.Host, config.HTTPPort),
-		Handler: mux,
+		Handler: app.panicRecovery(app.loggingMiddleware(mux)),
 	}
 	app.httpServer = httpServer
 
 	return app, err
+}
+
+func (a *AppServer) grpcMiddleware() []grpc.ServerOption {
+	opts := []grpcrecovery.Option{
+		grpcrecovery.WithRecoveryHandler(
+			func(p interface{}) error {
+				err := status.Errorf(codes.Unknown, "panic triggered: %v", p)
+				a.logger.Error("panic error", zap.Error(err))
+				return err
+			},
+		),
+	}
+
+	serverOpts := []grpc.ServerOption{
+		grpcmiddleware.WithUnaryServerChain(
+			grpcctxtags.UnaryServerInterceptor(),
+			grpczap.UnaryServerInterceptor(a.logger),
+			grpcrecovery.UnaryServerInterceptor(opts...),
+		),
+		grpcmiddleware.WithStreamServerChain(
+			grpcctxtags.StreamServerInterceptor(),
+			grpczap.StreamServerInterceptor(a.logger),
+			grpcrecovery.StreamServerInterceptor(opts...),
+		),
+	}
+
+	return serverOpts
 }
 
 func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {
@@ -82,7 +115,6 @@ func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {
 				zap.String("path", r.URL.Path),
 				zap.String("request-id", middleware.GetReqID(r.Context())))
 		}()
-
 		next.ServeHTTP(ww, r)
 	}
 	return http.HandlerFunc(fn)
@@ -96,9 +128,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 				if !ok {
 					err = fmt.Errorf("panic: %v", rc)
 				}
-				a.logger.Error("panic error",
-					zap.String("request-id", middleware.GetReqID(r.Context())),
-					zap.Error(err))
+				a.logger.Error("panic error", zap.Error(err))
 
 				render.Render(w, r, ErrInternalServer)
 				return

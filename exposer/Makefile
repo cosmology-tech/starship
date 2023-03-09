@@ -6,7 +6,7 @@ DOCKER_REPO_NAME := anmol1696
 DOCKER_IMAGE := exposer
 DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
-DOCKER_ARGS += --platform linux/amd64 --no-cache
+DOCKER_ARGS += --platform linux/amd64
 
 all: update build
 
