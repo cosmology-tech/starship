@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-chi/chi"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	pb "registry/registry"
 
 	"github.com/go-chi/render"
 	"go.uber.org/zap"
@@ -47,11 +50,10 @@ func readJSONFile(file string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-func (a *AppServer) GetChains(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChains, error) {
 	files, err := os.ReadDir(a.config.ChainRegistry)
 	if err != nil {
-		a.renderError(w, r, err)
-		return
+		return nil, err
 	}
 
 	var chains []interface{}

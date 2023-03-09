@@ -41,7 +41,7 @@ message ResponseChainIDs {
 }
 
 message RequestChain {
-  string chain_id = 1;
+  string chain = 1;
 }
 
 message ResponseChain {
