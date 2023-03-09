@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"encoding/json"
-	pb "exposer/exposer"
 	"fmt"
-	"github.com/golang/protobuf/jsonpb"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
 	"net/http"
 	"os"
 
+	"github.com/golang/protobuf/jsonpb"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/emptypb"
+
+	pb "exposer/exposer"
 )
 
 func fetchNodeStatus(url string) (StatusResponse, error) {
@@ -66,12 +67,6 @@ func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.Respon
 }
 
 func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.GenesisState, error) {
-	//data, err := a.readJSONFile(a.config.GenesisFile)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//return &pb.ResponseFileData{Data: data}, nil
 	jsonFile, err := os.Open(a.config.GenesisFile)
 	if err != nil {
 		return nil, err
