@@ -1,4 +1,4 @@
-EXAMPLE = upgrade-testing
+EXAMPLE = chain
 FILE = custom-values.yaml
 
 HELM_REPO = starship

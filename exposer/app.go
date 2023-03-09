@@ -1,21 +1,35 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/render"
+	"net"
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
+	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpcctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	pb "exposer/exposer"
 )
 
 type AppServer struct {
+	pb.UnimplementedExposerServer
+
 	config *Config
 	logger *zap.Logger
-	server *http.Server
-	router http.Handler
+
+	grpcServer *grpc.Server
+	httpServer *http.Server
 }
 
 func NewAppServer(config *Config) (*AppServer, error) {
@@ -35,35 +49,56 @@ func NewAppServer(config *Config) (*AppServer, error) {
 		logger: log,
 	}
 
-	// Setup routes
-	router, err := app.Router()
+	// Create grpc server
+	grpcServer := grpc.NewServer(app.grpcMiddleware()...)
+	pb.RegisterExposerServer(grpcServer, app)
+	app.grpcServer = grpcServer
+
+	// Create http server
+	mux := runtime.NewServeMux()
+	err = pb.RegisterExposerHandlerFromEndpoint(
+		context.Background(),
+		mux,
+		fmt.Sprintf("%s:%s", config.Host, config.GRPCPort),
+		[]grpc.DialOption{grpc.WithInsecure()},
+	)
 	if err != nil {
-		log.Error("Error setting up routes", zap.Error(err))
 		return nil, err
 	}
-	app.router = router
+	httpServer := &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", config.Host, config.HTTPPort),
+		Handler: app.panicRecovery(app.loggingMiddleware(mux)),
+	}
+	app.httpServer = httpServer
 
 	return app, err
 }
 
-func (a *AppServer) Router() (*chi.Mux, error) {
-	router := chi.NewRouter()
-	router.MethodNotAllowed(MethodNotAllowed)
-	router.NotFound(NotFound)
+func (a *AppServer) grpcMiddleware() []grpc.ServerOption {
+	opts := []grpcrecovery.Option{
+		grpcrecovery.WithRecoveryHandler(
+			func(p interface{}) error {
+				err := status.Errorf(codes.Unknown, "panic triggered: %v", p)
+				a.logger.Error("panic error", zap.Error(err))
+				return err
+			},
+		),
+	}
 
-	// Set middleware
-	router.Use(a.panicRecovery)
-	router.Use(render.SetContentType(render.ContentTypeJSON))
+	serverOpts := []grpc.ServerOption{
+		grpcmiddleware.WithUnaryServerChain(
+			grpcctxtags.UnaryServerInterceptor(),
+			grpczap.UnaryServerInterceptor(a.logger),
+			grpcrecovery.UnaryServerInterceptor(opts...),
+		),
+		grpcmiddleware.WithStreamServerChain(
+			grpcctxtags.StreamServerInterceptor(),
+			grpczap.StreamServerInterceptor(a.logger),
+			grpcrecovery.StreamServerInterceptor(opts...),
+		),
+	}
 
-	// Setup routes
-	router.Get("/node_id", a.GetNodeID)
-	router.Get("/pub_key", a.GetPubKey)
-	router.Get("/genesis", a.GetGenesisFile)
-	router.Get("/keys", a.GetKeysFile)
-	router.Get("/priv_validator_keys", a.GetPrivKeysFile)
-	router.Patch("/priv_validator_keys", a.SetPrivKeysFile)
-
-	return router, nil
+	return serverOpts
 }
 
 func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {
@@ -80,7 +115,6 @@ func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {
 				zap.String("path", r.URL.Path),
 				zap.String("request-id", middleware.GetReqID(r.Context())))
 		}()
-
 		next.ServeHTTP(ww, r)
 	}
 	return http.HandlerFunc(fn)
@@ -94,9 +128,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 				if !ok {
 					err = fmt.Errorf("panic: %v", rc)
 				}
-				a.logger.Error("panic error",
-					zap.String("request-id", middleware.GetReqID(r.Context())),
-					zap.Error(err))
+				a.logger.Error("panic error", zap.Error(err))
 
 				render.Render(w, r, ErrInternalServer)
 				return
@@ -110,17 +142,22 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 func (a *AppServer) Run() error {
 	a.logger.Info("App starting", zap.Any("Config", a.config))
 
-	// Setup server
-	server := &http.Server{
-		Addr:    a.config.Addr,
-		Handler: a.router,
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", a.config.Host, a.config.GRPCPort))
+	if err != nil {
+		a.logger.Error("failed to listen", zap.Error(err))
 	}
-	a.server = server
 
-	// Start http server as long-running go routine
+	// Start grpc server as long-running go routine
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			a.logger.Error("failed to start the App HTTP server", zap.Error(err))
+		if err := a.grpcServer.Serve(lis); err != nil {
+			a.logger.Error("failed to start the App gRPC server", zap.Error(err))
+		}
+	}()
+
+	// Start http server
+	go func() {
+		if err := a.httpServer.ListenAndServe(); err != nil {
+			a.logger.Error("failed to start the App http server", zap.Error(err))
 		}
 	}()
 

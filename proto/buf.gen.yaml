@@ -1,8 +1,6 @@
 version: v1
 managed:
   enabled: true
-  go_package_prefix:
-    default: github.com/bufbuild/buf-tour/gen
 plugins:
   - plugin: buf.build/protocolbuffers/go
     out: .
@@ -10,3 +8,8 @@ plugins:
   - plugin: buf.build/grpc/go
     out: .
     opt: paths=source_relative
+  - plugin: buf.build/grpc-ecosystem/gateway
+    out: .
+    opt:
+    - paths=source_relative
+    - generate_unbound_methods=true
