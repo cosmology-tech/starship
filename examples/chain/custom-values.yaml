@@ -34,6 +34,3 @@ relayers:
 
 explorer:
   enabled: true
-
-exposer:
-  image: anmol1696/exposer:20230309-8eba81c
