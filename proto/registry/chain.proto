@@ -9,140 +9,140 @@ import "google/protobuf/any.proto";
 option go_package = "github.com/Anmol1696/starship/registry";
 
 message Fee_tokens {
-  string denom = 1;
-  double fixed_min_gas_price = 2;
-  double low_gas_price = 3;
-  double average_gas_price = 4;
-  double high_gas_price = 5;
+  string denom = 1 [json_name = "denom"];
+  double fixed_min_gas_price = 2 [json_name = "fixed_min_gas_price"];
+  double low_gas_price = 3 [json_name = "low_gas_price"];
+  double average_gas_price = 4 [json_name = "average_gas_price"];
+  double high_gas_price = 5 [json_name = "high_gas_price"];
 }
 
 message Fees {
-  repeated Fee_tokens fee_tokens = 1;
+  repeated Fee_tokens fee_tokens = 1 [json_name = "fee_tokens"];
 }
 
 message Staking_tokens {
-  string denom = 1;
+  string denom = 1 [json_name = "denom"];
 }
 
 message Lock_duration {
-  string time = 1;
+  string time = 1 [json_name = "time"];
 }
 
 message Staking {
-  repeated Staking_tokens staking_tokens = 1;
-  optional Lock_duration lock_duration = 2;
+  repeated Staking_tokens staking_tokens = 1 [json_name = "staking_tokens"];
+  optional Lock_duration lock_duration = 2 [json_name = "lock_duration"];
 }
 
 message Genesis {
-  string name = 1;
-  string genesis_url = 2;
+  string name = 1 [json_name = "name"];
+  string genesis_url = 2 [json_name = "genesis_url"];
 }
 
 message Versions {
-  string name = 1;
-  string tag = 2;
-  uint32 height = 3;
-  optional string next_version_name = 4;
+  string name = 1 [json_name = "name"];
+  string tag = 2 [json_name = "tag"];
+  uint32 height = 3 [json_name = "height"];
+  optional string next_version_name = 4 [json_name = "next_version_name"];
 }
 
 message Codebase {
-  string git_repo = 1;
-  optional string recommended_version = 2;
-  repeated string compatible_versions = 3;
-  map<string,string> binaries = 4;
-  optional string cosmos_sdk_version = 5;
-  optional string tendermint_version = 6;
-  optional string cosmwasm_version = 7;
-  optional bool cosmwasm_enabled = 8;
-  optional string ibc_go_version = 9;
-  repeated string ics_enabled = 10;
-  optional Genesis genesis = 11;
-  repeated Versions versions = 12;
+  string git_repo = 1 [json_name = "git_repo"];
+  optional string recommended_version = 2 [json_name = "recommended_version"];
+  repeated string compatible_versions = 3 [json_name = "compatible_versions"];
+  map<string,string> binaries = 4 [json_name = "binaries"];
+  optional string cosmos_sdk_version = 5 [json_name = "cosmos_sdk_version"];
+  optional string tendermint_version = 6 [json_name = "tendermint_version"];
+  optional string cosmwasm_version = 7 [json_name = "cosmwasm_version"];
+  optional bool cosmwasm_enabled = 8 [json_name = "cosmwasm_enabled"];
+  optional string ibc_go_version = 9 [json_name = "ibc_go_version"];
+  repeated string ics_enabled = 10 [json_name = "ics_enabled"];
+  optional Genesis genesis = 11 [json_name = "genesis"];
+  repeated Versions versions = 12 [json_name = "versions"];
 }
 
 message LogoURIs {
-  string png = 1;
-  string svg = 2;
+  string png = 1 [json_name = "png"];
+  string svg = 2 [json_name = "svg"];
 }
 
 message Image {
-  optional string png = 1;
-  map<string,string> theme = 2;
+  optional string png = 1 [json_name = "png"];
+  map<string,string> theme = 2 [json_name = "theme"];
 }
 
 message Peers {
   message Peer {
-    string id = 1;
-    string address = 2;
-    optional string provider = 3;
+    string id = 1 [json_name = "id"];
+    string address = 2 [json_name = "address"];
+    optional string provider = 3 [json_name = "provider"];
   }
 
-  repeated Peer seeds = 1;
-  repeated Peer persistent_peers = 2;
+  repeated Peer seeds = 1 [json_name = "seeds"];
+  repeated Peer persistent_peers = 2 [json_name = "persistent_peers"];
 }
 
 message APIs {
   message API {
-    string address = 1;
-    string provider = 2;
+    string address = 1 [json_name = "address"];
+    string provider = 2 [json_name = "provider"];
   }
 
-  repeated API rpc = 1;
-  repeated API rest = 2;
-  repeated API grpc = 3;
+  repeated API rpc = 1 [json_name = "rpc"];
+  repeated API rest = 2 [json_name = "rest"];
+  repeated API grpc = 3 [json_name = "grpc"];
 }
 
 message Explorer {
-  string kind = 1;
-  string url = 2;
-  optional string tx_page = 3;
-  optional string account_page = 4;
+  string kind = 1 [json_name = "kind"];
+  string url = 2 [json_name = "url"];
+  optional string tx_page = 3 [json_name = "tx_page"];
+  optional string account_page = 4 [json_name = "account_page"];
 }
 
 message ChainRegistry {
-  string schema = 1 [ json_name = "$schema" ];
-  string chain_name = 2;
-  string chain_id = 3;
-  string pretty_name = 4;
-  optional string status = 5;
-  optional string network_type = 6;
-  optional string website = 7;
-  optional string bech32_prefix = 8;
-  optional string daemon_name = 9;
-  optional string node_home = 10;
-  repeated string key_algos = 11;
-  uint32 slip44 = 12;
-  optional Fees fees = 13;
-  optional Staking staking = 14;
-  optional Codebase codebase = 15;
-  optional LogoURIs logo_URIs = 16;
-  repeated Image images = 17;
-  optional Peers peers = 18;
-  optional APIs apis = 19;
-  repeated Explorer explorers = 20;
-  repeated string keywords = 21;
-  optional string update_link = 22;
+  string schema = 1 [json_name = "$schema"];
+  string chain_name = 2 [json_name = "chain_name"];
+  string chain_id = 3 [json_name = "chain_id"];
+  string pretty_name = 4 [json_name = "pretty_name"];
+  optional string status = 5 [json_name = "status"];
+  optional string network_type = 6 [json_name = "network_type"];
+  optional string website = 7 [json_name = "website"];
+  optional string bech32_prefix = 8 [json_name = "bech32_prefix"];
+  optional string daemon_name = 9 [json_name = "daemon_name"];
+  optional string node_home = 10 [json_name = "node_home"];
+  repeated string key_algos = 11 [json_name = "key_algos"];
+  uint32 slip44 = 12 [json_name = "slip44"];
+  optional Fees fees = 13 [json_name = "fees"];
+  optional Staking staking = 14 [json_name = "staking"];
+  optional Codebase codebase = 15 [json_name = "codebase"];
+  optional LogoURIs logo_URIs = 16 [json_name = "logo_URIs"];
+  repeated Image images = 17 [json_name = "images"];
+  optional Peers peers = 18 [json_name = "peers"];
+  optional APIs apis = 19 [json_name = "apis"];
+  repeated Explorer explorers = 20 [json_name = "explorers"];
+  repeated string keywords = 21 [json_name = "keywords"];
+  optional string update_link = 22 [json_name = "update_link"];
 }
 
 message DenomUnit {
-  string denom = 1;
-  int64 exponent = 2;
-  repeated string aliases = 3;
+  string denom = 1 [json_name = "denom"];
+  int64 exponent = 2 [json_name = "exponent"];
+  repeated string aliases = 3 [json_name = "aliases"];
 }
 
 message ChainAsset {
-  string description = 1;
-  repeated DenomUnit denom_units = 2;
-  string base = 3;
-  string name = 4;
-  optional string display = 5;
-  optional string symbol = 6;
-  optional string coingecko_id = 7;
-  repeated string keywords = 8;
-  optional LogoURIs logo_URIs = 9;
+  string description = 1 [json_name = "description"];
+  repeated DenomUnit denom_units = 2 [json_name = "denom_units"];
+  string base = 3 [json_name = "base"];
+  string name = 4 [json_name = "name"];
+  optional string display = 5 [json_name = "display"];
+  optional string symbol = 6 [json_name = "symbol"];
+  optional string coingecko_id = 7 [json_name = "coingecko_id"];
+  repeated string keywords = 8 [json_name = "keywords"];
+  optional LogoURIs logo_URIs = 9 [json_name = "logo_URIs"];
 }
 
 message AssetList {
-  string chain_name = 1;
-  repeated ChainAsset assets = 2;
+  string chain_name = 1 [json_name = "chain_name"];
+  repeated ChainAsset assets = 2 [json_name = "assets"];
 }

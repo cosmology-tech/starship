@@ -33,23 +33,23 @@ service Registry {
 }
 
 message ResponseChains {
-  repeated ChainRegistry chains = 1;
+  repeated ChainRegistry chains = 1 [json_name = "chains"];
 }
 
 message ResponseChainIDs {
-  repeated string chain_ids = 1;
+  repeated string chain_ids = 1 [json_name = "chain_ids"];
 }
 
 message RequestChain {
-  string chain = 1;
+  string chain = 1 [json_name = "chain"];
 }
 
 message ResponseChain {
-  ChainRegistry chain = 1;
+  ChainRegistry chain = 1 [json_name = "chain"];
 }
 
 message ResponseChainAssets {
-  string schema = 1 [ json_name = "$schema" ];
-  string chain_name = 2;
-  repeated ChainAsset assets = 3;
+  string schema = 1 [json_name = "$schema"];
+  string chain_name = 2 [json_name = "chain_name"];
+  repeated ChainAsset assets = 3 [json_name = "assets"];
 }
