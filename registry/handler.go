@@ -5,33 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
+
 	pb "registry/registry"
-
-	"go.uber.org/zap"
 )
-
-func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, filePath string) {
-	jsonFile, err := os.Open(filePath)
-	if err != nil {
-		a.logger.Error("Error opening file",
-			zap.String("file", filePath),
-			zap.Error(err))
-		a.renderError(w, r, fmt.Errorf("error opening json file: %s", filePath))
-	}
-
-	byteValue, _ := io.ReadAll(jsonFile)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(byteValue)
-}
 
 func readJSONFile(file string) (map[string]interface{}, error) {
 	jsonFile, err := os.Open(file)
