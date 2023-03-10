@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -54,6 +55,10 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 
 	var chains []*pb.ChainRegistry
 	for _, f := range files {
+		if strings.HasSuffix(f.Name(), "_") && !f.IsDir() {
+			continue
+		}
+
 		chain := &pb.ChainRegistry{}
 		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
 
@@ -76,6 +81,10 @@ func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.Res
 
 	var chainIDs []string
 	for _, f := range files {
+		if strings.HasSuffix(f.Name(), "_") && !f.IsDir() {
+			continue
+		}
+
 		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
 		info, err := readJSONFile(filename)
 		if err != nil {
@@ -126,6 +135,11 @@ func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.Request
 	return chainAsset, nil
 }
 
+// GetAllIBC will return all the current IBC connections
+// Note, IBC data can be stroed in cache. On each request, we call the underlying
+// endpoints and fetch data. Then we cache it and store it. We can prefill the cache on
+// startup as well, by specifing what all endpoints to call on startup
+// For notes on caching, have a look at James's Code
 func (a *AppServer) GetAllIBC(ctx context.Context) error {
 	return ErrNotImplemented
 }

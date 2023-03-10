@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -131,7 +130,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 				}
 				a.logger.Error("panic error", zap.Error(err))
 
-				render.Render(w, r, ErrInternalServer)
+				http.Error(w, ErrInternalServer.Error(), 500)
 				return
 			}
 		}()

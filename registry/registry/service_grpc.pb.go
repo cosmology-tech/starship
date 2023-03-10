@@ -24,6 +24,7 @@ const (
 	Registry_ListChains_FullMethodName     = "/registry.Registry/ListChains"
 	Registry_GetChain_FullMethodName       = "/registry.Registry/GetChain"
 	Registry_GetChainAssets_FullMethodName = "/registry.Registry/GetChainAssets"
+	Registry_ListIBC_FullMethodName        = "/registry.Registry/ListIBC"
 )
 
 // RegistryClient is the client API for Registry service.
@@ -37,6 +38,8 @@ type RegistryClient interface {
 	ListChains(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseChains, error)
 	GetChain(ctx context.Context, in *RequestChain, opts ...grpc.CallOption) (*ResponseChain, error)
 	GetChainAssets(ctx context.Context, in *RequestChain, opts ...grpc.CallOption) (*ResponseChainAssets, error)
+	// ListIBCs will fetch all the current IBC connections
+	ListIBC(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseIBC, error)
 }
 
 type registryClient struct {
@@ -83,6 +86,15 @@ func (c *registryClient) GetChainAssets(ctx context.Context, in *RequestChain, o
 	return out, nil
 }
 
+func (c *registryClient) ListIBC(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ResponseIBC, error) {
+	out := new(ResponseIBC)
+	err := c.cc.Invoke(ctx, Registry_ListIBC_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RegistryServer is the server API for Registry service.
 // All implementations must embed UnimplementedRegistryServer
 // for forward compatibility
@@ -94,6 +106,8 @@ type RegistryServer interface {
 	ListChains(context.Context, *emptypb.Empty) (*ResponseChains, error)
 	GetChain(context.Context, *RequestChain) (*ResponseChain, error)
 	GetChainAssets(context.Context, *RequestChain) (*ResponseChainAssets, error)
+	// ListIBCs will fetch all the current IBC connections
+	ListIBC(context.Context, *emptypb.Empty) (*ResponseIBC, error)
 	mustEmbedUnimplementedRegistryServer()
 }
 
@@ -112,6 +126,9 @@ func (UnimplementedRegistryServer) GetChain(context.Context, *RequestChain) (*Re
 }
 func (UnimplementedRegistryServer) GetChainAssets(context.Context, *RequestChain) (*ResponseChainAssets, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChainAssets not implemented")
+}
+func (UnimplementedRegistryServer) ListIBC(context.Context, *emptypb.Empty) (*ResponseIBC, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListIBC not implemented")
 }
 func (UnimplementedRegistryServer) mustEmbedUnimplementedRegistryServer() {}
 
@@ -198,6 +215,24 @@ func _Registry_GetChainAssets_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Registry_ListIBC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RegistryServer).ListIBC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Registry_ListIBC_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RegistryServer).ListIBC(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Registry_ServiceDesc is the grpc.ServiceDesc for Registry service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -220,6 +255,10 @@ var Registry_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChainAssets",
 			Handler:    _Registry_GetChainAssets_Handler,
+		},
+		{
+			MethodName: "ListIBC",
+			Handler:    _Registry_ListIBC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
