@@ -49,6 +49,7 @@ message ResponseChain {
 }
 
 message ResponseChainAssets {
-  string chain_name = 1;
-  repeated ChainAsset assets = 2;
+  string schema = 1 [ json_name = "$schema" ];
+  string chain_name = 2;
+  repeated ChainAsset assets = 3;
 }
