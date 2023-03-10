@@ -27,9 +27,9 @@ service Registry {
     option (google.api.http) = { get: "/chains/{chain}/assets" };
   }
   // ListIBCs will fetch all the current IBC connections
-  //rpc ListIBC(google.protobuf.Empty) returns (ResponseIBC) {
-  //  option (google.api.http) = { get: "/ibc" };
-  //}
+  rpc ListIBC(google.protobuf.Empty) returns (ResponseIBC) {
+    option (google.api.http) = { get: "/ibc" };
+  }
 }
 
 message ResponseChains {
@@ -52,4 +52,8 @@ message ResponseChainAssets {
   string schema = 1 [json_name = "$schema"];
   string chain_name = 2 [json_name = "chain_name"];
   repeated ChainAsset assets = 3 [json_name = "assets"];
+}
+
+message ResponseIBC {
+
 }
