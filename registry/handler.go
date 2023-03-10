@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-chi/chi"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
 	"net/http"
@@ -13,7 +14,6 @@ import (
 	"path/filepath"
 	pb "registry/registry"
 
-	"github.com/go-chi/render"
 	"go.uber.org/zap"
 )
 
@@ -36,18 +36,31 @@ func (a *AppServer) renderJSONFile(w http.ResponseWriter, r *http.Request, fileP
 func readJSONFile(file string) (map[string]interface{}, error) {
 	jsonFile, err := os.Open(file)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error opening json file: %s", file)
 	}
 
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
-
 	var result map[string]interface{}
 	json.Unmarshal(byteValue, &result)
 
 	return result, nil
+}
+
+func readJSONToProto(file string, m proto.Message) error {
+	jsonFile, err := os.Open(file)
+	if err != nil {
+		return fmt.Errorf("error opening json file: %s", file)
+	}
+
+	err = jsonpb.Unmarshal(jsonFile, m)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChains, error) {
@@ -56,25 +69,26 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 		return nil, err
 	}
 
-	var chains []interface{}
+	var chains []*pb.ChainRegistry
 	for _, f := range files {
+		chain := &pb.ChainRegistry{}
 		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
-		info, err := readJSONFile(filename)
+
+		err := readJSONToProto(filename, chain)
 		if err != nil {
-			a.renderError(w, r, fmt.Errorf("unable to read file %s, err: %d", filename, err))
-			return
+			return nil, err
 		}
-		chains = append(chains, info)
+
+		chains = append(chains, chain)
 	}
 
-	render.JSON(w, r, NewItemsResponse(chains))
+	return &pb.ResponseChains{Chains: chains}, err
 }
 
-func (a *AppServer) GetChainIDs(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChainIDs, error) {
 	files, err := os.ReadDir(a.config.ChainRegistry)
 	if err != nil {
-		a.renderError(w, r, err)
-		return
+		return nil, err
 	}
 
 	var chainIDs []string
@@ -82,73 +96,69 @@ func (a *AppServer) GetChainIDs(w http.ResponseWriter, r *http.Request) {
 		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
 		info, err := readJSONFile(filename)
 		if err != nil {
-			a.renderError(w, r, fmt.Errorf("unable to read file %s, err: %d", filename, err))
-			return
+			return nil, err
 		}
 		chainID, ok := info["chain_id"].(string)
 		if !ok {
-			a.renderError(w, r, fmt.Errorf("unable to get chain id for %s", filename))
-			return
+			return nil, fmt.Errorf("unable to get chain id for %s, err: %s", filename, err)
 		}
 		chainIDs = append(chainIDs, chainID)
 	}
 
-	render.JSON(w, r, NewItemsResponse(chainIDs))
+	return &pb.ResponseChainIDs{ChainIds: chainIDs}, nil
 }
 
 // GetChain handles the incoming request for a single chain given the chain id
 // Note, we use chain-id instead of chain type, since it is expected, that there
 // can be multiple chains of same type by unique chain ids
-func (a *AppServer) GetChain(w http.ResponseWriter, r *http.Request) {
-	chainID := chi.URLParam(r, "chain")
+func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChain, error) {
+	chainID := requestChain.Chain
 
 	filename := filepath.Join(a.config.ChainRegistry, chainID, "chain.json")
+	chain := &pb.ChainRegistry{}
 
-	info, err := readJSONFile(filename)
+	err := readJSONToProto(filename, chain)
 	if errors.Is(err, os.ErrNotExist) {
-		render.Render(w, r, ErrNotFound)
-		return
+		return nil, ErrNotFound
 	} else if err != nil {
-		a.renderError(w, r, fmt.Errorf("unable to read file %s, err: %d", filename, err))
-		return
+		return nil, fmt.Errorf("unable to read file %s, err: %d", filename, err)
 	}
 
-	render.JSON(w, r, info)
+	return &pb.ResponseChain{Chain: chain}, nil
 }
 
-func (a *AppServer) GetChainAssets(w http.ResponseWriter, r *http.Request) {
-	chainID := chi.URLParam(r, "chain")
+func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChainAssets, error) {
+	chainID := requestChain.Chain
 
 	filename := filepath.Join(a.config.ChainRegistry, chainID, "assetlist.json")
+	chainAsset := &pb.ResponseChainAssets{}
 
-	info, err := readJSONFile(filename)
+	err := readJSONToProto(filename, chainAsset)
 	if errors.Is(err, os.ErrNotExist) {
-		render.Render(w, r, ErrNotFound)
-		return
+		return nil, ErrNotFound
 	} else if err != nil {
-		a.renderError(w, r, fmt.Errorf("unable to read file %s, err: %d", filename, err))
-		return
+		return nil, fmt.Errorf("unable to read file %s, err: %d", filename, err)
 	}
 
-	render.JSON(w, r, info)
+	return chainAsset, nil
 }
 
-func (a *AppServer) GetAllIBC(w http.ResponseWriter, r *http.Request) {
-	render.Render(w, r, ErrNotImplemented)
+func (a *AppServer) GetAllIBC(ctx context.Context) error {
+	return ErrNotImplemented
 }
 
-func (a *AppServer) GetIBCChainsData(w http.ResponseWriter, r *http.Request) {
-	render.Render(w, r, ErrNotImplemented)
+func (a *AppServer) GetIBCChainsData(ctx context.Context) error {
+	return ErrNotImplemented
 }
 
-func (a *AppServer) SetIBCChainsData(w http.ResponseWriter, r *http.Request) {
-	render.Render(w, r, ErrNotImplemented)
+func (a *AppServer) SetIBCChainsData(ctx context.Context) error {
+	return ErrNotImplemented
 }
 
-func (a *AppServer) GetIBCChainsChannels(w http.ResponseWriter, r *http.Request) {
-	render.Render(w, r, ErrNotImplemented)
+func (a *AppServer) GetIBCChainsChannels(ctx context.Context) error {
+	return ErrNotImplemented
 }
 
-func (a *AppServer) AddIBCChainChannel(w http.ResponseWriter, r *http.Request) {
-	render.Render(w, r, ErrNotImplemented)
+func (a *AppServer) AddIBCChainChannel(ctx context.Context) error {
+	return ErrNotImplemented
 }

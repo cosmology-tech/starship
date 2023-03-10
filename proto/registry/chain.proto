@@ -4,13 +4,14 @@ package registry;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/descriptor.proto";
+import "google/protobuf/any.proto";
 
 option go_package = "github.com/Anmol1696/starship/registry";
 
 message Fee_tokens {
   string denom = 1;
-  uint32 fixed_min_gas_price = 2;
-  uint32 low_gas_price = 3;
+  double fixed_min_gas_price = 2;
+  double low_gas_price = 3;
   double average_gas_price = 4;
   double high_gas_price = 5;
 }
@@ -23,8 +24,13 @@ message Staking_tokens {
   string denom = 1;
 }
 
+message Lock_duration {
+  string time = 1;
+}
+
 message Staking {
   repeated Staking_tokens staking_tokens = 1;
+  optional Lock_duration lock_duration = 2;
 }
 
 message Genesis {
@@ -59,23 +65,63 @@ message LogoURIs {
   string svg = 2;
 }
 
+message Image {
+  optional string png = 1;
+  map<string,string> theme = 2;
+}
+
+message Peers {
+  message Peer {
+    string id = 1;
+    string address = 2;
+    optional string provider = 3;
+  }
+
+  repeated Peer seeds = 1;
+  repeated Peer persistent_peers = 2;
+}
+
+message APIs {
+  message API {
+    string address = 1;
+    string provider = 2;
+  }
+
+  repeated API rpc = 1;
+  repeated API rest = 2;
+  repeated API grpc = 3;
+}
+
+message Explorer {
+  string kind = 1;
+  string url = 2;
+  optional string tx_page = 3;
+  optional string account_page = 4;
+}
+
 message ChainRegistry {
-  string chain_name = 1;
-  string chain_id = 2;
-  string pretty_name = 3;
-  optional string status = 4;
-  optional string network_type = 5;
-  optional string website = 6;
-  optional string bech32_prefix = 7;
-  optional string daemon_name = 8;
-  optional string node_home = 9;
-  repeated string key_algos = 10;
-  uint32 slip44 = 11;
-  optional Fees fees = 12;
-  optional Staking staking = 13;
-  optional Codebase codebase = 14;
-  optional LogoURIs logo_URIs = 17;
-  repeated string keywords = 18;
+  string schema = 1 [ json_name = "$schema" ];
+  string chain_name = 2;
+  string chain_id = 3;
+  string pretty_name = 4;
+  optional string status = 5;
+  optional string network_type = 6;
+  optional string website = 7;
+  optional string bech32_prefix = 8;
+  optional string daemon_name = 9;
+  optional string node_home = 10;
+  repeated string key_algos = 11;
+  uint32 slip44 = 12;
+  optional Fees fees = 13;
+  optional Staking staking = 14;
+  optional Codebase codebase = 15;
+  optional LogoURIs logo_URIs = 16;
+  repeated Image images = 17;
+  optional Peers peers = 18;
+  optional APIs apis = 19;
+  repeated Explorer explorers = 20;
+  repeated string keywords = 21;
+  optional string update_link = 22;
 }
 
 message DenomUnit {

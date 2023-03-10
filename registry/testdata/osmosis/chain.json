@@ -1,0 +1,344 @@
+{
+  "$schema": "../chain.schema.json",
+  "chain_name": "osmosis",
+  "status": "live",
+  "network_type": "mainnet",
+  "website": "https://osmosis.zone/",
+  "update_link": "https://raw.githubusercontent.com/osmosis-labs/osmosis/main/chain.schema.json",
+  "pretty_name": "Osmosis",
+  "chain_id": "osmosis-1",
+  "bech32_prefix": "osmo",
+  "daemon_name": "osmosisd",
+  "node_home": "$HOME/.osmosisd",
+  "key_algos": [
+    "secp256k1"
+  ],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "uosmo",
+        "fixed_min_gas_price": 0,
+        "low_gas_price": 0,
+        "average_gas_price": 0.025,
+        "high_gas_price": 0.04
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [
+      {
+        "denom": "uosmo"
+      }
+    ],
+    "lock_duration": {
+      "time": "1209600s"
+    }
+  },
+  "codebase": {
+    "git_repo": "https://github.com/osmosis-labs/osmosis",
+    "recommended_version": "v14.0.0",
+    "compatible_versions": [
+      "v14.0.0"
+    ],
+    "binaries": {
+      "linux/amd64": "https://github.com/osmosis-labs/osmosis/releases/download/v14.0.0/osmosisd-14.0.0-linux-amd64?checksum=sha256:441cac2f9094b63ec7a363f4d5442f16c28f65390cf286a589be62ee1ba66cc1",
+      "linux/arm64": "https://github.com/osmosis-labs/osmosis/releases/download/v14.0.0/osmosisd-14.0.0-linux-arm64?checksum=sha256:5c8bed57f2d58bb3d3834beb9ef38aedc9329c8bf3e95da28aa7b00b2174bfc1"
+    },
+    "cosmos_sdk_version": "0.45",
+    "tendermint_version": "0.34",
+    "cosmwasm_version": "0.30",
+    "cosmwasm_enabled": true,
+    "ibc_go_version": "4.2.0",
+    "ics_enabled": [
+      "ics20-1"
+    ],
+    "genesis": {
+      "name": "v3",
+      "genesis_url": "https://github.com/osmosis-labs/networks/raw/main/osmosis-1/genesis.json"
+    },
+    "versions": [
+      {
+        "name": "v3",
+        "tag": "v3.1.0",
+        "height": 0,
+        "next_version_name": "v4"
+      },
+      {
+        "name": "v4",
+        "tag": "v4.2.0",
+        "height": 1314500,
+        "next_version_name": "v5"
+      },
+      {
+        "name": "v5",
+        "tag": "v6.4.1",
+        "height": 2383300,
+        "next_version_name": "v7"
+      },
+      {
+        "name": "v7",
+        "tag": "v8.0.0",
+        "height": 3401000,
+        "next_version_name": "v9"
+      },
+      {
+        "name": "v9",
+        "tag": "v10.0.1",
+        "height": 4707300,
+        "next_version_name": "v11"
+      },
+      {
+        "name": "v11",
+        "tag": "v11.0.0",
+        "height": 5432450,
+        "next_version_name": "v12"
+      },
+      {
+        "name": "v12",
+        "tag": "v12.3.0",
+        "height": 6246000,
+        "next_version_name": "v13"
+      },
+      {
+        "name": "v13",
+        "tag": "v13.1.0",
+        "height": 7241500,
+        "next_version_name": "v14"
+      },
+      {
+        "name": "v14",
+        "tag": "v14.0.0",
+        "height": 7937500
+      }
+    ]
+  },
+  "images": [
+    {
+      "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmosis-chain-logo.png",
+      "theme": {
+        "primary_color_hex": "#231D4B"
+      }
+    }
+  ],
+  "logo_URIs": {
+    "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmosis-chain-logo.png"
+  },
+  "peers": {
+    "seeds": [
+      {
+        "id": "f515a8599b40f0e84dfad935ba414674ab11a668",
+        "address": "osmosis.blockpane.com:26656",
+        "provider": "blockpane"
+      },
+      {
+        "id": "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0",
+        "address": "seeds.polkachu.com:12556",
+        "provider": "Polkachu"
+      },
+      {
+        "id": "20e1000e88125698264454a884812746c2eb4807",
+        "address": "seeds.lavenderfive.com:12556",
+        "provider": "Lavender.Five Nodes 🐝"
+      },
+      {
+        "id": "ebc272824924ea1a27ea3183dd0b9ba713494f83",
+        "address": "osmosis-mainnet-seed.autostake.net:26716",
+        "provider": "AutoStake 🛡️ Slash Protected"
+      },
+      {
+        "id": "3cc024d1c760c9cd96e6413abaf3b36a8bdca58e",
+        "address": "seeds.goldenratiostaking.net:1630",
+        "provider": "Golden Ratio Staking"
+      },
+      {
+        "id": "3e874613919a6f8b3fc26071fef563c88f031b3c",
+        "address": "seed-osmosis.freshstaking.com:31656",
+        "provider": "FreshSTAKING"
+      }
+    ],
+    "persistent_peers": [
+      {
+        "id": "4d9ac3510d9f5cfc975a28eb2a7b8da866f7bc47",
+        "address": "37.187.38.191:26656",
+        "provider": "stakelab"
+      },
+      {
+        "id": "2f9c16151400d8516b0f58c030b3595be20b804c",
+        "address": "37.120.245.167:26656",
+        "provider": "syncnode"
+      },
+      {
+        "id": "ebc272824924ea1a27ea3183dd0b9ba713494f83",
+        "address": "osmosis-mainnet-peer.autostake.net:26716",
+        "provider": "AutoStake 🛡️ Slash Protected"
+      },
+      {
+        "id": "3e874613919a6f8b3fc26071fef563c88f031b3c",
+        "address": "seed-osmosis.freshstaking.com:31656",
+        "provider": "FreshSTAKING"
+      }
+    ]
+  },
+  "apis": {
+    "rpc": [
+      {
+        "address": "https://rpc.osmosis.zone/",
+        "provider": "Osmosis Foundation"
+      },
+      {
+        "address": "https://rpc-osmosis.blockapsis.com",
+        "provider": "chainapsis"
+      },
+      {
+        "address": "https://osmosis-rpc.quickapi.com:443",
+        "provider": "Chainlayer"
+      },
+      {
+        "address": "https://rpc-osmosis.whispernode.com:443",
+        "provider": "WhisperNode 🤐"
+      },
+      {
+        "address": "https://osmosis-rpc.lavenderfive.com:443",
+        "provider": "Lavender.Five Nodes 🐝"
+      },
+      {
+        "address": "https://rpc-osmosis.ecostake.com",
+        "provider": "ecostake"
+      },
+      {
+        "address": "https://osmosis-rpc.polkachu.com",
+        "provider": "Polkachu"
+      },
+      {
+        "address": "https://rpc-osmosis-ia.cosmosia.notional.ventures",
+        "provider": "Notional"
+      },
+      {
+        "address": "https://rpc.osmosis.interbloc.org",
+        "provider": "Interbloc"
+      },
+      {
+        "address": "https://osmosis.rpc.stakin-nodes.com",
+        "provider": "Stakin"
+      },
+      {
+        "address": "https://rpc.osmosis.goldenratiostaking.net",
+        "provider": "Golden Ratio Staking"
+      },
+      {
+        "address": "https://rpc.osl.zone",
+        "provider": "Osmosis Support Lab"
+      },
+      {
+        "address": "https://osmosis-mainnet-rpc.autostake.net:443",
+        "provider": "AutoStake 🛡️ Slash Protected"
+      }
+    ],
+    "rest": [
+      {
+        "address": "https://lcd.osmosis.zone/",
+        "provider": "Osmosis Foundation"
+      },
+      {
+        "address": "https://osmosis-lcd.quickapi.com:443",
+        "provider": "Chainlayer"
+      },
+      {
+        "address": "https://lcd-osmosis.blockapsis.com",
+        "provider": "chainapsis"
+      },
+      {
+        "address": "https://osmosis-api.lavenderfive.com:443",
+        "provider": "Lavender.Five Nodes 🐝"
+      },
+      {
+        "address": "https://rest-osmosis.ecostake.com",
+        "provider": "ecostake"
+      },
+      {
+        "address": "https://api-osmosis-ia.cosmosia.notional.ventures",
+        "provider": "Notional"
+      },
+      {
+        "address": "https://api.osmosis.interbloc.org",
+        "provider": "Interbloc"
+      },
+      {
+        "address": "https://osmosis-api.polkachu.com",
+        "provider": "Polkachu"
+      },
+      {
+        "address": "https://osmosis.rest.stakin-nodes.com",
+        "provider": "Stakin"
+      },
+      {
+        "address": "https://api.osl.zone",
+        "provider": "Osmosis Support Lab"
+      },
+      {
+        "address": "https://osmosis-mainnet-lcd.autostake.net:443",
+        "provider": "AutoStake 🛡️ Slash Protected"
+      }
+    ],
+    "grpc": [
+      {
+        "address": "osmosis-grpc.lavenderfive.com:443",
+        "provider": "Lavender.Five Nodes 🐝"
+      },
+      {
+        "address": "grpc-osmosis-ia.cosmosia.notional.ventures:443",
+        "provider": "Notional"
+      },
+      {
+        "address": "osmosis.grpc.stakin-nodes.com:443",
+        "provider": "Stakin"
+      }
+    ]
+  },
+  "explorers": [
+    {
+      "kind": "EZStaking Tools",
+      "url": "https://ezstaking.tools/osmosis",
+      "tx_page": "https://ezstaking.tools/osmosis/txs/${txHash}",
+      "account_page": "https://ezstaking.tools/osmosis/account/${accountAddress}"
+    },
+    {
+      "kind": "mintscan",
+      "url": "https://www.mintscan.io/osmosis",
+      "tx_page": "https://www.mintscan.io/osmosis/txs/${txHash}",
+      "account_page": "https://www.mintscan.io/osmosis/account/${accountAddress}"
+    },
+    {
+      "kind": "ping.pub",
+      "url": "https://ping.pub/osmosis",
+      "tx_page": "https://ping.pub/osmosis/tx/${txHash}"
+    },
+    {
+      "kind": "explorers.guru",
+      "url": "https://osmosis.explorers.guru",
+      "tx_page": "https://osmosis.explorers.guru/transaction/${txHash}",
+      "account_page": "https://osmosis.explorers.guru/account/${accountAddress}"
+    },
+    {
+      "kind": "atomscan",
+      "url": "https://atomscan.com/osmosis",
+      "tx_page": "https://atomscan.com/osmosis/transactions/${txHash}"
+    },
+    {
+      "kind": "bigdipper",
+      "url": "https://bigdipper.live/osmosis",
+      "tx_page": "https://bigdipper.live/osmosis/transactions/${txHash}",
+      "account_page": "https://bigdipper.live/osmosis/accounts/${accountAddress}"
+    },
+    {
+      "kind": "TC Network",
+      "url": "https://explorer.tcnetwork.io/osmosis",
+      "tx_page": "https://explorer.tcnetwork.io/osmosis/transaction/${txHash}",
+      "account_page": "https://explorer.tcnetwork.io/osmosis/account/${accountAddress}"
+    }
+  ],
+  "keywords": [
+    "dex"
+  ]
+}

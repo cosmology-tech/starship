@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -12,6 +13,10 @@ type ErrResponse struct {
 	HTTPStatusCode int   `json:"-"`
 
 	MessageText string `json:"message"`
+}
+
+func (e *ErrResponse) Error() string {
+	return fmt.Sprintf("error: %s", e.MessageText)
 }
 
 func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {

@@ -8,7 +8,7 @@ DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
 DOCKER_ARGS += --platform linux/amd64
 
-all: update build
+all: update build run
 
 ## Go commands
 update:
@@ -20,7 +20,7 @@ build:
 	go build -mod readonly -o $(BINARY_DIR) ./...
 
 run:
-	$(BINARY_DIR)/$(BINARY_NAME) --config-file testdata
+	$(BINARY_DIR)/$(BINARY_NAME) --chain-registry testdata/
 
 ## Docker commands
 docker-build:
