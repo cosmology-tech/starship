@@ -10,7 +10,7 @@ WORKDIR /usr/local/share/app
 COPY . .
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
-RUN apk add --no-cache $PACKAGES && go build -mod readonly -o lcr ./...
+RUN apk add --no-cache $PACKAGES && go build -mod readonly -o bin/ ./...
 
 # Final image
 FROM alpine:3.16
@@ -22,6 +22,6 @@ WORKDIR /usr/local/share/app
 RUN ls /usr/bin
 
 # Copy over binaries from the build-env
-COPY --from=build-env /usr/local/share/app/lcr /usr/bin/lcr
+COPY --from=build-env /usr/local/share/app/bin/registry /usr/bin/registry
 
 EXPOSE 8080
