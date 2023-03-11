@@ -1,7 +1,8 @@
- General files for the project
+# General files for the project
 pkg/*
 *.pyc
 bin/*
+**bin/
 .project
 /.bin
 /_test/secrets/*.json
