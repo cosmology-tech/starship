@@ -1,0 +1,56 @@
+syntax = "proto3";
+package collector;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/Anmol1696/starship/collector";
+
+// Interface for service
+service Collector {
+  // GetNodeID will returns current node id
+  rpc GetChains(google.protobuf.Empty) returns (ResponseNodeID) {
+    option (google.api.http) = { get: "/node_id" };
+  }
+  // All Exports
+  rpc ListChainExports(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = { get: "/chains/{chain}/validators/{validator}/exports" };
+  }
+  rpc GetChainExport(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = { get: "/chains/{chain}/validators/{validator}/exports/{id}" };
+  }
+  rpc SetChainExport(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/chains/{chain}/validators/{validator}/exports/{id}"
+      body: ""
+    };
+  }
+  // All snapshots
+  rpc ListChainSnapshots(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = { get: "/chains/{chain}/validators/{validator}/snapshots" };
+  }
+  rpc GetChainSnapshots(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = { get: "/chains/{chain}/validators/{validator}/snapshots/{id}" };
+  }
+  rpc SetChainSnapshots(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/chains/{chain}/validators/{validator}/snapshots/{id}"
+      body: ""
+    };
+  }
+}
+
+message ResponseNodeID {
+  string node_id = 1;
+}
+
+message ResponsePubKey {
+  string type = 1;
+  string key = 2;
+}
+
+message ResponseFileData {
+  google.protobuf.Any data = 1;
+}
