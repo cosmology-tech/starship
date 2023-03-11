@@ -12,7 +12,7 @@ go_library(
         "main.go",
         "model.go",
     ],
-    importpath = "github.com/anmol1696/shuttle/collector",
+    importpath = "github.com/anmol1696/starship/collector",
     visibility = ["//visibility:private"],
     deps = [
         "@com_github_go_chi_chi//:go_default_library",

@@ -1,6 +1,10 @@
 version: v1
 managed:
   enabled: true
+  go_package_prefix:
+    default: github.com/Anmol1696/starship
+    except:
+      - buf.build/googleapis/googleapis
 plugins:
   - plugin: buf.build/protocolbuffers/go
     out: .
