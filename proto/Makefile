@@ -1,9 +1,9 @@
-build: build-collector build-exposer build-registy
+build: build-collector build-exposer build-registry
 
 build-collector:
 	buf generate --path collector/ --output ../collector
 
-build-registy:
+build-registry:
 	buf generate --path registry/ --output ../registry
 
 build-exposer:

@@ -10,14 +10,20 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Addr:          ":8080",
+		Host:          "0.0.0.0",
+		HTTPPort:      "8080",
+		GRPCPort:      "9090",
 		ChainRegistry: "chains/",
 	}
 }
 
 type Config struct {
-	// Addr is the interface and port to bind the HTTP service on
-	Addr string `name:"addr" json:"addr" env:"ADDR" usage:"IP address and port to listen on"`
+	// Host is the interface to bind the HTTP service on
+	Host string `name:"host" json:"host" env:"HOST" usage:"Host address to listen on"`
+	// HTTPPort is the port for the http server
+	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
+	// GRPCPort is the port for the grpc server
+	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
 	// ChainRegistry is full path to the directory containing various chain registry information
 	ChainRegistry string `name:"chain-registry" json:"chain_registry" env:"CHAIN_REGISTRY" usage:"Path of chain registry files"`
 	// Verbose switches on debug logging
