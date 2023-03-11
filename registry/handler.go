@@ -55,7 +55,7 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 
 	var chains []*pb.ChainRegistry
 	for _, f := range files {
-		if strings.HasSuffix(f.Name(), "_") && !f.IsDir() {
+		if strings.HasPrefix(f.Name(), "_") || !f.IsDir() {
 			continue
 		}
 
@@ -81,7 +81,7 @@ func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.Res
 
 	var chainIDs []string
 	for _, f := range files {
-		if strings.HasSuffix(f.Name(), "_") && !f.IsDir() {
+		if strings.HasPrefix(f.Name(), "_") || !f.IsDir() {
 			continue
 		}
 
