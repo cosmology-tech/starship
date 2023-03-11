@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/Anmol1696/starship/exposer";
+
+message GenesisState {
+
+  message Block {
+    string max_bytes = 1 [json_name = "max_bytes"];
+    string max_gas = 2 [json_name = "max_gas"];
+    string time_iota_ms = 3 [json_name = "time_iota_ms"];
+  }
+
+  message Evidence {
+    string max_age_num_blocks = 1 [json_name = "max_age_num_blocks"];
+    string max_age_duration = 2 [json_name = "max_age_duration"];
+    string max_bytes = 3 [json_name = "max_bytes"];
+  }
+
+  message Validator {
+    repeated string pub_key_types = 1 [json_name = "pub_key_types"];
+  }
+
+  message Version {
+  }
+
+  message Consensus_params {
+    Block block = 1;
+    Evidence evidence = 2;
+    Validator validator = 3;
+    Version version = 4;
+  }
+
+  google.protobuf.Timestamp genesis_time = 1 [ json_name = "genesis_time" ];
+  string chain_id = 2 [ json_name = "chain_id" ];
+  string initial_height = 3 [ json_name = "initial_height" ];
+  Consensus_params consensus_params = 4 [ json_name = "consensus_params" ];
+  string app_hash = 5 [ json_name = "app_hash" ];
+  google.protobuf.Struct app_state = 6 [ json_name = "app_state" ];
+}

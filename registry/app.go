@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
 	"net"
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/middleware"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -19,11 +18,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "exposer/exposer"
+	pb "registry/registry"
 )
 
 type AppServer struct {
-	pb.UnimplementedExposerServer
+	pb.UnimplementedRegistryServer
 
 	config *Config
 	logger *zap.Logger
@@ -51,12 +50,12 @@ func NewAppServer(config *Config) (*AppServer, error) {
 
 	// Create grpc server
 	grpcServer := grpc.NewServer(app.grpcMiddleware()...)
-	pb.RegisterExposerServer(grpcServer, app)
+	pb.RegisterRegistryServer(grpcServer, app)
 	app.grpcServer = grpcServer
 
 	// Create http server
 	mux := runtime.NewServeMux()
-	err = pb.RegisterExposerHandlerFromEndpoint(
+	err = pb.RegisterRegistryHandlerFromEndpoint(
 		context.Background(),
 		mux,
 		fmt.Sprintf("%s:%s", config.Host, config.GRPCPort),
@@ -72,6 +71,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app.httpServer = httpServer
 
 	return app, err
+
 }
 
 func (a *AppServer) grpcMiddleware() []grpc.ServerOption {
@@ -130,7 +130,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 				}
 				a.logger.Error("panic error", zap.Error(err))
 
-				render.Render(w, r, ErrInternalServer)
+				http.Error(w, ErrInternalServer.Error(), 500)
 				return
 			}
 		}()

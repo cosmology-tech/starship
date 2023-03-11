@@ -1,11 +1,11 @@
-EXAMPLE = upgrade-testing
+EXAMPLE = chain
 FILE = custom-values.yaml
 
-HELM_REPO = shuttle
+HELM_REPO = starship
 HELM_CHART = devnet
 
 setup:
-	helm repo add $(HELM_REPO) https://anmol1696.github.io/shuttle/
+	helm repo add $(HELM_REPO) https://anmol1696.github.io/starship/
 	helm repo update
 	helm search repo $(HELM_REPO)/$(HELM_CHART)
 

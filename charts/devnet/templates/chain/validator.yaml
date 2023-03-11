@@ -110,7 +110,7 @@ spec:
               echo "Setup config files"
               bash -e /scripts/setup_config.sh
 
-              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id)@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
+              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
 
@@ -192,8 +192,10 @@ spec:
             {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
-            - name: EXPOSER_ADDR
-              value: ":8081"
+            - name: EXPOSER_HTTP_PORT
+              value: "8081"
+            - name: EXPOSER_GRPC_PORT
+              value: "9091"
             - name: EXPOSER_GENESIS_FILE
               value: {{ $defaultChain.home }}/config/genesis.json
             - name: EXPOSER_MNEMONIC_FILE

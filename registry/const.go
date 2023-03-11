@@ -1,14 +1,27 @@
 package main
 
+import (
+	"errors"
+)
+
 var (
 	Version         = "v0"
 	RequestIdCtxKey = &contextKey{"RequestId"}
 )
 
 const (
-	Prog        = "lcr"
+	Prog        = "registry"
 	Description = "is a local chain registry api that exposes chain registry based on configs"
 	envPrefix   = "LCR_"
+)
+
+// Define default errors
+var (
+	ErrValidation       = errors.New("validation error")
+	ErrNotFound         = errors.New("resource not found")
+	ErrNotImplemented   = errors.New("not Implemented")
+	ErrMethodNotAllowed = errors.New("method not allowed")
+	ErrInternalServer   = errors.New("internal server error")
 )
 
 // copied and modified from net/http/http.go

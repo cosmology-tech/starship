@@ -1,0 +1,49 @@
+syntax = "proto3";
+package exposer;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/descriptor.proto";
+
+import "exposer/mnemonic.proto";
+import "exposer/genesis.proto";
+
+option go_package = "github.com/Anmol1696/starship/exposer";
+
+// Interface for service
+service Exposer {
+  // GetNodeID will returns current node id
+  rpc GetNodeID(google.protobuf.Empty) returns (ResponseNodeID) {
+    option (google.api.http) = { get: "/node_id" };
+  }
+  // GetPubKey returns the public key of the current node
+  rpc GetPubKey(google.protobuf.Empty) returns (ResponsePubKey) {
+    option (google.api.http) = { get: "/pub_key" };
+  }
+  // GetGenesisFile returns the genesis file of the node
+  rpc GetGenesisFile(google.protobuf.Empty) returns (GenesisState) {
+    option (google.api.http) = { get: "/genesis" };
+  }
+  // GetKeysFile returns the keys of the node
+  rpc GetKeys(google.protobuf.Empty) returns (Keys) {
+    option (google.api.http) = { get: "/keys" };
+  }
+  // GetPrivKeysFile returns the keys of the node
+  rpc GetPrivKeysFile(google.protobuf.Empty) returns (PrivValidatorKey) {
+    option (google.api.http) = { get: "/priv_keys" };
+  }
+}
+
+message ResponseNodeID {
+  string node_id = 1 [ json_name = "node_id" ];
+}
+
+message ResponsePubKey {
+  string type = 1;
+  string key = 2;
+}
+
+message ResponseFileData {
+  bytes data = 1;
+}
