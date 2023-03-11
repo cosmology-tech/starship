@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "exposer/exposer"
+	pb "github.com/Anmol1696/starship/exposer/exposer"
 )
 
 type AppServer struct {

@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "exposer/exposer"
+	pb "github.com/Anmol1696/starship/exposer/exposer"
 )
 
 func fetchNodeStatus(url string) (StatusResponse, error) {

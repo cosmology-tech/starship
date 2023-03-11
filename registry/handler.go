@@ -14,7 +14,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "registry/registry"
+	pb "github.com/Anmol1696/starship/registry/registry"
 )
 
 func readJSONFile(file string) (map[string]interface{}, error) {

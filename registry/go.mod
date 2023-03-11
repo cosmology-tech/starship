@@ -1,4 +1,4 @@
-module registry
+module github.com/Anmol1696/starship/registry
 
 go 1.19
 

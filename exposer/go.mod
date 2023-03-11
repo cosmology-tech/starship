@@ -1,4 +1,4 @@
-module exposer
+module github.com/Anmol1696/starship/exposer
 
 go 1.19
 

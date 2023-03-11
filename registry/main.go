@@ -24,7 +24,7 @@ func NewApp() *cli.App {
 	app.Usage = Description
 	app.Version = Version
 	app.Flags = GetCommandLineOptions()
-	app.UsageText = "lcr [options]"
+	app.UsageText = "registry [options]"
 
 	app.Action = func(ctx *cli.Context) error {
 		if err := ParseCLIOptions(ctx, conf); err != nil {

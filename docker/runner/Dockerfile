@@ -7,7 +7,7 @@ FROM alpine:3.16
 COPY --from=go-builder /go/bin/cosmovisor /usr/bin/
 
 # Set up dependencies
-ENV PACKAGES curl make bash jq sed
+ENV PACKAGES --update ca-certificates curl make bash jq sed
 
 # Install minimum necessary dependencies
 RUN apk add --no-cache $PACKAGES
