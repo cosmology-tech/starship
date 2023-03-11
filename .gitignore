@@ -2,6 +2,7 @@
 pkg/*
 *.pyc
 bin/*
+**bin/
 .project
 /.bin
 /_test/secrets/*.json
