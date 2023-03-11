@@ -10,7 +10,7 @@ var (
 )
 
 const (
-	Prog        = "lcr"
+	Prog        = "registry"
 	Description = "is a local chain registry api that exposes chain registry based on configs"
 	envPrefix   = "LCR_"
 )
