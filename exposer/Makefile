@@ -8,19 +8,13 @@ DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
 DOCKER_ARGS += --platform linux/amd64
 
-all: update build
-
-## Go commands
-update:
-	(cd $(CURDIR)/../proto && $(MAKE) build-$(BINARY_NAME))
-	go mod tidy
+all: build run
 
 build:
-	@mkdir -p $(BINARY_DIR)
-	go build -o $(BINARY_DIR) ./...
+	bazel build //$(BINARY_NAME):$(BINARY_NAME)
 
 run:
-	$(BINARY_DIR)/$(BINARY_NAME) \
+	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- \
 		--genesis-file $(CURDIR)/testdata/genesis.json \
 		--mnemonic-file $(CURDIR)/testdata/keys.json \
 		--priv-val-file $(CURDIR)/testdata/priv_validator_key.json \
