@@ -1,0 +1,38 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "registry_proto",
+    srcs = [
+        "chain.proto",
+        "service.proto",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//registry:registry_proto",
+        "@com_google_protobuf//:any_proto",
+        "@com_google_protobuf//:descriptor_proto",
+        "@com_google_protobuf//:empty_proto",
+        "@go_googleapis//google/api:annotations_proto",
+    ],
+)
+
+go_proto_library(
+    name = "registry_go_proto",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/Anmol1696/starship/registry",
+    proto = ":registry_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//registry:chain_proto",
+        "@go_googleapis//google/api:annotations_go_proto",
+    ],
+)
+
+go_library(
+    name = "registry",
+    embed = [":registry_go_proto"],
+    importpath = "github.com/Anmol1696/starship/registry",
+    visibility = ["//visibility:public"],
+)

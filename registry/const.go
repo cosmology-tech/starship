@@ -12,7 +12,7 @@ var (
 const (
 	Prog        = "registry"
 	Description = "is a local chain registry api that exposes chain registry based on configs"
-	envPrefix   = "LCR_"
+	envPrefix   = "REGISTRY_"
 )
 
 // Define default errors

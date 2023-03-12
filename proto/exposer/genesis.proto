@@ -1,4 +1,5 @@
 syntax = "proto3";
+package exposer;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";

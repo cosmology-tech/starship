@@ -18,7 +18,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "registry/registry"
+	pb "github.com/Anmol1696/starship/registry/registry"
 )
 
 type AppServer struct {
