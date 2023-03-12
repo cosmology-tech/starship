@@ -12,14 +12,14 @@ go_library(
         "main.go",
         "model.go",
     ],
-    importpath = "github.com/anmol1696/starship/collector",
+    importpath = "github.com/Anmol1696/starship/collector",
     visibility = ["//visibility:private"],
     deps = [
-        "@com_github_go_chi_chi//:go_default_library",
-        "@com_github_go_chi_chi//middleware:go_default_library",
-        "@com_github_go_chi_render//:go_default_library",
-        "@com_github_urfave_cli//:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "@com_github_go_chi_chi//:chi",
+        "@com_github_go_chi_chi//middleware",
+        "@com_github_go_chi_render//:render",
+        "@com_github_urfave_cli//:cli",
+        "@org_uber_go_zap//:zap",
     ],
 )
 
