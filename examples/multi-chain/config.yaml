@@ -1,7 +1,7 @@
 chains:
   - name: osmosis-1
     type: osmosis
-    numValidators: 4
+    numValidators: 2
     ports:
       rest: 1317
       rpc: 26657
@@ -20,13 +20,13 @@ chains:
 
 relayers:
   - name: osmos-juno
-    type: ts-relayer
+    type: hermes
     replicas: 1
     chains:
       - osmosis-1
       - juno-0
   - name: osmos-cosmos
-    type: ts-relayer
+    type: hermes
     replicas: 1
     chains:
       - osmosis-1
