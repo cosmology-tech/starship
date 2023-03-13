@@ -1,8 +1,9 @@
-EXAMPLE = chain
+NAME = starship-multichain
 FILE = config.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
+HELM_VERSION = v0.1.15
 
 ###############################################################################
 ###                              Helm Charts                                ###
@@ -14,16 +15,16 @@ setup:
 	helm search repo $(HELM_REPO)/$(HELM_CHART)
 
 install:
-	helm install -f $(EXAMPLE)/$(FILE) $(EXAMPLE) $(HELM_REPO)/$(HELM_CHART)
+	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 upgrade:
-	helm upgrade --debug $(EXAMPLE) $(HELM_REPO)/$(HELM_CHART) -f $(EXAMPLE)/$(FILE)
+	helm upgrade --debug $(NAME) $(HELM_REPO)/$(HELM_CHART) -f $(FILE) --version $(HELM_VERSION)
 
 debug:
-	helm install --dry-run --debug -f $(EXAMPLE)/$(FILE) $(EXAMPLE) $(HELM_REPO)/$(HELM_CHART)
+	helm install --dry-run --debug -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 delete:
-	-helm delete $(EXAMPLE)
+	-helm delete $(NAME)
 
 ###############################################################################
 ###                              Port forward                              ###
