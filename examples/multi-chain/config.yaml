@@ -1,0 +1,36 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 4
+    ports:
+      rest: 1317
+      rpc: 26657
+  - name: cosmos-2
+    type: cosmos
+    numValidators: 3
+    ports:
+      rest: 1313
+      rpc: 26653
+  - name: juno-0
+    type: juno
+    numValidators: 2
+    ports:
+      rest: 1315
+      rpc: 26655
+
+relayers:
+  - name: osmos-juno
+    type: ts-relayer
+    replicas: 1
+    chains:
+      - osmosis-1
+      - juno-0
+  - name: osmos-cosmos
+    type: ts-relayer
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmos-2
+
+explorer:
+  enabled: true
