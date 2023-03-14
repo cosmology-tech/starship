@@ -1,36 +1,26 @@
+# Example values.yaml file will will create 2 chains with 4 validators,
+# a ts-relayer between them and the explorer
 chains:
   - name: osmosis-1
     type: osmosis
-    numValidators: 2
-    ports:
-      rest: 1317
-      rpc: 26657
-  - name: cosmos-2
-    type: cosmos
-    numValidators: 3
+    numValidators: 4
     ports:
       rest: 1313
       rpc: 26653
-  - name: juno-0
-    type: juno
-    numValidators: 2
+  - name: wasmd
+    type: wasmd
+    numValidators: 4
     ports:
-      rest: 1315
-      rpc: 26655
+      rpc: 26659
+      rest: 1319
 
 relayers:
-  - name: osmos-juno
-    type: hermes
+  - name: osmo-wasm
+    type: ts-relayer
     replicas: 1
     chains:
       - osmosis-1
-      - juno-0
-  - name: osmos-cosmos
-    type: hermes
-    replicas: 1
-    chains:
-      - osmosis-1
-      - cosmos-2
+      - wasmd
 
 explorer:
   enabled: true
