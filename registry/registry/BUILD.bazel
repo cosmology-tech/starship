@@ -11,8 +11,11 @@ go_library(
     importpath = "github.com/Anmol1696/starship/registry/registry",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime",
-        "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities",
+        "//build/bin/external/com_google_protobuf/_virtual_imports/any_proto/google/protobuf:anypb",
+        "//build/bin/external/com_google_protobuf/_virtual_imports/descriptor_proto/google/protobuf:descriptorpb",
+        "//build/bin/external/com_google_protobuf/_virtual_imports/empty_proto/google/protobuf:emptypb",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime:go_default_library",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities:go_default_library",
         "@go_googleapis//google/api:annotations_go_proto",
         "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//codes",
@@ -22,8 +25,5 @@ go_library(
         "@org_golang_google_protobuf//proto",
         "@org_golang_google_protobuf//reflect/protoreflect",
         "@org_golang_google_protobuf//runtime/protoimpl",
-        "@org_golang_google_protobuf//types/descriptorpb",
-        "@org_golang_google_protobuf//types/known/anypb",
-        "@org_golang_google_protobuf//types/known/emptypb",
     ],
 )

@@ -11,7 +11,6 @@ proto_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//exposer:exposer_proto",
         "@com_google_protobuf//:any_proto",
         "@com_google_protobuf//:descriptor_proto",
         "@com_google_protobuf//:empty_proto",
@@ -28,8 +27,6 @@ go_proto_library(
     proto = ":exposer_proto",
     visibility = ["//visibility:public"],
     deps = [
-        "//exposer:genesis_proto",
-        "//exposer:mnemonic_proto",
         "@go_googleapis//google/api:annotations_go_proto",
     ],
 )
