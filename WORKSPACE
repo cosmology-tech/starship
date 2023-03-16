@@ -47,10 +47,10 @@ aspect_bazel_lib_dependencies()
 ## rules_go
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "56d8c5a5c91e1af73eca71a6fab2ced959b67c86d12ba37feedb0a2dfea441a6",
+    sha256 = "dd926a88a564a9246713a9c00b35315f54cbd46b31a26d5d8fb264c07045f05d",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.37.0/rules_go-v0.37.0.zip",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.37.0/rules_go-v0.37.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.38.1/rules_go-v0.38.1.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.38.1/rules_go-v0.38.1.zip",
     ],
 )
 
@@ -109,9 +109,17 @@ container_deps()
 load("@io_bazel_rules_docker//container:pull.bzl", "container_pull")
 
 container_pull(
-    name = "base_linux_amd64",
+    name = "base_linux_x86",
     digest = "sha256:e6ad96020874a50d84b3e1111d66911b2e600a86522de9215e635dbf8e848a2a",
     registry = "index.docker.io",
     repository = "anmol1696/base",
     tag = "latest",
+)
+
+container_pull(
+    name = "base_linux_arm64",
+    digest = "sha256:ac49c4bee880c15e6a79811ce8893140a5086d3be69fc75a1c5cc02297c6ecdc",
+    registry = "index.docker.io",
+    repository = "anmol1696/base",
+    tag = "latest-arm64",
 )

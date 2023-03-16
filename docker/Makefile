@@ -10,8 +10,16 @@ docker-build:
 		-t $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME) \
 		. -f $(PROCESS)/Dockerfile
 
+docker-build-arm64:
+	$(DOCKER) buildx build $(DOCKER_ARGS) \
+		-t $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)-arm64 \
+		. -f $(PROCESS)/Dockerfile.arm64
+
 docker-build-push: docker-build
 	$(DOCKER) push $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
+
+docker-build-push-arm64: docker-build
+	$(DOCKER) push $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)-arm64
 
 docker-run:
 	$(DOCKER) run --rm -it --entrypoint /bin/bash $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
@@ -22,4 +30,3 @@ docker-build-push-all: $(process_dir)/*
 	for p in $^ ; do \
   	$(MAKE) docker-build-push PROCESS=$${p}; \
 	done
-

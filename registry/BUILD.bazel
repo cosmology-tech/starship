@@ -37,15 +37,16 @@ go_library(
     ],
 )
 
-go_binary(
-    name = "registry",
-    embed = [":registry_lib"],
-    visibility = ["//visibility:public"],
+container_image(
+    name = "image",
+    base = "@base_linux_x86//image",
+    entrypoint = ["/registy"],
+    files = [":registry"],
 )
 
 container_image(
-    name = "image",
-    base = "@base_linux_amd64//image",
+    name = "image_arm64",
+    base = "@base_linux_arm64//image",
     entrypoint = ["/registy"],
     files = [":registry"],
 )
@@ -56,4 +57,14 @@ container_push(
     image = ":image",
     registry = "index.docker.io",
     repository = "anmol1696/registry",
+    tag = "latest"
+)
+
+container_push(
+    name = "image_push_arm64",
+    format = "Docker",
+    image = ":image_arm64",
+    registry = "index.docker.io",
+    repository = "anmol1696/registry",
+    tag = "latest-arm64"
 )
