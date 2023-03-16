@@ -195,7 +195,7 @@ spec:
             - name: EXPOSER_HTTP_PORT
               value: "8081"
             - name: EXPOSER_GRPC_PORT
-              value: "9091"
+              value: "9099"
             - name: EXPOSER_GENESIS_FILE
               value: {{ $defaultChain.home }}/config/genesis.json
             - name: EXPOSER_MNEMONIC_FILE
