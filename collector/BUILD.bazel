@@ -13,7 +13,7 @@ go_library(
         "model.go",
     ],
     importpath = "",
-    visibility = ["//visibility:private"],
+    visibility = ["//visibility:public"],
     deps = [
         "@com_github_go_chi_chi//:chi",
         "@com_github_go_chi_chi//middleware",
@@ -42,7 +42,7 @@ go_library(
         "model.go",
     ],
     importpath = "github.com/Anmol1696/starship/collector",
-    visibility = ["//visibility:private"],
+    visibility = ["//visibility:public"],
     deps = [
         "@com_github_go_chi_chi//:chi",
         "@com_github_go_chi_chi//middleware",
