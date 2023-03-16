@@ -31,6 +31,18 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
+# Aspect bazel lib for more utils
+http_archive(
+    name = "aspect_bazel_lib",
+    sha256 = "ee95bbc80f9ca219b93a8cc49fa19a2d4aa8649ddc9024f46abcdd33935753ca",
+    strip_prefix = "bazel-lib-1.29.2",
+    url = "https://github.com/aspect-build/bazel-lib/releases/download/v1.29.2/bazel-lib-v1.29.2.tar.gz",
+)
+
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
+
+aspect_bazel_lib_dependencies()
+
 ## rules_go
 http_archive(
     name = "io_bazel_rules_go",
@@ -75,18 +87,6 @@ load("@bazel_skylib_gazelle_plugin//:setup.bzl", "bazel_skylib_gazelle_plugin_se
 bazel_skylib_gazelle_plugin_setup(go_version = "1.19.4")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-# Aspect bazel lib for more utils
-http_archive(
-    name = "aspect_bazel_lib",
-    sha256 = "ee95bbc80f9ca219b93a8cc49fa19a2d4aa8649ddc9024f46abcdd33935753ca",
-    strip_prefix = "bazel-lib-1.29.2",
-    url = "https://github.com/aspect-build/bazel-lib/releases/download/v1.29.2/bazel-lib-v1.29.2.tar.gz",
-)
-
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
-
-aspect_bazel_lib_dependencies()
 
 ## rules_docker
 http_archive(

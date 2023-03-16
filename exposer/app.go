@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
 	"net"
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/render"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
