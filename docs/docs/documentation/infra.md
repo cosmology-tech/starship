@@ -4,7 +4,7 @@ Starship infra is built with kubernetes. Inorder to simulate the cosmos ecosyste
 
 ## Design
 
-![k8s setup](https://raw.githubusercontent.com/Anmol1696/starship/anmol/docs/docs/docs/assets/images/k8s-setup.png "Kubernetes setup")
+![k8s setup](https://raw.githubusercontent.com/Anmol1696/starship/main/docs/docs/assets/images/k8s-setup.png "Kubernetes setup")
 
 We support multiple kinds of nodes:
 
