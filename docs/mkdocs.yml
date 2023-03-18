@@ -1,0 +1,53 @@
+site_name: Starship
+site_description: Universal development environment for the Cosmos ecosystem
+site_url: https://github.com/pages/Anmol1696/starship/
+
+repo_name: Anmol1696/starship
+repo_url: https://github.com/Anmol1696/starship
+edit_uri: ""
+
+remote_branch: gh-pages
+
+theme:
+  name: material
+  icon:
+    logo: material/image-filter-hdr
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: grey
+      accent: red
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: grey
+      accent: red
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/images/logo.png
+  features:
+    - navigation.tabs
+    #- navigation.tabs.sticky
+    - navigation.top
+    - navigation.instant
+    - navigation.expand
+  custom_dir: overrides
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Tutorial:
+      'Step 1: Dependencies': tutorial/step-1.md
+  - FAQ: faq.md
+  - About:
+      'Starship': about/index.md
