@@ -10,8 +10,7 @@ remote_branch: gh-pages
 
 theme:
   name: material
-  icon:
-    logo: assets/images/logo.png
+  logo: assets/images/logo.png
   font:
     text: Roboto
     code: Roboto Mono
