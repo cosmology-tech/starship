@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: shared-runner
+    runs-on: ubuntu-latest
 
     container:
       image: docker.io/squidfunk/mkdocs-material
