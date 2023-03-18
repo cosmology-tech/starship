@@ -23,4 +23,4 @@ jobs:
       - name: Deploy mkdocs to GitHub Pages
         run: |
           cd docs
-          mkdocs gh-deploy --force
+          mkdocs gh-deploy --force --no-history
