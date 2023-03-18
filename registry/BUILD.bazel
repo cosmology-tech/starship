@@ -1,11 +1,7 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
-
-go_binary(
-    name = "registry",
-    embed = [":registry_lib"],
-    visibility = ["//visibility:public"],
-)
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_cross_binary")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push", "container_bundle")
 
 go_library(
     name = "registry_lib",
@@ -37,34 +33,49 @@ go_library(
     ],
 )
 
-container_image(
+go_binary(
+    name = "registry",
+    embed = [":registry_lib"],
+    visibility = ["//visibility:public"],
+    cgo = False,
+    static = "on",
+)
+
+go_cross_binary(
+    name = "registry_arm64",
+    platform = "@io_bazel_rules_go//go/toolchain:linux_arm64",
+    target = ":registry",
+)
+
+
+# Build docker images now
+go_image(
     name = "image",
     base = "@base_linux_x86//image",
-    entrypoint = ["/registy"],
-    files = [":registry"],
+    binary = ":registry",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
 
-container_image(
+go_image(
     name = "image_arm64",
     base = "@base_linux_arm64//image",
-    entrypoint = ["/registy"],
-    files = [":registry"],
+    binary = ":registry_arm64",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
 
-container_push(
+container_bundle(
+    name = "image_bundle",
+    images = {
+        "index.docker.io/anmol1696/registry:latest-test": ":image",
+        "index.docker.io/anmol1696/registry:latest-test-arm64": ":image_arm64",
+    },
+    tags = ["manual"],
+)
+
+docker_push(
     name = "image_push",
-    format = "Docker",
-    image = ":image",
-    registry = "index.docker.io",
-    repository = "anmol1696/registry",
-    tag = "latest"
-)
-
-container_push(
-    name = "image_push_arm64",
-    format = "Docker",
-    image = ":image_arm64",
-    registry = "index.docker.io",
-    repository = "anmol1696/registry",
-    tag = "latest-arm64"
+    bundle = ":image_bundle",
+    tags = ["manual"],
 )

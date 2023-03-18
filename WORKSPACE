@@ -106,11 +106,18 @@ load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
 container_deps()
 
+load(
+    "@io_bazel_rules_docker//go:image.bzl",
+    _go_image_repos = "repositories",
+)
+
+_go_image_repos()
+
 load("@io_bazel_rules_docker//container:pull.bzl", "container_pull")
 
 container_pull(
     name = "base_linux_x86",
-    digest = "sha256:e6ad96020874a50d84b3e1111d66911b2e600a86522de9215e635dbf8e848a2a",
+    digest = "sha256:3f5fecac8b6b32fc6c58d020103261210e9aab4c2db4e3541ac9c979e1f7232a",
     registry = "index.docker.io",
     repository = "anmol1696/base",
     tag = "latest",

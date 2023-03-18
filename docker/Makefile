@@ -11,14 +11,14 @@ docker-build:
 		. -f $(PROCESS)/Dockerfile
 
 docker-build-arm64:
-	$(DOCKER) buildx build $(DOCKER_ARGS) \
+	$(DOCKER) buildx build --platform linux/arm64 \
 		-t $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)-arm64 \
 		. -f $(PROCESS)/Dockerfile.arm64
 
 docker-build-push: docker-build
 	$(DOCKER) push $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
 
-docker-build-push-arm64: docker-build
+docker-build-push-arm64: docker-build-arm64
 	$(DOCKER) push $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)-arm64
 
 docker-run:
