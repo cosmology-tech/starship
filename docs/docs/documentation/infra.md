@@ -9,14 +9,17 @@ Starship infra is built with kubernetes. Inorder to simulate the cosmos ecosyste
 We support multiple kinds of nodes:
 
 * Chains
+
   * Cosmoshub
   * Osmosis
   * Persistence
   * Juno
   * Generic Wasmd chain
+
 * IBC relayer
   * TS-relayer
   * Hermes
+
 * Explorers
   * Ping Pub
 
