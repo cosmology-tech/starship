@@ -33,8 +33,9 @@ nav:
   - Tutorial:
       'Step 1: Dependencies': tutorial/step-1.md
   - Documentation:
-      Introduction: documentation/index.md
-      Infra Setup: documentation/infra.md
+      'Introduction': documentation/index.md
+      'Infra Setup': documentation/infra.md
+  - Demo: demo/index.md
   - FAQ: faq.md
   - About:
       'Starship': about/index.md
