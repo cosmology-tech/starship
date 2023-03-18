@@ -4,21 +4,23 @@ Starship infra is built with kubernetes. Inorder to simulate the cosmos ecosyste
 
 ## Design
 
-![k8s setup](assets/image/k8s-setup.png "Kubernetes setup")
+![k8s setup](https://raw.githubusercontent.com/Anmol1696/starship/anmol/docs/docs/docs/assets/images/k8s-setup.png "Kubernetes setup")
 
 We support multiple kinds of nodes:
-- Chains
-  - Cosmoshub
-  - Osmosis
-  - Persistence
-  - Juno
-  - Generic Wasmd chain
-- IBC relayer
-  - TS-relayer
-  - Hermes
-- Explorers
-  - Ping Pub
+
+* Chains
+  * Cosmoshub
+  * Osmosis
+  * Persistence
+  * Juno
+  * Generic Wasmd chain
+* IBC relayer
+  * TS-relayer
+  * Hermes
+* Explorers
+  * Ping Pub
 
 Soon we will also add ability to add:
-- RPC Nodes
-- Archival Nodes
+
+* RPC Nodes
+* Archival Nodes
