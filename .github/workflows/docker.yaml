@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - anmol/bazel-docker
 
 jobs:
   deploy-docker:
@@ -46,16 +45,16 @@ jobs:
       - name: Determine tag
         id: docker-tag
         run: |
-          tag=$(date -u "+%Y%m%d")-$(echo ${GITHUB_SHA} | cut -c1-7)-test
+          tag=$(date -u "+%Y%m%d")-$(echo ${GITHUB_SHA} | cut -c1-7)
           echo Tag will be $tag
           echo ::set-output name=version::$tag
 
-      - name: Build docker image for registry
+      - name: Build and push docker image for registry
         run: bazel run --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} //registry:image_push
         env:
           DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
 
-      - name: Build docker image for registry
+      - name: Build and push docker image for registry
         run: bazel run --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} //exposer:image_push
         env:
           DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
