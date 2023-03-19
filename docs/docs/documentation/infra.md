@@ -17,10 +17,12 @@ We support multiple kinds of nodes:
     * Generic Wasmd chain
 
 * IBC relayer
+
     * TS-relayer
     * Hermes
 
 * Explorers
+
     * Ping Pub
 
 Soon we will also add ability to add:
