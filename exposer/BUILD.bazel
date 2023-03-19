@@ -80,5 +80,6 @@ container_bundle(
 docker_push(
     name = "image_push",
     bundle = ":image_bundle",
+    skip_unchanged_digest = True,
     tags = ["manual"],
 )
