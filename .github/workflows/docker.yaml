@@ -53,9 +53,9 @@ jobs:
       - name: Build docker image for registry
         run: bazel run //registry:image_push
         env:
-          - DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
+          DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
 
       - name: Build docker image for registry
         run: bazel run //exposer:image_push
         env:
-          - DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
+          DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
