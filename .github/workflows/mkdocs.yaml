@@ -1,0 +1,26 @@
+name: mkdocs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**
+      - .github/workflows/mkdocs.yaml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker.io/squidfunk/mkdocs-material
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Deploy mkdocs to GitHub Pages
+        run: |
+          git config --global --add safe.directory /__w/starship/starship
+          cd docs
+          mkdocs gh-deploy --force --no-history

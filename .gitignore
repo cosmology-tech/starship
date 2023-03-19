@@ -38,3 +38,6 @@ Session.vim
 **/charts/*.tgz
 
 .history
+
+# Ignore docs site created
+**/site/
