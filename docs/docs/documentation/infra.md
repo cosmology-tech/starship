@@ -10,18 +10,18 @@ We support multiple kinds of nodes:
 
 * Chains
 
-  * Cosmoshub
-  * Osmosis
-  * Persistence
-  * Juno
-  * Generic Wasmd chain
+    * Cosmoshub
+    * Osmosis
+    * Persistence
+    * Juno
+    * Generic Wasmd chain
 
 * IBC relayer
-  * TS-relayer
-  * Hermes
+    * TS-relayer
+    * Hermes
 
 * Explorers
-  * Ping Pub
+    * Ping Pub
 
 Soon we will also add ability to add:
 
