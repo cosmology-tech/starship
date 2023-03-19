@@ -1,10 +1,7 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-
-go_binary(
-    name = "registry",
-    embed = [":registry_lib"],
-    visibility = ["//visibility:public"],
-)
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_cross_binary")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push", "container_bundle")
 
 go_library(
     name = "registry_lib",
@@ -34,4 +31,52 @@ go_library(
         "@org_golang_google_protobuf//types/known/emptypb",
         "@org_uber_go_zap//:zap",
     ],
+)
+
+go_binary(
+    name = "registry",
+    embed = [":registry_lib"],
+    visibility = ["//visibility:public"],
+    cgo = False,
+    static = "on",
+)
+
+go_cross_binary(
+    name = "registry_arm64",
+    platform = "@io_bazel_rules_go//go/toolchain:linux_arm64",
+    target = ":registry",
+)
+
+# Build docker images now
+go_image(
+    name = "image",
+    base = "@base_linux_x86//image",
+    binary = ":registry",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image_arm64",
+    base = "@base_linux_arm64//image",
+    binary = ":registry_arm64",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+)
+
+container_bundle(
+    name = "image_bundle",
+    images = {
+        "index.docker.io/anmol1696/registry:latest": ":image",
+        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)": ":image",
+        "index.docker.io/anmol1696/registry:latest-arm64": ":image_arm64",
+        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
+    },
+    tags = ["manual"],
+)
+
+docker_push(
+    name = "image_push",
+    bundle = ":image_bundle",
+    tags = ["manual"],
 )
