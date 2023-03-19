@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - anmol/bazel-docker
 
 jobs:
   deploy-docker:
@@ -12,6 +13,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Bazel cache
         id: bazel-cache
@@ -27,7 +34,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Install bazelisk
         run: |
@@ -36,11 +43,19 @@ jobs:
           mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
-      - name: Run tests
-        run: bazel test //...
+      - name: Determine tag
+        id: docker-tag
+        run: |
+          tag=$(date -u "+%Y%m%d")-$(echo ${GITHUB_SHA} | cut -c1-7)-test
+          echo Tag will be $tag
+          echo ::set-output name=version::$tag
 
-      - name: Deploying current release
-        run: bazel run //container:release
+      - name: Build docker image for registry
+        run: bazel run //registry:image_push
+        env:
+          - DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
 
-      - name: Deploying Demo container
-        run: bazel run //container:demo
+      - name: Build docker image for registry
+          run: bazel run //exposer:image_push
+          env:
+            - DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
