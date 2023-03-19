@@ -51,11 +51,11 @@ jobs:
           echo ::set-output name=version::$tag
 
       - name: Build docker image for registry
-        run: DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} bazel run //registry:image_push
+        run: bazel run --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} //registry:image_push
         env:
           DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
 
       - name: Build docker image for registry
-        run: DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} bazel run //exposer:image_push
+        run: bazel run --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} //exposer:image_push
         env:
           DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
