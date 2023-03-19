@@ -69,8 +69,10 @@ go_image(
 container_bundle(
     name = "image_bundle",
     images = {
-        "index.docker.io/anmol1696/exposer:latest-test": ":image",
-        "index.docker.io/anmol1696/exposer:latest-test-arm64": ":image_arm64",
+        "index.docker.io/anmol1696/exposer:latest": ":image",
+        "index.docker.io/anmol1696/exposer:$(DOCKER_TAG_NAME)": ":image",
+        "index.docker.io/anmol1696/exposer:latest-arm64": ":image_arm64",
+        "index.docker.io/anmol1696/exposer:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
     },
     tags = ["manual"],
 )

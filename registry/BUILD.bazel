@@ -47,7 +47,6 @@ go_cross_binary(
     target = ":registry",
 )
 
-
 # Build docker images now
 go_image(
     name = "image",
@@ -68,8 +67,10 @@ go_image(
 container_bundle(
     name = "image_bundle",
     images = {
-        "index.docker.io/anmol1696/registry:latest-test": ":image",
-        "index.docker.io/anmol1696/registry:latest-test-arm64": ":image_arm64",
+        "index.docker.io/anmol1696/registry:latest": ":image",
+        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)": ":image",
+        "index.docker.io/anmol1696/registry:latest-arm64": ":image_arm64",
+        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
     },
     tags = ["manual"],
 )
