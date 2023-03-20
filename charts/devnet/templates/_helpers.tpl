@@ -131,11 +131,11 @@ Returns resources for a validator
 {{ toYaml .resources }}
 {{- else }}
 limits:
+  cpu: "2"
+  memory: "2G"
+requests:
   cpu: "1"
   memory: "1G"
-requests:
-  cpu: "0.5"
-  memory: "500M"
 {{- end }}
 {{- end }}
 
@@ -144,9 +144,9 @@ Returns resources for a validator
 */}}
 {{- define "devnet.init.resources" }}
 limits:
-  cpu: "0.2"
-  memory: "200M"
+  cpu: "1"
+  memory: "1G"
 requests:
-  cpu: "0.1"
-  memory: "100M"
+  cpu: "0.5"
+  memory: "500M"
 {{- end }}

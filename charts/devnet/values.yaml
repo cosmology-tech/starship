@@ -24,15 +24,15 @@ tolerations: []
 affinity: {}
 
 exposer:
-  image: anmol1696/exposer:latest
+  image: anmol1696/exposer:20230319-e41e51f
   port: 8081
   resources:
     limits:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.5"
+      memory: "500M"
     requests:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.2"
+      memory: "200M"
 
 # Chain timeouts
 timeouts:
