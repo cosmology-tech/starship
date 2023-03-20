@@ -2,6 +2,7 @@
 ![Lint](https://github.com/Anmol1696/starship/actions/workflows/lint-check.yaml/badge.svg)
 ![Deploy](https://github.com/Anmol1696/starship/actions/workflows/release.yaml/badge.svg)
 ![Docs](https://github.com/Anmol1696/starship/actions/workflows/mkdocs.yaml/badge.svg)
+![Docker](https://github.com/Anmol1696/starship/actions/workflows/docker.yaml/badge.svg)
 
 Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
