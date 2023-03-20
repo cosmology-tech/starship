@@ -1,5 +1,5 @@
-EXAMPLE = chain
-FILE = custom-values.yaml
+EXAMPLE = multi-chain
+FILE = config.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet

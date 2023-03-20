@@ -41,10 +41,11 @@ go_binary(
     static = "on",
 )
 
-go_cross_binary(
+go_binary(
     name = "registry_arm64",
-    platform = "@io_bazel_rules_go//go/toolchain:linux_arm64",
-    target = ":registry",
+    embed = [":registry_lib"],
+    visibility = ["//visibility:public"],
+    cgo = False,
 )
 
 # Build docker images now

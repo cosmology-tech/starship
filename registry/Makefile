@@ -14,7 +14,7 @@ build:
 	bazel build //$(BINARY_NAME):$(BINARY_NAME)
 
 run:
-	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- --chain-registry $(CURDIR)/testdata/
+	bazel run //$(BINARY_NAME):$(BINARY_NAME)_arm64 -- --chain-registry $(CURDIR)/testdata/
 
 ## Docker commands
 docker-build:
@@ -26,4 +26,3 @@ docker-build-push:
 
 docker-run:
 	$(DOCKER) run --rm -it --entrypoint /bin/bash $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME)
-
