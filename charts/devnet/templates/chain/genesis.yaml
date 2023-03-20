@@ -161,7 +161,7 @@ spec:
               value: /configs/keys.json
             - name: EXPOSER_PRIV_VAL_FILE
               value: {{ $defaultChain.home }}/config/priv_validator_key.json
-          command: [ "bash -c sleep 10000000" ]
+          command: [ "/app/exposer/exposer" ]
           resources: {{- toYaml $.Values.exposer.resources | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
