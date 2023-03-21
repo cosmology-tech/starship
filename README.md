@@ -1,6 +1,7 @@
 # starship
 ![Lint](https://github.com/Anmol1696/starship/actions/workflows/lint-check.yaml/badge.svg)
 ![Deploy](https://github.com/Anmol1696/starship/actions/workflows/release.yaml/badge.svg)
+![Build](https://github.com/Anmol1696/starship/actions/workflows/build.yaml/badge.svg)
 ![Docs](https://github.com/Anmol1696/starship/actions/workflows/mkdocs.yaml/badge.svg)
 ![Docker](https://github.com/Anmol1696/starship/actions/workflows/docker.yaml/badge.svg)
 
