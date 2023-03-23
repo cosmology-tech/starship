@@ -13,31 +13,11 @@ import (
 	"go.uber.org/zap"
 )
 
-type IBCInfo struct {
-	ChainId      string `json:"chain_id"`
-	ChannelId    string `json:"channel_id"`
-	PortId       string `json:"port_id"`
-	ConnectionId string `json:"connection_id"`
-	ClientId     string `json:"client_id"`
-}
-
-type ChainIBCInfo struct {
-	IBCInfo
-
-	CounterParty IBCInfo           `json:"counter_party,omitempty"`
-	Ordering     string            `json:"ordering,omitempty"`
-	Version      string            `json:"version,omitempty"`
-	State        string            `json:"state,omitempty"`
-	Tags         map[string]string `json:"tags,omitempty"`
-}
-
 type ChainClient struct {
 	logger      *zap.Logger
 	chainConfig *lens.ChainClientConfig
 
 	client *lens.ChainClient
-
-	chainIBCInfo []ChainIBCInfo
 }
 
 func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainClient, error) {
@@ -59,8 +39,8 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	return chainClient, nil
 }
 
-// GetIBCInfos will fetch all the IBC channels for the chain
-func (c *ChainClient) GetIBCInfos(chainId string) ([]ChainIBCInfo, error) {
+// getChannelPort returns the chains and the counterparty info
+func (c *ChainClient) getChannelsPorts() ([]ChannelsInfo, error) {
 	querier := query.Query{Client: c.client, Options: query.DefaultOptions()}
 
 	channels, err := querier.Ibc_Channels()
@@ -68,61 +48,51 @@ func (c *ChainClient) GetIBCInfos(chainId string) ([]ChainIBCInfo, error) {
 		return nil, err
 	}
 
-	var chainIBCInfos []ChainIBCInfo
+	var channelsInfo []ChannelsInfo
 	for _, channel := range channels.Channels {
-		fmt.Printf("channel: %s, port: %s\n", channel.ChannelId, channel.PortId)
-		fmt.Printf("counter party: channel: %s, port: %s\n", channel.Counterparty.ChannelId, channel.Counterparty.PortId)
-
 		// use connection hop to get connections info
 		if len(channel.ConnectionHops) != 1 {
 			return nil, fmt.Errorf("number of connections not 1")
 		}
-		connectionId := channel.ConnectionHops[0]
-		clientId, cpConnectionId, cpClientId, err := c.getIBCConnectionInfo(connectionId)
-		if err != nil {
-			return nil, err
-		}
 
-		cpChainId, err := c.getChainIdFromClient(connectionId)
-		if err != nil {
-			return nil, err
-		}
-
-		c := ChainIBCInfo{
-			IBCInfo: IBCInfo{
-				ChainId:      chainId,
-				ChannelId:    channel.ChannelId,
-				ConnectionId: connectionId,
-				PortId:       channel.PortId,
-				ClientId:     clientId,
+		ci := ChannelsInfo{
+			ChannelPort: ChannelPort{
+				ChannelId: channel.ChannelId,
+				PortId:    channel.PortId,
 			},
-			CounterParty: IBCInfo{
-				ChainId:      cpChainId,
-				ChannelId:    channel.Counterparty.ChannelId,
-				PortId:       channel.Counterparty.PortId,
-				ConnectionId: cpConnectionId,
-				ClientId:     cpClientId,
+			Counterparty: ChannelPort{
+				ChannelId: channel.Counterparty.ChannelId,
+				PortId:    channel.Counterparty.PortId,
 			},
-			Ordering: channel.Ordering.String(),
-			Version:  channel.Version,
-			State:    channel.State.String(),
+			ConnectionId: channel.ConnectionHops[0],
+			Ordering:     channel.Ordering.String(),
+			Version:      channel.Version,
 		}
 
-		chainIBCInfos = append(chainIBCInfos, c)
+		channelsInfo = append(channelsInfo, ci)
 	}
 
-	return chainIBCInfos, nil
+	return channelsInfo, nil
 }
 
-func (c *ChainClient) getIBCConnectionInfo(connectionId string) (string, string, string, error) {
+func (c *ChainClient) getConnectionClient(connectionId string) (*ConnectionInfo, error) {
 	querier := query.Query{Client: c.client, Options: query.DefaultOptions()}
 
 	connection, err := querier.Ibc_Connection(connectionId)
 	if err != nil {
-		return "", "", "", err
+		return nil, err
 	}
 
-	return connection.Connection.ClientId, connection.Connection.Counterparty.ConnectionId, connection.Connection.Counterparty.ClientId, nil
+	return &ConnectionInfo{
+		ConnectionClient: ConnectionClient{
+			ConnectionId: connectionId,
+			ClientId:     connection.Connection.ClientId,
+		},
+		Counterparty: ConnectionClient{
+			ConnectionId: connection.Connection.Counterparty.ConnectionId,
+			ClientId:     connection.Connection.Counterparty.ClientId,
+		},
+	}, nil
 }
 
 // GetIBCClients will fetch all the IBC channels for the chain
@@ -150,4 +120,49 @@ func (c *ChainClient) getChainIdFromClient(clientId string) (string, error) {
 	}
 
 	return cs.ChainId, nil
+}
+
+// GetIBCInfos will fetch all the IBC channels for the chain
+func (c *ChainClient) GetIBCInfos() ([]ChainIBCInfo, error) {
+	channelsInfo, err := c.getChannelsPorts()
+	if err != nil {
+		return nil, err
+	}
+
+	var chainIBCInfos []ChainIBCInfo
+	for _, channelInfo := range channelsInfo {
+		cpChainId, err := c.getChainIdFromClient(channelInfo.ConnectionId)
+		if err != nil {
+			return nil, err
+		}
+
+		connectionInfo, err := c.getConnectionClient(channelInfo.ConnectionId)
+		if err != nil {
+			return nil, err
+		}
+
+		cii := ChainIBCInfo{
+			IBCInfo: IBCInfo{
+				ChainId:      c.chainConfig.ChainID,
+				ChannelId:    channelInfo.ChannelId,
+				PortId:       channelInfo.PortId,
+				ConnectionId: connectionInfo.ConnectionId,
+				ClientId:     connectionInfo.ClientId,
+			},
+			Counterparty: IBCInfo{
+				ChainId:      cpChainId,
+				ChannelId:    channelInfo.Counterparty.ChannelId,
+				PortId:       channelInfo.Counterparty.PortId,
+				ConnectionId: connectionInfo.Counterparty.ConnectionId,
+				ClientId:     connectionInfo.Counterparty.ClientId,
+			},
+			Ordering: channelInfo.Ordering,
+			Version:  channelInfo.Version,
+			State:    channelInfo.State,
+		}
+
+		chainIBCInfos = append(chainIBCInfos, cii)
+	}
+
+	return chainIBCInfos, nil
 }

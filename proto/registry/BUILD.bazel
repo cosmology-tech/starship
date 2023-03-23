@@ -6,6 +6,7 @@ proto_library(
     name = "registry_proto",
     srcs = [
         "chain.proto",
+        "ibc.proto",
         "service.proto",
     ],
     visibility = ["//visibility:public"],
