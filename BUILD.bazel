@@ -2,7 +2,7 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
 # gazelle:prefix github.com/Anmol1696/starship
-# gazelle:proto disable
+# gazelle:proto disable_global
 # gazelle:resolve go github.com/Anmol1696/starship/registry/registry //proto/registry:registry_go_proto
 # gazelle:resolve go github.com/Anmol1696/starship/exposer/exposer //proto/exposer:exposer_go_proto
 # gazelle:exclude registry/registry
