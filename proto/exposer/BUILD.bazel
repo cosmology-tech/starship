@@ -22,11 +22,8 @@ proto_library(
 
 go_proto_library(
     name = "exposer_go_proto",
-    compilers = [
-        "@io_bazel_rules_go//proto:go_grpc",
-        "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:go_gen_grpc_gateway",
-     ],
-    importpath = "github.com/Anmol1696/starship/exposer/exposer",
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    importpath = "github.com/Anmol1696/starship/exposer",
     proto = ":exposer_proto",
     visibility = ["//visibility:public"],
     deps = [
@@ -37,6 +34,6 @@ go_proto_library(
 go_library(
     name = "exposer",
     embed = [":exposer_go_proto"],
-    importpath = "github.com/Anmol1696/starship/exposer/exposer",
+    importpath = "github.com/Anmol1696/starship/exposer",
     visibility = ["//visibility:public"],
 )

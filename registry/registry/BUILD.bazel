@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "registry",
+    srcs = [
+        "chain.pb.go",
+        "ibc.pb.go",
+        "service.pb.go",
+        "service.pb.gw.go",
+    ],
+    importpath = "github.com/Anmol1696/starship/registry/registry",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//registry/vendor/github.com/grpc-ecosystem/grpc-gateway/v2/runtime",
+        "//registry/vendor/github.com/grpc-ecosystem/grpc-gateway/v2/utilities",
+        "//registry/vendor/google.golang.org/genproto/googleapis/api/annotations",
+        "//registry/vendor/google.golang.org/grpc",
+        "//registry/vendor/google.golang.org/grpc/codes",
+        "//registry/vendor/google.golang.org/grpc/grpclog",
+        "//registry/vendor/google.golang.org/grpc/metadata",
+        "//registry/vendor/google.golang.org/grpc/status",
+        "//registry/vendor/google.golang.org/protobuf/proto",
+        "//registry/vendor/google.golang.org/protobuf/reflect/protoreflect",
+        "//registry/vendor/google.golang.org/protobuf/runtime/protoimpl",
+        "//registry/vendor/google.golang.org/protobuf/types/descriptorpb",
+        "//registry/vendor/google.golang.org/protobuf/types/known/anypb",
+        "//registry/vendor/google.golang.org/protobuf/types/known/emptypb",
+    ],
+)
