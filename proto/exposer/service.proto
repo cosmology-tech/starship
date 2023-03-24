@@ -9,7 +9,7 @@ import "google/protobuf/descriptor.proto";
 import "proto/exposer/mnemonic.proto";
 import "proto/exposer/genesis.proto";
 
-option go_package = "github.com/Anmol1696/starship/exposer";
+option go_package = "github.com/Anmol1696/starship/exposer/exposer";
 
 // Interface for service
 service Exposer {

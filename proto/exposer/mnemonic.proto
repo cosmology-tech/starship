@@ -1,7 +1,7 @@
 syntax = "proto3";
 package exposer;
 
-option go_package = "github.com/Anmol1696/starship/exposer";
+option go_package = "github.com/Anmol1696/starship/exposer/exposer";
 
 message Mnemonic {
   string name = 1;
