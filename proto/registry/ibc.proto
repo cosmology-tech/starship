@@ -1,0 +1,38 @@
+syntax = "proto3";
+package registry;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/Anmol1696/starship/registry/registry";
+
+message IBCChain {
+  string chain_name = 1 [json_name = "chain_name"];
+  string client_id = 2 [json_name = "client_id"];
+  string connection_id = 3 [json_name = "connection_id"];
+}
+
+message ChannelData {
+  message ChannelPort {
+    string channel_id = 1 [json_name = "channel_id"];
+    string port_id = 2 [json_name = "port_id"];
+  }
+
+  message Tags {
+    string status = 1 [json_name = "status"];
+    bool perferred = 2 [json_name = "perferred"];
+    string dex = 3 [json_name = "dex"];
+  }
+
+  ChannelPort chain_1 = 1 [json_name = "chain_1"];
+  ChannelPort chain_2 = 2 [json_name = "chain_2"];
+  string ordering = 3 [json_name = "ordering"];
+  string version = 4 [json_name = "version"];
+  Tags tags = 5 [json_name = "tags"];
+}
+
+message IBCData {
+  string schema = 1 [json_name = "$schema"];
+  IBCChain chain_1 = 2 [json_name = "chain_1"];
+  IBCChain chain_2 = 3 [json_name = "chain_2"];
+  repeated ChannelData channels = 4 [json_name = "channels"];
+}
