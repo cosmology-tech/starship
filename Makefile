@@ -79,7 +79,7 @@ endif
 setup: setup-kubectl setup-kind
 
 clean-kind:
-	kind delete cluster
+	kind delete cluster --name $(KIND_CLUSTER)
 
 ###############################################################################
 ###                              Keys config                                ###

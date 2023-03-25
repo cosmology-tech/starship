@@ -115,7 +115,7 @@ can perform
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
 ```bash
-helm repo add starship https://anmol1696.github.io/starship
+helm repo add starship https://cosmology-tech.github.io/starship
 helm repo update
 
 helm search repo starship/devnet
