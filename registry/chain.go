@@ -25,6 +25,17 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 		ChainID:        chainID,
 		RPCAddr:        rpcAddr,
 		KeyringBackend: "test",
+		Key:            "default",
+		//RPCAddr:        "https://osmosis-1.technofractal.com:443",
+		//GRPCAddr:       "https://gprc.osmosis-1.technofractal.com:443",
+		//AccountPrefix:  "osmo",
+		//GasAdjustment:  1.2,
+		//GasPrices:      "0.01uosmo",
+		//MinGasAmount:   0,
+		Debug:   true,
+		Timeout: "20s",
+		//OutputFormat: "json",
+		SignModeStr: "direct",
 	}
 	client, err := lens.NewChainClient(logger, ccc, home, os.Stdin, os.Stdout)
 	if err != nil {
