@@ -144,8 +144,24 @@ func (a *AppServer) GetAllIBC(ctx context.Context) error {
 	return ErrNotImplemented
 }
 
-func (a *AppServer) GetIBCChainsData(ctx context.Context) error {
-	return ErrNotImplemented
+func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIBCInfo) (*pb.IBCData, error) {
+	client, err := a.chainClients.GetChainClient(requestIBCInfo.Chain_1)
+	if err != nil {
+		return nil, err
+	}
+
+	infos, err := client.GetCachedChainInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, info := range infos {
+		if info.Counterparty.ChainId == requestIBCInfo.Chain_2 {
+			return info.ToProto(), nil
+		}
+	}
+
+	return nil, fmt.Errorf("not found: no ibc connection found between %s and %s", requestIBCInfo.Chain_1, requestIBCInfo.Chain_2)
 }
 
 func (a *AppServer) SetIBCChainsData(ctx context.Context) error {

@@ -10,10 +10,11 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:          "0.0.0.0",
-		HTTPPort:      "8080",
-		GRPCPort:      "9090",
-		ChainRegistry: "chains/",
+		Host:            "0.0.0.0",
+		HTTPPort:        "8080",
+		GRPCPort:        "9090",
+		ChainRegistry:   "chains/",
+		ChainClientHome: "~/.lens",
 	}
 }
 
@@ -26,6 +27,12 @@ type Config struct {
 	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
 	// ChainRegistry is full path to the directory containing various chain registry information
 	ChainRegistry string `name:"chain-registry" json:"chain_registry" env:"CHAIN_REGISTRY" usage:"Path of chain registry files"`
+	// ChainClientHome is the path the home directory for lens client
+	ChainClientHome string `name:"chain-client-home" json:"chain_client_home" env:"CHAIN_CLIENT_HOME" usage:"Path to the home of lens client directory"`
+	// ChainClientIDs is a comma seperated list of chain ids for various chains
+	ChainClientIDs string `name:"chain-client-ids" json:"chain_client_ids" env:"CHAIN_CLIENT_IDS" usage:"Comma seperated list of chain ids for various chains"`
+	// ChainClientRPCs is a comma seperated list of chain rpc address for various chains
+	ChainClientRPCs string `name:"chain-client-rpcs" json:"chain_client_rpcs" env:"CHAIN_CLIENT_RPCS" usage:"Comma seperated list of chain rpc address for various chains"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs

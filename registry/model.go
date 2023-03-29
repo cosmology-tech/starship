@@ -48,8 +48,38 @@ type ChainIBCInfo struct {
 	Tags         map[string]string `json:"tags,omitempty"`
 }
 
-func NewChainRegistry(info ChainIBCInfo) pb.IBCData {
-	return pb.IBCData{}
+func (info *ChainIBCInfo) ToProto() *pb.IBCData {
+	return &pb.IBCData{
+		Schema: "../ibc_data.schema.json",
+		Chain_1: &pb.IBCChain{
+			ChainName:    info.ChainId,
+			ClientId:     info.ClientId,
+			ConnectionId: info.ConnectionId,
+		},
+		Chain_2: &pb.IBCChain{
+			ChainName:    info.Counterparty.ChainId,
+			ClientId:     info.Counterparty.ClientId,
+			ConnectionId: info.Counterparty.ConnectionId,
+		},
+		Channels: []*pb.ChannelData{
+			&pb.ChannelData{
+				Chain_1: &pb.ChannelData_ChannelPort{
+					ChannelId: info.ChannelId,
+					PortId:    info.PortId,
+				},
+				Chain_2: &pb.ChannelData_ChannelPort{
+					ChannelId: info.Counterparty.ChannelId,
+					PortId:    info.Counterparty.PortId,
+				},
+				Ordering: info.Ordering,
+				Version:  info.Version,
+				Tags: &pb.ChannelData_Tags{
+					Status:    "live",
+					Perferred: true,
+				},
+			},
+		},
+	}
 }
 
 type ChainIBCInfos []*ChainIBCInfo

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
@@ -13,11 +14,51 @@ import (
 	"go.uber.org/zap"
 )
 
+type ChainClients []*ChainClient
+
+// NewChainClients returns a list of chain clients from a list of strings
+func NewChainClients(logger *zap.Logger, chainIDs, rpcAddrs []string, home string) (ChainClients, error) {
+	// make home if non existant
+	_ = os.MkdirAll(home, 0755)
+
+	var clients []*ChainClient
+	for i := range chainIDs {
+		client, err := NewChainClient(logger, chainIDs[i], rpcAddrs[i], home)
+
+		if err != nil {
+			logger.Error("unable to create client for chain",
+				zap.String("chain_id", chainIDs[i]),
+				zap.String("rpc_addr", rpcAddrs[i]),
+				zap.Error(err),
+			)
+			return nil, err
+		}
+
+		clients = append(clients, client)
+	}
+
+	return clients, nil
+}
+
+// GetChainClient returns a chain client pointer for the given chain id
+func (cc ChainClients) GetChainClient(chainID string) (*ChainClient, error) {
+	for _, client := range cc {
+		if client.chainConfig.ChainID == chainID {
+			return client, nil
+		}
+	}
+
+	return nil, fmt.Errorf("not found: client chain id %s", chainID)
+}
+
 type ChainClient struct {
 	logger      *zap.Logger
 	chainConfig *lens.ChainClientConfig
 
 	client *lens.ChainClient
+
+	mu           sync.Mutex
+	chainIBCInfo []*ChainIBCInfo
 }
 
 func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainClient, error) {
@@ -25,6 +66,9 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 		ChainID:        chainID,
 		RPCAddr:        rpcAddr,
 		KeyringBackend: "test",
+		Debug:          true,
+		Timeout:        "20s",
+		SignModeStr:    "direct",
 	}
 	client, err := lens.NewChainClient(logger, ccc, home, os.Stdin, os.Stdout)
 	if err != nil {
@@ -32,10 +76,15 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	}
 
 	chainClient := &ChainClient{
-		logger:      logger,
-		chainConfig: ccc,
-		client:      client,
+		logger:       logger,
+		chainConfig:  ccc,
+		client:       client,
+		chainIBCInfo: nil,
 	}
+
+	// Cache initial values, best effort
+	//_, _ = chainClient.GetCachedChainInfo()
+
 	return chainClient, nil
 }
 
@@ -43,10 +92,12 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 func (c *ChainClient) getChannelsPorts() ([]ChannelsInfo, error) {
 	querier := query.Query{Client: c.client, Options: query.DefaultOptions()}
 
+	c.logger.Info("created a querier object, making the first query")
 	channels, err := querier.Ibc_Channels()
 	if err != nil {
 		return nil, err
 	}
+	c.logger.Info("channels queried from the upstream", zap.Any("channels", channels))
 
 	var channelsInfo []ChannelsInfo
 	for _, channel := range channels.Channels {
@@ -82,6 +133,10 @@ func (c *ChainClient) getConnectionClient(connectionId string) (*ConnectionInfo,
 	if err != nil {
 		return nil, err
 	}
+
+	c.logger.Info("connection queried from the upstream",
+		zap.String("connection_id", connectionId),
+		zap.Any("connection", connection))
 
 	return &ConnectionInfo{
 		ConnectionClient: ConnectionClient{
@@ -122,26 +177,26 @@ func (c *ChainClient) getChainIdFromClient(clientId string) (string, error) {
 	return cs.ChainId, nil
 }
 
-// GetIBCInfos will fetch all the IBC channels for the chain
-func (c *ChainClient) GetIBCInfos() ([]ChainIBCInfo, error) {
+// GetChainInfo will fetch all the IBC channels for the chain
+func (c *ChainClient) GetChainInfo() ([]*ChainIBCInfo, error) {
 	channelsInfo, err := c.getChannelsPorts()
 	if err != nil {
 		return nil, err
 	}
 
-	var chainIBCInfos []ChainIBCInfo
+	var chainIBCInfos []*ChainIBCInfo
 	for _, channelInfo := range channelsInfo {
-		cpChainId, err := c.getChainIdFromClient(channelInfo.ConnectionId)
-		if err != nil {
-			return nil, err
-		}
-
 		connectionInfo, err := c.getConnectionClient(channelInfo.ConnectionId)
 		if err != nil {
 			return nil, err
 		}
 
-		cii := ChainIBCInfo{
+		cpChainId, err := c.getChainIdFromClient(connectionInfo.ClientId)
+		if err != nil {
+			return nil, err
+		}
+
+		cii := &ChainIBCInfo{
 			IBCInfo: IBCInfo{
 				ChainId:      c.chainConfig.ChainID,
 				ChannelId:    channelInfo.ChannelId,
@@ -165,4 +220,25 @@ func (c *ChainClient) GetIBCInfos() ([]ChainIBCInfo, error) {
 	}
 
 	return chainIBCInfos, nil
+}
+
+// GetCachedChainInfo will return cached chain info, if no cache, then will cache the info
+func (c *ChainClient) GetCachedChainInfo() ([]*ChainIBCInfo, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	// try and fetch from cache
+	if c.chainIBCInfo != nil {
+		return c.chainIBCInfo, nil
+	}
+
+	// set cache if unset
+	chainInfo, err := c.GetChainInfo()
+	if err != nil {
+		c.logger.Error("unable to cache value for chain info", zap.Error(err))
+		return nil, err
+	}
+	c.chainIBCInfo = chainInfo
+
+	return c.chainIBCInfo, nil
 }
