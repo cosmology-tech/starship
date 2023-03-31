@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"sync"
@@ -154,10 +153,12 @@ func (c *ChainClient) getConnectionClient(connectionId string) (*ConnectionInfo,
 func (c *ChainClient) getChainIdFromClient(clientId string) (string, error) {
 	querier := query.Query{Client: c.client, Options: query.DefaultOptions()}
 
+	c.logger.Info("making query for chain id from client id", zap.String("clientId", clientId))
 	state, err := querier.Ibc_ClientState(clientId)
 	if err != nil {
 		return "", err
 	}
+	c.logger.Info("query ibc client state", zap.String("clientId", clientId), zap.Any("state", state))
 
 	clientState, err := clienttypes.UnpackClientState(state.ClientState)
 	if err != nil {
@@ -168,10 +169,9 @@ func (c *ChainClient) getChainIdFromClient(clientId string) (string, error) {
 		return "", fmt.Errorf("client state type not %s", exported.Tendermint)
 	}
 
-	cs := &ibctm.ClientState{}
-	err = json.Unmarshal(state.ClientState.Value, cs)
-	if err != nil {
-		return "", err
+	cs, ok := clientState.(*ibctm.ClientState)
+	if !ok {
+		return "", fmt.Errorf("unable to convert client state to lightclient ClientState, client: %s", clientState.String())
 	}
 
 	return cs.ChainId, nil

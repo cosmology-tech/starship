@@ -2944,8 +2944,8 @@ def go_dependencies():
         build_file_proto_mode = "disable",
         importpath = "github.com/strangelove-ventures/lens",
         replace = "github.com/Anmol1696/lens",
-        sum = "h1:AArhCam5eb6WvMFJZv4dM5yg+9oCu9ImO5cC469yNsw=",
-        version = "v0.1.1-0.20230323142436-ffca30557a14",
+        sum = "h1:JffXA2erpPh5UCNd3PM11LlAfUdRFXVeref0Dg+Ypik=",
+        version = "v0.1.1-0.20230331154219-5027f163133a",
     )
     go_repository(
         name = "com_github_streadway_amqp",
