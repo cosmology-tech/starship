@@ -139,7 +139,7 @@ func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.Request
 func (a *AppServer) ListIBC(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseListIBC, error) {
 	var resData []*pb.IBCData
 	for _, client := range a.chainClients {
-		infos, err := client.GetCachedChainInfo()
+		infos, err := client.GetChainInfo()
 		if err != nil {
 			return nil, err
 		}
@@ -152,13 +152,33 @@ func (a *AppServer) ListIBC(ctx context.Context, _ *emptypb.Empty) (*pb.Response
 	return &pb.ResponseListIBC{Data: resData}, nil
 }
 
+// ListChainIBC will return all the current IBC connections
+func (a *AppServer) ListChainIBC(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseListIBC, error) {
+	client, err := a.chainClients.GetChainClient(requestChain.Chain)
+	if err != nil {
+		return nil, err
+	}
+
+	infos, err := client.GetChainInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	var resData []*pb.IBCData
+	for _, info := range infos {
+		resData = append(resData, info.ToProto())
+	}
+
+	return &pb.ResponseListIBC{Data: resData}, nil
+}
+
 func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIBCInfo) (*pb.IBCData, error) {
 	client, err := a.chainClients.GetChainClient(requestIBCInfo.Chain_1)
 	if err != nil {
 		return nil, err
 	}
 
-	infos, err := client.GetCachedChainInfo()
+	infos, err := client.GetChainInfo()
 	if err != nil {
 		return nil, err
 	}

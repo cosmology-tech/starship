@@ -31,6 +31,10 @@ service Registry {
   rpc ListIBC(google.protobuf.Empty) returns (ResponseListIBC) {
     option (google.api.http) = { get: "/ibc" };
   }
+  // ListChainIBC will fetch all the current IBC connections for the chain
+  rpc ListChainIBC(RequestChain) returns (ResponseListIBC) {
+    option (google.api.http) = { get: "/ibc/{chain}" };
+  }
   // GetIBCInfo will fetch all the current IBC connections
   rpc GetIBCInfo(RequestIBCInfo) returns (IBCData) {
     option (google.api.http) = { get: "/ibc/{chain_1}/{chain_2}" };
