@@ -6,6 +6,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/descriptor.proto";
 
 import "proto/registry/chain.proto";
+import "proto/registry/ibc.proto";
 
 option go_package = "github.com/Anmol1696/starship/registry/registry";
 
@@ -27,8 +28,16 @@ service Registry {
     option (google.api.http) = { get: "/chains/{chain}/assets" };
   }
   // ListIBCs will fetch all the current IBC connections
-  rpc ListIBC(google.protobuf.Empty) returns (ResponseIBC) {
+  rpc ListIBC(google.protobuf.Empty) returns (ResponseListIBC) {
     option (google.api.http) = { get: "/ibc" };
+  }
+  // ListChainIBC will fetch all the current IBC connections for the chain
+  rpc ListChainIBC(RequestChain) returns (ResponseListIBC) {
+    option (google.api.http) = { get: "/ibc/{chain}" };
+  }
+  // GetIBCInfo will fetch all the current IBC connections
+  rpc GetIBCInfo(RequestIBCInfo) returns (IBCData) {
+    option (google.api.http) = { get: "/ibc/{chain_1}/{chain_2}" };
   }
 }
 
@@ -54,6 +63,11 @@ message ResponseChainAssets {
   repeated ChainAsset assets = 3 [json_name = "assets"];
 }
 
-message ResponseIBC {
+message ResponseListIBC {
+  repeated IBCData data = 1 [json_name = "data"];
+}
 
+message RequestIBCInfo {
+  string chain_1 = 1 [json_name = "chain_1"];
+  string chain_2 = 2 [json_name = "chain_2"];
 }

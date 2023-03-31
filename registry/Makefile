@@ -14,7 +14,10 @@ build:
 	bazel build //$(BINARY_NAME):$(BINARY_NAME)
 
 run:
-	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- --chain-registry $(CURDIR)/testdata/
+	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- \
+	--chain-registry $(CURDIR)/testdata/ \
+	--chain-client-ids "osmosis-1" \
+	--chain-client-rpcs "https://rpc.osmosis.zone:443"
 
 ## Docker commands
 docker-build:

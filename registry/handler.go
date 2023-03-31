@@ -135,27 +135,59 @@ func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.Request
 	return chainAsset, nil
 }
 
-// GetAllIBC will return all the current IBC connections
-// Note, IBC data can be stroed in cache. On each request, we call the underlying
-// endpoints and fetch data. Then we cache it and store it. We can prefill the cache on
-// startup as well, by specifing what all endpoints to call on startup
-// For notes on caching, have a look at James's Code
-func (a *AppServer) GetAllIBC(ctx context.Context) error {
-	return ErrNotImplemented
+// ListIBC will return all the current IBC connections
+func (a *AppServer) ListIBC(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseListIBC, error) {
+	var resData []*pb.IBCData
+	for _, client := range a.chainClients {
+		infos, err := client.GetChainInfo()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, info := range infos {
+			resData = append(resData, info.ToProto())
+		}
+	}
+
+	return &pb.ResponseListIBC{Data: resData}, nil
 }
 
-func (a *AppServer) GetIBCChainsData(ctx context.Context) error {
-	return ErrNotImplemented
+// ListChainIBC will return all the current IBC connections
+func (a *AppServer) ListChainIBC(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseListIBC, error) {
+	client, err := a.chainClients.GetChainClient(requestChain.Chain)
+	if err != nil {
+		return nil, err
+	}
+
+	infos, err := client.GetChainInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	var resData []*pb.IBCData
+	for _, info := range infos {
+		resData = append(resData, info.ToProto())
+	}
+
+	return &pb.ResponseListIBC{Data: resData}, nil
 }
 
-func (a *AppServer) SetIBCChainsData(ctx context.Context) error {
-	return ErrNotImplemented
-}
+func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIBCInfo) (*pb.IBCData, error) {
+	client, err := a.chainClients.GetChainClient(requestIBCInfo.Chain_1)
+	if err != nil {
+		return nil, err
+	}
 
-func (a *AppServer) GetIBCChainsChannels(ctx context.Context) error {
-	return ErrNotImplemented
-}
+	infos, err := client.GetChainInfo()
+	if err != nil {
+		return nil, err
+	}
 
-func (a *AppServer) AddIBCChainChannel(ctx context.Context) error {
-	return ErrNotImplemented
+	for _, info := range infos {
+		if info.Counterparty.ChainId == requestIBCInfo.Chain_2 {
+			return info.ToProto(), nil
+		}
+	}
+
+	return nil, fmt.Errorf("not found: no ibc connection found between %s and %s", requestIBCInfo.Chain_1, requestIBCInfo.Chain_2)
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -27,6 +29,9 @@ type AppServer struct {
 	config *Config
 	logger *zap.Logger
 
+	// clients for various chains
+	chainClients ChainClients
+
 	grpcServer *grpc.Server
 	httpServer *http.Server
 }
@@ -43,9 +48,20 @@ func NewAppServer(config *Config) (*AppServer, error) {
 		zap.Any("config", config),
 	)
 
+	chainClients, err := NewChainClients(
+		log,
+		strings.Split(config.ChainClientIDs, ","),
+		strings.Split(config.ChainClientRPCs, ","),
+		os.Getenv("HOME"),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	app := &AppServer{
-		config: config,
-		logger: log,
+		config:       config,
+		logger:       log,
+		chainClients: chainClients,
 	}
 
 	// Create grpc server
