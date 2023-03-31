@@ -81,8 +81,8 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 		chainIBCInfo: nil,
 	}
 
-	// Cache initial values, best effort
-	//_, _ = chainClient.GetCachedChainInfo()
+	// Cache initial values, the best effort
+	_, _ = chainClient.GetCachedChainInfo()
 
 	return chainClient, nil
 }

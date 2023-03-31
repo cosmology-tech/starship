@@ -74,6 +74,7 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 				Ordering: info.Ordering,
 				Version:  info.Version,
 				Tags: &pb.ChannelData_Tags{
+					// todo: fetch status from client status instead of hardcoding
 					Status:    "live",
 					Perferred: true,
 				},
