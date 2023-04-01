@@ -119,6 +119,16 @@ func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain)
 	return &pb.ResponseChain{Chain: chain}, nil
 }
 
+// ListChainPeers fetches all the peers for the chain
+func (a *AppServer) ListChainPeers(ctx context.Context, requestChain *pb.RequestChain) (*pb.Peers, error) {
+	client, err := a.chainClients.GetChainClient(requestChain.Chain)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChainAssets, error) {
 	chainID := requestChain.Chain
 

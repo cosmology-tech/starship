@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	pb "github.com/Anmol1696/starship/registry/registry"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
@@ -85,6 +86,15 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	_, _ = chainClient.GetCachedChainInfo()
 
 	return chainClient, nil
+}
+
+// getChainSeedPeers returns the nodes for the genesis node
+func (c *ChainClient) getChainSeedPeers() ([]*pb.Peer, error) {
+
+}
+
+func (c *ChainClient) getChainPersistencePeers() ([]*pb.Peer, error) {
+
 }
 
 // getChannelPort returns the chains and the counterparty info

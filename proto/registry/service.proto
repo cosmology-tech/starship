@@ -24,6 +24,14 @@ service Registry {
   rpc GetChain(RequestChain) returns (ResponseChain) {
     option (google.api.http) = { get: "/chains/{chain}" };
   }
+  // ListChainPeers will fetch all the nodes and addresses
+  rpc ListChainPeers(RequestChain) returns (Peers) {
+    option (google.api.http) = { get: "/chains/{chain}/peers" };
+  }
+  // ListChainAPIs will fetch all the nodes and addresses
+  rpc ListChainAPIs(RequestChain) returns (APIs) {
+    option (google.api.http) = { get: "/chains/{chain}/apis" };
+  }
   rpc GetChainAssets(RequestChain) returns (ResponseChainAssets) {
     option (google.api.http) = { get: "/chains/{chain}/assets" };
   }
