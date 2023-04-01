@@ -47,6 +47,38 @@ func readJSONToProto(file string, m proto.Message) error {
 	return nil
 }
 
+// VerifyChainIDs will check the config chain ids are present as directories in
+// the chain registry directory
+func (a *AppServer) VerifyChainIDs() error {
+	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
+
+	files, err := os.ReadDir(a.config.ChainRegistry)
+	if err != nil {
+		return err
+	}
+
+	var notChainIDs []string
+	for _, chainID := range chainIDs {
+		var found bool
+		for _, file := range files {
+			if file.Name() == chainID {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			notChainIDs = append(notChainIDs, chainID)
+		}
+	}
+
+	if len(notChainIDs) > 0 {
+		return fmt.Errorf("chains %s not found in chain registry directory", strings.Join(notChainIDs, ","))
+	}
+
+	return nil
+}
+
 func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChains, error) {
 	files, err := os.ReadDir(a.config.ChainRegistry)
 	if err != nil {
@@ -79,7 +111,9 @@ func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.Res
 		return nil, err
 	}
 
-	var chainIDs []string
+	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
+
+	// Verifty chain ids are correct
 	for _, f := range files {
 		if strings.HasPrefix(f.Name(), "_") || !f.IsDir() {
 			continue
