@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
 	pb "github.com/Anmol1696/starship/registry/registry"
@@ -88,13 +90,54 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	return chainClient, nil
 }
 
-// getChainSeedPeers returns the nodes for the genesis node
-func (c *ChainClient) getChainSeedPeers() ([]*pb.Peer, error) {
-
+func (c *ChainClient) ChainID() string {
+	return c.chainConfig.ChainID
 }
 
-func (c *ChainClient) getChainPersistencePeers() ([]*pb.Peer, error) {
+func (c *ChainClient) GetNodeMoniker(ctx context.Context) (string, error) {
+	status, err := c.client.RPCClient.Status(ctx)
+	if err != nil {
+		return "", err
+	}
 
+	return status.NodeInfo.Moniker, nil
+}
+
+// GetChainSeed returns the nodes for the self node
+func (c *ChainClient) GetChainSeed(ctx context.Context) ([]*pb.Peer, error) {
+	status, err := c.client.RPCClient.Status(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	seed := &pb.Peer{
+		Id:       string(status.NodeInfo.ID()),
+		Address:  c.chainConfig.RPCAddr,
+		Provider: &status.NodeInfo.Moniker,
+	}
+
+	return []*pb.Peer{seed}, nil
+}
+
+// GetChainPeers returns the peers of the node
+func (c *ChainClient) GetChainPeers(ctx context.Context) ([]*pb.Peer, error) {
+	netInfo, err := c.client.RPCClient.NetInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var pbPeers []*pb.Peer
+	for _, peer := range netInfo.Peers {
+		port := strings.Split(peer.NodeInfo.ListenAddr, ":")[2]
+		pbPeer := &pb.Peer{
+			Id:       string(peer.NodeInfo.ID()),
+			Address:  fmt.Sprintf("%s:%s", peer.RemoteIP, port),
+			Provider: &peer.NodeInfo.Moniker,
+		}
+		pbPeers = append(pbPeers, pbPeer)
+	}
+
+	return pbPeers, nil
 }
 
 // getChannelPort returns the chains and the counterparty info

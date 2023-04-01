@@ -33,6 +33,10 @@ type Config struct {
 	ChainClientIDs string `name:"chain-client-ids" json:"chain_client_ids" env:"CHAIN_CLIENT_IDS" usage:"Comma seperated list of chain ids for various chains"`
 	// ChainClientRPCs is a comma seperated list of chain rpc address for various chains
 	ChainClientRPCs string `name:"chain-client-rpcs" json:"chain_client_rpcs" env:"CHAIN_CLIENT_RPCS" usage:"Comma seperated list of chain rpc address for various chains"`
+	// ChainClientGRPCs is a comma seperated list of chain grpc address for various chains
+	ChainClientGRPCs string `name:"chain-client-grpcs" json:"chain_client_grpcs" env:"CHAIN_CLIENT_GRPCS" usage:"Comma seperated list of chain grpc address for various chains"`
+	// ChainClientRESTs is a comma seperated list of chain rest address for various chains
+	ChainClientRESTs string `name:"chain-client-rests" json:"chain_client_rests" env:"CHAIN_CLIENT_RESTS" usage:"Comma seperated list of chain rest address for various chains"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs

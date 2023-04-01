@@ -116,7 +116,40 @@ func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain)
 		return nil, fmt.Errorf("unable to read file %s, err: %d", filename, err)
 	}
 
+	client, err := a.chainClients.GetChainClient(requestChain.Chain)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch and overide peers
+	peers, err := a.getChainPeers(ctx, client)
+	if err != nil {
+		return nil, err
+	}
+	chain.Peers = peers
+
+	// Fetch and overide apis
+	apis, err := a.getChainAPIs(ctx, client)
+	if err != nil {
+		return nil, err
+	}
+	chain.Apis = apis
+
 	return &pb.ResponseChain{Chain: chain}, nil
+}
+
+func (a *AppServer) getChainPeers(ctx context.Context, client *ChainClient) (*pb.Peers, error) {
+	seedPeers, err := client.GetChainSeed(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	persistentPeers, err := client.GetChainPeers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Peers{Seeds: seedPeers, PersistentPeers: persistentPeers}, nil
 }
 
 // ListChainPeers fetches all the peers for the chain
@@ -126,7 +159,66 @@ func (a *AppServer) ListChainPeers(ctx context.Context, requestChain *pb.Request
 		return nil, err
 	}
 
-	return nil, nil
+	return a.getChainPeers(ctx, client)
+}
+
+func (a *AppServer) getChainAPIs(ctx context.Context, client *ChainClient) (*pb.APIs, error) {
+	chainID := client.ChainID()
+
+	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
+
+	index := 0
+	found := false
+	for index = range chainIDs {
+		if chainIDs[index] == chainID {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return nil, fmt.Errorf("not found: chain id %s not in configs", chainID)
+	}
+
+	moniker, err := client.GetNodeMoniker(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	apiFactory := func(addrs string) []*pb.APIs_API {
+		if addrs == "" {
+			return nil
+		}
+		addrsList := strings.Split(addrs, ",")
+		if index > len(addrsList) {
+			return nil
+		}
+		return []*pb.APIs_API{
+			{
+				Address:  addrsList[index],
+				Provider: moniker,
+			},
+		}
+	}
+
+	apis := &pb.APIs{
+		Rpc:  apiFactory(a.config.ChainClientRPCs),
+		Grpc: apiFactory(a.config.ChainClientGRPCs),
+		Rest: apiFactory(a.config.ChainClientRESTs),
+	}
+
+	return apis, nil
+}
+
+// ListChainAPIs fetches all the apis
+func (a *AppServer) ListChainAPIs(ctx context.Context, requestChain *pb.RequestChain) (*pb.APIs, error) {
+	chainID := requestChain.Chain
+	client, err := a.chainClients.GetChainClient(chainID)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.getChainAPIs(ctx, client)
 }
 
 func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChainAssets, error) {
