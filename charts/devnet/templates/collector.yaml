@@ -9,7 +9,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - name: collector
+    - name: http
       port: 8070
       protocol: TCP
       targetPort: 8070

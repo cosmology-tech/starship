@@ -9,7 +9,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - name: explorer
+    - name: http
       port: 8080
       protocol: TCP
       targetPort: 8080
