@@ -74,7 +74,7 @@ spec:
             - mountPath: /scripts
               name: scripts
         {{- end }}
-        {{- include "devnet.init.wait" $dataExposer | indent 8 }}
+        {{- include "devnet.init.wait" list $chain.name | indent 8 }}
         - name: init-validator
           image: {{ $image }}
           imagePullPolicy: Always

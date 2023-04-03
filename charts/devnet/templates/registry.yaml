@@ -40,7 +40,7 @@ spec:
         tier: gateway
       labels:
         app.kubernetes.io/instance: registry
-        app.kubernetes.io/type: {{ .Values.registry.type }}
+        app.kubernetes.io/type: registry
         app.kubernetes.io/name: registry
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
@@ -51,12 +51,12 @@ spec:
           resources:
             limits:
               cpu: "1"
-              memory: 4Gi
+              memory: 2Gi
             requests:
               cpu: "0.5"
-              memory: 2Gi
+              memory: 1Gi
           volumeMounts:
-            - mountPath: /home/registry/src/chains/mainnet
+            - mountPath: /configs
               name: registry-configs
           readinessProbe:
             tcpSocket:
@@ -84,31 +84,89 @@ data:
   {{- if not $.Values.registry.localhost }}
   {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
   {{- end }}
-  {{ $chain.name }}.json: |-
+  {{ $chain.name }}/assetlist.json: |-
     {
-      "chain_name": "{{ $chain.name }}",
-      "coingecko": "{{ $chain.type }}",
+      "$schema": "../assetlist.schema.json",
+      "chain_name": "{{ $chain.type }}",
+      "assets": [
+        {
+          "description": "The denom for token {{ $defaultChain.denom }}",
+          "base": "{{ $defaultChain.denom }}",
+          "name": "{{ $defaultChain.denom }}",
+          "display": "{{ trimPrefix 'u' $defaultChain.denom }}",
+          "symbol": "{{ trimPrefix 'u' $defaultChain.denom | upper }}",
+          "exponent": "6",
+          "denom_units": [
+            {
+              "denom": "{{ $defaultChain.denom }}",
+              "exponent": 0
+            },
+            {
+              "denom": "{{ trimPrefix 'u' $defaultChain.denom }}",
+              "exponent": 6
+            }
+          ],
+          "coingecko_id": "{{ $chain.type }}",
+          "logo": ""
+        }
+      ]
+    }
+  {{ $chain.name }}/chain.json: |-
+    {
+      "$schema": "../chain.schema.json",
+      "chain_name": "{{ $chain.type }}",
+      "status": "live",
+      "network_type": "mainnet",
+      "chain_id": "{{ $chain.name }}",
+      "bech32_prefix": "{{ $defaultChain.prefix }}",
+      "daemon_name": "{{ $defaultChain.binary }}",
+      "node_home": "{{ $defaultChain.home }}",
+      "key_algos": [
+        "secp256k1"
+      ],
+      "slip44": "{{ $defaultChain.coinType | int }}",
+      "fees": {
+        "fee_tokens": [
+          {
+            "denom": "{{ $defaultChain.denom }}",
+            "fixed_min_gas_price": 0,
+            "low_gas_price": 0,
+            "average_gas_price": 0.025,
+            "high_gas_price": 0.04
+          }
+        ]
+      },
+      "staking": {
+        "staking_tokens": [
+          {
+            "denom": "{{ $defaultChain.denom }}"
+          }
+        ],
+        "lock_duration": {
+          "time": "1209600s"
+        }
+      },
+      "codebase": {
+        "git_repo": "{{ $defaultChain.repo }}"
+      },
       "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
       "rpc": [
         "http://{{ $host }}:{{ $chain.ports.rpc }}",
         "http://{{ $host }}:{{ $chain.ports.rpc }}"
       ],
-      "snapshot_provider": "",
-      "sdk_version": "0.45.6",
-      "coin_type": "{{ $defaultChain.coinType }}",
-      "min_tx_fee": "3000",
-      "addr_prefix": "{{ $defaultChain.prefix }}",
-      "logo": "",
-      "assets": [
+      {{- if .Values.explorer.enabled }}
+      "explorers": [
         {
-          "base": "{{ $defaultChain.denom }}",
-          "symbol": "{{ $defaultChain.prefix | upper }}",
-          "exponent": "6",
-          "coingecko_id": "{{ $chain.name }}",
-          "logo": ""
+          "kind": "{{ .Values.explorer.type }}",
+          "url": "http://localhost:{{ .Values.explorer.ports.rest }}"
         }
-      ]
+      ],
+      {{- end }}
+      "peers": {
+        "seeds": [],
+        "persistent_peers": []
+      }
     }
-  {{- end }}
+    {{- end }}
 ---
 {{- end }}

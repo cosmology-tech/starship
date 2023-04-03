@@ -32,8 +32,7 @@ spec:
       initContainers:
         {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
         {{- range $chain := $relayer.chains  }}
-        {{- $initData := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
-        {{- include "devnet.init.wait" $initData | indent 8 }}
+        {{- include "devnet.init.wait" list $chain.name | indent 8 }}
         {{- end }}
         - name: init-relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
