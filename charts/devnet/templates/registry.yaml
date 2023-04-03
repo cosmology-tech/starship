@@ -1,0 +1,114 @@
+{{- if .Values.registry.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  labels:
+    app.kubernetes.io/name: registry
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: grpc
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app.kubernetes.io/name: registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: registry
+      app.kubernetes.io/name: registry
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: registry
+        app.kubernetes.io/type: {{ .Values.registry.type }}
+        app.kubernetes.io/name: registry
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      containers:
+        - name: registry
+          image: {{ .Values.registry.image }}
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: 4Gi
+            requests:
+              cpu: "0.5"
+              memory: 2Gi
+          volumeMounts:
+            - mountPath: /home/registry/src/chains/mainnet
+              name: registry-configs
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        - name: registry-configs
+          configMap:
+            name: registry
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry
+data:
+  {{- range $chain := .Values.chains }}
+  {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+  {{ $host := "localhost" }}
+  {{- if not $.Values.registry.localhost }}
+  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+  {{- end }}
+  {{ $chain.name }}.json: |-
+    {
+      "chain_name": "{{ $chain.name }}",
+      "coingecko": "{{ $chain.type }}",
+      "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
+      "rpc": [
+        "http://{{ $host }}:{{ $chain.ports.rpc }}",
+        "http://{{ $host }}:{{ $chain.ports.rpc }}"
+      ],
+      "snapshot_provider": "",
+      "sdk_version": "0.45.6",
+      "coin_type": "{{ $defaultChain.coinType }}",
+      "min_tx_fee": "3000",
+      "addr_prefix": "{{ $defaultChain.prefix }}",
+      "logo": "",
+      "assets": [
+        {
+          "base": "{{ $defaultChain.denom }}",
+          "symbol": "{{ $defaultChain.prefix | upper }}",
+          "exponent": "6",
+          "coingecko_id": "{{ $chain.name }}",
+          "logo": ""
+        }
+      ]
+    }
+  {{- end }}
+---
+{{- end }}
