@@ -55,6 +55,7 @@ message Codebase {
   repeated string ics_enabled = 10 [json_name = "ics_enabled"];
   optional Genesis genesis = 11 [json_name = "genesis"];
   repeated Versions versions = 12 [json_name = "versions"];
+  map<string,string> consensus = 13 [json_name = "consensus"];
 }
 
 message LogoURIs {

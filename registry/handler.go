@@ -47,12 +47,12 @@ func readJSONToProto(file string, m proto.Message) error {
 	return nil
 }
 
-// VerifyChainIDs will check the config chain ids are present as directories in
+// verifyChainIDs will check the config chain ids are present as directories in
 // the chain registry directory
-func (a *AppServer) VerifyChainIDs() error {
-	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
+func verifyChainIDs(config *Config) error {
+	chainIDs := strings.Split(config.ChainClientIDs, ",")
 
-	files, err := os.ReadDir(a.config.ChainRegistry)
+	files, err := os.ReadDir(config.ChainRegistry)
 	if err != nil {
 		return err
 	}
@@ -106,30 +106,7 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 }
 
 func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChainIDs, error) {
-	files, err := os.ReadDir(a.config.ChainRegistry)
-	if err != nil {
-		return nil, err
-	}
-
 	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
-
-	// Verifty chain ids are correct
-	for _, f := range files {
-		if strings.HasPrefix(f.Name(), "_") || !f.IsDir() {
-			continue
-		}
-
-		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
-		info, err := readJSONFile(filename)
-		if err != nil {
-			return nil, err
-		}
-		chainID, ok := info["chain_id"].(string)
-		if !ok {
-			return nil, fmt.Errorf("unable to get chain id for %s, err: %s", filename, err)
-		}
-		chainIDs = append(chainIDs, chainID)
-	}
 
 	return &pb.ResponseChainIDs{ChainIds: chainIDs}, nil
 }

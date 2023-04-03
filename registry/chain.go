@@ -85,7 +85,7 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	}
 
 	// Cache initial values, the best effort
-	_, _ = chainClient.GetCachedChainInfo()
+	//_, _ = chainClient.GetCachedChainInfo()
 
 	return chainClient, nil
 }
@@ -128,7 +128,7 @@ func (c *ChainClient) GetChainPeers(ctx context.Context) ([]*pb.Peer, error) {
 
 	var pbPeers []*pb.Peer
 	for _, peer := range netInfo.Peers {
-		port := strings.Split(peer.NodeInfo.ListenAddr, ":")[2]
+		port := peer.NodeInfo.ListenAddr[strings.LastIndex(peer.NodeInfo.ListenAddr, ",")+1:]
 		pbPeer := &pb.Peer{
 			Id:       string(peer.NodeInfo.ID()),
 			Address:  fmt.Sprintf("%s:%s", peer.RemoteIP, port),
