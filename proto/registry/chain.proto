@@ -55,6 +55,7 @@ message Codebase {
   repeated string ics_enabled = 10 [json_name = "ics_enabled"];
   optional Genesis genesis = 11 [json_name = "genesis"];
   repeated Versions versions = 12 [json_name = "versions"];
+  map<string,string> consensus = 13 [json_name = "consensus"];
 }
 
 message LogoURIs {
@@ -67,13 +68,13 @@ message Image {
   map<string,string> theme = 2 [json_name = "theme"];
 }
 
-message Peers {
-  message Peer {
-    string id = 1 [json_name = "id"];
-    string address = 2 [json_name = "address"];
-    optional string provider = 3 [json_name = "provider"];
-  }
+message Peer {
+  string id = 1 [json_name = "id"];
+  string address = 2 [json_name = "address"];
+  optional string provider = 3 [json_name = "provider"];
+}
 
+message Peers {
   repeated Peer seeds = 1 [json_name = "seeds"];
   repeated Peer persistent_peers = 2 [json_name = "persistent_peers"];
 }

@@ -64,6 +64,12 @@ func NewAppServer(config *Config) (*AppServer, error) {
 		chainClients: chainClients,
 	}
 
+	// Validate config
+	err = app.ValidateConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	// Create grpc server
 	grpcServer := grpc.NewServer(app.grpcMiddleware()...)
 	pb.RegisterRegistryServer(grpcServer, app)
@@ -88,6 +94,16 @@ func NewAppServer(config *Config) (*AppServer, error) {
 
 	return app, err
 
+}
+
+func (a *AppServer) ValidateConfig() error {
+	// Verify chain ids and chain registry information
+	err := verifyChainIDs(a.config)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *AppServer) grpcMiddleware() []grpc.ServerOption {
