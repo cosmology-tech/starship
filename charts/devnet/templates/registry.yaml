@@ -1,4 +1,8 @@
 {{- if .Values.registry.enabled }}
+{{ $listIDs := list }}
+{{- range $.Values.chains -}}
+{{ $listIDs = .name | append $listIDs }}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -45,9 +49,15 @@ spec:
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       containers:
+        {{ include "devnet.init.wait" $listIDs }}
         - name: registry
           image: {{ .Values.registry.image }}
           imagePullPolicy: Always
+          env:
+            - name: REGISTRY_CHAIN_CLIENT_IDS
+              value: {{ include "devnet.chains.ids" }}
+            - name: REGISTRY_CHAIN_CLIENT_RPCS
+              value: {{ include "devnet.chains.rpc.addrs" }}
           resources:
             limits:
               cpu: "1"

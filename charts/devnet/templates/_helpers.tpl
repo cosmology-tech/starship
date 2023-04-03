@@ -161,7 +161,7 @@ requests:
 {{/*
 Returns a comma seperated list of chain id
 */}}
-{{- define "devnet.chains.rpc.addrs" -}}
+{{- define "devnet.chains.ids" -}}
 {{- $values := list -}}
 {{- range $.Values.chains -}}
     {{- $values = .name | append $values -}}
