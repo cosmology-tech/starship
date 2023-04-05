@@ -106,19 +106,26 @@ Environment variables for genesis chain
 Init container for waiting on a url to respond
 */}}
 {{- define "devnet.init.wait" }}
-- name: {{ printf "wait-for-%s" .chain }}
+- name: "wait-for-chains"
   image: "curlimages/curl"
   imagePullPolicy: Always
   env:
-  {{- include "devnet.genesisVars" . | indent 4}}
+    - name: GENESIS_PORT
+      value: "{{ .port }}"
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
   command:
     - /bin/sh
     - "-c"
     - |
-      while [ $(curl -sw '%{http_code}' http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
+      {{- range $chain := .chains }}
+      while [ $(curl -sw '%{http_code}' http://{{ $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
         echo "Genesis validator does not seem to be ready. Waiting for it to start..."
         sleep 10;
       done
+      {{- end }}
       echo "Ready to start"
       exit 0
 {{- end }}
@@ -150,3 +157,25 @@ requests:
   cpu: "0.5"
   memory: "500M"
 {{- end }}
+
+{{/*
+Returns a comma seperated list of chain id
+*/}}
+{{- define "devnet.chains.ids" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = $chain.name | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the RPC address
+*/}}
+{{- define "devnet.chains.rpc.addrs" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}

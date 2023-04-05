@@ -1,0 +1,189 @@
+{{- if .Values.registry.enabled }}
+{{ $listIDs := list }}
+{{- range $.Values.chains -}}
+{{ $listIDs = .name | append $listIDs }}
+{{- end }}
+{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  labels:
+    app.kubernetes.io/name: registry
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: grpc
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app.kubernetes.io/name: registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: registry
+      app.kubernetes.io/name: registry
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: registry
+        app.kubernetes.io/type: registry
+        app.kubernetes.io/name: registry
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      initContainers:
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
+      containers:
+        - name: registry
+          image: {{ .Values.registry.image }}
+          imagePullPolicy: Always
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: REGISTRY_CHAIN_CLIENT_IDS
+              value: "{{ include "devnet.chains.ids" . }}"
+            - name: REGISTRY_CHAIN_CLIENT_RPCS
+              value: "{{ include "devnet.chains.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_REGISTRY
+              value: "/configs"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: "0.5"
+              memory: 1Gi
+          volumeMounts:
+            {{- range $chain := .Values.chains }}
+            - mountPath: /configs/{{ $chain.name }}
+              name: registry-configs-{{ $chain.name }}
+            {{- end }}
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        {{- range $chain := .Values.chains }}
+        - name: registry-configs-{{ $chain.name }}
+          configMap:
+            name: registry-{{ $chain.name }}
+        {{- end }}
+---
+{{- range $chain := .Values.chains }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $host := "localhost" }}
+{{- if not $.Values.registry.localhost }}
+{{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-{{ $chain.name }}
+data:
+  assetlist.json: |-
+    {
+      "$schema": "../assetlist.schema.json",
+      "chain_name": "{{ $chain.type }}",
+      "assets": [
+        {
+          "description": "The denom for token {{ $defaultChain.denom }}",
+          "base": "{{ $defaultChain.denom }}",
+          "name": "{{ $defaultChain.denom }}",
+          "display": "{{ $defaultChain.denom }}",
+          "symbol": "{{ $defaultChain.denom | upper }}",
+          "exponent": "6",
+          "denom_units": [
+            {
+              "denom": "{{ $defaultChain.denom }}",
+              "exponent": 0
+            },
+            {
+              "denom": "{{ $defaultChain.denom }}",
+              "exponent": 6
+            }
+          ],
+          "coingecko_id": "{{ $chain.type }}",
+          "logo": ""
+        }
+      ]
+    }
+  chain.json: |-
+    {
+      "$schema": "../chain.schema.json",
+      "chain_name": "{{ $chain.type }}",
+      "status": "live",
+      "network_type": "mainnet",
+      "chain_id": "{{ $chain.name }}",
+      "bech32_prefix": "{{ $defaultChain.prefix }}",
+      "daemon_name": "{{ $defaultChain.binary }}",
+      "node_home": "{{ $defaultChain.home }}",
+      "key_algos": [
+        "secp256k1"
+      ],
+      "slip44": "{{ $defaultChain.coinType | int }}",
+      "fees": {
+        "fee_tokens": [
+          {
+            "denom": "{{ $defaultChain.denom }}",
+            "fixed_min_gas_price": 0,
+            "low_gas_price": 0,
+            "average_gas_price": 0.025,
+            "high_gas_price": 0.04
+          }
+        ]
+      },
+      "staking": {
+        "staking_tokens": [
+          {
+            "denom": "{{ $defaultChain.denom }}"
+          }
+        ],
+        "lock_duration": {
+          "time": "1209600s"
+        }
+      },
+      "codebase": {
+        "git_repo": "{{ $defaultChain.repo }}"
+      },
+      {{- if $.Values.explorer.enabled }}
+      "explorers": [
+        {
+          "kind": "{{ $.Values.explorer.type }}",
+          "url": "http://localhost:{{ $.Values.explorer.ports.rest }}"
+        }
+      ],
+      {{- end }}
+      "peers": {
+        "seeds": [],
+        "persistent_peers": []
+      }
+    }
+---
+{{- end }}
+{{- end }}

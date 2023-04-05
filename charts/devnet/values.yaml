@@ -182,11 +182,12 @@ explorer:
 faucet:
   enabled: false
 
-chainRegistry:
+registry:
   enabled: false
-  image: anmol1696/chain-registry
+  image: anmol1696/registry
   ports:
-    rest: 8090
+    rest: 6060
+    grpc: 7070
 
 collector:
   enabled: false

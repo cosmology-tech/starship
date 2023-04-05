@@ -1,6 +1,7 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "ts-relayer" }}
 {{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
+{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.port }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -31,10 +32,7 @@ spec:
     spec:
       initContainers:
         {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
-        {{- range $chain := $relayer.chains  }}
-        {{- $initData := dict "chain" $chain "port" ($.Values.exposer.port | quote | default "8081") }}
-        {{- include "devnet.init.wait" $initData | indent 8 }}
-        {{- end }}
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
           imagePullPolicy: Always
