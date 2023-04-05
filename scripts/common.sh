@@ -1,5 +1,11 @@
 #!/bin/bash
 
+RED=31
+GREEN="32"
+YELLOW=33
+BLUE=34
+
+
 function color() {
     # Usage: color "31;5" "string"
     # Some valid values for color:
