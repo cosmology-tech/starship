@@ -12,6 +12,8 @@
 {{- if $upgrade.enabled }}
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
+
+{{ $initParams := dict "chains" list $chain.name "port" $.Values.exposer.port }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

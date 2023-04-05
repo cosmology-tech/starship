@@ -111,7 +111,7 @@ Init container for waiting on a url to respond
   imagePullPolicy: Always
   env:
     - name: GENESIS_PORT
-      value: {{ $.Values.exposer.port | default "8081" }}
+      value: "{{ .port }}"
     - name: NAMESPACE
       valueFrom:
         fieldRef:
@@ -120,8 +120,8 @@ Init container for waiting on a url to respond
     - /bin/sh
     - "-c"
     - |
-      {{- range . }}
-      while [ $(curl -sw '%{http_code}' http://{{ . }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
+      {{- range $chain := .chains }}
+      while [ $(curl -sw '%{http_code}' http://{{ $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
         echo "Genesis validator does not seem to be ready. Waiting for it to start..."
         sleep 10;
       done
@@ -163,8 +163,8 @@ Returns a comma seperated list of chain id
 */}}
 {{- define "devnet.chains.ids" -}}
 {{- $values := list -}}
-{{- range $.Values.chains -}}
-    {{- $values = .name | append $values -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = $chain.name | append $values -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
@@ -174,8 +174,8 @@ Returns a comma seperated list of urls for the RPC address
 */}}
 {{- define "devnet.chains.rpc.addrs" -}}
 {{- $values := list -}}
-{{- range $.Values.chains -}}
-    {{- $values = printf "http://%s-genesis.%s.svc.cluster.local:26657" .name $.Release.Namespace | append $values -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}

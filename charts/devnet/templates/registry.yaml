@@ -3,6 +3,7 @@
 {{- range $.Values.chains -}}
 {{ $listIDs = .name | append $listIDs }}
 {{- end }}
+{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.port }}
 ---
 apiVersion: v1
 kind: Service
@@ -48,16 +49,23 @@ spec:
         app.kubernetes.io/name: registry
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
+      initContainers:
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
       containers:
-        {{ include "devnet.init.wait" $listIDs }}
         - name: registry
           image: {{ .Values.registry.image }}
           imagePullPolicy: Always
           env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: REGISTRY_CHAIN_CLIENT_IDS
-              value: {{ include "devnet.chains.ids" }}
+              value: "{{ include "devnet.chains.ids" . }}"
             - name: REGISTRY_CHAIN_CLIENT_RPCS
-              value: {{ include "devnet.chains.rpc.addrs" }}
+              value: "{{ include "devnet.chains.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_REGISTRY
+              value: "/configs"
           resources:
             limits:
               cpu: "1"
@@ -66,8 +74,10 @@ spec:
               cpu: "0.5"
               memory: 1Gi
           volumeMounts:
-            - mountPath: /configs
-              name: registry-configs
+            {{- range $chain := .Values.chains }}
+            - mountPath: /configs/{{ $chain.name }}
+              name: registry-configs-{{ $chain.name }}
+            {{- end }}
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -79,22 +89,24 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30
       volumes:
-        - name: registry-configs
+        {{- range $chain := .Values.chains }}
+        - name: registry-configs-{{ $chain.name }}
           configMap:
-            name: registry
+            name: registry-{{ $chain.name }}
+        {{- end }}
 ---
+{{- range $chain := .Values.chains }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $host := "localhost" }}
+{{- if not $.Values.registry.localhost }}
+{{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: registry
+  name: registry-{{ $chain.name }}
 data:
-  {{- range $chain := .Values.chains }}
-  {{ $defaultChain := get $.Values.defaultChains $chain.type }}
-  {{ $host := "localhost" }}
-  {{- if not $.Values.registry.localhost }}
-  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
-  {{- end }}
-  {{ $chain.name }}/assetlist.json: |-
+  assetlist.json: |-
     {
       "$schema": "../assetlist.schema.json",
       "chain_name": "{{ $chain.type }}",
@@ -103,8 +115,8 @@ data:
           "description": "The denom for token {{ $defaultChain.denom }}",
           "base": "{{ $defaultChain.denom }}",
           "name": "{{ $defaultChain.denom }}",
-          "display": "{{ trimPrefix 'u' $defaultChain.denom }}",
-          "symbol": "{{ trimPrefix 'u' $defaultChain.denom | upper }}",
+          "display": "{{ $defaultChain.denom }}",
+          "symbol": "{{ $defaultChain.denom | upper }}",
           "exponent": "6",
           "denom_units": [
             {
@@ -112,7 +124,7 @@ data:
               "exponent": 0
             },
             {
-              "denom": "{{ trimPrefix 'u' $defaultChain.denom }}",
+              "denom": "{{ $defaultChain.denom }}",
               "exponent": 6
             }
           ],
@@ -121,7 +133,7 @@ data:
         }
       ]
     }
-  {{ $chain.name }}/chain.json: |-
+  chain.json: |-
     {
       "$schema": "../chain.schema.json",
       "chain_name": "{{ $chain.type }}",
@@ -159,16 +171,11 @@ data:
       "codebase": {
         "git_repo": "{{ $defaultChain.repo }}"
       },
-      "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
-      "rpc": [
-        "http://{{ $host }}:{{ $chain.ports.rpc }}",
-        "http://{{ $host }}:{{ $chain.ports.rpc }}"
-      ],
-      {{- if .Values.explorer.enabled }}
+      {{- if $.Values.explorer.enabled }}
       "explorers": [
         {
-          "kind": "{{ .Values.explorer.type }}",
-          "url": "http://localhost:{{ .Values.explorer.ports.rest }}"
+          "kind": "{{ $.Values.explorer.type }}",
+          "url": "http://localhost:{{ $.Values.explorer.ports.rest }}"
         }
       ],
       {{- end }}
@@ -177,6 +184,6 @@ data:
         "persistent_peers": []
       }
     }
-    {{- end }}
 ---
+{{- end }}
 {{- end }}
