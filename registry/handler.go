@@ -80,26 +80,16 @@ func verifyChainIDs(config *Config) error {
 }
 
 func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChains, error) {
-	files, err := os.ReadDir(a.config.ChainRegistry)
-	if err != nil {
-		return nil, err
-	}
+	chainIDs := strings.Split(a.config.ChainClientIDs, ",")
 
 	var chains []*pb.ChainRegistry
-	for _, f := range files {
-		if strings.HasPrefix(f.Name(), "_") || !f.IsDir() {
-			continue
-		}
-
-		chain := &pb.ChainRegistry{}
-		filename := filepath.Join(a.config.ChainRegistry, f.Name(), "chain.json")
-
-		err := readJSONToProto(filename, chain)
+	for _, chainID := range chainIDs {
+		resp, err := a.GetChain(ctx, &pb.RequestChain{Chain: chainID})
 		if err != nil {
 			return nil, err
 		}
 
-		chains = append(chains, chain)
+		chains = append(chains, resp.Chain)
 	}
 
 	return &pb.ResponseChains{Chains: chains}, err
