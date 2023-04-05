@@ -24,3 +24,6 @@ relayers:
 
 explorer:
   enabled: true
+
+registry:
+  enabled: true
