@@ -46,6 +46,7 @@ port-forward-all:
 	done
 	echo "Port forwarding explorer to localhost"
 	kubectl port-forward service/explorer 8080:8080 &
+	kubectl port-forward service/registry 8081:8080 &
 
 .PHONY: stop-forward
 stop-forward:
