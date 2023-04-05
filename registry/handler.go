@@ -92,7 +92,7 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 		chains = append(chains, resp.Chain)
 	}
 
-	return &pb.ResponseChains{Chains: chains}, err
+	return &pb.ResponseChains{Chains: chains}, nil
 }
 
 func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseChainIDs, error) {
