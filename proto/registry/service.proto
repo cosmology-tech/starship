@@ -21,7 +21,7 @@ service Registry {
   rpc ListChains(google.protobuf.Empty) returns (ResponseChains) {
     option (google.api.http) = { get: "/chains" };
   }
-  rpc GetChain(RequestChain) returns (ResponseChain) {
+  rpc GetChain(RequestChain) returns (ChainRegistry) {
     option (google.api.http) = { get: "/chains/{chain}" };
   }
   // ListChainPeers will fetch all the nodes and addresses
@@ -59,10 +59,6 @@ message ResponseChainIDs {
 
 message RequestChain {
   string chain = 1 [json_name = "chain"];
-}
-
-message ResponseChain {
-  ChainRegistry chain = 1 [json_name = "chain"];
 }
 
 message ResponseChainAssets {

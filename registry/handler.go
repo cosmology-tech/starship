@@ -89,7 +89,7 @@ func (a *AppServer) ListChains(ctx context.Context, _ *emptypb.Empty) (*pb.Respo
 			return nil, err
 		}
 
-		chains = append(chains, resp.Chain)
+		chains = append(chains, resp)
 	}
 
 	return &pb.ResponseChains{Chains: chains}, nil
@@ -104,7 +104,7 @@ func (a *AppServer) ListChainIDs(ctx context.Context, _ *emptypb.Empty) (*pb.Res
 // GetChain handles the incoming request for a single chain given the chain id
 // Note, we use chain-id instead of chain type, since it is expected, that there
 // can be multiple chains of same type by unique chain ids
-func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChain, error) {
+func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain) (*pb.ChainRegistry, error) {
 	chainID := requestChain.Chain
 
 	filename := filepath.Join(a.config.ChainRegistry, chainID, "chain.json")
@@ -136,7 +136,7 @@ func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain)
 	}
 	chain.Apis = apis
 
-	return &pb.ResponseChain{Chain: chain}, nil
+	return chain, nil
 }
 
 func (a *AppServer) getChainPeers(ctx context.Context, client *ChainClient) (*pb.Peers, error) {
