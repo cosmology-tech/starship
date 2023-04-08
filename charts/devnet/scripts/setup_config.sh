@@ -22,7 +22,7 @@ sed -i -e 's#broadcast-mode = "sync"#broadcast-mode = "block"#g' $CHAIN_DIR/conf
 sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/client.toml
 
 echo "Update app.toml file"
-sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0.025$DENOM\"#g" $CHAIN_DIR/config/app.toml
+sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0$DENOM\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e "s#pruning = \".*\"#pruning = \"default\"#g" $CHAIN_DIR/config/app.toml
 sed -i -z -e 's/Enable defines if the API server should be enabled.\nenable = false/Enable defines if the API server should be enabled.\nenable = true/g' $CHAIN_DIR/config/app.toml
 sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DIR/config/app.toml
