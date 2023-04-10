@@ -1,4 +1,4 @@
-workspace(name = "com_github_anmol1696_starship")
+workspace(name = "com_github_cosmology_tech_starship")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 

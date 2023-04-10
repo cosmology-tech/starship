@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "github.com/Anmol1696/starship/registry/registry"
+	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
 type ChannelPort struct {

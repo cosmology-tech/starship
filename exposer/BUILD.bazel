@@ -14,7 +14,7 @@ go_library(
         "main.go",
         "model.go",
     ],
-    importpath = "github.com/Anmol1696/starship/exposer",
+    importpath = "github.com/cosmology-tech/starship/exposer",
     visibility = ["//visibility:public"],
     deps = [
         "//proto/exposer:exposer_go_proto",
