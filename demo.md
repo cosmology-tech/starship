@@ -5,7 +5,7 @@ creted with starship.
 
 1. Clone 2 repos, mesh-security clone and starship
    ```bash
-   git clone git@github.com:Anmol1696/starship.git
+   git clone git@github.com:cosmology-tech/starship.git
    
    # Mesh security repo, containing the tests
    git clone git@github.com:Anmol1696/mesh-security.git
@@ -14,7 +14,7 @@ creted with starship.
    ```
    Note: We used the forked mesh-security repo since there are minor changes made to the testing repo. We will remove
    this dependency soon
-2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/Anmol1696/starship#setup-local-k8s-cluster-optional)
+2. If you dont have access to a k8s cluster, please follow the steps in [README](https://github.com/cosmology-tech/starship#setup-local-k8s-cluster-optional)
 3. Optionally if you are resource constrained on your k8s cluster, you checkout starship to a local branch, which will
    spin up less resources. If you have a beefy machine, no need... try it out
    ```bash

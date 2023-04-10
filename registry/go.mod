@@ -1,4 +1,4 @@
-module github.com/Anmol1696/starship/registry
+module github.com/cosmology-tech/starship/registry
 
 go 1.19
 

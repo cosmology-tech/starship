@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
 
-option go_package = "github.com/Anmol1696/starship/exposer/exposer";
+option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
 
 message GenesisState {
 

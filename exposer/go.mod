@@ -1,4 +1,4 @@
-module github.com/Anmol1696/starship/exposer
+module github.com/cosmology-tech/starship/exposer
 
 go 1.19
 

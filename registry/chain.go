@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	pb "github.com/Anmol1696/starship/registry/registry"
+	pb "github.com/cosmology-tech/starship/registry/registry"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
