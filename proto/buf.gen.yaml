@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/Anmol1696/starship
+    default: github.com/cosmology-tech/starship
     except:
       - buf.build/googleapis/googleapis
 plugins:

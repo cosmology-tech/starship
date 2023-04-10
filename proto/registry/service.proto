@@ -8,7 +8,7 @@ import "google/protobuf/descriptor.proto";
 import "proto/registry/chain.proto";
 import "proto/registry/ibc.proto";
 
-option go_package = "github.com/Anmol1696/starship/registry/registry";
+option go_package = "github.com/cosmology-tech/starship/registry/registry";
 
 // Interface for service
 service Registry {
