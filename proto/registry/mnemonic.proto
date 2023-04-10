@@ -1,5 +1,5 @@
 syntax = "proto3";
-package exposer;
+package registry;
 
 option go_package = "github.com/cosmology-tech/starship/registry/registry";
 
