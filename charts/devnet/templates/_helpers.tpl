@@ -179,3 +179,15 @@ Returns a comma seperated list of urls for the RPC address
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the Exposer address
+*/}}
+{{- define "devnet.chains.exposer.addrs" -}}
+{{- $port = ($.Values.exposer.port | quote | default "8081") }}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:%s" $chain.name $port | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}

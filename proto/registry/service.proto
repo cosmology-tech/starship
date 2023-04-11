@@ -7,6 +7,7 @@ import "google/protobuf/descriptor.proto";
 
 import "proto/registry/chain.proto";
 import "proto/registry/ibc.proto";
+import "proto/registry/mnemonic.proto";
 
 option go_package = "github.com/cosmology-tech/starship/registry/registry";
 
@@ -23,6 +24,9 @@ service Registry {
   }
   rpc GetChain(RequestChain) returns (ChainRegistry) {
     option (google.api.http) = { get: "/chains/{chain}" };
+  }
+  rpc GetChainKeys(RequestChain) returns (Keys) {
+    option (google.api.http) = { get: "/chains/{chain}/keys" };
   }
   // ListChainPeers will fetch all the nodes and addresses
   rpc ListChainPeers(RequestChain) returns (Peers) {

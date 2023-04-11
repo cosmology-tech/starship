@@ -222,6 +222,16 @@ func (a *AppServer) ListChainAPIs(ctx context.Context, requestChain *pb.RequestC
 	return a.getChainAPIs(ctx, client)
 }
 
+// GetChainKeys fetches all keys for the chain
+func (a *AppServer) GetChainKeys(ctx context.Context, requestChain *pb.RequestChain) (*pb.Keys, error) {
+	client, err := a.chainClients.GetChainClient(requestChain.Chain)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.GetChainKeys(ctx)
+}
+
 func (a *AppServer) GetChainAssets(ctx context.Context, requestChain *pb.RequestChain) (*pb.ResponseChainAssets, error) {
 	chainID := requestChain.Chain
 
