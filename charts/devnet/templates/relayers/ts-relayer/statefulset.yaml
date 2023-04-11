@@ -1,7 +1,7 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "ts-relayer" }}
 {{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
-{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.port }}
+{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

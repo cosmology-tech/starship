@@ -1,5 +1,5 @@
 {{- range $chain := .Values.chains }}
-{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
+{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
 
 {{ $upgrade := get $chain "upgrade" }}

@@ -25,7 +25,8 @@ affinity: {}
 
 exposer:
   image: anmol1696/exposer:20230319-e41e51f
-  port: 8081
+  ports:
+    rest: 8081
   resources:
     limits:
       cpu: "0.5"

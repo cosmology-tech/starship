@@ -26,7 +26,7 @@ delete:
 
 .PHOY: port-forward
 port-forward:
-	$(CURDIR)/scripts/port-forward.sh -c=$(HELM_FILE)
+	$(CURDIR)/../scripts/port-forward.sh -c=$(HELM_FILE)
 
 .PHONY: stop-forward
 stop-forward:

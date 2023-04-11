@@ -17,9 +17,9 @@ spec:
       targetPort: {{ $port }}
     {{- end }}
     - name: http
-      port: {{ $.Values.exposer.port | default 8081 }}
+      port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
-      targetPort: {{ $.Values.exposer.port | default 8081 }}
+      targetPort: {{ $.Values.exposer.ports.rest | default 8081 }}
   selector:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 ---
