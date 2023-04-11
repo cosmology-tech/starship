@@ -1,0 +1,28 @@
+syntax = "proto3";
+package registry;
+
+option go_package = "github.com/cosmology-tech/starship/registry/registry";
+
+message Mnemonic {
+  string name = 1;
+  string type = 2;
+  string mnemonic = 3;
+}
+
+message Keys {
+  repeated Mnemonic genesis = 1;
+  repeated Mnemonic validators = 2;
+  repeated Mnemonic keys = 3;
+  repeated Mnemonic relayers = 4;
+}
+
+message TypeKey {
+  string type = 1;
+  string value = 2;
+}
+
+message PrivValidatorKey {
+  string address = 1;
+  TypeKey pub_key = 2 [ json_name = "pub_key" ];
+  TypeKey priv_key = 3 [ json_name = "priv_key" ] ;
+}

@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
@@ -19,13 +22,13 @@ import (
 type ChainClients []*ChainClient
 
 // NewChainClients returns a list of chain clients from a list of strings
-func NewChainClients(logger *zap.Logger, chainIDs, rpcAddrs []string, home string) (ChainClients, error) {
+func NewChainClients(logger *zap.Logger, chainIDs, rpcAddrs, exposerAddrs []string, home string) (ChainClients, error) {
 	// make home if non existant
 	_ = os.MkdirAll(home, 0755)
 
 	var clients []*ChainClient
 	for i := range chainIDs {
-		client, err := NewChainClient(logger, chainIDs[i], rpcAddrs[i], home)
+		client, err := NewChainClient(logger, chainIDs[i], rpcAddrs[i], exposerAddrs[i], home)
 
 		if err != nil {
 			logger.Error("unable to create client for chain",
@@ -56,6 +59,7 @@ func (cc ChainClients) GetChainClient(chainID string) (*ChainClient, error) {
 type ChainClient struct {
 	logger      *zap.Logger
 	chainConfig *lens.ChainClientConfig
+	exposerAddr string
 
 	client *lens.ChainClient
 
@@ -63,7 +67,7 @@ type ChainClient struct {
 	chainIBCInfo []*ChainIBCInfo
 }
 
-func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainClient, error) {
+func NewChainClient(logger *zap.Logger, chainID, rpcAddr, exposerAddr, home string) (*ChainClient, error) {
 	ccc := &lens.ChainClientConfig{
 		ChainID:        chainID,
 		RPCAddr:        rpcAddr,
@@ -80,6 +84,7 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, home string) (*ChainCl
 	chainClient := &ChainClient{
 		logger:       logger,
 		chainConfig:  ccc,
+		exposerAddr:  exposerAddr,
 		client:       client,
 		chainIBCInfo: nil,
 	}
@@ -138,6 +143,27 @@ func (c *ChainClient) GetChainPeers(ctx context.Context) ([]*pb.Peer, error) {
 	}
 
 	return pbPeers, nil
+}
+
+// GetChainKeys fetches keys from the chain exposer at `/keys` endpoint
+func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/keys", strings.Trim(c.exposerAddr, "/")))
+	if err != nil {
+		return nil, err
+	}
+
+	respData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var keys *pb.Keys
+	err = json.Unmarshal(respData, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
 }
 
 // getChannelPort returns the chains and the counterparty info

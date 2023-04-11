@@ -37,6 +37,8 @@ type Config struct {
 	ChainClientGRPCs string `name:"chain-client-grpcs" json:"chain_client_grpcs" env:"CHAIN_CLIENT_GRPCS" usage:"Comma seperated list of chain grpc address for various chains"`
 	// ChainClientRESTs is a comma seperated list of chain rest address for various chains
 	ChainClientRESTs string `name:"chain-client-rests" json:"chain_client_rests" env:"CHAIN_CLIENT_RESTS" usage:"Comma seperated list of chain rest address for various chains"`
+	// ChainClientExposers is a comma seperated list of chain exposer endpoints for various chains
+	ChainClientExposers string `name:"chain-client-exposer" json:"chain_client_exposers" env:"CHAIN_CLIENT_EXPOSERS" usage:"Comma seperated list of chain exposer address"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
