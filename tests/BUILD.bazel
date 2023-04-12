@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_cross_binary", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_cross_binary", "go_library", "go_test")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 load("@io_bazel_rules_docker//contrib:push-all.bzl", "docker_push")
 load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "container_image", "container_push")
@@ -6,14 +6,10 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "con
 go_library(
     name = "tests_lib",
     srcs = [
-        "config.go",
+        "config.go"
     ],
     importpath = "github.com/cosmology-tech/starship/tests",
     visibility = ["//visibility:public"],
-    deps = [
-        "//proto/registry:registry_go_proto",  # keep
-        "@org_uber_go_zap//:zap",
-    ],
 )
 
 go_test(
@@ -22,5 +18,13 @@ go_test(
         "e2e_test.go",
         "registry_test.go",
     ],
-    embed = [":tests_lib"]
+    embed = [":tests_lib"],
+    deps = [
+        "//proto/registry:registry_go_proto",
+        "@com_github_json_iterator_go//:go",
+        "@com_github_stretchr_testify//suite",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@org_uber_go_zap//:zap",
+    ],
 )
+
