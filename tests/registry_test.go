@@ -2,7 +2,9 @@ package tests
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"net/http"
+	urlpkg "net/url"
 
 	json "github.com/json-iterator/go"
 
@@ -10,10 +12,15 @@ import (
 )
 
 func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal interface{}) {
-	req.Host = fmt.Sprintf("0.0.0.0:%d", s.config.Registry.Ports.Rest)
+	host := fmt.Sprintf("http://0.0.0.0:%d%s", s.config.Registry.Ports.Rest, req.URL.String())
+	s.T().Log("creating a new url with", zap.String("url", host))
+	url, err := urlpkg.Parse(host)
+	s.Require().NoError(err)
+
+	req.URL = url
 
 	body := s.MakeRequest(req, 200)
-	err := json.Unmarshal(body, unmarshal)
+	err = json.Unmarshal(body, unmarshal)
 	s.Require().NoError(err)
 }
 

@@ -37,7 +37,7 @@ func (s *TestSuite) SetupSuite() {
 }
 
 func (s *TestSuite) MakeRequest(req *http.Request, expCode int) []byte {
-	s.T().Log("making request for", zap.Any("request", req))
+	s.T().Log("making request for", zap.Any("request", &req))
 
 	resp, err := http.DefaultClient.Do(req)
 	s.Require().NoError(err)

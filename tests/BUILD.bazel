@@ -26,5 +26,8 @@ go_test(
         "@in_gopkg_yaml_v3//:yaml_v3",
         "@org_uber_go_zap//:zap",
     ],
+    data = [":config.yaml"],
+    env = {
+        "GO_TEST_WRAP_TESTV": "1",
+    },
 )
-

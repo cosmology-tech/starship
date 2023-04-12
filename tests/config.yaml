@@ -5,23 +5,23 @@ chains:
     ports:
       rest: 1313
       rpc: 26653
-  - name: cosmoshub-1
-    type: cosmos
-    numValidators: 1
-    ports:
-      rest: 1317
-      rpc: 26657
-
-relayers:
-  - name: osmos-cosmos
-    type: hermes
-    replicas: 1
-    chains:
-      - osmosis-1
-      - cosmoshub-1
+#  - name: cosmoshub-1
+#    type: cosmos
+#    numValidators: 1
+#    ports:
+#      rest: 1317
+#      rpc: 26657
+#
+#relayers:
+#  - name: osmos-cosmos
+#    type: hermes
+#    replicas: 1
+#    chains:
+#      - osmosis-1
+#      - cosmoshub-1
 
 explorer:
-  enabled: true
+  enabled: false
   ports:
     rest: 8080
 

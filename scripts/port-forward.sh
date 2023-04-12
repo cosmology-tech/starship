@@ -38,8 +38,8 @@ stop_port_forward
 echo "Port forwarding for config ${CONFIGFILE}"
 echo "Port forwarding all chains"
 num_chains=$(yq -r ".chains | length - 1" ${CONFIGFILE})
-if [[ $num_chains -lt 1 ]]; then
-  echo "No chains to port-forward"
+if [[ $num_chains -lt 0 ]]; then
+  echo "No chains to port-forward: num: $num_chains"
   exit 1
 fi
 for i in $(seq 0 $num_chains); do
