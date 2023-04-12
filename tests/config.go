@@ -8,9 +8,10 @@ type Chain struct {
 }
 
 type Port struct {
-	Rest int `name:"rest" json:"rest" yaml:"rest"`
-	Rpc  int `name:"rpc" json:"rpc" yaml:"rpc"`
-	Grpc int `name:"grpc" json:"grpc" yaml:"grpc"`
+	Rest    int `name:"rest" json:"rest" yaml:"rest"`
+	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
+	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
+	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
 }
 
 type Relayer struct {

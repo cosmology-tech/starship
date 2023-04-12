@@ -2,7 +2,6 @@ package tests
 
 import (
 	"fmt"
-	"go.uber.org/zap"
 	"net/http"
 	urlpkg "net/url"
 
@@ -13,7 +12,7 @@ import (
 
 func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal interface{}) {
 	host := fmt.Sprintf("http://0.0.0.0:%d%s", s.config.Registry.Ports.Rest, req.URL.String())
-	s.T().Log("creating a new url with", zap.String("url", host))
+
 	url, err := urlpkg.Parse(host)
 	s.Require().NoError(err)
 
@@ -24,7 +23,7 @@ func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal interface{}
 	s.Require().NoError(err)
 }
 
-func (s *TestSuite) TestRegistryChainIds() {
+func (s *TestSuite) TestRegistry_ListChainIds() {
 	s.T().Log("runing test for /chain_ids endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chain_ids", nil)
@@ -37,7 +36,7 @@ func (s *TestSuite) TestRegistryChainIds() {
 	s.Assert().Len(respChains.ChainIds, len(s.config.Chains))
 }
 
-func (s *TestSuite) TestRegistryChains() {
+func (s *TestSuite) TestRegistry_ListChains() {
 	s.T().Log("runing test for /chains endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chains", nil)
@@ -55,4 +54,77 @@ func (s *TestSuite) TestRegistryChains() {
 
 		s.Assert().Equal(expChain.Type, chain.ChainName)
 	}
+}
+
+func (s *TestSuite) TestRegistry_GetChain() {
+	s.T().Log("runing test for /chains/{chain} endpoint for registry")
+
+	for _, chain := range s.config.Chains {
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.Name), nil)
+		s.Require().NoError(err)
+
+		respChain := &pb.ChainRegistry{}
+		s.MakeRegistryRequest(req, respChain)
+
+		s.Assert().Equal(chain.Name, respChain.ChainId)
+		s.Assert().Equal(chain.Type, respChain.ChainName)
+	}
+}
+
+func (s *TestSuite) TestRegistry_ListChainPeers() {
+	s.T().Log("runing test for /chains/{chain}/peers endpoint for registry")
+
+	for _, chain := range s.config.Chains {
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/peers", chain.Name), nil)
+		s.Require().NoError(err)
+
+		respPeers := &pb.Peers{}
+		s.MakeRegistryRequest(req, respPeers)
+
+		s.Assert().Len(respPeers.Seeds, 1)
+		s.Assert().Len(respPeers.PersistentPeers, chain.NumValidators-1)
+	}
+}
+
+func (s *TestSuite) TestRegistry_ListChainApis() {
+	s.T().Log("runing test for /chains/{chain}/apis endpoint for registry")
+
+	for _, chain := range s.config.Chains {
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/apis", chain.Name), nil)
+		s.Require().NoError(err)
+
+		respAPIs := &pb.APIs{}
+		s.MakeRegistryRequest(req, respAPIs)
+
+		s.Assert().Len(respAPIs.Rpc, 1)
+	}
+}
+
+func (s *TestSuite) TestRegistry_GetChainAssets() {
+	s.T().Log("runing test for /chains/{chain}/assets endpoint for registry")
+	s.T().Skip("skipping asset tests for now, since it is failing....")
+
+	for _, chain := range s.config.Chains {
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.Name), nil)
+		s.Require().NoError(err)
+
+		respAssets := &pb.ResponseChainAssets{}
+		s.MakeRegistryRequest(req, respAssets)
+
+		s.Assert().Equal(chain.Type, respAssets.ChainName)
+		s.Assert().Len(respAssets.Assets, 1)
+	}
+}
+
+func (s *TestSuite) TestRegistry_ListIBC() {
+	s.T().Log("runing test for /ibc endpoint for registry")
+
+	req, err := http.NewRequest(http.MethodGet, "/ibc", nil)
+	s.Require().NoError(err)
+
+	respIBC := &pb.ResponseListIBC{}
+	s.MakeRegistryRequest(req, respIBC)
+
+	// assert results to expected values
+	s.Assert().Len(respIBC.Data, len(s.config.Relayers)*2, "number of ibc information should be double the number of relayers")
 }

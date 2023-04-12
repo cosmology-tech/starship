@@ -17,16 +17,20 @@ go_test(
     srcs = [
         "e2e_test.go",
         "registry_test.go",
+        "exposer_test.go",
     ],
     embed = [":tests_lib"],
     deps = [
         "//proto/registry:registry_go_proto",
+        "//proto/exposer:exposer_go_proto",
         "@com_github_json_iterator_go//:go",
         "@com_github_stretchr_testify//suite",
         "@in_gopkg_yaml_v3//:yaml_v3",
         "@org_uber_go_zap//:zap",
     ],
-    data = [":config.yaml"],
+    data = [
+        ":config.yaml"
+    ],
     env = {
         "GO_TEST_WRAP_TESTV": "1",
     },
