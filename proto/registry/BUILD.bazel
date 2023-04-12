@@ -6,8 +6,8 @@ proto_library(
     srcs = [
         "chain.proto",
         "ibc.proto",
-        "service.proto",
         "mnemonic.proto",
+        "service.proto",
     ],
     visibility = ["//visibility:public"],
     deps = [

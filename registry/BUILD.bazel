@@ -18,9 +18,9 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/registry:registry_go_proto",  # keep
-        "@com_github_cosmos_ibc_go_v7//modules/core/02-client/types:go_default_library",
-        "@com_github_cosmos_ibc_go_v7//modules/core/exported:go_default_library",
-        "@com_github_cosmos_ibc_go_v7//modules/light-clients/07-tendermint:go_default_library",
+        "@com_github_cosmos_ibc_go_v7//modules/core/02-client/types",
+        "@com_github_cosmos_ibc_go_v7//modules/core/exported",
+        "@com_github_cosmos_ibc_go_v7//modules/light-clients/07-tendermint",
         "@com_github_go_chi_chi//middleware",
         "@com_github_golang_protobuf//jsonpb",
         "@com_github_golang_protobuf//proto",
@@ -44,7 +44,6 @@ go_binary(
     name = "registry",
     embed = [":registry_lib"],
     static = "on",
-    cgo = False,
     visibility = ["//visibility:public"],
 )
 
