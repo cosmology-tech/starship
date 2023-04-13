@@ -82,6 +82,8 @@ spec:
               name: relayer-config
             - mountPath: /keys
               name: keys
+          resources:
+{{ toYaml $.Values.resources.init | indent 12 }}
       containers:
         - name: relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
