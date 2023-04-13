@@ -13,20 +13,20 @@ chains:
       requests:
         cpu: "0.2"
         memory: "200M"
-  - name: cosmoshub-1
-    type: cosmos
-    numValidators: 1
-    ports:
-      rest: 1317
-      rpc: 26657
-      exposer: 38087
-    resources:
-      limits:
-        cpu: "0.3"
-        memory: "300M"
-      requests:
-        cpu: "0.2"
-        memory: "200M"
+#  - name: cosmoshub-1
+#    type: cosmos
+#    numValidators: 1
+#    ports:
+#      rest: 1317
+#      rpc: 26657
+#      exposer: 38087
+#    resources:
+#      limits:
+#        cpu: "0.3"
+#        memory: "300M"
+#      requests:
+#        cpu: "0.2"
+#        memory: "200M"
 
 #relayers:
 #  - name: osmos-cosmos
