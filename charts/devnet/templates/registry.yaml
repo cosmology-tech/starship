@@ -3,7 +3,7 @@
 {{- range $.Values.chains -}}
 {{ $listIDs = .name | append $listIDs }}
 {{- end }}
-{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest }}
+{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: v1
 kind: Service
@@ -69,12 +69,7 @@ spec:
             - name: REGISTRY_CHAIN_CLIENT_EXPOSERS
               value: "{{ include "devnet.chains.exposer.addrs" . }}"
           resources:
-            limits:
-              cpu: "1"
-              memory: 2Gi
-            requests:
-              cpu: "0.5"
-              memory: 1Gi
+{{ toYaml .Values.registry.resources | indent 12 }}
           volumeMounts:
             {{- range $chain := .Values.chains }}
             - mountPath: /configs/{{ $chain.name }}
