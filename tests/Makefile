@@ -9,7 +9,7 @@ HELM_CHART = devnet
 ###############################################################################
 
 install:
-	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART)
+	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART) --wait --debug
 
 upgrade:
 	helm upgrade --debug $(HELM_NAME) ../charts/$(HELM_CHART) -f $(HELM_FILE)
