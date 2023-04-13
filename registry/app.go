@@ -94,7 +94,10 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	app.httpServer = httpServer
 
 	return app, err
+}
 
+func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	a.httpServer.Handler.ServeHTTP(w, r)
 }
 
 func (a *AppServer) ValidateConfig() error {

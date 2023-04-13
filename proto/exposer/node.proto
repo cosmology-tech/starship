@@ -1,0 +1,60 @@
+syntax = "proto3";
+package exposer;
+
+option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
+
+message Status {
+  message Result {
+    NodeInfo node_info = 1 [json_name = "node_info"];
+    SyncInfo sync_info = 2 [json_name = "sync_info"];
+    ValidatorInfo validator_info = 3 [json_name = "validator_info"];
+  }
+
+  string jsonrpc = 1 [json_name="jsonrpc"];
+  double id = 2 [json_name = "id"];
+  Result result = 3 [json_name = "result"];
+}
+
+message NodeInfo {
+  message ProtocolVersion {
+    string p2p = 1 [json_name = "p2p"];
+    string block = 2 [json_name = "block"];
+    string app = 3 [json_name = "app"];
+  }
+  message Other {
+    string tx_index = 1 [json_name = "tx_index"];
+    string rpc_address = 2 [json_name = "rpc_address"];
+  }
+
+  string id = 1 [json_name = "id"];
+  string listen_addr = 2 [json_name = "listen_addr"];
+  string network = 3 [json_name = "network"];
+  string version = 4 [json_name = "version"];
+  string channels = 5 [json_name = "channels"];
+  string moniker = 6 [json_name = "moniker"];
+  ProtocolVersion protocol_version = 7 [json_name = "protocol_version"];
+  Other other = 8 [json_name = "other"];
+}
+
+message SyncInfo {
+  string latest_block_hash = 1 [json_name = "latest_block_hash"];
+  string latest_app_hash = 2 [json_name = "latest_app_hash"];
+  string latest_block_height = 3 [json_name = "latest_block_height"];
+  string latest_block_time = 4 [json_name = "latest_block_time"];
+  string earliest_app_hash = 5 [json_name = "earliest_app_hash"];
+  string earliest_block_hash = 6 [json_name = "earliest_block_hash"];
+  string earliest_block_height = 7 [json_name = "earliest_block_height"];
+  string earliest_block_time = 8 [json_name = "earliest_block_time"];
+  bool catching_up = 9 [json_name = "catching_up"];
+}
+
+message ValidatorInfo {
+  message Key {
+    string type = 1 [json_name = "type"];
+    string value = 2 [json_name = "value"];
+  }
+
+  string address = 1 [json_name = "address"];
+  string voting_power = 2 [json_name = "voting_power"];
+  Key pub_key = 3 [json_name = "pub_key"];
+}

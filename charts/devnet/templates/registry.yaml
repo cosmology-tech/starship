@@ -3,7 +3,7 @@
 {{- range $.Values.chains -}}
 {{ $listIDs = .name | append $listIDs }}
 {{- end }}
-{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.port }}
+{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest }}
 ---
 apiVersion: v1
 kind: Service

@@ -15,17 +15,17 @@ import (
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
 
-func fetchNodeStatus(url string) (StatusResponse, error) {
-	var statusResp StatusResponse
+func fetchNodeStatus(url string) (*pb.Status, error) {
+	statusResp := &pb.Status{}
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return statusResp, fmt.Errorf("unable to fetch status, err: %d", err)
+		return nil, fmt.Errorf("unable to fetch status, err: %d", err)
 	}
 
 	defer resp.Body.Close()
-	if err := json.NewDecoder(resp.Body).Decode(&statusResp); err != nil {
-		return statusResp, fmt.Errorf("unable to parse status response, err: %d", err)
+	if err := json.NewDecoder(resp.Body).Decode(statusResp); err != nil {
+		return nil, fmt.Errorf("unable to parse status response, err: %d", err)
 	}
 
 	return statusResp, nil
@@ -49,7 +49,7 @@ func (a *AppServer) GetNodeID(ctx context.Context, _ *emptypb.Empty) (*pb.Respon
 		return nil, err
 	}
 
-	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.ID}, nil
+	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.Id}, nil
 }
 
 func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.ResponsePubKey, error) {

@@ -1,6 +1,6 @@
 {{- range $chain := .Values.chains }}
 {{- if gt $chain.numValidators 1.0 }}
-{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.port | quote | default "8081") }}
+{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
 
 {{ $upgrade := get $chain "upgrade" }}
@@ -13,7 +13,7 @@
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
 
-{{ $initParams := dict "chains" list $chain.name "port" $.Values.exposer.port }}
+{{ $initParams := dict "chains" list $chain.name "port" $.Values.exposer.ports.rest }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
