@@ -47,10 +47,6 @@ func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
 	s.Require().Equal(expCode, resp.StatusCode, "response code did not match")
 
 	return resp.Body
-	//resBody, err := io.ReadAll(resp.Body)
-	//s.Require().NoError(err, "unable to read response body into buffer")
-
-	//return resBody
 }
 
 func (s *TestSuite) TestChains_Status() {
