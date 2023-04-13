@@ -122,7 +122,7 @@ spec:
               {{- else }}
               $CHAIN_BIN start
               {{- end }}
-          resources: {{- include "devnet.validator.resources" $chain | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" $chain | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node

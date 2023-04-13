@@ -103,7 +103,9 @@ Environment variables for genesis chain
 {{- end }}
 
 {{/*
-Init container for waiting on a url to respond
+Init container for waiting on a url to respond\
+Usage:
+{{ include "devnet.init.wait" ( dict "port" .Values.path.to.port "chains" .Values.path.to.chain "context" $ ) }}
 */}}
 {{- define "devnet.init.wait" }}
 - name: "wait-for-chains"
@@ -128,12 +130,13 @@ Init container for waiting on a url to respond
       {{- end }}
       echo "Ready to start"
       exit 0
+  resources: {{- toYaml .context.Values.resources.wait | indent 4 }}
 {{- end }}
 
 {{/*
 Returns resources for a validator
 */}}
-{{- define "devnet.validator.resources" }}
+{{- define "devnet.node.resources" }}
 {{- if hasKey . "resources" }}
 {{ toYaml .resources }}
 {{- else }}
