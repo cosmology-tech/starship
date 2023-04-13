@@ -5,23 +5,27 @@
 nameOverride: ""
 fullnameOverride: ""
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+resources:
+  init:
+    limits:
+      cpu: "1"
+      memory: "1G"
+    requests:
+      cpu: "0.5"
+      memory: "500M"
+  wait:
+    limits:
+      cpu: "0.5"
+      memory: "500M"
+    requests:
+      cpu: "0.2"
+      memory: "200M"
 
 exposer:
   image: anmol1696/exposer:20230319-e41e51f
@@ -179,6 +183,14 @@ explorer:
   localhost: true
   ports:
     rest: 8080
+  resources:
+    limits:
+      cpu: "1"
+      memory: 4Gi
+    requests:
+      cpu: "0.5"
+      memory: 2Gi
+
 
 faucet:
   enabled: false
@@ -189,6 +201,13 @@ registry:
   ports:
     rest: 6060
     grpc: 7070
+  resources:
+    limits:
+      cpu: "1"
+      memory: 2Gi
+    requests:
+      cpu: "0.5"
+      memory: 1Gi
 
 collector:
   enabled: false
@@ -196,3 +215,10 @@ collector:
   localhost: true
   ports:
     rest: 8070
+  resources:
+    limits:
+      cpu: "1"
+      memory: 2Gi
+    requests:
+      cpu: "0.5"
+      memory: 1Gi

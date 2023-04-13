@@ -13,7 +13,7 @@
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
 
-{{ $initParams := dict "chains" list $chain.name "port" $.Values.exposer.ports.rest }}
+{{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -76,7 +76,7 @@ spec:
             - mountPath: /scripts
               name: scripts
         {{- end }}
-        {{- include "devnet.init.wait" list $chain.name | indent 8 }}
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-validator
           image: {{ $image }}
           imagePullPolicy: Always
@@ -179,7 +179,7 @@ spec:
                     COLLECTOR_HOST=http://$COLLECTOR_SERVICE.$NAMESPACE.svc.cluster.local:$COLLECTOR_PORT
                     VAL_NAME=$VAL_NAME COLLECTOR_HOST=$COLLECTOR_HOST bash -e /scripts/register_snapshots.sh
             {{- end }}
-          resources: {{- include "devnet.validator.resources" $chain | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" $chain | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
