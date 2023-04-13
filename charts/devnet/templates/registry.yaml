@@ -68,7 +68,8 @@ spec:
               value: "/configs"
             - name: REGISTRY_CHAIN_CLIENT_EXPOSERS
               value: "{{ include "devnet.chains.exposer.addrs" . }}"
-          resources: {{- toYaml .Values.registry.resources | indent 12 }}
+          resources:
+{{ toYaml .Values.registry.resources | indent 12 }}
           volumeMounts:
             {{- range $chain := .Values.chains }}
             - mountPath: /configs/{{ $chain.name }}

@@ -27,14 +27,37 @@ chains:
       requests:
         cpu: "0.2"
         memory: "200M"
-#
-#relayers:
-#  - name: osmos-cosmos
-#    type: hermes
-#    replicas: 1
-#    chains:
-#      - osmosis-1
-#      - cosmoshub-1
+
+relayers:
+  - name: osmos-cosmos
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmoshub-1
+    resources:
+      limits:
+        cpu: "0.2"
+        memory: "200M"
+      requests:
+        cpu: "0.1"
+        memory: "100M"
+
+resources:
+  init:
+    limits:
+      cpu: "0.3"
+      memory: "300M"
+    requests:
+      cpu: "0.2"
+      memory: "200M"
+  wait:
+    limits:
+      cpu: "0.3"
+      memory: "300M"
+    requests:
+      cpu: "0.2"
+      memory: "200M"
 
 exposer:
   resources:

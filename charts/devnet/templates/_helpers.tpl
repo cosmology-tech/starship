@@ -130,7 +130,8 @@ Usage:
       {{- end }}
       echo "Ready to start"
       exit 0
-  resources: {{- toYaml .context.Values.resources.wait | indent 4 }}
+  resources:
+{{ toYaml .context.Values.resources.wait | indent 4 }}
 {{- end }}
 
 {{/*

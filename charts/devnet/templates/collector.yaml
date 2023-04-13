@@ -51,12 +51,7 @@ spec:
               value: /opt/collector
           command: [ "collector" ]
           resources:
-            limits:
-              cpu: "1"
-              memory: 4Gi
-            requests:
-              cpu: "0.5"
-              memory: 2Gi
+{{ toYaml .Values.collector.resources | indent 12 }}
           volumeMounts:
             - mountPath: /opt/collector
               name: collector

@@ -44,7 +44,8 @@ spec:
         - name: explorer
           image: {{ .Values.explorer.image }}
           imagePullPolicy: Always
-          resources: {{- toYaml .Values.explorer.resources | indent 12 }}
+          resources:
+{{ toYaml .Values.explorer.resources | indent 12 }}
           volumeMounts:
             - mountPath: /home/explorer/src/chains/mainnet
               name: explorer-configs
