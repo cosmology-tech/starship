@@ -1,6 +1,7 @@
 # starship
+![Tests](https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg)
 ![Lint](https://github.com/cosmology-tech/starship/actions/workflows/lint-check.yaml/badge.svg)
-![Deploy](https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg)
+![Release](https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg)
 ![Build](https://github.com/cosmology-tech/starship/actions/workflows/build.yaml/badge.svg)
 ![Docs](https://github.com/cosmology-tech/starship/actions/workflows/mkdocs.yaml/badge.svg)
 ![Docker](https://github.com/cosmology-tech/starship/actions/workflows/docker.yaml/badge.svg)
