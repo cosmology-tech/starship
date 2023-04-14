@@ -1,10 +1,17 @@
 #!/bin/bash
-. "$(dirname "$0")"/common.sh
 
 set -euo pipefail
 
+function color() {
+  local color=$1
+  shift
+  local black=30 red=31 green=32 yellow=33 blue=34 magenta=35 cyan=36 white=37
+  local color_code=${!color:-$green}
+  printf "\033[%sm%s\033[0m\n" "$color_code" "$*"
+}
+
 function stop_port_forward() {
-  color 33 "Trying to stop all port-forward, if any...."
+  color green "Trying to stop all port-forward, if any...."
   PIDS=$(ps -ef | grep -i -e 'kubectl port-forward' | grep -v 'grep' | cat | awk '{print $2}') || true
   for p in $PIDS; do
     kill -15 $p
@@ -52,7 +59,7 @@ for i in $(seq 0 $num_chains); do
   [[ "$locallcd" != "null" ]] && kubectl port-forward pods/$chain-genesis-0 $locallcd:$CHAIN_LCD_PORT > /dev/null 2>&1 &
   [[ "$localexp" != "null" ]] && kubectl port-forward pods/$chain-genesis-0 $localexp:$CHAIN_EXPOSER_PORT > /dev/null 2>&1 &
   sleep 1
-  color $YELLOW "chains: forwarded $chain lcd to http://localhost:$locallcd, rpc to http://localhost:$localrpc"
+  color yellow "chains: forwarded $chain lcd to http://localhost:$locallcd, rpc to http://localhost:$localrpc"
 done
 
 echo "Port forward services"
@@ -62,12 +69,12 @@ then
   kubectl port-forward service/registry 8081:$REGISTRY_LCD_PORT > /dev/null 2>&1 &
   kubectl port-forward service/registry 9091:$REGISTRY_GRPC_PORT > /dev/null 2>&1 &
   sleep 1
-  color $YELLOW "registry: forwarded registry lcd to grpc http://localhost:8081, to http://localhost:9091"
+  color yellow "registry: forwarded registry lcd to grpc http://localhost:8081, to http://localhost:9091"
 fi
 
 if [[ $(yq -r ".explorer.enabled" $CONFIGFILE) == "true" ]];
 then
   kubectl port-forward service/explorer 8080:$EXPLORER_LCD_PORT > /dev/null 2>&1 &
   sleep 1
-  color $GREEN "Open the explorer to get started.... http://localhost:8080"
+  color green "Open the explorer to get started.... http://localhost:8080"
 fi
