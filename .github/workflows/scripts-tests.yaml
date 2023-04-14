@@ -28,6 +28,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Check binaries
+        run: |
+          which kind
+          which kubectl
+          which helm
+          which yq
+
       - name: Run script
         run: ./scripts/dev-setup.sh
 
