@@ -43,4 +43,4 @@ jobs:
 
       - name: Run tests
         run: |
-          bazel test --test_output=all //tests:tests
+          bazel test --cache_test_results=no --test_output=all //tests:tests
