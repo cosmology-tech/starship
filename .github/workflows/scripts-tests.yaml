@@ -1,0 +1,42 @@
+name: Scripts tests
+
+on:
+  push:
+    paths:
+      - 'scripts/**'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'scripts/**'
+    branches:
+      - main
+
+jobs:
+  tests:
+    name: Test scripts/dev-setup.sh
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run script
+        run: ./scripts/dev-setup.sh
+
+      - name: Check again
+        run: ./scripts/dev-setup.sh | grep "All binaries are installeddd"
+
+      - name: Check binaries
+        run: |
+          which kind
+          which kubectl
+          which helm
+          which yq
