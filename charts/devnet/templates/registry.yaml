@@ -114,7 +114,6 @@ data:
           "name": "{{ $defaultChain.denom }}",
           "display": "{{ $defaultChain.denom }}",
           "symbol": "{{ $defaultChain.denom | upper }}",
-          "exponent": "6",
           "denom_units": [
             {
               "denom": "{{ $defaultChain.denom }}",
@@ -125,8 +124,7 @@ data:
               "exponent": 6
             }
           ],
-          "coingecko_id": "{{ $chain.type }}",
-          "logo": ""
+          "coingecko_id": "{{ $chain.type }}"
         }
       ]
     }

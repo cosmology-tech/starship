@@ -5,12 +5,13 @@ import (
 	"net/http"
 	urlpkg "net/url"
 
-	json "github.com/json-iterator/go"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
-func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal interface{}) {
+func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal proto.Message) {
 	host := fmt.Sprintf("http://0.0.0.0:%d%s", s.config.Registry.Ports.Rest, req.URL.String())
 
 	url, err := urlpkg.Parse(host)
@@ -19,7 +20,8 @@ func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal interface{}
 	req.URL = url
 
 	body := s.MakeRequest(req, 200)
-	err = json.Unmarshal(body, unmarshal)
+	err = jsonpb.Unmarshal(body, unmarshal)
+	//err = json.Unmarshal(body, unmarshal)
 	s.Require().NoError(err)
 }
 
@@ -102,7 +104,6 @@ func (s *TestSuite) TestRegistry_ListChainApis() {
 
 func (s *TestSuite) TestRegistry_GetChainAssets() {
 	s.T().Log("runing test for /chains/{chain}/assets endpoint for registry")
-	s.T().Skip("skipping asset tests for now, since it is failing....")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.Name), nil)

@@ -1,13 +1,13 @@
 package tests
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"testing"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
@@ -40,16 +40,13 @@ func (s *TestSuite) SetupTest() {
 	s.config = config
 }
 
-func (s *TestSuite) MakeRequest(req *http.Request, expCode int) []byte {
+func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
 	resp, err := http.DefaultClient.Do(req)
 	s.Require().NoError(err, "trying to make request", zap.Any("request", req))
 
 	s.Require().Equal(expCode, resp.StatusCode, "response code did not match")
 
-	resBody, err := io.ReadAll(resp.Body)
-	s.Require().NoError(err, "unable to read response body into buffer")
-
-	return resBody
+	return resp.Body
 }
 
 func (s *TestSuite) TestChains_Status() {
@@ -62,7 +59,7 @@ func (s *TestSuite) TestChains_Status() {
 
 		body := s.MakeRequest(req, 200)
 		resp := &pb.Status{}
-		err = json.Unmarshal(body, &resp)
+		err = jsonpb.Unmarshal(body, resp)
 		s.Assert().NoError(err)
 
 		// assert chain id

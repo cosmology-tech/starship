@@ -35,12 +35,13 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
       - name: Setup Test infra
-        uses: cosmology-tech/starship-action@0.2.4
+        uses: cosmology-tech/starship-action@0.2.5
         with:
           values: tests/config.yaml
           port-forward: true
-          version: 0.1.21
+          version: 0.1.24
+          chart: ./charts/devnet
 
       - name: Run tests
         run: |
-          bazel test --test_output=all //tests:tests
+          bazel test --cache_test_results=no --test_output=all //tests:tests

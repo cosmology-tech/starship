@@ -5,12 +5,13 @@ import (
 	"net/http"
 	urlpkg "net/url"
 
-	json "github.com/json-iterator/go"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
 
-func (s *TestSuite) MakeExposerRequest(chain *Chain, req *http.Request, unmarshal interface{}) {
+func (s *TestSuite) MakeExposerRequest(chain *Chain, req *http.Request, unmarshal proto.Message) {
 	host := fmt.Sprintf("http://0.0.0.0:%d%s", chain.Ports.Exposer, req.URL.String())
 
 	url, err := urlpkg.Parse(host)
@@ -19,7 +20,7 @@ func (s *TestSuite) MakeExposerRequest(chain *Chain, req *http.Request, unmarsha
 	req.URL = url
 
 	body := s.MakeRequest(req, 200)
-	err = json.Unmarshal(body, unmarshal)
+	err = jsonpb.Unmarshal(body, unmarshal)
 	s.Require().NoError(err)
 }
 
@@ -47,12 +48,12 @@ func (s *TestSuite) TestExposer_GetGenesisFile() {
 	s.Require().NoError(err)
 
 	// todo: fix unmarshalling of genesis into proto
-	resp := map[string]interface{}{}
-	s.MakeExposerRequest(chain, req, &resp)
+	resp := &pb.GenesisState{}
+	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
 	s.Assert().NotNil(resp)
-	s.Assert().Equal(chain.Name, resp["chain_id"].(string))
+	s.Assert().Equal(chain.Name, resp.ChainId)
 }
 
 func (s *TestSuite) TestExposer_GetPubKey() {

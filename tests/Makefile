@@ -8,6 +8,16 @@ HELM_CHART = devnet
 ###                              Helm Charts                                ###
 ###############################################################################
 
+.PHONY: start
+start: install port-forward
+
+.PHONY: stop
+stop: stop-forward delete
+
+###############################################################################
+###                              Helm Charts                                ###
+###############################################################################
+
 install:
 	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART) --wait --debug
 
@@ -19,6 +29,15 @@ debug:
 
 delete:
 	-helm delete $(HELM_NAME)
+
+###############################################################################
+###                              Tests cases                                ###
+###############################################################################
+
+.PHONY: test
+test:
+	bazel test --cache_test_results=no --test_output=all //tests:tests
+
 
 ###############################################################################
 ###                              Port forward                              ###
