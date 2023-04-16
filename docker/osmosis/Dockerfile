@@ -7,7 +7,7 @@ FROM golang:1.18-alpine3.16 AS go-builder
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"osmosis"}
 ENV CHAIN_BIN=${CHAIN_BIN:-"osmosisd"}
-ENV CHAIN_VERSION=${CHAIN_VERSION:-"12.1.0"}
+ENV CHAIN_VERSION=${CHAIN_VERSION:-"15.0.0"}
 ENV CODE_REF=${CODE_REF:-"https://github.com/osmosis-labs/osmosis/archive/refs/tags"}
 
 # Set up dependencies
@@ -58,7 +58,7 @@ FROM alpine:3.16
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"osmosis"}
 ENV CHAIN_BIN=${CHAIN_BIN:-"osmosisd"}
-ENV CHAIN_VERSION=${CHAIN_VERSION:-"12.1.0"}
+ENV CHAIN_VERSION=${CHAIN_VERSION:-"15.0.0"}
 
 COPY --from=go-builder /usr/local/app/build/$CHAIN_BIN /usr/bin/$CHAIN_BIN
 COPY --from=go-builder /go/bin/cosmovisor /usr/bin/cosmovisor
