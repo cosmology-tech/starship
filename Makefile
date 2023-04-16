@@ -39,45 +39,23 @@ delete:
 ###############################################################################
 ###                          Local Kind Setup                               ###
 ###############################################################################
-
 KIND_CLUSTER=starship
 
-install-kind:
-ifeq ($(shell uname -s), Linux)
-	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.15.0/kind-linux-amd64
-	chmod +x ./kind
-	sudo mv ./kind /usr/local/bin/kind
-else
-	brew install kind
-endif
+.PHONY: check
+check:
+	bash $(CURDIR)/scripts/dev-setup.sh
 
-kind_check := $(shell command -v kind 2> /dev/null)
+.PHONY: setup
+setup: setup-kind
+
+.PHONY: clean
+clean: clean-kind
+
+.PHONY: setup-kind
 setup-kind:
-ifndef kind_check
-	echo "No kind in $(PATH), installing kind..."
-	$(MAKE) install-kind
-endif
-	echo "kind already insteall.. setting up kind cluster"
 	kind create cluster --name $(KIND_CLUSTER)
 
-install-kubectl:
-ifeq ($(shell uname -s), Linux)
-	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-	chmod +x ./kubectl
-	sudo mv ./kubectl /usr/local/bin/kubectl
-else
-	brew install kubectl
-endif
-
-kubectl_check := $(shell command -v kubectl 2> /dev/null)
-setup-kubectl:
-ifndef kubectl_check
-	$(MAKE) install-kubectl
-endif
-	echo "kubectl already installed"
-
-setup: setup-kubectl setup-kind
-
+.PHONY: clean-kind
 clean-kind:
 	kind delete cluster --name $(KIND_CLUSTER)
 
@@ -110,7 +88,7 @@ add-n-mnemonic:
 
 .PHOY: port-forward-all
 port-forward-all:
-	$(CURDIR)/scripts/port-forward.sh -c=$(VALUES_FILE)
+	$(CURDIR)/scripts/port-forward.sh --config=$(VALUES_FILE)
 
 .PHONY: stop-forward
 stop-forward:
