@@ -40,8 +40,8 @@ jobs:
             type=$(echo "$changed_dir" | awk -F '/' '{print $1}')
             process=$(echo "$changed_dir" | awk -F '/' '{print $2}')
             if [ ${{ github.ref }} == 'refs/heads/main' ]; then
-              ./scripts/build-docker.sh "$type" "$process" --push --push-latest
+              ./scripts/build-docker.sh -t "$type" -p "$process" --push --push-latest
             else
-              ./scripts/build-docker.sh "$type" "$process"
+              ./scripts/build-docker.sh -t "$type" -p "$process"
             fi
           done
