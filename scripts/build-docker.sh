@@ -39,21 +39,25 @@ docker_process_build() {
     exit 1
   fi
 
-  echo "here...."
+  # Set tag as CHAIN_VERSION for all chains
   if [[ "$type" == "chains" ]]; then
     local tag=$(cat $DOCKER_DIR/$type/$process/Dockerfile | grep -oP 'CHAIN_VERSION=\$\{CHAIN_VERSION:-"\K[0-9.]+(?="})' | cut -d '"' -f1 | head -1)
   fi
 
-  color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
+  # Build docker image if push-only is not set
+  if [[ "$push_image" != "push-only" ]]; then
+    color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
+    docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$process:$tag" . -f $DOCKER_DIR/$type/$process/Dockerfile
+    echo "$DOCKER_REPO/$process:$tag"
+  fi
 
-  docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$process:$tag" . -f $DOCKER_DIR/$type/$process/Dockerfile
-  echo "$DOCKER_REPO/$process:$tag"
-
-  if [[ "$push_image" == "push" ]]; then
+  # Push docker image, if feature flags set
+  if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
     color green "pushing docker image $DOCKER_REPO/$process:$tag"
     docker push "$DOCKER_REPO/$process:$tag"
   fi
 
+  # Push the docker image with tag as latest
   if [[ "$push_latest" == "latest" && "$type" == "chains" ]]; then
     color green "pushing docker image $DOCKER_REPO/$process:$tag as latest"
     docker tag "$DOCKER_REPO/$process:$tag" "$DOCKER_REPO/$process:latest"
@@ -92,6 +96,10 @@ while [ $# -gt 0 ]; do
       ;;
     --push)
       PUSH="push"
+      shift # past argument
+      ;;
+    --push-only)
+      PUSH="push-only"
       shift # past argument
       ;;
     --push-latest)
