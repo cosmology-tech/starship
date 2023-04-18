@@ -7,7 +7,7 @@ FROM golang:1.18-alpine3.16 AS go-builder
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"juno"}
 ENV CHAIN_BIN=${CHAIN_BIN:-"junod"}
-ENV CHAIN_VERSION=${CHAIN_VERSION:-"10.0.2"}
+ENV CHAIN_VERSION=${CHAIN_VERSION:-"12.0.0"}
 ENV CODE_REF=${CODE_REF:-"https://github.com/CosmosContracts/juno/archive/refs/tags"}
 
 # Set up dependencies
