@@ -6,6 +6,8 @@ DOCKER_REPO=anmol1696
 PUSH=0
 PUSH_LATEST=0
 
+DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/../docker"
+
 set -euo pipefail
 
 function color() {
@@ -32,19 +34,19 @@ docker_process_build() {
 
   local tag=latest
 
-  if ! is_directory "$type/$process"; then
-    color red "$type/$process is not a valid directory, please make sure inputs are correct"
+  if ! is_directory "$DOCKER_DIR/$type/$process"; then
+    color red "$DOCKER_DIR/$type/$process is not a valid directory, please make sure inputs are correct"
     exit 1
   fi
 
   echo "here...."
   if [[ "$type" == "chains" ]]; then
-    local tag=$(cat $type/$process/Dockerfile | grep -oP 'CHAIN_VERSION=\$\{CHAIN_VERSION:-"\K[0-9.]+(?="})' | cut -d '"' -f1 | head -1)
+    local tag=$(cat $DOCKER_DIR/$type/$process/Dockerfile | grep -oP 'CHAIN_VERSION=\$\{CHAIN_VERSION:-"\K[0-9.]+(?="})' | cut -d '"' -f1 | head -1)
   fi
 
-  color yellow "building docker image $DOCKER_REPO/$process:$tag from file $type/$process/Dockerfile"
+  color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
 
-  docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$process:$tag" . -f $type/$process/Dockerfile
+  docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$process:$tag" . -f $DOCKER_DIR/$type/$process/Dockerfile
   echo "$DOCKER_REPO/$process:$tag"
 
   if [[ "$push_image" == "push" ]]; then
@@ -61,15 +63,19 @@ docker_process_build() {
 
 build_all_process() {
   local type=$1
-  find "$type" -type f -print0 | while IFS= read -r -d '' file; do
-    echo "Building for $type/$file"
-    docker_process_build $type $file ${@:3}
+  for process in $DOCKER_DIR/$type/*/; do
+    process="${process%*/}"
+    process="${process##*/}"
+    echo "Building for $type/$process"
+    docker_process_build $type $process ${@:3}
   done
 }
 
 build_all_types() {
-  find "." -type f -print0 | while IFS= read -r -d '' type; do
-    echo "Building for $type"
+  for type in $DOCKER_DIR/*/; do
+    type="${type%*/}"
+    type="${type##*/}"
+    echo "Building for all $type"
     build_all_process $type "all" ${@:3}
   done
 }
