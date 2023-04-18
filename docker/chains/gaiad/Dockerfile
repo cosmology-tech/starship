@@ -7,7 +7,7 @@ FROM golang:1.18-alpine3.16 AS go-builder
 
 ENV CHAIN_NAME=${CHAIN_NAME:-"gaia"}
 ENV CHAIN_BIN=${CHAIN_BIN:-"gaiad"}
-ENV CHAIN_VERSION=${CHAIN_VERSION:-"7.1.0"}
+ENV CHAIN_VERSION=${CHAIN_VERSION:-"8.0.0"}
 ENV CODE_REF=${CODE_REF:-"https://github.com/cosmos/gaia/archive/refs/tags"}
 
 # Set up dependencies
