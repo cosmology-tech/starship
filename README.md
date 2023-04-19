@@ -4,7 +4,7 @@
 ![Release](https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg)
 ![Build](https://github.com/cosmology-tech/starship/actions/workflows/build.yaml/badge.svg)
 ![Docs](https://github.com/cosmology-tech/starship/actions/workflows/mkdocs.yaml/badge.svg)
-![Docker](https://github.com/cosmology-tech/starship/actions/workflows/docker.yaml/badge.svg)
+![Docker](https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml/badge.svg)
 
 Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
