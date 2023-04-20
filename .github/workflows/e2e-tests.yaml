@@ -12,6 +12,11 @@ jobs:
   e2e-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    concurrency: stagging
+
+    env:
+      DEVNET_NAME: starship-devnet
+      DEVNET_NAMESPACE: starship-ci
 
     steps:
       - name: Checkout
@@ -61,14 +66,22 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
       - name: Setup Test infra
-        uses: cosmology-tech/starship-action@0.2.5
+        uses: cosmology-tech/starship-action@0.2.7
         with:
           values: tests/config.yaml
           port-forward: true
-          version: 0.1.24
+          version: 0.0.0
           chart: ./charts/devnet
           kubeconfig: ${{ steps.kubeconfig.outputs.content }}
+          name: ${{ env.DEVNET_NAME }}
+          namespace: ${{ env.DEVNET_NAMESPACE }}
 
       - name: Run tests
         run: |
           bazel test --cache_test_results=no --test_output=all //tests:tests
+
+      # todo: change this to be post step of the action
+      - name: Cleanup cluster
+        if: always()
+        run: |
+          helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
