@@ -37,6 +37,12 @@ jobs:
           touch /tmp/kubeconfig
           aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.AWS_EKS_CLUSTER }} --kubeconfig /opt/kube.config
 
+      - name: Read kubeconfig
+        id: kubeconfig
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: /tmp/kubeconfig
+
       - name: Bazel cache
         id: bazel-cache
         uses: actions/cache@v2
@@ -61,7 +67,7 @@ jobs:
           port-forward: true
           version: 0.1.24
           chart: ./charts/devnet
-          kubeconfig: /tmp/kubeconfig
+          kubeconfig: ${{ steps.kubeconfig.outputs.content }}
 
       - name: Run tests
         run: |
