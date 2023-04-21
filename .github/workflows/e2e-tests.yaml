@@ -12,11 +12,14 @@ jobs:
   e2e-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    concurrency: stagging
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
     env:
       DEVNET_NAME: starship-devnet
-      DEVNET_NAMESPACE: starship-ci
+      DEVNET_NAMESPACE: starship-ci-${{ github.workflow }}-${{ github.ref }}
 
     steps:
       - name: Checkout
@@ -85,3 +88,4 @@ jobs:
         if: always()
         run: |
           helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
+          kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
