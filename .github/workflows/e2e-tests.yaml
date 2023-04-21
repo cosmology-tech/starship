@@ -17,10 +17,6 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-    env:
-      DEVNET_NAME: starship-devnet
-      DEVNET_NAMESPACE: starship-ci-${{ github.workflow }}-${{ github.ref }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -69,15 +65,14 @@ jobs:
           chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
       - name: Setup Test infra
-        uses: cosmology-tech/starship-action@0.2.7
+        id: starship-action
+        uses: cosmology-tech/starship-action@0.2.8
         with:
           values: tests/config.yaml
           port-forward: true
           version: 0.0.0
           chart: ./charts/devnet
           kubeconfig: ${{ steps.kubeconfig.outputs.content }}
-          name: ${{ env.DEVNET_NAME }}
-          namespace: ${{ env.DEVNET_NAMESPACE }}
 
       - name: Run tests
         run: |
@@ -89,3 +84,6 @@ jobs:
         run: |
           helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
           kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
+        env:
+          DEVNET_NAME: ${{ steps.starship-action.outputs.name }}
+          DEVNET_NAMESPACE: ${{ steps.starship-action.outputs.namespace }}
