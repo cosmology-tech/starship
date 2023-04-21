@@ -7,6 +7,14 @@ type Chain struct {
 	Ports         Port   `name:"ports" json:"ports" yaml:"ports"`
 }
 
+func (c *Chain) GetRPCAddr() string {
+	return fmt.Sprintf("http://localhost:%d", c.Ports.Rpc)
+}
+
+func (c *Chain) GetRESTAddr() string {
+	return fmt.Sprintf("http://localhost:%d", c.Ports.Rest)
+}
+
 type Port struct {
 	Rest    int `name:"rest" json:"rest" yaml:"rest"`
 	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
@@ -27,8 +35,16 @@ type Feature struct {
 	Ports   Port   `name:"ports" json:"ports" yaml:"ports"`
 }
 
+func (f *Feature) GetRPCAddr() string {
+	return fmt.Sprintf("http://localhost:%d", f.Ports.Rpc)
+}
+
+func (f *Feature) GetRESTAddr() string {
+	return fmt.Sprintf("http://localhost:%d", f.Ports.Rest)
+}
+
 // Config is the struct for the config.yaml setup file
-// todo: move this to a more common place, outside of just tests
+// todo: move this to a more common place, outside just tests
 // todo: can be moved to proto defination
 type Config struct {
 	Chains   []*Chain   `name:"chains" json:"chains" yaml:"chains"`
