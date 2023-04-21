@@ -7,7 +7,7 @@ import (
 
 type ChainClients []*ChainClient
 
-func NewChainClients(logger *zap.Logger, config *Config) (*ChainClients, error) {
+func NewChainClients(logger *zap.Logger, config *Config) (ChainClients, error) {
 	var clients []*ChainClient
 	for _, chain := range config.Chains {
 		client, err := NewChainClient(logger, config, chain.Name)
@@ -23,6 +23,17 @@ func NewChainClients(logger *zap.Logger, config *Config) (*ChainClients, error) 
 	}
 
 	return clients, nil
+}
+
+// GetChainClient returns a chain client pointer for the given chain id
+func (cc ChainClients) GetChainClient(chainID string) (*ChainClient, error) {
+	for _, client := range cc {
+		if client.ChainID() == chainID {
+			return client, nil
+		}
+	}
+
+	return nil, fmt.Errorf("not found: client chain id %s", chainID)
 }
 
 type ChainClient struct {
