@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +12,7 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
 	"github.com/strangelove-ventures/lens/client/query"
 	"go.uber.org/zap"
@@ -152,13 +151,8 @@ func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
 		return nil, err
 	}
 
-	respData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var keys *pb.Keys
-	err = json.Unmarshal(respData, keys)
+	keys := &pb.Keys{}
+	err = jsonpb.Unmarshal(resp.Body, keys)
 	if err != nil {
 		return nil, err
 	}
