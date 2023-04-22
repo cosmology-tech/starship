@@ -6,7 +6,7 @@ chains:
       rest: 1313
       rpc: 26653
       exposer: 38083
-  - name: cosmoshub-1
+  - name: cosmoshub-4
     type: cosmos
     numValidators: 2
     ports:
@@ -20,7 +20,7 @@ relayers:
     replicas: 1
     chains:
       - osmosis-1
-      - cosmoshub-1
+      - cosmoshub-4
 
 explorer:
   enabled: true

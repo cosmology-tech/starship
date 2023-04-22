@@ -129,3 +129,21 @@ func (s *TestSuite) TestRegistry_ListIBC() {
 	// assert results to expected values
 	s.Assert().Len(respIBC.Data, len(s.config.Relayers)*2, "number of ibc information should be double the number of relayers")
 }
+
+func (s *TestSuite) TestRegistry_GetChainKeys() {
+	s.T().Log("runing test for /chains/{chain}/keys endpoint for registry")
+
+	for _, chain := range s.config.Chains {
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/keys", chain.Name), nil)
+		s.Require().NoError(err)
+
+		respKeys := &pb.Keys{}
+		s.MakeRegistryRequest(req, respKeys)
+
+		// assert results to expected values
+		s.Assert().Len(respKeys.Genesis, 1)
+		s.Assert().Len(respKeys.Validators, 4)
+		s.Assert().Len(respKeys.Keys, 3)
+		s.Assert().Len(respKeys.Relayers, 2)
+	}
+}
