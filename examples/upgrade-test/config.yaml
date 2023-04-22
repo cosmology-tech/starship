@@ -7,7 +7,7 @@ chains:
       rest: 1313
   - name: core-1
     type: persistencecore
-    numValidators: 4
+    numValidators: 1
     upgrade:
       enabled: true
       type: build
@@ -28,7 +28,7 @@ relayers:
       - core-1
 
 explorer:
-  enabled: true
+  enabled: false
   ports:
     rest: 8080
 

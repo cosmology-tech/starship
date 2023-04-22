@@ -1,12 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
+	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
 	"go.uber.org/zap"
 
@@ -49,12 +48,25 @@ type ChainClient struct {
 	config *Config
 
 	address     string
+	chainID     string
 	chainConfig *lens.ChainClientConfig
 	client      *lens.ChainClient
 }
 
 func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainClient, error) {
 	cc := config.GetChain(chainID)
+
+	chainClient := &ChainClient{
+		logger:  logger,
+		config:  config,
+		chainID: chainID,
+	}
+
+	// fetch chain registry from the local registry
+	registry, err := chainClient.GetChainRegistry()
+	if err != nil {
+		return nil, err
+	}
 
 	ccc := &lens.ChainClientConfig{
 		ChainID:        chainID,
@@ -63,6 +75,11 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		Debug:          true,
 		Timeout:        "20s",
 		SignModeStr:    "direct",
+		AccountPrefix:  *registry.Bech32Prefix,
+		GasAdjustment:  1.5,
+		GasPrices:      fmt.Sprintf("%f%s", registry.Fees.FeeTokens[0].HighGasPrice, registry.Fees.FeeTokens[0].Denom),
+		MinGasAmount:   0,
+		Slip44:         int(registry.Slip44),
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
@@ -70,12 +87,8 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		return nil, err
 	}
 
-	chainClient := &ChainClient{
-		logger:      logger,
-		config:      config,
-		chainConfig: ccc,
-		client:      client,
-	}
+	chainClient.chainConfig = ccc
+	chainClient.client = client
 
 	err = chainClient.Initialize()
 	if err != nil {
@@ -90,11 +103,11 @@ func (c *ChainClient) GetRPCAddr() string {
 }
 
 func (c *ChainClient) ChainID() string {
-	return c.chainConfig.ChainID
+	return c.chainID
 }
 
 func (c *ChainClient) Initialize() error {
-	keyName := "genesis"
+	keyName := fmt.Sprintf("genesis-%s", c.ChainID())
 	mnemonic, err := c.GetGenesisMnemonic()
 	if err != nil {
 		return err
@@ -119,13 +132,8 @@ func (c *ChainClient) GetChainKeys() (*pb.Keys, error) {
 		return nil, err
 	}
 
-	respData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var keys *pb.Keys
-	err = json.Unmarshal(respData, keys)
+	keys := &pb.Keys{}
+	err = jsonpb.Unmarshal(resp.Body, keys)
 	if err != nil {
 		return nil, err
 	}
@@ -144,10 +152,35 @@ func (c *ChainClient) GetGenesisMnemonic() (string, error) {
 }
 
 func (c *ChainClient) GetWallet(keyName, mnemonic string) (string, error) {
+	// delete key if already exists
+	//_, err := c.client.DeleteKey(keyName)
+
 	walletAddr, err := c.client.RestoreKey(keyName, mnemonic, 118)
 	if err != nil {
 		return "", err
 	}
 
 	return walletAddr, nil
+}
+
+// GetChainRegistry fetches the chain registry from the registry at `/chains/{chain-id}` endpoint
+func (c *ChainClient) GetChainRegistry() (*pb.ChainRegistry, error) {
+	url := fmt.Sprintf("%s/chains/%s", c.config.Registry.GetRESTAddr(), c.ChainID())
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	chainRegistry := &pb.ChainRegistry{}
+	err = jsonpb.Unmarshal(resp.Body, chainRegistry)
+	if err != nil {
+		return nil, err
+	}
+
+	// verify chain id from chain registry and config
+	if chainRegistry.ChainId != c.ChainID() {
+		return nil, fmt.Errorf("chain id mismatch: %s != %s", chainRegistry.ChainId, c.ChainID())
+	}
+
+	return chainRegistry, nil
 }
