@@ -1,4 +1,8 @@
-package upgrade_test
+package main
+
+import (
+	"fmt"
+)
 
 type Chain struct {
 	Name          string `name:"name" json:"name" yaml:"name"`

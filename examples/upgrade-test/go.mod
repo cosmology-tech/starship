@@ -5,12 +5,12 @@ go 1.19
 replace github.com/strangelove-ventures/lens => github.com/Anmol1696/lens v0.1.1-0.20230331154219-5027f163133a
 
 require (
+	github.com/cosmology-tech/starship/exposer v0.0.0-20230421131018-8f6482543ae8
 	github.com/cosmology-tech/starship/registry v0.0.0-20230421131018-8f6482543ae8
 	github.com/golang/protobuf v1.5.3
 	github.com/strangelove-ventures/lens v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.8.2
 	go.uber.org/zap v1.24.0
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -167,6 +167,7 @@ require (
 	google.golang.org/protobuf v1.29.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect

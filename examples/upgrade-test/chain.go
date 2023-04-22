@@ -1,7 +1,15 @@
-package upgrade_test
+package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+
 	lens "github.com/strangelove-ventures/lens/client"
+	"go.uber.org/zap"
+
 	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
@@ -37,11 +45,12 @@ func (cc ChainClients) GetChainClient(chainID string) (*ChainClient, error) {
 }
 
 type ChainClient struct {
-	logger      *zap.Logger
-	config 		*Config
+	logger *zap.Logger
+	config *Config
 
+	address     string
 	chainConfig *lens.ChainClientConfig
-	client 		*lens.ChainClient
+	client      *lens.ChainClient
 }
 
 func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainClient, error) {
@@ -53,7 +62,7 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		KeyringBackend: "test",
 		Debug:          true,
 		Timeout:        "20s",
-		SignModeStr: 	"direct",
+		SignModeStr:    "direct",
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
@@ -62,21 +71,48 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 	}
 
 	chainClient := &ChainClient{
-		logger:       logger,
-		config: 	  config,
-		chainConfig:  ccc,
-		client:       client,
+		logger:      logger,
+		config:      config,
+		chainConfig: ccc,
+		client:      client,
+	}
+
+	err = chainClient.Initialize()
+	if err != nil {
+		return nil, err
 	}
 
 	return chainClient, nil
+}
+
+func (c *ChainClient) GetRPCAddr() string {
+	return c.config.GetChain(c.ChainID()).GetRPCAddr()
 }
 
 func (c *ChainClient) ChainID() string {
 	return c.chainConfig.ChainID
 }
 
+func (c *ChainClient) Initialize() error {
+	keyName := "genesis"
+	mnemonic, err := c.GetGenesisMnemonic()
+	if err != nil {
+		return err
+	}
+
+	wallet, err := c.GetWallet(keyName, mnemonic)
+	if err != nil {
+		return err
+	}
+
+	c.address = wallet
+	c.chainConfig.Key = keyName
+
+	return nil
+}
+
 // GetChainKeys fetches keys from the chain registry at `/chains/{chain-id}/keys` endpoint
-func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
+func (c *ChainClient) GetChainKeys() (*pb.Keys, error) {
 	url := fmt.Sprintf("%s/chains/%s/keys", c.config.Registry.GetRESTAddr(), c.ChainID())
 	resp, err := http.Get(url)
 	if err != nil {
@@ -98,11 +134,20 @@ func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
 }
 
 // GetGenesisMnemonic fetches the mnemonic from GetChainKeys and returns the first mnemonic in genesis list
-func (c *ChainClient) GetGenesisMnemonic(ctx context.Context) (string, error) {
-	keys, err := c.GetChainKeys(ctx)
+func (c *ChainClient) GetGenesisMnemonic() (string, error) {
+	keys, err := c.GetChainKeys()
 	if err != nil {
 		return "", err
 	}
 
 	return keys.Genesis[0].Mnemonic, nil
+}
+
+func (c *ChainClient) GetWallet(keyName, mnemonic string) (string, error) {
+	walletAddr, err := c.client.RestoreKey(keyName, mnemonic, 118)
+	if err != nil {
+		return "", err
+	}
+
+	return walletAddr, nil
 }

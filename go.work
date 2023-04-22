@@ -6,4 +6,6 @@ use (
 	./registry
 	./tools
 	./tests
+
+	./examples/upgrade-test
 )
