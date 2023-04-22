@@ -20,6 +20,8 @@ run:
 	--chain-client-ids "osmosis-1,juno-0" \
 	--chain-client-rpcs "https://rpc.osmosis.zone:443,https://rpc.juno.strange.love:443"
 
+# Assumes a local starship cluster is running
+# Uses tests/config.yaml as the base config
 run-local:
 	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- \
 	--http-port "8001" --grpc-port "9001" \
