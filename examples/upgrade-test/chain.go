@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
 	"go.uber.org/zap"
@@ -78,8 +79,9 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		AccountPrefix:  *registry.Bech32Prefix,
 		GasAdjustment:  1.5,
 		GasPrices:      fmt.Sprintf("%f%s", registry.Fees.FeeTokens[0].HighGasPrice, registry.Fees.FeeTokens[0].Denom),
-		MinGasAmount:   0,
+		MinGasAmount:   10000,
 		Slip44:         int(registry.Slip44),
+		Modules:        lens.ModuleBasics,
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
@@ -113,7 +115,7 @@ func (c *ChainClient) Initialize() error {
 		return err
 	}
 
-	wallet, err := c.GetWallet(keyName, mnemonic)
+	wallet, err := c.CreateWallet(keyName, mnemonic)
 	if err != nil {
 		return err
 	}
@@ -151,9 +153,9 @@ func (c *ChainClient) GetGenesisMnemonic() (string, error) {
 	return keys.Genesis[0].Mnemonic, nil
 }
 
-func (c *ChainClient) GetWallet(keyName, mnemonic string) (string, error) {
+func (c *ChainClient) CreateWallet(keyName, mnemonic string) (string, error) {
 	// delete key if already exists
-	//_, err := c.client.DeleteKey(keyName)
+	_ = c.client.DeleteKey(keyName)
 
 	walletAddr, err := c.client.RestoreKey(keyName, mnemonic, 118)
 	if err != nil {
@@ -161,6 +163,24 @@ func (c *ChainClient) GetWallet(keyName, mnemonic string) (string, error) {
 	}
 
 	return walletAddr, nil
+}
+
+func (c *ChainClient) CreateRandWallet(keyName string) (string, error) {
+	entropy, err := bip39.NewEntropy(256)
+	if err != nil {
+		return "", err
+	}
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		return "", err
+	}
+
+	address, err := c.CreateWallet(keyName, mnemonic)
+	if err != nil {
+		return "", err
+	}
+
+	return address, nil
 }
 
 // GetChainRegistry fetches the chain registry from the registry at `/chains/{chain-id}` endpoint
@@ -183,4 +203,55 @@ func (c *ChainClient) GetChainRegistry() (*pb.ChainRegistry, error) {
 	}
 
 	return chainRegistry, nil
+}
+
+func (c *ChainClient) GetChainDenom() (string, error) {
+	registry, err := c.GetChainRegistry()
+	if err != nil {
+		return "", err
+	}
+
+	return registry.Staking.StakingTokens[0].Denom, nil
+}
+
+// GetChainAssets fetches the assets from chain registry at `/chains/{chain-id}/assets` endpoint
+func (c *ChainClient) GetChainAssets() ([]*pb.ChainAsset, error) {
+	url := fmt.Sprintf("%s/chains/%s/assets", c.config.Registry.GetRESTAddr(), c.ChainID())
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	respAssets := &pb.ResponseChainAssets{}
+	err = jsonpb.Unmarshal(resp.Body, respAssets)
+	if err != nil {
+		return nil, err
+	}
+
+	return respAssets.Assets, nil
+}
+
+func (c *ChainClient) GetIBCInfo(chain2 string) (*pb.IBCData, error) {
+	url := fmt.Sprintf("%s/ibc/%s/%s", c.config.Registry.GetRESTAddr(), c.ChainID(), chain2)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	ibcData := &pb.IBCData{}
+	err = jsonpb.Unmarshal(resp.Body, ibcData)
+	if err != nil {
+		return nil, err
+	}
+
+	return ibcData, nil
+}
+
+func (c *ChainClient) GetIBCChannel(chain2 string) (*pb.ChannelData, error) {
+	ibcInfo, err := c.GetIBCInfo(chain2)
+	if err != nil {
+		return nil, err
+	}
+
+	return ibcInfo.Channels[0], nil
 }
