@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
@@ -254,4 +256,22 @@ func (c *ChainClient) GetIBCChannel(chain2 string) (*pb.ChannelData, error) {
 	}
 
 	return ibcInfo.Channels[0], nil
+}
+
+func (c *ChainClient) GetStatus() (*coretypes.ResultStatus, error) {
+	status, err := c.client.RPCClient.Status(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return status, nil
+}
+
+func (c *ChainClient) GetHeight() (int64, error) {
+	status, err := c.GetStatus()
+	if err != nil {
+		return -1, err
+	}
+
+	return status.SyncInfo.LatestBlockHeight, nil
 }
