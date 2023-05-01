@@ -5,10 +5,11 @@ import (
 )
 
 type Chain struct {
-	Name          string `name:"name" json:"name" yaml:"name"`
-	Type          string `name:"type" json:"type" yaml:"type"`
-	NumValidators int    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
-	Ports         Port   `name:"ports" json:"ports" yaml:"ports"`
+	Name          string  `name:"name" json:"name" yaml:"name"`
+	Type          string  `name:"type" json:"type" yaml:"type"`
+	NumValidators int     `name:"num-validators" json:"num_validators" yaml:"numValidators"`
+	Ports         Port    `name:"ports" json:"ports" yaml:"ports"`
+	Upgrade       Upgrade `name:"upgrade" json:"upgrade" yaml:"upgrade"`
 }
 
 func (c *Chain) GetRPCAddr() string {
@@ -17,6 +18,16 @@ func (c *Chain) GetRPCAddr() string {
 
 func (c *Chain) GetRESTAddr() string {
 	return fmt.Sprintf("http://localhost:%d", c.Ports.Rest)
+}
+
+type Upgrade struct {
+	Enabled  bool   `name:"eanbled" json:"enabled" yaml:"enabled"`
+	Type     string `name:"type" json:"type" yaml:"type"`
+	Genesis  string `name:"genesis" json:"genesis" yaml:"genesis"`
+	Upgrades []struct {
+		Name    string `name:"name" json:"name" yaml:"name"`
+		Version string `name:"version" json:"version" yaml:"version"`
+	} `name:"upgrades" json:"upgrades" yaml:"upgrades"`
 }
 
 type Port struct {

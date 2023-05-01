@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
@@ -216,6 +218,14 @@ func (c *ChainClient) GetChainDenom() (string, error) {
 	return registry.Staking.StakingTokens[0].Denom, nil
 }
 
+func (c *ChainClient) MustGetChainDenom() string {
+	denom, err := c.GetChainDenom()
+	if err != nil {
+		panic(err)
+	}
+	return denom
+}
+
 // GetChainAssets fetches the assets from chain registry at `/chains/{chain-id}/assets` endpoint
 func (c *ChainClient) GetChainAssets() ([]*pb.ChainAsset, error) {
 	url := fmt.Sprintf("%s/chains/%s/assets", c.config.Registry.GetRESTAddr(), c.ChainID())
@@ -274,4 +284,90 @@ func (c *ChainClient) GetHeight() (int64, error) {
 	}
 
 	return status.SyncInfo.LatestBlockHeight, nil
+}
+
+func (c *ChainClient) CustomSendMsg(ctx context.Context, keyName string, msg sdk.Msg, memo string) (*sdk.TxResponse, error) {
+	return c.CustomSendMsgs(ctx, keyName, []sdk.Msg{msg}, memo)
+}
+
+// CustomSendMsgs wraps the msgs in a StdTx, signs and sends it. An error is returned if there
+// was an issue sending the transaction. A successfully sent, but failed transaction will
+// not return an error. If a transaction is successfully sent, the result of the execution
+// of that transaction will be logged. A boolean indicating if a transaction was successfully
+// sent and executed successfully is returned.
+func (c *ChainClient) CustomSendMsgs(ctx context.Context, keyName string, msgs []sdk.Msg, memo string) (*sdk.TxResponse, error) {
+	cc := c.client
+	txf, err := cc.PrepareFactory(cc.TxFactory())
+	if err != nil {
+		return nil, err
+	}
+
+	if memo != "" {
+		txf = txf.WithMemo(memo)
+	}
+
+	// Set the gas amount on the transaction factory
+	adjusted := uint64(1000000)
+	txf = txf.WithGas(adjusted)
+
+	// Build the transaction builder
+	txb, err := txf.BuildUnsignedTx(msgs...)
+	if err != nil {
+		return nil, err
+	}
+
+	// Attach the signature to the transaction
+	// c.LogFailedTx(nil, err, msgs)
+	// Force encoding in the chain specific address
+	for _, msg := range msgs {
+		cc.Codec.Marshaler.MustMarshalJSON(msg)
+	}
+
+	err = func() error {
+		done := cc.SetSDKContext()
+		// ensure that we allways call done, even in case of an error or panic
+		defer done()
+		if err = tx.Sign(txf, keyName, txb, false); err != nil {
+			return err
+		}
+		return nil
+	}()
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate the transaction bytes
+	txBytes, err := cc.Codec.TxConfig.TxEncoder()(txb.GetTx())
+	if err != nil {
+		return nil, err
+	}
+
+	// Broadcast those bytes
+	res, err := cc.BroadcastTx(ctx, txBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// transaction was executed, log the success or failure using the tx response code
+	// NOTE: error is nil, logic should use the returned error to determine if the
+	// transaction was successfully executed.
+	if res.Code != 0 {
+		return res, fmt.Errorf("transaction failed with code: %d", res.Code)
+	}
+
+	return res, nil
+}
+
+func (c *ChainClient) SendMsg(ctx context.Context, msg sdk.Msg, memo string) (*sdk.TxResponse, error) {
+	return c.SendMsgs(ctx, []sdk.Msg{msg}, memo)
+}
+
+// SendMsgs wraps the msgs in a StdTx, signs and sends it. An error is returned if there
+// was an issue sending the transaction. A successfully sent, but failed transaction will
+// not return an error. If a transaction is successfully sent, the result of the execution
+// of that transaction will be logged. A boolean indicating if a transaction was successfully
+// sent and executed successfully is returned.
+func (c *ChainClient) SendMsgs(ctx context.Context, msgs []sdk.Msg, memo string) (*sdk.TxResponse, error) {
+	return c.CustomSendMsgs(ctx, c.chainConfig.Key, msgs, memo)
 }

@@ -36,7 +36,9 @@ delete:
 
 .PHONY: test
 test:
-	go test .
+	go test . -short -v
+	go test . -v
+	go test . -short -v
 
 
 ###############################################################################
