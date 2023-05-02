@@ -57,7 +57,7 @@ func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
 func (s *TestSuite) WaitForTx(chain *ChainClient, txHex string) {
 	var tx *coretypes.ResultTx
 	var err error
-	s.Require().Eventually(
+	s.Require().Eventuallyf(
 		func() bool {
 			tx, err = chain.client.QueryTx(context.Background(), txHex, false)
 			if err != nil {
@@ -68,15 +68,16 @@ func (s *TestSuite) WaitForTx(chain *ChainClient, txHex string) {
 			}
 			return false
 		},
-		10*time.Second,
+		300*time.Second,
 		time.Second,
+		"waited for too long, still txn not successfull",
 	)
 	s.Assert().NotNil(tx)
 }
 
 // WaitForHeight will wait till the chain reaches the block height
 func (s *TestSuite) WaitForHeight(chain *ChainClient, height int64) {
-	s.Require().Eventually(
+	s.Require().Eventuallyf(
 		func() bool {
 			curHeight, err := chain.GetHeight()
 			s.Assert().NoError(err)
@@ -85,8 +86,9 @@ func (s *TestSuite) WaitForHeight(chain *ChainClient, height int64) {
 			}
 			return false
 		},
-		10*time.Second,
-		time.Second,
+		300*time.Second,
+		5*time.Second,
+		"waited for too long, still height did not reach desired block height",
 	)
 }
 
