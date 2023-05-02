@@ -19,7 +19,7 @@ func (s *TestSuite) TestChainsStatus() {
 		status, err := chainClient.GetStatus()
 		s.Assert().NoError(err)
 
-		s.Assert().Equal(chainClient.ChainID(), status.NodeInfo.Network)
+		s.Assert().Equal(chainClient.GetChainID(), status.NodeInfo.Network)
 	}
 }
 
@@ -37,7 +37,7 @@ func (s *TestSuite) TestChainTokenTransfer() {
 	s.TransferTokens(chain1, address, 2345000, denom)
 
 	// Verify the address recived the token
-	balance, err := chain1.client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
+	balance, err := chain1.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
 	s.Require().NoError(err)
 
 	// Assert correct transfers
@@ -62,7 +62,7 @@ func (s *TestSuite) TestChainIBCTransfer() {
 	s.IBCTransferTokens(chain2, chain1, address, 12345000)
 
 	// Verify the address recived the token
-	balance, err := chain1.client.QueryBalanceWithDenomTraces(context.Background(), sdk.AccAddress(address), nil)
+	balance, err := chain1.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.AccAddress(address), nil)
 	s.Require().NoError(err)
 
 	chain2Denom, err := chain2.GetChainDenom()
