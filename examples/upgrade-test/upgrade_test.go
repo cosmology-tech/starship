@@ -31,7 +31,7 @@ func (s *TestSuite) TestChainUpgrade() {
 
 	// Perform chain upgrade
 	// fetch all the information needed for the upgrade
-	cc := chain.config.GetChain("core-1")
+	cc := chain.Config.GetChain("core-1")
 	version := cc.Upgrade.Upgrades[0].Name
 	curHeight, err := chain.GetHeight()
 	s.Require().NoError(err)
@@ -54,7 +54,7 @@ func (s *TestSuite) TestChainUpgrade() {
 
 	msg := &gov.MsgSubmitProposal{
 		InitialDeposit: sdk.NewCoins(sdk.NewCoin("uxprt", sdk.NewInt(10000000))),
-		Proposer:       chain.address,
+		Proposer:       chain.Address,
 	}
 	err = msg.SetContent(content)
 	s.Require().NoError(err)
@@ -81,15 +81,15 @@ func (s *TestSuite) TestChainUpgrade() {
 	s.T().Logf("upgrade: software upgrade proposal submited, proposal id: %d", proposalID)
 
 	// Vote on the proposal to pass it
-	vote := &gov.MsgVote{ProposalId: uint64(proposalID), Voter: chain.address, Option: gov.OptionYes}
+	vote := &gov.MsgVote{ProposalId: uint64(proposalID), Voter: chain.Address, Option: gov.OptionYes}
 	res, err = chain.SendMsg(context.Background(), vote, "Votes for software upgrade proposal")
 	s.Require().NoError(err)
 	s.WaitForTx(chain, res.TxHash)
-	s.T().Logf("upgrade: voted on the proposal from addr: %s", chain.address)
+	s.T().Logf("upgrade: voted on the proposal from addr: %s", chain.Address)
 
 	// Query proposal to see if it is in voting period
 	req := &gov.QueryProposalRequest{ProposalId: uint64(proposalID)}
-	queryclient := gov.NewQueryClient(chain.client)
+	queryclient := gov.NewQueryClient(chain.Client)
 	propRes, err := queryclient.Proposal(context.Background(), req)
 	s.Require().NoError(err)
 	s.Require().NotNil(propRes)
@@ -110,7 +110,7 @@ func (s *TestSuite) TestChainUpgrade() {
 	s.T().Logf("post-upgrade: checked proposal has passed")
 
 	// Verify upgrade happened
-	upgradeClient := upgradetypes.NewQueryClient(chain.client)
+	upgradeClient := upgradetypes.NewQueryClient(chain.Client)
 	planRes, err := upgradeClient.AppliedPlan(context.Background(), &upgradetypes.QueryAppliedPlanRequest{Name: version})
 	s.Require().NoError(err)
 	s.Require().Equal(planRes.Height, upgradeHeight)
@@ -118,7 +118,7 @@ func (s *TestSuite) TestChainUpgrade() {
 
 	// Perform post upgrade tests/checks
 	// balance of address
-	balance, err := chain.client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
+	balance, err := chain.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
 	s.Require().NoError(err)
 	// Assert correct transfers
 	s.Assert().Len(balance, 1)
@@ -133,7 +133,7 @@ func (s *TestSuite) TestChainUpgrade() {
 		12312300, denom, address)
 
 	// Check balance again
-	balance, err = chain.client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
+	balance, err = chain.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
 	s.Require().NoError(err)
 	// Assert correct transfers
 	s.Assert().Len(balance, 1)

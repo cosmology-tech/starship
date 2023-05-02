@@ -16,6 +16,8 @@ import (
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
+
+	starship "github.com/cosmology-tech/starship/clients/go/client"
 )
 
 var configFile = "./config.yaml"
@@ -23,8 +25,8 @@ var configFile = "./config.yaml"
 type TestSuite struct {
 	suite.Suite
 
-	config       *Config
-	chainClients ChainClients
+	config       *starship.Config
+	chainClients starship.ChainClients
 }
 
 func (s *TestSuite) SetupTest() {
@@ -33,13 +35,13 @@ func (s *TestSuite) SetupTest() {
 	// read config file from yaml
 	yamlFile, err := os.ReadFile(configFile)
 	s.Require().NoError(err)
-	config := &Config{}
+	config := &starship.Config{}
 	err = yaml.Unmarshal(yamlFile, config)
 	s.Require().NoError(err)
 	s.config = config
 
 	// create chain clients
-	chainClients, err := NewChainClients(zap.L(), config)
+	chainClients, err := starship.NewChainClients(zap.L(), config)
 	s.Require().NoError(err)
 	s.chainClients = chainClients
 }
@@ -54,12 +56,12 @@ func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
 }
 
 // WaitForTx will wait for the tx to complete, fail if not able to find tx
-func (s *TestSuite) WaitForTx(chain *ChainClient, txHex string) {
+func (s *TestSuite) WaitForTx(chain *starship.ChainClient, txHex string) {
 	var tx *coretypes.ResultTx
 	var err error
 	s.Require().Eventuallyf(
 		func() bool {
-			tx, err = chain.client.QueryTx(context.Background(), txHex, false)
+			tx, err = chain.Client.QueryTx(context.Background(), txHex, false)
 			if err != nil {
 				return false
 			}
@@ -76,7 +78,7 @@ func (s *TestSuite) WaitForTx(chain *ChainClient, txHex string) {
 }
 
 // WaitForHeight will wait till the chain reaches the block height
-func (s *TestSuite) WaitForHeight(chain *ChainClient, height int64) {
+func (s *TestSuite) WaitForHeight(chain *starship.ChainClient, height int64) {
 	s.Require().Eventuallyf(
 		func() bool {
 			curHeight, err := chain.GetHeight()
@@ -92,26 +94,26 @@ func (s *TestSuite) WaitForHeight(chain *ChainClient, height int64) {
 	)
 }
 
-func (s *TestSuite) TransferTokens(chain *ChainClient, addr string, amount int, denom string) {
+func (s *TestSuite) TransferTokens(chain *starship.ChainClient, addr string, amount int, denom string) {
 	coin, err := sdk.ParseCoinNormalized(fmt.Sprintf("%d%s", amount, denom))
 	s.Require().NoError(err)
 
 	// Build transaction message
 	req := &banktypes.MsgSend{
-		FromAddress: chain.address,
+		FromAddress: chain.Address,
 		ToAddress:   addr,
 		Amount:      sdk.Coins{coin},
 	}
 
-	res, err := chain.client.SendMsg(context.Background(), req, "Transfer tokens for e2e tests")
+	res, err := chain.Client.SendMsg(context.Background(), req, "Transfer tokens for e2e tests")
 	s.Require().NoError(err)
 
 	s.WaitForTx(chain, res.TxHash)
 }
 
 // IBCTransferTokens will transfer chain native token from chain1 to chain2 at given address
-func (s *TestSuite) IBCTransferTokens(chain1, chain2 *ChainClient, chain2Addr string, amount int) {
-	channel, err := chain1.GetIBCChannel(chain2.ChainID())
+func (s *TestSuite) IBCTransferTokens(chain1, chain2 *starship.ChainClient, chain2Addr string, amount int) {
+	channel, err := chain1.GetIBCChannel(chain2.GetChainID())
 	s.Require().NoError(err)
 
 	denom, err := chain1.GetChainDenom()
@@ -122,14 +124,14 @@ func (s *TestSuite) IBCTransferTokens(chain1, chain2 *ChainClient, chain2Addr st
 		SourcePort:       channel.Chain_2.PortId,
 		SourceChannel:    channel.Chain_2.ChannelId,
 		Token:            coin,
-		Sender:           chain1.address,
+		Sender:           chain1.Address,
 		Receiver:         chain2Addr,
 		TimeoutHeight:    clienttypes.NewHeight(12300, 45600),
 		TimeoutTimestamp: 0,
-		Memo:             fmt.Sprintf("testsetup: transfer token from %s to %s", chain1.ChainID(), chain2.ChainID()),
+		Memo:             fmt.Sprintf("testsetup: transfer token from %s to %s", chain1.GetChainID(), chain2.GetChainID()),
 	}
 
-	res, err := chain1.client.SendMsg(context.Background(), req, "")
+	res, err := chain1.Client.SendMsg(context.Background(), req, "")
 	s.Require().NoError(err)
 	if err != nil {
 		s.Require().Nil(res, "msg failed", zap.Any("error", err), zap.Any("code", res.Code), zap.Any("logs", res.Logs))
