@@ -1,5 +1,5 @@
-NAME = starship-multichain
-FILE = config.yaml
+HELM_NAME = starship-multichain
+HELM_FILE = config.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet

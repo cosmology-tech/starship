@@ -11,10 +11,10 @@ chains:
     upgrade:
       enabled: true
       type: build
-      genesis: v4.0.0
+      genesis: v7.0.0
       upgrades:
-        - name: v5
-          version: v5.0.0
+        - name: v8
+          version: v8.0.0-rc3
     ports:
       rpc: 26657
       rest: 1317
