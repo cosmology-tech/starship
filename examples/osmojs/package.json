@@ -1,0 +1,46 @@
+{
+  "name": "osmojs-e2e",
+  "version": "1.0.0",
+  "description": "running e2e tests for osmojs with starship",
+  "main": "src/setup.test.js",
+  "jest": {
+    "testTimeout": 15000
+  },
+  "scripts": {
+    "fix": "npm run fix:prettier && npm run fix:lint",
+    "fix:prettier": "prettier \"**/*.{ts,md}\" --write",
+    "fix:lint": "eslint src --ext .ts --fix",
+    "e2e": "npm run e2e:test",
+    "e2e:deps": "make setup",
+    "e2e:kind": "make setup-kind",
+    "e2e:start": "make start",
+    "e2e:test": "jest --testPathPattern=src/",
+    "e2e:stop": "make stop",
+    "e2e:clean": "make stop clean"
+  },
+  "type": "module",
+  "files": [
+    "src",
+    "configs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/runtime": "^7.19.0",
+    "@confio/relayer": "0.7.0",
+    "@cosmjs/amino": "0.29.3",
+    "@cosmjs/proto-signing": "0.29.3",
+    "@cosmjs/stargate": "0.29.3",
+    "@cosmjs/tendermint-rpc": "^0.29.3",
+    "@osmonauts/lcd": "^0.8.0",
+    "eslint": "^8.40.0",
+    "jest": "^29.5.0",
+    "js-yaml": "^4.1.0",
+    "long": "^5.2.0",
+    "node-fetch": "^3.3.1",
+    "osmojs": "^15.2.1",
+    "path": "^0.12.7",
+    "prettier": "^2.8.8",
+    "protobufjs": "^6.11.3"
+  }
+}
