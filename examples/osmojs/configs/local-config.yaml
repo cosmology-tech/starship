@@ -1,0 +1,33 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    ports:
+      rest: 1317
+      rpc: 26657
+  - name: cosmos-2
+    type: cosmos
+    numValidators: 1
+    ports:
+      rest: 1313
+      rpc: 26653
+  - name: juno-0
+    type: juno
+    numValidators: 1
+    ports:
+      rest: 1315
+      rpc: 26655
+
+relayers:
+  - name: osmos-juno
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - juno-0
+  - name: osmos-cosmos
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmos-2
