@@ -5,8 +5,8 @@ import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { osmosis } from 'osmojs';
 
-import { ibcCosmosToOsmosis, sendOsmoToAddress } from './utils';
-import { ChainClientRegistry } from './clients.js';
+import { ibcCosmosToOsmosis, sendOsmoToAddress } from '../src/utils';
+import { ChainClientRegistry } from '../src/clients.js';
 
 
 describe("IBC transfer of atom", () => {

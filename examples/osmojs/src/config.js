@@ -8,7 +8,7 @@ let KEYS;
 
 // returns starship config used to spun up the cluster
 export function getStarshipConfig() {
-  const configPath = path.join(__dirname, "configs", "config.yaml");
+  const configPath = path.join(__dirname, "..", "configs", "config.yaml");
   return yaml.load(fs.readFileSync(configPath, "utf-8"));
 }
 
