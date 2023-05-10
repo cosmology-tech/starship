@@ -109,7 +109,7 @@ describe("Pool testing over IBC tokens", () => {
     pool = poolResponse.pool
   }, 20000);
 
-  it("join and actions on pool", async () => {
+  it("join pool", async () => {
     const signingClient = await SigningStargateClient.connectWithSigner(
       chainClients["osmosis-1"].rpc,
       wallet,
@@ -141,4 +141,7 @@ describe("Pool testing over IBC tokens", () => {
     expect(gammBalance.denom).toEqual(gammDenom)
     expect(BigInt(gammBalance.amount)).toEqual(BigInt(shareOutAmount) + BigInt(totalgammAmount))
   }, 200000);
+  
+  it("lockup tokens", () => {})
+  it("swap tokens using pool", () => {})
 });
