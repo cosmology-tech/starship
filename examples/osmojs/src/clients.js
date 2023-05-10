@@ -117,7 +117,7 @@ export class ChainClientRegistry {
   getChainType() {
     return this.chainInfo["chain_name"];
   }
-
+  
   getDenom() {
     return this.chainInfo.staking["staking_tokens"][0].denom
   }
