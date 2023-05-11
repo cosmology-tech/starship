@@ -1,5 +1,5 @@
 import { generateMnemonic } from '@confio/relayer/build/lib/helpers';
-import {assertIsDeliverTxSuccess, setupIbcExtension, QueryClient, SigningStargateClient} from '@cosmjs/stargate';
+import {assertIsDeliverTxSuccess, SigningStargateClient} from '@cosmjs/stargate';
 import { coin, coins } from '@cosmjs/amino';
 import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
@@ -24,22 +24,25 @@ describe("Pool testing over IBC tokens", () => {
 
   beforeAll(async () => {
     chainClients = ChainClients
+    baseDenom = chainClients["osmosis-1"].getDenom();
+    chain = chainClients["osmosis-1"];
+    
+    // Initialize wallet
     wallet = await DirectSecp256k1HdWallet.fromMnemonic(
       generateMnemonic(),
       { prefix: chainClients["osmosis-1"].getPrefix() },
     );
-    baseDenom = chainClients["osmosis-1"].getDenom();
     address = (await wallet.getAccounts())[0].address;
-    chain = chainClients["osmosis-1"]
     
-    // Transfer osmosis and ibc tokens to address
+    // Transfer osmosis and ibc tokens to address, send only osmo to address
+    await sendOsmoToAddress(chain, address);
     await sendOsmoToAddress(chain, address);
     await ibcCosmosToOsmosis(chainClients["cosmos-2"], chainClients["osmosis-1"], address);
   }, 200000);
 
   it("check address has tokens", async () => {
     const balances = await chain.client.getAllBalances(address);
-  
+
     expect(balances.length).toEqual(2);
   }, 10000);
 
@@ -142,6 +145,56 @@ describe("Pool testing over IBC tokens", () => {
     expect(BigInt(gammBalance.amount)).toEqual(BigInt(shareOutAmount) + BigInt(totalgammAmount))
   }, 200000);
   
-  it("lockup tokens", () => {})
-  it("swap tokens using pool", () => {})
+  it("swap tokens using pool, to address without ibc token", async () => {
+    const signingClient = await SigningStargateClient.connectWithSigner(
+      chainClients["osmosis-1"].rpc,
+      wallet,
+      chainClients["osmosis-1"].stargateClientOpts(),
+    );
+    
+    const ibcDenom = pool.poolAssets.find((asset) => {
+      if (asset.token.denom.startsWith("ibc/")) {
+        return asset
+      }
+    }).token.denom
+    
+    const balanceBefore = await chain.client.getBalance(address, ibcDenom)
+    
+    const swapMsg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn({
+      sender: address,
+      routes: [
+        {
+          poolId,
+          tokenOutDenom: ibcDenom,
+        }
+      ],
+      tokenIn: coin("200000", chain.getDenom()),
+      tokenOutMinAmount: "100000",
+    })
+  
+    const result = await signingClient.signAndBroadcast(
+      address,
+      [swapMsg],
+      { amount: coins(10_000_000, chain.getDenom()), gas: "10000000" },
+      "swap tokens",
+    )
+    
+    assertIsDeliverTxSuccess(result);
+    
+    const swapEvent = result.events.find((event) => {
+      if (event.type === "token_swapped" ) {
+        return event
+      }
+    })
+    const amountOut = swapEvent.attributes.find((attr) => {
+      if (attr.key === "tokens_out") {
+        return attr
+      }
+    }).value.split(ibcDenom)[0]
+    
+    const balanceAfter = await chain.client.getBalance(address, ibcDenom)
+    
+    // Verify balance increase of ibc denom is from token swap
+    expect(BigInt(balanceAfter.amount) - BigInt(balanceBefore.amount)).toEqual(BigInt(amountOut))
+  }, 200000);
 });

@@ -21,6 +21,14 @@ export const calcShareOutAmount = (
     .sort((a, b) => (new BigNumber(a).lt(b) ? -1 : 1))[0];
 };
 
+export const calcAmountWithSlippage = (
+  amount,
+  slippage
+) => {
+  const remainingPercentage = new BigNumber(100).minus(slippage).div(100);
+  return new BigNumber(amount).multipliedBy(remainingPercentage).toString();
+};
+
 export const daysToSeconds = (days) => {
   return (Number(days) * 24 * 60 * 60).toString();
 };
