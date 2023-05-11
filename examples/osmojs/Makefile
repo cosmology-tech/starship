@@ -16,7 +16,7 @@ start: install port-forward
 
 .PHONY: test
 test:
-	jest --testPathPattern=../tests
+	npm run e2e:test
 
 .PHONY: stop
 stop: stop-forward delete
