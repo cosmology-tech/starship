@@ -29,7 +29,8 @@
     "prettier": "^2.8.8",
     "protobufjs": "^6.11.3",
     "sinon": "14.0.2",
-    "ts-jest": "^29.1.0"
+    "ts-jest": "^29.1.0",
+    "bignumber.js": "9.1.0"
   },
   "scripts": {
     "fix": "npm run fix:prettier && npm run fix:lint",
@@ -39,11 +40,10 @@
     "e2e:deps": "make setup",
     "e2e:kind": "make setup-kind",
     "e2e:start": "make start",
-    "e2e:test": "jest --testPathPattern=tests/",
+    "e2e:test": "jest --testPathPattern=tests/ --runInBand",
     "e2e:stop": "make stop",
     "e2e:clean": "make stop clean"
   },
   "author": "",
-  "license": "ISC",
-  "type": "module"
+  "license": "ISC"
 }
