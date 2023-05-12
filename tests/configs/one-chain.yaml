@@ -21,11 +21,11 @@ registry:
     grpc: 9091
   resources:
     limits:
-      cpu: "0.2"
-      memory: 200M
+      cpu: "0.1"
+      memory: 100M
     requests:
-      cpu: "0.2"
-      memory: 200M
+      cpu: "0.1"
+      memory: 100M
 
 resources:
   init:
@@ -37,8 +37,8 @@ resources:
       memory: 500M
   wait:
     limits:
-      cpu: "0.2"
-      memory: 200M
+      cpu: "0.1"
+      memory: 100M
     requests:
-      cpu: "0.2"
+      cpu: "0.1"
       memory: 200M

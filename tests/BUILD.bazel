@@ -12,6 +12,11 @@ go_library(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "configfiles",
+    srcs = glob(["configs/*.yaml"]),
+)
+
 go_test(
     name = "tests",
     srcs = [
@@ -31,9 +36,7 @@ go_test(
         "@com_github_golang_protobuf//proto",
     ],
     data = [
-        ":configs/build-chain.yaml",
-        ":configs/one-chain.yaml",
-        ":configs/two-chain.yaml",
+        ":configfiles",
     ],
     env = {
         "GO_TEST_WRAP_TESTV": "1",
