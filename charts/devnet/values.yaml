@@ -146,6 +146,17 @@ chains: []
   #   ports:
   #     rpc: 26657
   #     rest: 1317
+  # - name: core-2
+  #   type: persistencecore
+  #   numValidators: 3
+  #   build:
+  #     # build directive will instruct the chart to build the chain source from
+  #     # given version tag or branch name
+  #     enabled: true
+  #     source: v3.2.0
+  #   ports:
+  #     rpc: 26658
+  #     rest: 1318
   # - name: juno-1
   #   type: juno
   #   numValidators: 2
