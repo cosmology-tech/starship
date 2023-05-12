@@ -36,7 +36,7 @@ delete:
 
 .PHONY: test
 test:
-	bazel test --cache_test_results=no --test_output=all //tests:tests
+	TEST_CONFIG_FILE=$(HELM_FILE) bazel test --cache_test_results=no --test_output=all //tests:tests
 
 ###############################################################################
 ###                              Port forward                              ###

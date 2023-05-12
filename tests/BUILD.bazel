@@ -31,7 +31,9 @@ go_test(
         "@com_github_golang_protobuf//proto",
     ],
     data = [
-        ":config.yaml"
+        ":configs/build-chain.yaml",
+        ":configs/one-chain.yaml",
+        ":configs/two-chain.yaml",
     ],
     env = {
         "GO_TEST_WRAP_TESTV": "1",
