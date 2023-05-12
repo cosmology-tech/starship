@@ -79,9 +79,11 @@ jobs:
 
       - name: Run tests
         run: |
-          bazel test --cache_test_results=no --test_output=all //tests:tests
-        env:
-          TEST_CONFIG_FILE: ${{ env.CONFIG_FILE }}
+          bazel test \
+            --cache_test_results=no \
+            --test_output=all \
+            --test_env=TEST_CONFIG_FILE=${{ env.CONFIG_FILE }} \
+            //tests:tests
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -166,9 +168,11 @@ jobs:
 
       - name: Run tests
         run: |
-          bazel test --cache_test_results=no --test_output=all //tests:tests
-        env:
-          TEST_CONFIG_FILE: ${{ env.CONFIG_FILE }}
+          bazel test \
+            --cache_test_results=no \
+            --test_output=all \
+            --test_env=TEST_CONFIG_FILE=${{ env.CONFIG_FILE }} \
+            //tests:tests
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
