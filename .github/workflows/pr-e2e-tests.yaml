@@ -1,4 +1,4 @@
-name: E2E test on Comment
+name: PR E2E test on Comment
 
 on:
   issue_comment:
