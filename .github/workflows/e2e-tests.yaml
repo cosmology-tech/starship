@@ -7,9 +7,40 @@ on:
   # Run every day at 18:00 UTC
   schedule:
     - cron: '0 18 * * *'
+  issue_comment:
+    types:
+      - created
+      - edited
+  workflow_dispatch:
 
 jobs:
-  e2e-twochain:
+  check-pr-comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if specific directives exists
+        id: directive-validation
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const directive = '/run_e2e';
+            const payload = context.payload;
+            
+            let body = '';
+            
+            if (payload.pull_request) {
+              body = payload.pull_request.body;
+            } else if (payload.comment) {
+              body = payload.comment.body;
+            }
+            
+            return body.includes(directive);
+
+  e2e-two-chain:
+    needs: check-pr-comment
+
+    if: ${{ github.event.issue.pull_request && needs.check-pr-comment.outputs.directive-validation }}
+
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -100,7 +131,8 @@ jobs:
     timeout-minutes: 30
 
     # Run sequentially
-    needs: e2e-twochain
+    needs: [check-pr-comment, e2e-two-chain]
+    if: ${{ github.event.issue.pull_request && needs.check-pr-comment.outputs.directive-validation }}
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
