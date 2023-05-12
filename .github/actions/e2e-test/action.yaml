@@ -52,13 +52,12 @@ runs:
 
     - name: Bazel cache
       id: bazel-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       env:
         version: 4.2.1
       with:
-        path: |
-          ~/.cache/bazel
-        key: ${{ runner.os }}-{{ env.version }}-bazel-cache
+        path: "~/.cache/bazel"
+        key: ${{ runner.os }}-${{ env.version }}-bazel-cache
 
     - name: Install bazelisk
       run: |
