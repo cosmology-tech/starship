@@ -5,6 +5,18 @@ inputs:
   config-file:
     description: "Path to the config file"
     required: true
+  aws-access-key-id:
+    description: "AWS Access key for the kubernetes cluster"
+    required: true
+  aws-secret-access-key:
+    description: "AWS Access Secret key for the kubernetes cluster"
+    required: true
+  aws-region:
+    description: "AWS Regsion of the cluster"
+    required: true
+  aws-eks-cluster:
+    description: "AWS EKS cluster name"
+    required: true
 
 runs:
   using: composite
@@ -13,9 +25,9 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.AWS_REGION }}
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
 
     - name: Install AWS CLI v2
       run: |
@@ -28,7 +40,7 @@ runs:
     - name: Create Kubeconfig
       run: |
         touch /tmp/kubeconfig
-        aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.AWS_EKS_CLUSTER }} --kubeconfig /tmp/kubeconfig
+        aws eks update-kubeconfig --region ${{ inputs.aws-region }} --name ${{ inputs.aws-eks-cluster }} --kubeconfig /tmp/kubeconfig
 
     - name: Read kubeconfig
       id: kubeconfig
@@ -68,7 +80,7 @@ runs:
         bazel test \
           --cache_test_results=no \
           --test_output=all \
-          --test_env=TEST_CONFIG_FILE=${{ env.CONFIG_FILE }} \
+          --test_env=TEST_CONFIG_FILE=${{ inputs.config-file }} \
           //tests:tests
 
     # todo: change this to be post step of the action
