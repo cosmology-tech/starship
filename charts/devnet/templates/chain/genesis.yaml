@@ -2,13 +2,12 @@
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
 
-{{ $upgrade := get $chain "upgrade" }}
-{{- if not $upgrade }}
-{{ $upgrade = dict "enabled" false }}
-{{- end }}
+{{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
+{{- $build := .build | default (dict "enabled" false) -}}
+{{- $toBuild := or $build.enabled $upgrade.enabled }}
 
 {{ $image := $chain.image | default $defaultChain.image }}
-{{- if $upgrade.enabled }}
+{{- if $toBuild }}
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
 ---
@@ -38,7 +37,7 @@ spec:
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       initContainers:
-        {{- if $upgrade.enabled }}
+        {{- if $toBuild }}
         - name: init-build-images
           image: anmol1696/builder:latest
           imagePullPolicy: IfNotPresent
@@ -50,9 +49,13 @@ spec:
               go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
 
               # Build genesis
+              {{- if $upgrade.enabled  }}
               UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build_chain.sh
               {{- range $upgrade := $chain.upgrade.upgrades }}
               UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build_chain.sh
+              {{- end }}
+              {{- else if $build.enabled }}
+              UPGRADE_NAME=genesis CODE_TAG={{ $chain.build.source }} bash -e /scripts/build_chain.sh
               {{- end }}
           env:
             - name: CODE_REF
@@ -64,6 +67,7 @@ spec:
             - name: CHAIN_NAME
               value: {{ $chain.name }}
             {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
@@ -87,7 +91,7 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
-              {{- if $upgrade.enabled }}
+              {{- if $toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
@@ -117,7 +121,7 @@ spec:
             - bash
             - "-c"
             - |
-              {{- if $upgrade.enabled }}
+              {{- if $toBuild }}
               /usr/bin/cosmovisor start
               {{- else }}
               $CHAIN_BIN start

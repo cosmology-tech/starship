@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -15,7 +16,7 @@ import (
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
 
-var configFile = "./config.yaml"
+var configEnvKey = "TEST_CONFIG_FILE"
 
 type TestSuite struct {
 	suite.Suite
@@ -31,6 +32,8 @@ func (s *TestSuite) SetupTest() {
 	s.T().Log("setting up e2e integration test suite...")
 
 	// read config file from yaml
+	configFile := os.Getenv(configEnvKey)
+	configFile = strings.Replace(configFile, "tests/", "", -1)
 	yamlFile, err := os.ReadFile(configFile)
 	s.Require().NoError(err)
 	config := &Config{}

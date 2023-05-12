@@ -1,0 +1,37 @@
+chains:
+  - name: cosmoshub-4
+    type: cosmos
+    numValidators: 2
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+  - name: core-1
+    type: persistencecore
+    numValidators: 2
+    build:
+      enabled: true
+      source: v7.0.0
+    ports:
+      rest: 1318
+      rpc: 26658
+      exposer: 38088
+
+relayers:
+  - name: persistence-cosmos
+    type: hermes
+    replicas: 1
+    chains:
+      - core-1
+      - cosmoshub-4
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091

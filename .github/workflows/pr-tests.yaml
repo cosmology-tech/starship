@@ -1,0 +1,62 @@
+name: PR tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      CONFIG_FILE: "tests/configs/one-chain.yaml"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Bazel cache
+        id: bazel-cache
+        uses: actions/cache@v2
+        env:
+          version: 4.2.1
+        with:
+          path: |
+            ~/.cache/bazel
+          key: ${{ runner.os }}-{{ env.version }}-bazel-cache
+
+      - name: Install bazelisk
+        run: |
+          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
+          mkdir -p "${GITHUB_WORKSPACE}/bin/"
+          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+
+      - name: Setup Test infra
+        id: starship-action
+        uses: cosmology-tech/starship-action@0.2.8
+        with:
+          values: ${{ env.CONFIG_FILE }}
+          port-forward: true
+          version: 0.0.0
+          chart: ./charts/devnet
+
+      - name: Run tests
+        run: |
+          bazel test \
+            --cache_test_results=no \
+            --test_output=all \
+            --test_env=TEST_CONFIG_FILE=${{ env.CONFIG_FILE }} \
+            //tests:tests
+
+      # todo: change this to be post step of the action
+      - name: Cleanup cluster
+        if: always()
+        run: |
+          helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
+          kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
+        env:
+          DEVNET_NAME: ${{ steps.starship-action.outputs.name }}
+          DEVNET_NAMESPACE: ${{ steps.starship-action.outputs.namespace }}
