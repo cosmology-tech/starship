@@ -36,11 +36,13 @@ runs:
         rm /tmp/awscliv2.zip
         sudo /tmp/aws/install --update
         rm -rf /tmp/aws/
+      shell: bash
 
     - name: Create Kubeconfig
       run: |
         touch /tmp/kubeconfig
         aws eks update-kubeconfig --region ${{ inputs.aws-region }} --name ${{ inputs.aws-eks-cluster }} --kubeconfig /tmp/kubeconfig
+      shell: bash
 
     - name: Read kubeconfig
       id: kubeconfig
@@ -64,6 +66,7 @@ runs:
         mkdir -p "${GITHUB_WORKSPACE}/bin/"
         mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+      shell: bash
 
     - name: Setup Test infra
       id: starship-action
@@ -82,6 +85,7 @@ runs:
           --test_output=all \
           --test_env=TEST_CONFIG_FILE=${{ inputs.config-file }} \
           //tests:tests
+      shell: bash
 
     # todo: change this to be post step of the action
     - name: Cleanup cluster
@@ -89,6 +93,7 @@ runs:
       run: |
         helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
         kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
+      shell: bash
       env:
         DEVNET_NAME: ${{ steps.starship-action.outputs.name }}
         DEVNET_NAMESPACE: ${{ steps.starship-action.outputs.namespace }}
