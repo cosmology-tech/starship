@@ -7,10 +7,6 @@ on:
   # Run every day at 18:00 UTC
   schedule:
     - cron: '0 18 * * *'
-  issue_comment:
-    types:
-      - created
-      - edited
   workflow_dispatch:
 
 jobs:
