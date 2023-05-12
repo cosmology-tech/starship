@@ -71,6 +71,7 @@ spec:
             - name: CHAIN_NAME
               value: {{ $chain.name }}
                     {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
