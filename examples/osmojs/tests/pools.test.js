@@ -1,13 +1,11 @@
 import { generateMnemonic } from '@confio/relayer/build/lib/helpers';
-import {assertIsDeliverTxSuccess, SigningStargateClient} from '@cosmjs/stargate';
+import { assertIsDeliverTxSuccess, SigningStargateClient } from '@cosmjs/stargate';
 import { coin, coins } from '@cosmjs/amino';
 import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { osmosis } from 'osmojs';
 
-import { ibcCosmosToOsmosis, sendOsmoToAddress } from '../src/utils';
-
-import {calcShareOutAmount, daysToSeconds} from "./utils.js";
+import { calcShareOutAmount } from "./utils.js";
 import { ChainClients } from './setup.test';
 
 
@@ -35,9 +33,8 @@ describe("Pool testing over IBC tokens", () => {
     address = (await wallet.getAccounts())[0].address;
     
     // Transfer osmosis and ibc tokens to address, send only osmo to address
-    await sendOsmoToAddress(chain, address);
-    await sendOsmoToAddress(chain, address);
-    await ibcCosmosToOsmosis(chainClients["cosmos-2"], chainClients["osmosis-1"], address);
+    await chain.sendTokens(address, "100000000000");
+    await chainClients["cosmos-2"].sendIBCTokens(address, "100000000000", chain.getChainId());
   }, 200000);
 
   it("check address has tokens", async () => {
@@ -48,9 +45,9 @@ describe("Pool testing over IBC tokens", () => {
 
   it("create ibc pools with ibc atom osmo", async () => {
     const signingClient = await SigningStargateClient.connectWithSigner(
-      chainClients["osmosis-1"].rpc,
+      chain.rpc,
       wallet,
-      chainClients["osmosis-1"].stargateClientOpts(),
+      chain.stargateClientOpts(),
     );
   
     const balances = await chain.client.getAllBalances(address);
@@ -114,12 +111,12 @@ describe("Pool testing over IBC tokens", () => {
 
   it("join pool", async () => {
     const signingClient = await SigningStargateClient.connectWithSigner(
-      chainClients["osmosis-1"].rpc,
+      chain.rpc,
       wallet,
-      chainClients["osmosis-1"].stargateClientOpts(),
+      chain.stargateClientOpts(),
     );
     
-    const allCoins = [coin("1000000", pool.poolAssets[0].token.denom), coin("1000000", pool.poolAssets[1].token.denom)]
+    const allCoins = pool.poolAssets.map(asset => coin("1000000", asset.token.denom))
     const shareOutAmount = calcShareOutAmount(pool, allCoins)
     const joinPoolMsg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool({
       poolId: poolId,

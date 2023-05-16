@@ -1,8 +1,6 @@
 import { generateMnemonic } from '@confio/relayer/build/lib/helpers';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 
-import { ibcCosmosToOsmosis, sendOsmoToAddress } from '../src/utils';
-
 import { ChainClients } from './setup.test';
 
 describe("Token transfers", () => {
@@ -24,7 +22,7 @@ describe("Token transfers", () => {
   it("send osmosis token to address", async () => {
     let chainClient = chainClients["osmosis-1"]
     // Transfer uosmo tokens from faceut
-    await sendOsmoToAddress(chainClient, address);
+    await chainClient.sendTokens(address, "100000000000");
     
     const balance = await chainClient.client.getBalance(address, baseDenom);
   
@@ -34,7 +32,8 @@ describe("Token transfers", () => {
   
   it("send ibc atom tokens to address", async () => {
     // Transfer uatom tokens via IBC to osmosis
-    await ibcCosmosToOsmosis(chainClients["cosmos-2"], chainClients["osmosis-1"], address);
+    const cosmosChain = chainClients["cosmos-2"];
+    await cosmosChain.sendIBCTokens(address, "100000000000", "osmosis-1");
     
     // Check atom in address
     const chain = chainClients["osmosis-1"];
