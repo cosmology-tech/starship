@@ -2,7 +2,7 @@ HELM_NAME = osmojs
 HELM_FILE = configs/config.yaml
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.23
+HELM_VERSION = v0.1.24
 
 ###############################################################################
 ###                              All commands                               ###
@@ -16,7 +16,7 @@ start: install port-forward
 
 .PHONY: test
 test:
-	npm run e2e:test
+	yarn run e2e:test
 
 .PHONY: stop
 stop: stop-forward delete
