@@ -38,7 +38,7 @@ setup-helm:
 install:
 	@echo "Installing the helm chart. This is going to take a while....."
 	@echo "You can check the status with \"kubectl get pods\", run in another terminal please"
-	helm install -f $(HELM_FILE) $(HELM_NAME) ../../charts/$(HELM_CHART) --version $(HELM_VERSION) --wait --timeout 20m
+	helm install -f $(HELM_FILE) $(HELM_NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION) --wait --timeout 20m
 
 .PHONY: upgrade
 upgrade:
