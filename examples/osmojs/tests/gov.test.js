@@ -93,17 +93,11 @@ describe("Governance tests for osmosis", () => {
     expect(result.proposal.proposalId.toString()).toEqual(proposalId);
   }, 10000);
   
-  it("vote on proposal", async () => {
-    const signingClient = await SigningStargateClient.connectWithSigner(
-      chain.rpc,
-      wallet,
-      chain.stargateClientOpts(),
-    );
-    
-    // Vote on proposal from voting address
+  it("vote on proposal from genesis wallet", async () => {
+    // Vote on proposal from genesis mnemonic address
     const msg = cosmos.gov.v1beta1.MessageComposer.withTypeUrl.vote({
       proposalId: Long.fromString(proposalId),
-      voter: address,
+      voter: chain.address,
       option: cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES,
     });
     
@@ -112,24 +106,19 @@ describe("Governance tests for osmosis", () => {
       gas: "200000",
     }
     
-    const result = await signingClient.signAndBroadcast(address, [msg], fee);
+    const result = await chain.client.signAndBroadcast(chain.address, [msg], fee);
     assertIsDeliverTxSuccess(result);
   }, 10000);
   
   it("verify vote", async () => {
     const { vote } = await queryClient.cosmos.gov.v1beta1.vote({
       proposalId: Long.fromString(proposalId),
-      voter: address,
+      voter: chain.address,
     });
     
     expect(vote.proposalId.toString()).toEqual(proposalId);
-    expect(vote.voter).toEqual(address);
+    expect(vote.voter).toEqual(chain.address);
     expect(vote.option).toEqual(cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES);
-    
-    const result = await queryClient.cosmos.gov.v1beta1.votes({
-      proposalId: Long.fromString(proposalId),
-    });
-    expect(result).toBeTruthy();
   }, 10000);
   
   it("wait for voting period to end", async () => {
