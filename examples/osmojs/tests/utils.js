@@ -32,3 +32,13 @@ export const calcAmountWithSlippage = (
 export const daysToSeconds = (days) => {
   return (Number(days) * 24 * 60 * 60).toString();
 };
+
+export const waitUntil = (date, timeout = 90000) => {
+  return new Promise((resolve) => {
+    const delay = date.getTime() - Date.now();
+    if (delay > timeout) {
+      throw new Error('Timeout to wait until date');
+    }
+    setTimeout(resolve, delay + 1000);
+  });
+};
