@@ -1,11 +1,13 @@
 import { generateMnemonic } from '@confio/relayer/build/lib/helpers';
 import { assertIsDeliverTxSuccess, SigningStargateClient } from '@cosmjs/stargate';
-import { coin, coins } from '@cosmjs/amino';
+import { coins } from '@cosmjs/amino';
+import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import BigNumber from 'bignumber.js';
-import {osmosis, cosmos} from "osmojs";
+import {cosmos} from "osmojs";
 
 import { ChainClients } from './setup.test';
+import { waitUntil } from "./utils.js";
+
 
 describe("Governance tests for osmosis", () => {
   let wallet;
@@ -26,7 +28,7 @@ describe("Governance tests for osmosis", () => {
     // Initialize wallet
     wallet = await DirectSecp256k1HdWallet.fromMnemonic(
       generateMnemonic(),
-      { prefix: chainClients["osmosis-1"].getPrefix() },
+      { prefix: chain.getPrefix() },
     );
     address = (await wallet.getAccounts())[0].address;
     
@@ -81,10 +83,69 @@ describe("Governance tests for osmosis", () => {
     proposalId = proposalIdEvent.attributes.find((attr) => attr.key === "proposal_id").value;
     
     expect(BigInt(proposalId)).toBeGreaterThan(BigInt(0));
-  });
+  }, 200000);
   
-  it("query proposal", async () => {});
-  it("vote on proposal", async () => {});
-  it("query vote", async () => {});
-  it("verify proposal passed", async () => {});
+  it("query proposal", async () => {
+    const result = await queryClient.cosmos.gov.v1beta1.proposal({
+      proposalId: Long.fromString(proposalId),
+    });
+    
+    expect(result.proposal.proposalId.toString()).toEqual(proposalId);
+  }, 10000);
+  
+  it("vote on proposal", async () => {
+    const signingClient = await SigningStargateClient.connectWithSigner(
+      chain.rpc,
+      wallet,
+      chain.stargateClientOpts(),
+    );
+    
+    // Vote on proposal from voting address
+    const msg = cosmos.gov.v1beta1.MessageComposer.withTypeUrl.vote({
+      proposalId: Long.fromString(proposalId),
+      voter: address,
+      option: cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES,
+    });
+    
+    const fee = {
+      amount: coins(100_000, baseDenom),
+      gas: "200000",
+    }
+    
+    const result = await signingClient.signAndBroadcast(address, [msg], fee);
+    assertIsDeliverTxSuccess(result);
+  }, 10000);
+  
+  it("verify vote", async () => {
+    const { vote } = await queryClient.cosmos.gov.v1beta1.vote({
+      proposalId: Long.fromString(proposalId),
+      voter: address,
+    });
+    
+    expect(vote.proposalId.toString()).toEqual(proposalId);
+    expect(vote.voter).toEqual(address);
+    expect(vote.option).toEqual(cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES);
+    
+    const result = await queryClient.cosmos.gov.v1beta1.votes({
+      proposalId: Long.fromString(proposalId),
+    });
+    expect(result).toBeTruthy();
+  }, 10000);
+  
+  it("wait for voting period to end", async () => {
+    // wait for the voting period to end
+    const {proposal} = await queryClient.cosmos.gov.v1beta1.proposal({
+      proposalId: Long.fromString(proposalId),
+    });
+    
+    await expect(waitUntil(proposal.votingEndTime)).resolves.not.toThrow();
+  }, 200000);
+  
+  it("verify proposal passed", async () => {
+    const { proposal } = await queryClient.cosmos.gov.v1beta1.proposal({
+      proposalId: Long.fromString(proposalId),
+    });
+    
+    expect(proposal.status).toEqual(cosmos.gov.v1beta1.ProposalStatus.PROPOSAL_STATUS_PASSED);
+  }, 10000);
 });
