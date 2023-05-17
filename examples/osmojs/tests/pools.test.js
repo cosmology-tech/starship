@@ -3,7 +3,7 @@ import { assertIsDeliverTxSuccess, SigningStargateClient } from '@cosmjs/stargat
 import { coin, coins } from '@cosmjs/amino';
 import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { osmosis } from 'osmojs';
+import { osmosis, google } from 'osmojs';
 
 import { calcShareOutAmount } from "./utils.js";
 import { ChainClients } from './setup.test';
@@ -97,14 +97,14 @@ describe("Pool testing over IBC tokens", () => {
     
     expect(poolResponse).toBeTruthy()
     expect(poolResponse.pool.id.toInt()).toEqual(poolId.toInt())
-    
+
     // Verify the address has gamm tokens
     const gammDenom = poolResponse.pool.totalShares.denom
     const gammBalance = await chain.client.getBalance(address, gammDenom);
-    
+
     expect(gammBalance.denom).toEqual(gammDenom)
     expect(BigInt(gammBalance.amount)).toEqual(BigInt(poolResponse.pool.totalShares.amount))
-    
+
     // Set pool var for other tests
     pool = poolResponse.pool
   }, 20000);
@@ -115,25 +115,25 @@ describe("Pool testing over IBC tokens", () => {
       wallet,
       chain.stargateClientOpts(),
     );
-    
+
     const allCoins = pool.poolAssets.map(asset => coin("1000000", asset.token.denom))
     const shareOutAmount = calcShareOutAmount(pool, allCoins)
-    const joinPoolMsg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool({
+    const msg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool({
       poolId: poolId,
       sender: address,
       shareOutAmount: shareOutAmount,
       tokenInMaxs: allCoins,
     })
-    
-    const resultPool = await signingClient.signAndBroadcast(
+
+    const result = await signingClient.signAndBroadcast(
       address,
-      [joinPoolMsg],
+      [msg],
       { amount: coins(10_000_000, chain.getDenom()), gas: "10000000" },
       "join pool created",
     )
-    
-    assertIsDeliverTxSuccess(resultPool);
-    
+
+    assertIsDeliverTxSuccess(result);
+
     // Verify new gamm tokens have been minted to the address
     const {denom: gammDenom, amount: totalgammAmount} = pool.totalShares
     const gammBalance = await chain.client.getBalance(address, gammDenom);
@@ -141,6 +141,32 @@ describe("Pool testing over IBC tokens", () => {
     expect(gammBalance.denom).toEqual(gammDenom)
     expect(BigInt(gammBalance.amount)).toEqual(BigInt(shareOutAmount) + BigInt(totalgammAmount))
   }, 200000);
+
+  it("lock tokens", async () => {
+    const signingClient = await SigningStargateClient.connectWithSigner(
+      chain.rpc,
+      wallet,
+      chain.stargateClientOpts(),
+    );
+
+    const gammDenom = pool.totalShares.denom
+    const coins = [coin("1000000", gammDenom)]
+
+    const msg = osmosis.lockup.MessageComposer.withTypeUrl.lockTokens({
+      coins,
+      owner: address,
+      duration: google.protobuf.Duration.fromPartial({ seconds: "86400" , nanos: 0}),
+    })
+
+    const result = await signingClient.signAndBroadcast(
+      address,
+      [msg],
+      { amount: [coin(10_000_000, chain.getDenom())], gas: "10000000" },
+      "lock tokens",
+    )
+
+    assertIsDeliverTxSuccess(result);
+  });
   
   it("swap tokens using pool, to address without ibc token", async () => {
     const signingClient = await SigningStargateClient.connectWithSigner(
@@ -157,7 +183,7 @@ describe("Pool testing over IBC tokens", () => {
     
     const balanceBefore = await chain.client.getBalance(address, ibcDenom)
     
-    const swapMsg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn({
+    const msg = osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn({
       sender: address,
       routes: [
         {
@@ -171,7 +197,7 @@ describe("Pool testing over IBC tokens", () => {
   
     const result = await signingClient.signAndBroadcast(
       address,
-      [swapMsg],
+      [msg],
       { amount: coins(10_000_000, chain.getDenom()), gas: "10000000" },
       "swap tokens",
     )
