@@ -8,7 +8,6 @@ import { osmosis, google } from 'osmojs';
 import { calcShareOutAmount } from "./utils.js";
 import { ChainClients } from './setup.test';
 
-
 describe("Pool testing over IBC tokens", () => {
   let wallet;
   let baseDenom;
