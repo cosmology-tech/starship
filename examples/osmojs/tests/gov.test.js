@@ -3,7 +3,7 @@ import { assertIsDeliverTxSuccess, SigningStargateClient } from '@cosmjs/stargat
 import { coins } from '@cosmjs/amino';
 import Long from 'long';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import {cosmos} from "osmojs";
+import { cosmos } from "osmojs";
 
 import { ChainClients } from './setup.test';
 import { waitUntil } from "./utils.js";

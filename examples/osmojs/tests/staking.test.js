@@ -2,7 +2,7 @@ import { generateMnemonic } from '@confio/relayer/build/lib/helpers';
 import { assertIsDeliverTxSuccess, SigningStargateClient } from '@cosmjs/stargate';
 import { coin, coins } from '@cosmjs/amino';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { cosmos } from 'interchain';
+import { cosmos } from "osmojs";
 import BigNumber from 'bignumber.js';
 
 import { ChainClients } from './setup.test';
