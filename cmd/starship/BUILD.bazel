@@ -1,0 +1,31 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_cross_binary", "go_library")
+
+go_library(
+    name = "starship_lib",
+    srcs = [
+        "binaries.go",
+        "charts.go",
+        "config.go",
+        "const.go",
+        "main.go",
+    ],
+    data = [
+        "//tests:configfiles",
+    ],
+    importpath = "github.com/cosmology-tech/starship/cmd/starship",
+    visibility = ["//visibility:public"],
+    deps = ["@org_uber_go_zap//:zap"],
+)
+
+go_binary(
+    name = "starship",
+    embed = [":starship_lib"],
+    static = "on",
+    visibility = ["//visibility:public"],
+)
+
+go_cross_binary(
+    name = "starship_arm64",
+    platform = "@io_bazel_rules_go//go/toolchain:linux_arm64",
+    target = ":starship",
+)
