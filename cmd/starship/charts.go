@@ -15,8 +15,6 @@ import (
 	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/repo"
-	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/client-go/rest"
 	"sigs.k8s.io/yaml"
 )
 
@@ -30,20 +28,20 @@ Inputs:
 * version, default will be set to latest
 */
 
-func NewRepoEntry() *repo.Entry {
+func (c *Client) CreateRepoEntry() *repo.Entry {
 	return &repo.Entry{
-		Name: "devnet",
-		URL:  defaultHelmRepoURL,
+		Name: c.config.HelmChartName,
+		URL:  c.config.HelmRepoURL,
 	}
 }
 
 // AddOrUpdateChartRepo adds or updates a chart repo in place
 // for the given version of the chart
-func AddOrUpdateChartRepo(version string) error {
+func (c *Client) AddOrUpdateChartRepo() error {
 	// Get the repo entry
-	repoEntry := NewRepoEntry()
+	repoEntry := c.CreateRepoEntry()
 
-	repoFile, lock, err := createOrGetRepoFile(settings.RepositoryConfig)
+	repoFile, lock, err := c.createOrGetRepoFile()
 	if err != nil {
 		return err
 	}
@@ -51,12 +49,12 @@ func AddOrUpdateChartRepo(version string) error {
 		defer lock.Unlock()
 	}
 
-	chartRepo, err := repo.NewChartRepository(repoEntry, getter.All(settings))
+	chartRepo, err := repo.NewChartRepository(repoEntry, getter.All(c.settings))
 	if err != nil {
 		return err
 	}
 
-	chartRepo.CachePath = settings.RepositoryCache
+	chartRepo.CachePath = c.settings.RepositoryCache
 
 	idx, err := chartRepo.DownloadIndexFile()
 	if err != nil {
@@ -66,7 +64,7 @@ func AddOrUpdateChartRepo(version string) error {
 	// Update the repo file with the new entry
 	//repoFile.Update(repoEntry)
 	if !repoFile.Has(repoEntry.Name) {
-		zap.L().Info("repo file does not have entry", zap.String("name", repoEntry.Name))
+		c.logger.Info("repo file does not have entry", zap.String("name", repoEntry.Name))
 	}
 
 	// Read the index file for the repository to get chart information and return chart URL
@@ -76,7 +74,7 @@ func AddOrUpdateChartRepo(version string) error {
 	}
 
 	// check if version is available for the chart
-	_, err = repoIndex.Get(repoEntry.Name, version)
+	_, err = repoIndex.Get(repoEntry.Name, c.config.Version)
 	if err != nil {
 		return fmt.Errorf("chart version is invalid: %s", err)
 	}
@@ -84,7 +82,9 @@ func AddOrUpdateChartRepo(version string) error {
 	return nil
 }
 
-func createOrGetRepoFile(repoFile string) (*repo.File, *flock.Flock, error) {
+func (c *Client) createOrGetRepoFile() (*repo.File, *flock.Flock, error) {
+	repoFile := c.settings.RepositoryConfig
+
 	// Check if the repo file exists, if not create it
 	if _, err := os.Stat(repoFile); os.IsNotExist(err) {
 		err := os.MkdirAll(filepath.Dir(repoFile), os.ModePerm)
@@ -120,59 +120,43 @@ func createOrGetRepoFile(repoFile string) (*repo.File, *flock.Flock, error) {
 	return &f, fileLock, nil
 }
 
-func getKubeClient() (*rest.Config, error) {
-	config := genericclioptions.NewConfigFlags(true)
+func (c *Client) createActionClient(config *action.Configuration) *action.Install {
+	client := action.NewInstall(config)
+	client.Namespace = "aws-starship"
+	client.ReleaseName = c.config.HelmChartName
+	client.Version = c.config.Version
+	client.Wait = true
+	client.Timeout = 300 * time.Second
+	client.Atomic = true
+	client.Force = true
 
-	kubeConfig := os.Getenv("KUBECONFIG")
-	config.KubeConfig = &kubeConfig
-
-	restConfig, err := config.ToRESTConfig()
-	if err != nil {
-		return nil, err
-	}
-	return restConfig, nil
+	return client
 }
 
 // InstallChart installs a chart
-func InstallChart(version, cofigFile string, wait bool) error {
-	//restConfig, err := getKubeClient()
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Printf(restConfig.String())
-	//settings.KubeConfig = os.Getenv("KUBECONFIG")
-
-	// create kube client and make sure it is reachable
-	//kubeClient := kube.New(settings.RESTClientGetter())
-	//err := kubeClient.IsReachable()
-	//if err != nil {
-	//	return err
-	//}
-	//kubeClient.Namespace = ""
-
+func (c *Client) InstallChart() error {
 	actionConfig := new(action.Configuration)
-	err := actionConfig.Init(settings.RESTClientGetter(), settings.Namespace(), "memory", func(format string, v ...interface{}) {
-		fmt.Sprintf(format, v)
+	err := actionConfig.Init(c.settings.RESTClientGetter(), c.settings.Namespace(), "memory", func(format string, v ...interface{}) {
+		c.logger.Info(fmt.Sprintf(format, v...))
 	})
 	if err != nil {
 		return err
 	}
 
-	client := action.NewInstall(actionConfig)
-	client.Namespace = "aws-starship"
-	client.ReleaseName = "devnet"
-	client.Version = version
-	client.Wait = wait
+	client := c.createActionClient(actionConfig)
 
-	cp, err := client.ChartPathOptions.LocateChart("starship/devnet", settings)
+	cp, err := client.ChartPathOptions.LocateChart(
+		fmt.Sprintf("%s/%s", c.config.HelmRepoName, c.config.HelmChartName),
+		c.settings,
+	)
 	if err != nil {
 		return err
 	}
 
 	// Get all the values from the config file
-	p := getter.All(settings)
+	p := getter.All(c.settings)
 	valueOpts := &values.Options{
-		ValueFiles: []string{cofigFile},
+		ValueFiles: []string{c.config.ConfigFile},
 	}
 	vals, err := valueOpts.MergeValues(p)
 	if err != nil {

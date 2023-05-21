@@ -4,6 +4,8 @@ go_library(
     name = "starship_lib",
     srcs = [
         "charts.go",
+        "config.go",
+        "const.go",
         "main.go",
     ],
     data = [
@@ -13,16 +15,15 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gofrs_flock//:flock",
-        "@io_k8s_cli_runtime//pkg/genericclioptions",
-        "@io_k8s_client_go//rest",
+        "@com_github_urfave_cli//:cli",
         "@io_k8s_sigs_yaml//:yaml",
         "@org_uber_go_zap//:zap",
+        "@org_uber_go_zap//zapcore",
         "@sh_helm_helm_v3//pkg/action",
         "@sh_helm_helm_v3//pkg/chart/loader",
         "@sh_helm_helm_v3//pkg/cli",
         "@sh_helm_helm_v3//pkg/cli/values",
         "@sh_helm_helm_v3//pkg/getter",
-        "@sh_helm_helm_v3//pkg/kube",
         "@sh_helm_helm_v3//pkg/repo",
     ],
 )
