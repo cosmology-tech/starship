@@ -6,8 +6,8 @@ proto_library(
     srcs = [
         "genesis.proto",
         "mnemonic.proto",
-        "service.proto",
         "node.proto",
+        "service.proto",
     ],
     visibility = ["//visibility:public"],
     deps = [
