@@ -14,4 +14,10 @@ const (
 func main() {
 	// Initialize settings variable
 	settings = cli.New()
+
+	// Fetch helm chart
+	err := AddOrUpdateChartRepo("0.1.23")
+	if err != nil {
+		panic(err)
+	}
 }
