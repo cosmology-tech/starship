@@ -1,7 +1,6 @@
 go 1.19
 
 use (
-
 	./clients/go/client
 	./cmd/starship
 	./collector

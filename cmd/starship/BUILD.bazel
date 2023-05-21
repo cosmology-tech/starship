@@ -6,14 +6,24 @@ go_library(
         "charts.go",
         "main.go",
     ],
+    data = [
+        "//tests:configfiles",
+    ],
     importpath = "github.com/cosmology-tech/starship/cmd/starship",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gofrs_flock//:flock",
-        "@in_gopkg_yaml_v3//:yaml_v3",
-        "@sh_helm_helm_v3//pkg/cli:go_default_library",
-        "@sh_helm_helm_v3//pkg/getter:go_default_library",
-        "@sh_helm_helm_v3//pkg/repo:go_default_library",
+        "@io_k8s_cli_runtime//pkg/genericclioptions",
+        "@io_k8s_client_go//rest",
+        "@io_k8s_sigs_yaml//:yaml",
+        "@org_uber_go_zap//:zap",
+        "@sh_helm_helm_v3//pkg/action",
+        "@sh_helm_helm_v3//pkg/chart/loader",
+        "@sh_helm_helm_v3//pkg/cli",
+        "@sh_helm_helm_v3//pkg/cli/values",
+        "@sh_helm_helm_v3//pkg/getter",
+        "@sh_helm_helm_v3//pkg/kube",
+        "@sh_helm_helm_v3//pkg/repo",
     ],
 )
 
@@ -28,21 +38,4 @@ go_cross_binary(
     name = "starship_arm64",
     platform = "@io_bazel_rules_go//go/toolchain:linux_arm64",
     target = ":starship",
-)
-
-# Build docker images now
-go_image(
-    name = "image",
-    base = "@base_linux_x86//image",
-    binary = ":starship",
-    tags = ["manual"],
-    visibility = ["//visibility:public"],
-)
-
-go_image(
-    name = "image_arm64",
-    base = "@base_linux_arm64//image",
-    binary = ":starship_arm64",
-    tags = ["manual"],
-    visibility = ["//visibility:public"],
 )

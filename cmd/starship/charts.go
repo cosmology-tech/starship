@@ -9,9 +9,15 @@ import (
 	"time"
 
 	"github.com/gofrs/flock"
-	"gopkg.in/yaml.v3"
+	"go.uber.org/zap"
+	"helm.sh/helm/v3/pkg/action"
+	"helm.sh/helm/v3/pkg/chart/loader"
+	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/repo"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
+	"k8s.io/client-go/rest"
+	"sigs.k8s.io/yaml"
 )
 
 /*
@@ -26,7 +32,7 @@ Inputs:
 
 func NewRepoEntry() *repo.Entry {
 	return &repo.Entry{
-		Name: "starship",
+		Name: "devnet",
 		URL:  defaultHelmRepoURL,
 	}
 }
@@ -58,7 +64,10 @@ func AddOrUpdateChartRepo(version string) error {
 	}
 
 	// Update the repo file with the new entry
-	repoFile.Update(repoEntry)
+	//repoFile.Update(repoEntry)
+	if !repoFile.Has(repoEntry.Name) {
+		zap.L().Info("repo file does not have entry", zap.String("name", repoEntry.Name))
+	}
 
 	// Read the index file for the repository to get chart information and return chart URL
 	repoIndex, err := repo.LoadIndexFile(idx)
@@ -101,10 +110,84 @@ func createOrGetRepoFile(repoFile string) (*repo.File, *flock.Flock, error) {
 		return nil, nil, err
 	}
 
-	var f *repo.File
-	if err := yaml.Unmarshal(b, f); err != nil {
+	fmt.Printf("repofile name: %s", repoFile)
+
+	var f repo.File
+	if err := yaml.Unmarshal(b, &f); err != nil {
 		return nil, nil, err
 	}
 
-	return f, fileLock, nil
+	return &f, fileLock, nil
+}
+
+func getKubeClient() (*rest.Config, error) {
+	config := genericclioptions.NewConfigFlags(true)
+
+	kubeConfig := os.Getenv("KUBECONFIG")
+	config.KubeConfig = &kubeConfig
+
+	restConfig, err := config.ToRESTConfig()
+	if err != nil {
+		return nil, err
+	}
+	return restConfig, nil
+}
+
+// InstallChart installs a chart
+func InstallChart(version, cofigFile string, wait bool) error {
+	//restConfig, err := getKubeClient()
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Printf(restConfig.String())
+	//settings.KubeConfig = os.Getenv("KUBECONFIG")
+
+	// create kube client and make sure it is reachable
+	//kubeClient := kube.New(settings.RESTClientGetter())
+	//err := kubeClient.IsReachable()
+	//if err != nil {
+	//	return err
+	//}
+	//kubeClient.Namespace = ""
+
+	actionConfig := new(action.Configuration)
+	err := actionConfig.Init(settings.RESTClientGetter(), settings.Namespace(), "memory", func(format string, v ...interface{}) {
+		fmt.Sprintf(format, v)
+	})
+	if err != nil {
+		return err
+	}
+
+	client := action.NewInstall(actionConfig)
+	client.Namespace = "aws-starship"
+	client.ReleaseName = "devnet"
+	client.Version = version
+	client.Wait = wait
+
+	cp, err := client.ChartPathOptions.LocateChart("starship/devnet", settings)
+	if err != nil {
+		return err
+	}
+
+	// Get all the values from the config file
+	p := getter.All(settings)
+	valueOpts := &values.Options{
+		ValueFiles: []string{cofigFile},
+	}
+	vals, err := valueOpts.MergeValues(p)
+	if err != nil {
+		return err
+	}
+
+	chartReq, err := loader.Load(cp)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.Run(chartReq, vals)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
