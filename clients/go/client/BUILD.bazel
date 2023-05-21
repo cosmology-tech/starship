@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "lib",
@@ -18,10 +18,4 @@ go_library(
         "@com_github_tendermint_tendermint//rpc/core/types",
         "@org_uber_go_zap//:zap",
     ],
-)
-
-go_binary(
-    name = "client",
-    embed = [":lib"],
-    visibility = ["//visibility:public"],
 )
