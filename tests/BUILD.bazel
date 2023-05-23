@@ -13,6 +13,7 @@ go_library(
 filegroup(
     name = "configfiles",
     srcs = glob(["configs/*.yaml"]),
+    visibility = ["//visibility:public"],
 )
 
 go_test(

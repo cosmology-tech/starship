@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-chi/chi v1.5.4
 	github.com/go-chi/render v1.0.2
-	github.com/urfave/cli v1.22.10
+	github.com/urfave/cli v1.22.12
 	go.uber.org/zap v1.24.0
 )
 
@@ -17,5 +17,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
+	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 )

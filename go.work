@@ -1,13 +1,13 @@
 go 1.19
 
 use (
+	./clients/go/client
+	./cmd/starship
 	./collector
-	./exposer
-	./registry
-	./tools
-	./tests
 
 	./examples/upgrade-test
-
-	./clients/go/client
+	./exposer
+	./registry
+	./tests
+	./tools
 )
