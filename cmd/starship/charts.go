@@ -14,6 +14,7 @@ import (
 	"helm.sh/helm/v3/pkg/chart/loader"
 	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/getter"
+	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/repo"
 	"sigs.k8s.io/yaml"
 )
@@ -110,8 +111,6 @@ func (c *Client) createOrGetRepoFile() (*repo.File, *flock.Flock, error) {
 		return nil, nil, err
 	}
 
-	fmt.Printf("repofile name: %s", repoFile)
-
 	var f repo.File
 	if err := yaml.Unmarshal(b, &f); err != nil {
 		return nil, nil, err
@@ -120,7 +119,7 @@ func (c *Client) createOrGetRepoFile() (*repo.File, *flock.Flock, error) {
 	return &f, fileLock, nil
 }
 
-func (c *Client) createActionClient(config *action.Configuration) *action.Install {
+func (c *Client) createInstallClient(config *action.Configuration) *action.Install {
 	client := action.NewInstall(config)
 	client.Namespace = "aws-starship"
 	client.ReleaseName = c.config.HelmChartName
@@ -136,14 +135,27 @@ func (c *Client) createActionClient(config *action.Configuration) *action.Instal
 // InstallChart installs a chart
 func (c *Client) InstallChart() error {
 	actionConfig := new(action.Configuration)
-	err := actionConfig.Init(c.settings.RESTClientGetter(), c.settings.Namespace(), "memory", func(format string, v ...interface{}) {
-		c.logger.Info(fmt.Sprintf(format, v...))
+	err := actionConfig.Init(c.settings.RESTClientGetter(), c.settings.Namespace(), "configmap", func(format string, v ...interface{}) {
+		c.logger.Debug(fmt.Sprintf(format, v...))
 	})
 	if err != nil {
 		return err
 	}
 
-	client := c.createActionClient(actionConfig)
+	// if chart exists, provide warning to user
+	r, err := c.GetChart()
+	if err != nil {
+		if err.Error() != "not found" {
+			return nil
+		}
+	}
+	if r != nil {
+		c.logger.Error("chart already exists, please stop the current chart with `stop` commad before installing", zap.String("name", r.Name))
+		return fmt.Errorf("chart already exists: name: %s", r.Name)
+	}
+
+	c.logger.Info("installing chart, hang tight...")
+	client := c.createInstallClient(actionConfig)
 
 	cp, err := client.ChartPathOptions.LocateChart(
 		fmt.Sprintf("%s/%s", c.config.HelmRepoName, c.config.HelmChartName),
@@ -168,7 +180,70 @@ func (c *Client) InstallChart() error {
 		return err
 	}
 
-	_, err = client.Run(chartReq, vals)
+	r, err = client.Run(chartReq, vals)
+	if err != nil {
+		return err
+	}
+
+	if r.Info.Status == release.StatusDeployed {
+		c.logger.Info("successfully deployed resources", zap.String("release", r.Name), zap.Any("info", r.Info))
+	}
+
+	return nil
+}
+
+func (c *Client) createListClient(config *action.Configuration) *action.List {
+	client := action.NewList(config)
+	client.ByDate = true
+
+	return client
+}
+
+// GetChart gets the current chart
+// todo: handle non deployed chart status
+func (c *Client) GetChart() (*release.Release, error) {
+	actionConfig := new(action.Configuration)
+	err := actionConfig.Init(c.settings.RESTClientGetter(), "", "configmap", func(format string, v ...interface{}) {
+		c.logger.Debug(fmt.Sprintf(format, v...))
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	client := c.createListClient(actionConfig)
+
+	client.SetStateMask()
+
+	releases, err := client.Run()
+	if err != nil {
+		return nil, err
+	}
+
+	var r *release.Release
+	for _, r = range releases {
+		if r.Name == c.config.HelmChartName {
+			break
+		}
+	}
+
+	if r == nil {
+		return nil, fmt.Errorf("not found")
+	}
+
+	return r, nil
+}
+
+func (c *Client) DeleteChart() error {
+	actionConfig := new(action.Configuration)
+	err := actionConfig.Init(c.settings.RESTClientGetter(), c.settings.Namespace(), "configmap", func(format string, v ...interface{}) {
+		c.logger.Debug(fmt.Sprintf(format, v...))
+	})
+	if err != nil {
+		return err
+	}
+
+	client := action.NewUninstall(actionConfig)
+	_, err = client.Run(c.config.HelmChartName)
 	if err != nil {
 		return err
 	}

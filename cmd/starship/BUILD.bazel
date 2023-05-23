@@ -7,6 +7,7 @@ go_library(
         "config.go",
         "const.go",
         "main.go",
+        "root.go",
     ],
     data = [
         "//tests:configfiles",
@@ -15,7 +16,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gofrs_flock//:flock",
-        "@com_github_urfave_cli//:cli",
+        "@com_github_urfave_cli_v2//:cli",
         "@io_k8s_sigs_yaml//:yaml",
         "@org_uber_go_zap//:zap",
         "@org_uber_go_zap//zapcore",
@@ -24,6 +25,7 @@ go_library(
         "@sh_helm_helm_v3//pkg/cli",
         "@sh_helm_helm_v3//pkg/cli/values",
         "@sh_helm_helm_v3//pkg/getter",
+        "@sh_helm_helm_v3//pkg/release",
         "@sh_helm_helm_v3//pkg/repo",
     ],
 )

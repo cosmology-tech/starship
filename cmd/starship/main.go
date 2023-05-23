@@ -42,18 +42,6 @@ func NewClient(config *Config) (*Client, error) {
 }
 
 func main() {
-	config := NewDefaultConfig()
-	client, err := NewClient(config)
-
-	// Fetch helm chart
-	err = client.AddOrUpdateChartRepo()
-	if err != nil {
-		panic(err)
-	}
-
-	// Install helm chart, and wait for it to be ready
-	err = client.InstallChart()
-	if err != nil {
-		panic(err)
-	}
+	app := NewApp()
+	_ = app.Run(os.Args)
 }

@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 func NewDefaultConfig() *Config {
 	return &Config{
+		Namespace:     "default",
 		HelmRepoName:  "starship",
 		HelmChartName: "devnet",
 		Verbose:       true,
@@ -22,6 +23,7 @@ func NewDefaultConfig() *Config {
 }
 
 type Config struct {
+	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment, default: default"`
 	ConfigFile    string `name:"config-file" json:"config_file" usage:"path to the config file"`
 	Version       string `name:"version" json:"version" usage:"version of the helm chart"`
 	HelmRepoURL   string `name:"helm-repo-url" json:"helm_repo_url" usage:"helm repo url"`
@@ -52,18 +54,18 @@ func GetCommandLineOptions() []cli.Flag {
 		case reflect.Bool:
 			dv := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).Bool()
 			msg := fmt.Sprintf("%s (default: %t)", usage, dv)
-			flags = append(flags, cli.BoolTFlag{
-				Name:   optName,
-				Usage:  msg,
-				EnvVar: envName,
+			flags = append(flags, &cli.BoolFlag{
+				Name:    optName,
+				Usage:   msg,
+				EnvVars: []string{envName},
 			})
 		case reflect.String:
 			defaultValue := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).String()
-			flags = append(flags, cli.StringFlag{
-				Name:   optName,
-				Usage:  usage,
-				EnvVar: envName,
-				Value:  defaultValue,
+			flags = append(flags, &cli.StringFlag{
+				Name:    optName,
+				Usage:   usage,
+				EnvVars: []string{envName},
+				Value:   defaultValue,
 			})
 		}
 	}
@@ -95,6 +97,9 @@ func NewLogger(config *Config) (*zap.Logger, error) {
 	c.DisableCaller = true
 	c.Encoding = "console"
 	c.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	c.EncoderConfig.CallerKey = zapcore.OmitKey
+	c.EncoderConfig.TimeKey = zapcore.OmitKey
+	c.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
 	if config.Verbose {
 		c.DisableCaller = false
