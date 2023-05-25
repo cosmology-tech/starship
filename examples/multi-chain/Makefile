@@ -3,19 +3,35 @@ FILE = config.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.18
+HELM_VERSION = v0.1.24
+
+###############################################################################
+###                              All commands                               ###
+###############################################################################
+
+.PHONY: setup
+setup: check setup-helm
+
+.PHONY: start
+start: install port-forward
+
+.PHONY: stop
+stop: stop-forward delete
+
+.PHONY: clean
+clean: stop clean-kind
 
 ###############################################################################
 ###                              Helm Charts                                ###
 ###############################################################################
 
-setup:
+setup-helm:
 	helm repo add $(HELM_REPO) https://cosmology-tech.github.io/starship/
 	helm repo update
 	helm search repo $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 install:
-	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
+	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION) --wait --timeout 20m
 
 upgrade:
 	helm upgrade --debug $(NAME) $(HELM_REPO)/$(HELM_CHART) -f $(FILE) --version $(HELM_VERSION)
@@ -27,36 +43,34 @@ delete:
 	-helm delete $(NAME)
 
 ###############################################################################
-###                              Port forward                              ###
+###                                 Port forward                            ###
 ###############################################################################
 
-.PHONY: port-forward port-forward-all
-.port-forward:
-	kubectl port-forward pods/$(chain)-genesis-0 $(localrpc):26657 &
-	kubectl port-forward pods/$(chain)-genesis-0 $(localrest):1317 &
-
-num_chains = $(shell yq -r ".chains | length" $(FILE))
-port-forward-all:
-	echo "Port forwarding all chains to localhost"
-	for i in $(shell seq 0 $(num_chains)); do \
-  		$(MAKE) .port-forward \
-  			chain=$$(yq -r ".chains[$$i].name" $(FILE)) \
-  			localrpc=$$(yq -r ".chains[$$i].ports.rpc" $(FILE)) \
-  			localrest=$$(yq -r ".chains[$$i].ports.rest" $(FILE)); \
-	done
-	echo "Port forwarding explorer to localhost"
-	kubectl port-forward service/explorer 8080:8080 &
-	kubectl port-forward service/registry 8081:8080 &
+.PHONY: port-forward
+port-forward:
+	bash $(CURDIR)/../../scripts/port-forward.sh --config=$(HELM_FILE)
 
 .PHONY: stop-forward
 stop-forward:
 	-pkill -f "port-forward"
 
-.PHONY: check-forward
-check-forward-all:
-	while true ; do \
-		for port in $$(yq -r "(.chains[] | .ports | .rpc, .rest), .explorer.localPorts.rest" $(FILE)); do \
-			nc -vz 127.0.0.1 $$port; \
-		done; \
-		sleep 10; \
-	done
+###############################################################################
+###                          Dependency check                               ###
+###############################################################################
+
+.PHONY: check
+check:
+	bash $(CURDIR)/../../scripts/dev-setup.sh
+
+###############################################################################
+###                          Local Kind Setup                               ###
+###############################################################################
+KIND_CLUSTER=starship
+
+.PHONY: setup-kind
+setup-kind:
+	kind create cluster --name $(KIND_CLUSTER)
+
+.PHONY: clean-kind
+clean-kind:
+	kind delete cluster --name $(KIND_CLUSTER)

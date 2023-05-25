@@ -7,8 +7,8 @@ chains:
     ports:
       rest: 1313
       rpc: 26653
-  - name: juno-0
-    type: juno
+  - name: core-1
+    type: persistencecore
     numValidators: 1
     ports:
       rest: 1315
@@ -26,22 +26,21 @@ relayers:
     replicas: 1
     chains:
       - osmosis-1
-      - juno-0
+      - core-1
   - name: osmos-cosmos
     type: hermes
     replicas: 1
     chains:
       - osmosis-1
       - cosmoshub-1
-  - name: juno-cosmos
-    type: hermes
-    replicas: 1
-    chains:
-      - juno-0
-      - cosmoshub-1
 
 explorer:
   enabled: true
+  ports:
+    rest: 8080
 
 registry:
   enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
