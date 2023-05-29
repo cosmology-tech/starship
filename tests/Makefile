@@ -1,8 +1,8 @@
-HELM_NAME = starship-e2e-tests
-HELM_FILE = configs/two-chain.yaml
+HELM_NAME ?= starship-e2e-tests
+HELM_FILE ?= configs/two-chain.yaml
 
-HELM_REPO = starship
-HELM_CHART = devnet
+HELM_REPO ?= starship
+HELM_CHART ?= devnet
 
 ###############################################################################
 ###                              Helm Charts                                ###

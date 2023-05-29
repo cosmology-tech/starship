@@ -154,7 +154,7 @@ requests:
 Returns resources for a validator
 */}}
 {{- define "devnet.init.resources" }}
-{{ toYaml .Values.resources.init }}
+{{ toYaml .resources.init }}
 {{- end }}
 
 {{/*
