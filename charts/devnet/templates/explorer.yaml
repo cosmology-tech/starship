@@ -71,6 +71,7 @@ metadata:
 data:
   {{- range $chain := .Values.chains }}
   {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+  {{ $chain = merge $chain $defaultChain }}
   {{ $host := "localhost" }}
   {{- if not $.Values.explorer.localhost }}
   {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
@@ -86,14 +87,14 @@ data:
       ],
       "snapshot_provider": "",
       "sdk_version": "0.45.6",
-      "coin_type": "{{ $defaultChain.coinType }}",
+      "coin_type": "{{ $chain.coinType }}",
       "min_tx_fee": "3000",
-      "addr_prefix": "{{ $defaultChain.prefix }}",
+      "addr_prefix": "{{ $chain.prefix }}",
       "logo": "",
       "assets": [
         {
-          "base": "{{ $defaultChain.denom }}",
-          "symbol": "{{ $defaultChain.prefix | upper }}",
+          "base": "{{ $chain.denom }}",
+          "symbol": "{{ $chain.prefix | upper }}",
           "exponent": "6",
           "coingecko_id": "{{ $chain.name }}",
           "logo": ""

@@ -2,12 +2,14 @@
 {{- if gt $chain.numValidators 1.0 }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+# merge defaultChain values into the $chain dict
+{{ $chain = merge $chain $defaultChain }}
 
 {{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
 {{- $build := .build | default (dict "enabled" false) -}}
 {{- $toBuild := or $build.enabled $upgrade.enabled }}
 
-{{ $image := $chain.image | default $defaultChain.image }}
+{{ $image := $chain.image }}
 {{- if $toBuild }}
 {{ $image = "anmol1696/runner:latest" }}
 {{- end }}
@@ -63,17 +65,17 @@ spec:
               {{- end }}
           env:
             - name: CODE_REF
-              value: {{ $defaultChain.repo }}
+              value: {{ $chain.repo }}
             - name: UPGRADE_DIR
-              value: {{ $defaultChain.home }}/cosmovisor
+              value: {{ $chain.home }}/cosmovisor
             - name: GOBIN
               value: /go/bin
             - name: CHAIN_NAME
               value: {{ $chain.name }}
-                    {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+                    {{ include "devnet.defaultEvnVars" $chain | indent 12 }}
           resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
-            - mountPath: {{ $defaultChain.home }}
+            - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
               name: addresses
@@ -85,7 +87,7 @@ spec:
           image: {{ $image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.timeoutVars" $.Values | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
@@ -124,7 +126,7 @@ spec:
               cat $CHAIN_DIR/config/config.toml
           resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
-            - mountPath: {{ $defaultChain.home }}
+            - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
               name: addresses
@@ -135,7 +137,7 @@ spec:
           image: {{ $image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: COLLECTOR_SERVICE
@@ -185,7 +187,7 @@ spec:
             {{- end }}
           resources: {{- include "devnet.node.resources" $chain | trim | nindent 12 }}
           volumeMounts:
-            - mountPath: {{ $defaultChain.home }}
+            - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
               name: addresses
@@ -195,7 +197,7 @@ spec:
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: Always
           env:
-            {{- include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: EXPOSER_HTTP_PORT
@@ -203,15 +205,15 @@ spec:
             - name: EXPOSER_GRPC_PORT
               value: "9099"
             - name: EXPOSER_GENESIS_FILE
-              value: {{ $defaultChain.home }}/config/genesis.json
+              value: {{ $chain.home }}/config/genesis.json
             - name: EXPOSER_MNEMONIC_FILE
               value: /configs/keys.json
             - name: EXPOSER_PRIV_VAL_FILE
-              value: {{ $defaultChain.home }}/config/priv_validator_key.json
+              value: {{ $chain.home }}/config/priv_validator_key.json
           command: [ "/app/exposer/exposer" ]
           resources: {{- toYaml $.Values.exposer.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: {{ $defaultChain.home }}
+            - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
               name: addresses

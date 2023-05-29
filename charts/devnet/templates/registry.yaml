@@ -94,6 +94,7 @@ spec:
 ---
 {{- range $chain := .Values.chains }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $chain = merge $chain $defaultChain }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
 {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
@@ -109,18 +110,18 @@ data:
       "chain_name": "{{ $chain.type }}",
       "assets": [
         {
-          "description": "The denom for token {{ $defaultChain.denom }}",
-          "base": "{{ $defaultChain.denom }}",
-          "name": "{{ $defaultChain.denom }}",
-          "display": "{{ $defaultChain.denom }}",
-          "symbol": "{{ $defaultChain.denom | upper }}",
+          "description": "The denom for token {{ $chain.denom }}",
+          "base": "{{ $chain.denom }}",
+          "name": "{{ $chain.denom }}",
+          "display": "{{ $chain.denom }}",
+          "symbol": "{{ $chain.denom | upper }}",
           "denom_units": [
             {
-              "denom": "{{ $defaultChain.denom }}",
+              "denom": "{{ $chain.denom }}",
               "exponent": 0
             },
             {
-              "denom": "{{ $defaultChain.denom }}",
+              "denom": "{{ $chain.denom }}",
               "exponent": 6
             }
           ],
@@ -135,17 +136,17 @@ data:
       "status": "live",
       "network_type": "mainnet",
       "chain_id": "{{ $chain.name }}",
-      "bech32_prefix": "{{ $defaultChain.prefix }}",
-      "daemon_name": "{{ $defaultChain.binary }}",
-      "node_home": "{{ $defaultChain.home }}",
+      "bech32_prefix": "{{ $chain.prefix }}",
+      "daemon_name": "{{ $chain.binary }}",
+      "node_home": "{{ $chain.home }}",
       "key_algos": [
         "secp256k1"
       ],
-      "slip44": "{{ $defaultChain.coinType | int }}",
+      "slip44": "{{ $chain.coinType | int }}",
       "fees": {
         "fee_tokens": [
           {
-            "denom": "{{ $defaultChain.denom }}",
+            "denom": "{{ $chain.denom }}",
             "fixed_min_gas_price": 0,
             "low_gas_price": 0,
             "average_gas_price": 0.025,
@@ -156,7 +157,7 @@ data:
       "staking": {
         "staking_tokens": [
           {
-            "denom": "{{ $defaultChain.denom }}"
+            "denom": "{{ $chain.denom }}"
           }
         ],
         "lock_duration": {
@@ -164,7 +165,7 @@ data:
         }
       },
       "codebase": {
-        "git_repo": "{{ $defaultChain.repo }}"
+        "git_repo": "{{ $chain.repo }}"
       },
       {{- if $.Values.explorer.enabled }}
       "explorers": [
