@@ -67,7 +67,7 @@ spec:
             - name: CHAIN_NAME
               value: {{ $chain.name }}
             {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
-          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
+          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
@@ -98,7 +98,7 @@ spec:
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
               bash -e /scripts/setup_config.sh
-          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
+          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node

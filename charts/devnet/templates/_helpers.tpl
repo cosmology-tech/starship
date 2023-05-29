@@ -154,12 +154,7 @@ requests:
 Returns resources for a validator
 */}}
 {{- define "devnet.init.resources" }}
-limits:
-  cpu: "1"
-  memory: "1G"
-requests:
-  cpu: "0.5"
-  memory: "500M"
+{{ toYaml .resources.init }}
 {{- end }}
 
 {{/*

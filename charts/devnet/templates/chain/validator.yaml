@@ -71,7 +71,7 @@ spec:
             - name: CHAIN_NAME
               value: {{ $chain.name }}
                     {{ include "devnet.defaultEvnVars" $defaultChain | indent 12 }}
-          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
+          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
@@ -122,7 +122,7 @@ spec:
 
               echo "Printing the whole config.toml file"
               cat $CHAIN_DIR/config/config.toml
-          resources: {{- include "devnet.init.resources" . | trim | nindent 12 }}
+          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $defaultChain.home }}
               name: node
