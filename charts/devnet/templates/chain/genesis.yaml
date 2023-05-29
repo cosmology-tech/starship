@@ -1,6 +1,6 @@
 {{- range $chain := .Values.chains }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
-{{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type | default dict }}
 
 # merge defaultChain values into the $chain dict
 {{ $chain = merge $chain $defaultChain }}

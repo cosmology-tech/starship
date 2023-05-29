@@ -93,7 +93,7 @@ spec:
         {{- end }}
 ---
 {{- range $chain := .Values.chains }}
-{{ $defaultChain := get $.Values.defaultChains $chain.type }}
+{{ $defaultChain := get $.Values.defaultChains $chain.type | default dict }}
 {{ $chain = merge $chain $defaultChain }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
