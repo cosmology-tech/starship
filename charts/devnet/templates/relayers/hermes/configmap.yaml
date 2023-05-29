@@ -81,16 +81,16 @@ data:
     {{- range $i, $chain := $relayer.chains }}
     {{- range $fullchain := $.Values.chains }}
     {{- if eq $fullchain.name $chain }}
+    {{ $defaultChain := get $.Values.defaultChains $fullchain.type }}
+    {{ $fullchain = merge $fullchain $defaultChain }}
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
     rpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
     grpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
     websocket_addr = "ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
-    {{- with index $.Values.defaultChains $fullchain.type }}
-    account_prefix = "{{ .prefix }}"
-    gas_price = { price = 0.25, denom = "{{ .denom }}" }
-    {{- end }}
+    account_prefix = "{{ $fullchain.prefix }}"
+    gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
     default_gas = 500000000
     max_gas = 1000000000
     rpc_timeout = "10s"

@@ -10,8 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    strategy:
+      matrix:
+        config-file: [ "one-chain.yaml", "one-custom-chain.yaml" ]
+      fail-fast: true
+      max-parallel: 2
+
     env:
-      CONFIG_FILE: "tests/configs/one-chain.yaml"
+      CONFIG_FILE: "tests/configs/${{ matrix.config-file }}"
 
     steps:
       - name: Checkout
