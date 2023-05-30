@@ -12,7 +12,7 @@
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "clean": "rimraf .next .turbo",
     "export": "next build && next export",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d out",
     "deploy:all": "npm run export && npm run deploy"
   },
   "dependencies": {
