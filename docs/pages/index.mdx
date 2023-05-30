@@ -1,0 +1,78 @@
+import React from "react";
+
+# Starship
+
+<p align="center" width="100%">
+  <img
+    src="https://user-images.githubusercontent.com/545047/190171432-5526db8f-9952-45ce-a745-bea4302f912b.svg"
+    alt="starship"
+    width="90px"
+    height="90px"
+  />
+</p>
+
+<div width="100%" style={{
+  display:'flex',
+  justifyContent:'center',
+  alignItems: 'center',
+  paddingTop: '12px'
+  }}>
+<div style={{paddingRight:'4px'}}>
+  <a href="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml">
+    <img
+      height="20"
+      src="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg"
+    />
+  </a>
+</div>
+<div style={{paddingRight:'4px'}}>
+  <a href="https://github.com/cosmology-tech/starship/blob/main/LICENSE">
+    <img
+      height="20"
+      src="https://img.shields.io/badge/license-MIT-blue.svg"
+    />
+  </a>
+</div>
+
+<div style={{paddingRight:'4px'}}>
+  <a href="https://github.com/cosmology-tech/starship/releases/latest">
+    <img
+      height="20"
+      src="https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg"
+    />
+  </a>
+  </div>
+</div>
+
+Starship is a unified development enrivonment that allow Cosmos developers to spin up a fully simulated mini-cosmos ecosystem
+and write end-to-end test cases
+
+
+Go to the [Official Project](https://github.com/cosmology-tech/starship) (👷‍♀️in progress...).
+
+## Get Started
+
+⚡️ [How to use Starship](https://thestarship.io/get-started)
+
+## Examples
+
+### [CosmJS based e2e testing](https://github.com/cosmology-tech/starship/tree/main/examples/osmojs)
+
+Setup chain multiple chains, write e2e tests for governance, staking and osmosis specific txns.
+Run tests with JS using CosmJS.
+Run tests with Golang
+### [chain-upgrade](https://github.com/cosmology-tech/starship/tree/main/examples/upgrade-test)
+
+Setup chain with cosmovisor setup with different chain version binaries.
+Run tests with Golang
+### [Multi chain setup](https://github.com/cosmology-tech/starship/blob/main/examples/multi-chain/config.yaml)
+
+Multi chain setup with 3 chains, 2 relayers between the chain, explorer and registry
+## Projects using Starship
+
+### [OsmoJS](https://github.com/osmosis-labs/osmojs/pull/36)
+
+JS library using Starship to run end-to-end tests against Osmosis chain. (Run in CI/CD)
+### [persistenceCore](https://github.com/persistenceOne/persistenceCore/pull/198)
+
+Persistence Core chain using Starship to test chain upgrades. (Run in CI/CD)
