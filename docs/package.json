@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "license": "MIT",
-  "homepage": "https://cosmology-tech.github.io/starship",
+  "homepage": "https://thestarship.io",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
