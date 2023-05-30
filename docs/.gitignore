@@ -1,0 +1,6 @@
+.vercel
+.next
+/out
+
+node_modules
+
