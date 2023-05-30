@@ -12,10 +12,19 @@ tolerations: []
 affinity: {}
 
 resources:
+  node:
+    # Default values for resources for chain and validator nodes
+    # Preference would be given to the resources directive in chain/relayer
+    limits:
+      cpu: "0.5"
+      memory: "500M"
+    requests:
+      cpu: "0.5"
+      memory: "500M"
   init:
     limits:
-      cpu: "1"
-      memory: "1G"
+      cpu: "0.5"
+      memory: "500M"
     requests:
       cpu: "0.5"
       memory: "500M"
@@ -33,11 +42,11 @@ exposer:
     rest: 8081
   resources:
     limits:
-      cpu: "0.5"
-      memory: "500M"
+      cpu: "0.1"
+      memory: "100M"
     requests:
-      cpu: "0.2"
-      memory: "200M"
+      cpu: "0.1"
+      memory: "100M"
 
 # Chain timeouts
 timeouts:
@@ -228,8 +237,8 @@ collector:
     rest: 8070
   resources:
     limits:
-      cpu: "1"
-      memory: 2Gi
+      cpu: "0.5"
+      memory: "500M"
     requests:
       cpu: "0.5"
-      memory: 1Gi
+      memory: "500M"

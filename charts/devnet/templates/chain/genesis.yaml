@@ -129,7 +129,7 @@ spec:
               {{- else }}
               $CHAIN_BIN start
               {{- end }}
-          resources: {{- include "devnet.node.resources" $chain | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
