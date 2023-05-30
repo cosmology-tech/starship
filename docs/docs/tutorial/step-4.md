@@ -1,5 +1,6 @@
 # **Step 4:** All in one place
 
+## TLDR
 We have created some handy example directory for the tutorial you just went though.
 You can find it at [examples/tutorial](https://github.com/cosmology-tech/starship/tree/main/examples/getting-started).
 
@@ -18,6 +19,7 @@ scripts/
 README.md
 ```
 
+Now inorder to spin a cluster run
 ```bash
 cd getting-started/
 
@@ -26,21 +28,16 @@ make setup
 
 # Install the starship instance and run port-forward
 make start
+# OR, if you are low on resources on local machine
+make start-tiny
 
 # Stop the cluster with
 make stop
 ```
 
+Checkout the README.md for more details on the commands, you can even run the commands individually, if some commands are having trouble.
+
 Once you are done, you can all the resources with
 ```bash
 make clean
 ```
-
-## Low on resources
-Simulating docker containers on your machine can be resource intensive, if you dont have enough
-resources you can also run a smaller version of the starship instance with less resources
-```bash
-# instead of `make start` run following
-make start-tiny
-```
-Note: This will be slower to spin up as well
