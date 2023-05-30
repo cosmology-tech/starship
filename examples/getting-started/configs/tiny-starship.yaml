@@ -1,0 +1,74 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    ports:
+      rest: 1313
+      rpc: 26653
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: "100M"
+      requests:
+        cpu: "0.1"
+        memory: "100M"
+  - name: gaia-1
+    type: cosmos
+    numValidators: 1
+    ports:
+      rest: 1317
+      rpc: 26657
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: "100M"
+      requests:
+        cpu: "0.1"
+        memory: "100M"
+
+relayers:
+  - name: osmos-gaia
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - gaia-1
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: "100M"
+      requests:
+        cpu: "0.1"
+        memory: "100M"
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+  resources:
+    limits:
+      cpu: "0.1"
+      memory: "100M"
+    requests:
+      cpu: "0.1"
+      memory: "100M"
+
+# configure default resources
+resources:
+  node:
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: "100M"
+      requests:
+        cpu: "0.1"
+        memory: "100M"
+
+exposer:
+  resources:
+    limits:
+      cpu: "0.1"
+      memory: "100M"
+    requests:
+      cpu: "0.1"
+      memory: "100M"
