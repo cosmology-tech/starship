@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+<!-- Render hero under tabs -->
+{% block tabs %}
+{{ super() }}
+
+<!-- Additional styles for landing page -->
+<style>
+
+    /* Application header should be static for the landing page */
+    .md-header {
+        position: initial;
+    }
+
+    /* Remove spacing, as we cannot hide it completely */
+    .md-main__inner {
+        margin: 0;
+    }
+
+    /* Hide main content for now */
+    .md-content {
+        display: none;
+    }
+
+    /* Hide table of contents */
+    @media screen and (min-width: 60em) {
+        .md-sidebar--secondary {
+            display: none;
+        }
+    }
+
+    /* Hide navigation */
+    @media screen and (min-width: 76.25em) {
+        .md-sidebar--primary {
+            display: none;
+        }
+    }
+
+    .mdx-hero {
+        background-image: url({{ 'assets/images/header.webp' | url }});
+
+        height: 100%;
+        min-height: 1080px;
+
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        padding-top: 6rem;
+    }
+
+    .mdx-hero__content {
+        max-width: 25rem;
+        padding: 5rem 2rem;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .mdx-hero__content h1,
+    .mdx-hero__content h3,
+    .mdx-hero__content p {
+        color: #fff;
+    }
+</style>
+
+<!-- Hero for landing page -->
+<section class="mdx-container">
+    <div class="md-typeset">
+        <div class="mdx-hero">
+            <div class="md-grid">
+                <!-- Hero content -->
+                <div class="mdx-hero__content">
+                    <h1>Welcome to Starship</h1>
+                    <h3>{{ config.site_description }}.<br /></h3>
+                    <p>To get started follow the onboarding tutorial.</p>
+                    <a
+                            href="{{ 'tutorial/step-1/' | url }}"
+                            title=""
+                            class="md-button md-button--primary"
+                    >
+                        Start onboarding
+                    </a>
+                    <a
+                            href="{{ 'documentation/' | url }}"
+                            title=""
+                            class="md-button"
+                    >
+                        Or learn more
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<!-- Content -->
+{% block content %}{% endblock %}
+
+<!-- Application footer -->
+{% block footer %}{% endblock %}

@@ -1,0 +1,41 @@
+site_name: Starship
+site_description: Universal development environment for the Cosmos ecosystem
+site_url: https://anmol1696.github.io/starship/
+
+repo_name: Anmol1696/starship
+repo_url: https://github.com/Anmol1696/starship
+edit_uri: ""
+
+remote_branch: gh-pages
+
+theme:
+  name: material
+  logo: assets/images/logo.png
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/images/logo.png
+  features:
+    - navigation.tabs
+    #- navigation.tabs.sticky
+    - navigation.top
+    - navigation.instant
+    - navigation.expand
+  custom_dir: overrides
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Tutorial:
+      'Step 1: Dependencies': tutorial/step-1.md
+  - Documentation:
+      'Introduction': documentation/index.md
+      'Infra Setup': documentation/infra.md
+  - Demo: demo/index.md
+  - FAQ: faq.md
+  - About:
+      'Starship': about/index.md
