@@ -1,0 +1,38 @@
+{{- $keys := .Files.Get "configs/keys.json" | fromJson }}
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "icq" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $relayer.type }}-{{ $relayer.name }}"
+data:
+  config.yaml: |-
+    default_chain: {{ index $relayer.chains 0 }}
+    chains:
+      {{- range $i, $chain := $relayer.chains }}
+      {{ $chain }}:
+        {{- range $fullchain := $.Values.chains }}
+        {{- if eq $fullchain.name $chain }}
+        key: {{ $chain }}-key
+        chain-id: {{ $chain }}
+        rpc-addr: http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
+        grpc-addr: http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090
+        {{- with index $.Values.defaultChains $fullchain.type }}
+        account-prefix: {{ .prefix }}
+        keyring-backend: test
+        gas-adjustment: 10
+        gas-prices: 0.001{{ .denom }}
+        {{- end }}
+        key-directory: /root/.icq/keys
+        debug: false
+        timeout: 30s
+        block-timeout: ""
+        output-format: json
+        sign-mode: direct
+        {{- end }}
+        {{- end }}
+    {{- end }}
+---
+{{- end }}
+{{- end }}
