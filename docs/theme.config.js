@@ -79,7 +79,7 @@ export default {
       openGraph: {
         images: [
           {
-            url: "https://user-images.githubusercontent.com/545047/190171432-5526db8f-9952-45ce-a745-bea4302f912b.svg",
+            url: "https://user-images.githubusercontent.com/10805402/242267086-72f49e17-6809-4b11-85cb-58ebed9b3d07.jpg",
           },
         ],
       },
@@ -93,7 +93,7 @@ export default {
   logo: (
     <>
       <img
-        src="https://user-images.githubusercontent.com/545047/190171432-5526db8f-9952-45ce-a745-bea4302f912b.svg"
+        src="https://user-images.githubusercontent.com/10805402/242267086-72f49e17-6809-4b11-85cb-58ebed9b3d07.jpg"
         width="50px"
       ></img>
       <span className="mr-2 font-extrabold hidden md:inline">
