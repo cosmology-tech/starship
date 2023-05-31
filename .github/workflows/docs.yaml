@@ -1,12 +1,12 @@
 name: Docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - docs/**
-      - .github/workflows/docs.yaml
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+        default: 'latest'
 
 jobs:
   deploy:
