@@ -1,4 +1,4 @@
-const siteUrl = 'https://thestarship.io';
+const siteUrl = 'https://starship.cosmology.tech';
 const siteAddress = new URL(siteUrl);
 const canonical = siteAddress.href.slice(0, -1);
 
