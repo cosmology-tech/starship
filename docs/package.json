@@ -1,10 +1,10 @@
 {
   "name": "docs",
-  "version": "1.9.35",
+  "version": "1.0.0",
   "private": true,
   "main": "index.js",
   "license": "MIT",
-  "homepage": "https://thestarship.io",
+  "homepage": "https://starship.cosmology.tech",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +12,7 @@
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "clean": "rimraf .next .turbo",
     "export": "next build && next export",
-    "deploy": "gh-pages -d out",
+    "deploy": "AWS_PROFILE=webinc aws s3 sync out/ s3://starship.cosmology.tech",
     "deploy:all": "npm run export && npm run deploy"
   },
   "dependencies": {
