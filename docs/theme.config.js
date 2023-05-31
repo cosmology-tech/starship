@@ -97,7 +97,7 @@ export default {
         width="50px"
       ></img>
       <span className="mr-2 font-extrabold hidden md:inline">
-        &nbsp;&nbsp;CosmosKit
+        &nbsp;&nbsp;Starship
       </span>
     </>
   ),
