@@ -28,10 +28,10 @@ export default {
     link: "https://discord.gg/6hy8KQ9aJY",
   },
   project: {
-    link: "https://github.com/cosmology-tech/cosmos-kit",
+    link: "https://github.com/cosmology-tech/starship",
   },
   docsRepositoryBase:
-    "https://github.com/cosmology-tech/cosmos-kit/tree/develop/packages/docs",
+    "https://github.com/cosmology-tech/starship/tree/main/docs",
   editLink: {
     text: "Edit this page on GitHub",
   },
@@ -79,7 +79,7 @@ export default {
       openGraph: {
         images: [
           {
-            url: "https://user-images.githubusercontent.com/10805402/242267086-72f49e17-6809-4b11-85cb-58ebed9b3d07.jpg",
+            url: "https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png",
           },
         ],
       },
@@ -93,7 +93,7 @@ export default {
   logo: (
     <>
       <img
-        src="https://user-images.githubusercontent.com/10805402/242267086-72f49e17-6809-4b11-85cb-58ebed9b3d07.jpg"
+        src="https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png"
         width="50px"
       ></img>
       <span className="mr-2 font-extrabold hidden md:inline">
