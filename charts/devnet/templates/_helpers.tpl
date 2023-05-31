@@ -146,14 +146,6 @@ Returns resources for a validator
 {{- end }}
 
 {{/*
-Returns resources for an init container, same as node resources since init containers
-run to completion, but can be overridden. Total resources on node is same
-*/}}
-{{- define "devnet.init.resources" }}
-{{ toYaml .resources.node }}
-{{- end }}
-
-{{/*
 Returns a comma seperated list of chain id
 */}}
 {{- define "devnet.chains.ids" -}}
