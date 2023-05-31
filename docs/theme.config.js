@@ -28,10 +28,10 @@ export default {
     link: "https://discord.gg/6hy8KQ9aJY",
   },
   project: {
-    link: "https://github.com/cosmology-tech/cosmos-kit",
+    link: "https://github.com/cosmology-tech/starship",
   },
   docsRepositoryBase:
-    "https://github.com/cosmology-tech/cosmos-kit/tree/develop/packages/docs",
+    "https://github.com/cosmology-tech/starship/tree/main/docs",
   editLink: {
     text: "Edit this page on GitHub",
   },
