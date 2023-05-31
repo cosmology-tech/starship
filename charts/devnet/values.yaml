@@ -196,11 +196,11 @@ explorer:
     rest: 8080
   resources:
     limits:
-      cpu: "0.5"
-      memory: "500M"
+      cpu: "1"
+      memory: "1000M"
     requests:
-      cpu: "0.5"
-      memory: "500M"
+      cpu: "1"
+      memory: "1000M"
 
 
 faucet:
