@@ -16,6 +16,13 @@ chains:
       rest: 1318
       rpc: 26658
       exposer: 38088
+    resources:
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+      requests:
+        cpu: "1"
+        memory: "1Gi"
 
 relayers:
   - name: persistence-cosmos
