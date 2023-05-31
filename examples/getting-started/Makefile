@@ -57,7 +57,7 @@ delete:
 
 .PHONY: port-forward
 port-forward:
-	bash $(CURDIR)/../../scripts/port-forward.sh --config=$(FILE)
+	bash $(CURDIR)/scripts/port-forward.sh --config=$(FILE)
 
 .PHONY: stop-forward
 stop-forward:

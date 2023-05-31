@@ -7,11 +7,11 @@ chains:
       rpc: 26653
     resources:
       limits:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
       requests:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
   - name: gaia-1
     type: cosmos
     numValidators: 1
@@ -20,11 +20,11 @@ chains:
       rpc: 26657
     resources:
       limits:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
       requests:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
 
 relayers:
   - name: osmos-gaia
@@ -45,24 +45,27 @@ explorer:
   enabled: true
   ports:
     rest: 8080
+  # Explorer is heavy on resources, specially the ram (for now)
+  # If someone has even less resources, it might make sense to disable
+  # explorer itself
   resources:
     limits:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.5"
+      memory: "2Gi"
     requests:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.5"
+      memory: "2Gi"
 
 # configure default resources
 resources:
   node:
     resources:
       limits:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
       requests:
-        cpu: "0.1"
-        memory: "100M"
+        cpu: "0.3"
+        memory: "300M"
 
 exposer:
   resources:
