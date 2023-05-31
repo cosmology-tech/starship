@@ -4,7 +4,7 @@ TINY_FILE = configs/tiny-starship.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.27
+HELM_VERSION = v0.1.30
 
 ###############################################################################
 ###                              All commands                               ###
@@ -57,7 +57,7 @@ delete:
 
 .PHONY: port-forward
 port-forward:
-	bash $(CURDIR)/../../scripts/port-forward.sh --config=$(FILE)
+	bash $(CURDIR)/scripts/port-forward.sh --config=$(FILE)
 
 .PHONY: stop-forward
 stop-forward:
