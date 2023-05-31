@@ -21,13 +21,6 @@ resources:
     requests:
       cpu: "0.5"
       memory: "500M"
-  init:
-    limits:
-      cpu: "0.5"
-      memory: "500M"
-    requests:
-      cpu: "0.5"
-      memory: "500M"
   wait:
     limits:
       cpu: "0.1"
@@ -42,11 +35,11 @@ exposer:
     rest: 8081
   resources:
     limits:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.2"
+      memory: "200M"
     requests:
-      cpu: "0.1"
-      memory: "100M"
+      cpu: "0.2"
+      memory: "200M"
 
 # Chain timeouts
 timeouts:
@@ -203,13 +196,16 @@ explorer:
   localhost: true
   ports:
     rest: 8080
+  # Currently the ping-pub explorer is using alot of memory dues to building the site
+  # at runtime (with custom configs). Anything bellow 2Gi will crash the pods on startup
+  # todo: make this more efficient with faster startuptime
   resources:
     limits:
       cpu: "1"
-      memory: "1000M"
+      memory: "2Gi"
     requests:
       cpu: "1"
-      memory: "1000M"
+      memory: "2Gi"
 
 
 faucet:
