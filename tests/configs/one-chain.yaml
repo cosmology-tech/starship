@@ -28,13 +28,6 @@ registry:
       memory: 100M
 
 resources:
-  init:
-    limits:
-      cpu: "0.5"
-      memory: 500M
-    requests:
-      cpu: "0.5"
-      memory: 500M
   wait:
     limits:
       cpu: "0.1"
