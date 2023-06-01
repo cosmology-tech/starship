@@ -16,6 +16,9 @@ chains:
       rest: 1318
       rpc: 26658
       exposer: 38088
+    # For building binary on the fly, resources need to be increased
+    # Minimum resources required is 1 CPU and 1 GB Ram, if resources are not
+    # increased, pods will crash. Takes around 8 mins to spin up
     resources:
       limits:
         cpu: "1"

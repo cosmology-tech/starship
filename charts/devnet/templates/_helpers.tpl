@@ -138,7 +138,7 @@ Usage:
 Returns resources for a validator
 */}}
 {{- define "devnet.node.resources" }}
-{{- if hasKey . "resources" }}
+{{- if hasKey .node "resources" }}
 {{ toYaml .node.resources }}
 {{- else }}
 {{ toYaml .context.Values.resources.node }}
