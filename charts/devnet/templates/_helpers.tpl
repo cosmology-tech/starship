@@ -138,23 +138,11 @@ Usage:
 Returns resources for a validator
 */}}
 {{- define "devnet.node.resources" }}
-{{- if hasKey . "resources" }}
-{{ toYaml .resources }}
+{{- if hasKey .node "resources" }}
+{{ toYaml .node.resources }}
 {{- else }}
-limits:
-  cpu: "2"
-  memory: "2G"
-requests:
-  cpu: "1"
-  memory: "1G"
+{{ toYaml .context.Values.resources.node }}
 {{- end }}
-{{- end }}
-
-{{/*
-Returns resources for a validator
-*/}}
-{{- define "devnet.init.resources" }}
-{{ toYaml .resources.init }}
 {{- end }}
 
 {{/*

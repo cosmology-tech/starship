@@ -99,7 +99,7 @@ spec:
               echo "Relayer Index: $RLY_INDEX"
 
               hermes start
-          resources: {{- include "devnet.node.resources" $relayer | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0

@@ -73,7 +73,7 @@ spec:
             - name: CHAIN_NAME
               value: {{ $chain.name }}
                     {{ include "devnet.defaultEvnVars" $chain | indent 12 }}
-          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
@@ -124,7 +124,7 @@ spec:
 
               echo "Printing the whole config.toml file"
               cat $CHAIN_DIR/config/config.toml
-          resources: {{- include "devnet.init.resources" $.Values | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
@@ -185,7 +185,7 @@ spec:
                     COLLECTOR_HOST=http://$COLLECTOR_SERVICE.$NAMESPACE.svc.cluster.local:$COLLECTOR_PORT
                     VAL_NAME=$VAL_NAME COLLECTOR_HOST=$COLLECTOR_HOST bash -e /scripts/register_snapshots.sh
             {{- end }}
-          resources: {{- include "devnet.node.resources" $chain | trim | nindent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
