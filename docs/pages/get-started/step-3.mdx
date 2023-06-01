@@ -24,7 +24,14 @@ We will run:
 * Hermes relayer between osmosis and cosmos chain
 * Ping Pub explorer for the chains
 
-Create a file `starship.yaml` with the following content
+Create a directory to play around in
+```bash
+mkdir getting-started
+cd getting-started
+touch starship.yaml
+```
+
+Add following content to `starship.yaml` with the following content
 ```yaml
 chains:
   - name: osmosis-1
@@ -87,6 +94,8 @@ This can take upto 2-5 minutes, depending on the underlying machine.
 ## Connect to the cluster
 Once the pods are in `Running` state, you can port forward all the nodes to local host with
 ```bash
+cd getting-started/
+
 # Download the port-forward script
 curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/port-forward.sh > port-forward.sh
 # Make it executable
