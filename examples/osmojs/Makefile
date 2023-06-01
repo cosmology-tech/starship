@@ -2,7 +2,7 @@ HELM_NAME = osmojs
 HELM_FILE = configs/config.yaml
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.24
+HELM_VERSION = v0.1.31
 
 ###############################################################################
 ###                              All commands                               ###
