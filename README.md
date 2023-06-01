@@ -1,9 +1,16 @@
-# starship
-![Tests](https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg)
-![Lint](https://github.com/cosmology-tech/starship/actions/workflows/lint-check.yaml/badge.svg)
-![Release](https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg)
-![Build](https://github.com/cosmology-tech/starship/actions/workflows/build.yaml/badge.svg)
-![Docker](https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml/badge.svg)
+# Starship
+
+<p align="center" width="100%">
+    <img height="148" src="https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png" />
+</p>
+
+<p align="center" width="100%">
+   <a href="https://github.com/cosmology-tech/starship/releases/latest"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/actions/workflows/build.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/build.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml/badge.svg"></a>
+</p>
 
 Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
@@ -18,99 +25,7 @@ Inorder to get started with starship, one needs to install the following
 * `yq`: https://github.com/mikefarah/yq/#install
 
 ## Getting started
-Update the `vaules.yaml` in `charts/devnet/templates`. Recommeded one creates a copy
-of the values file and update it as per your requirements.
-
-### Setup local k8s cluster (optional)
-Create a local k8s cluster using `kind`. Can be setup with `minikube` or
-docker-desktop as well.
-One can use the handy make commands in the `Makefile` like following
-```bash
-make setup-kind
-```
-This will create a local kind cluster in docker and set the correct context in
-your current kubectl. Check the kubectl context with
-```bash
-kubectl config current-context
-# check: kind-starship
-```
-
-### Setup k8s cluster
-1. Connect to a k8s cluster, make sure you are able to access following command
-   ```bash
-   kubectl get pods
-   ```
-2. Create a namespace in which the setup will be deployed.
-   ```bash
-   kubectl create namespace <namespace-name>
-   # example
-   kubectl create namespace starship
-   ```
-3. Make sure you have set the namespace in the current context, so the devnet is deployed
-   without conflict to your current workloads
-
-### Start
-1. Debug the k8s yaml configuration files
-   ```bash
-   make debug VALUES_NAME=<custom-filename>
-   # output all yaml files that will be deployed 
-   # default values file run
-   make debug
-   ```
-2. Start the cluster
-   ```bash
-   make install VALUES_NAME=<custom-filename>
-   # default values file run
-   make install
-   ```
-   Optionally you can use k9s, to watch all the fun
-3. Once you make any changes to the system or values, run
-   ```bash
-   make upgrade VALUES_NAME=<custom-filename>
-   # default values file run
-   make upgrade
-   ```
-4. Run local port forwarding based on local port info in the `values.yaml`
-   ```bash
-   # port-forward all the local ports locally, runs in background
-   make port-forward-all
-   
-   # Run following to stop port forwarding once done
-   make stop-forward
-   ```
-   Sometime one might need to run connection updates so the port-forward does not
-   get timed out. Run `make check-forward-all`
-5. Open the explorer at `http://localhost:8080`
-6. To clean up everything run
-   ```bash
-   # Kill any portforwarding
-   make stop-forward
-   # Delete current helm chart deployment
-   make delete
-   # If running local kind cluster, cleanup
-   make clean-kind
-   ```
-
-## Custom setup
-When one wants to change the configuration for setting up the devnet.
-1. Copy the `charts/devnet/values.yaml` to `custom-values.yaml` file.
-2. Update the yaml file
-3. Install chart `make install VALUES_FILE=custom-values.yaml`
-
-While making changes to the `vaules.yaml` file here are the modifications one
-can perform
-* Add chains to setup at `.chains` key, copy and paste an existing chain and make changes
-* Update how many validators per chain at `.chains[].numValidators`
-* Add relayer between chains with adding dict to `.relayers`, mention the chains to
-  connect between in `.relayers[].chains`, use the chain name defined in `.chains`
-* Toggle explorer with `.explorer.enabled` boolen flag
-
-**NOTE: `values.yaml` still needs to be optimized with default values and less user inputs**
-
-### ProTip: Local setup
-* Set `.chains[].numValidators` to `1` when using local cluster
-* Comment out chains and relayers not needed
-* Disable explorer for local setup
+Follow the steps here: https://starship.cosmology.tech/getting-started
 
 ## Using helm chart
 Inorder to use the helm chart externally without this repo.
