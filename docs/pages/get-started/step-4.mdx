@@ -1,42 +1,95 @@
-# **Step 4:** All in one place
+# **Step 4:** Interact with the chains
 
-## TLDR
-We have created some handy example directory for the tutorial you just went though.
-You can find it at [examples/tutorial](https://github.com/cosmology-tech/starship/tree/main/examples/getting-started).
-Directory structure is as follows
+In this step, we will connect with the runnings nodes, check the logs and interact with the chains.
+
+## 4.1) Prerequisites
+Step-3 infrastructure should be up and running. Check the pods are in running state with
+
 ```bash
-Makefile
-configs/
-  starship.yaml
-  tiny-starship.yaml
-scripts/
-  dev-setup.sh
-  port-forward.sh
-README.md
+kubectl get pods
+
+# You should see something like
+NAME                        READY   STATUS    RESTARTS   AGE
+explorer-5dd48ffc8d-jrtsh   1/1     Running   0          37m
+gaia-1-genesis-0            2/2     Running   0          37m
+hermes-osmos-gaia-0         1/1     Running   0          37m
+osmosis-1-genesis-0         2/2     Running   0          37m
+registry-7f9f9f9f9f-2q2q2   1/1     Running   0          37m
 ```
 
-Download the example directory with [URL](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2Fcosmology-tech%2Fstarship%2Ftree%2Fmain%2Fexamples%2Fgetting-started)
-
-Unzip it into a directory and run the following commands to get started.
-
+## 4.2) Connect to the cluster
+Once the pods are in `Running` state, you can port forward all the nodes to local host with handy scripts
 ```bash
 cd getting-started/
 
-# Install dependencies, install startship helm chart, create kind cluster
-make setup
-
-# Install the starship instance and run port-forward
-make start
-# OR, if you are low on resources on local machine
-make start-tiny
-
-# Stop the cluster with
-make stop
+# Download the port-forward script
+curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/port-forward.sh > port-forward.sh
+# Make it executable
+chmod +x port-forward.sh
+# Run it with the config file
+./port-forward.sh --config=starship.yaml
 ```
 
-Checkout the README.md for more details on the commands, you can even run the commands individually, if some commands are having trouble.
+This will forward the `ports` of the nodes in the `starship.yaml` to your local machine.
 
-Once you are done, you can all the resources with
+## 4.3) Interact with the chains
+You can then interact with the chain on localhost at
+* Osmosis: http://localhost:26653/status
+* Cosmos: http://localhost:26657/status
+
+And open up the explorer at http://localhost:8080
+> Note explorer can take some extra time to get ready, we are trying to make explorer initialization faster. You can check the logs of the explorer pod to see if it is ready.
 ```bash
-make clean
+kubectl logs -l app.kubernetes.io/name=explorer
 ```
+
+### Registry service endpoints
+Registry service is a central service that keeps track of all the chains, keys, endpoints and ibc channels. It is based
+on the cosmos/chain-registry, with some customizations.
+
+You can check the following endpoints on the registry service to get an idea of the infra:
+
+* Chains:
+    * http://localhost:8081/chains: will list all the chains
+    * http://localhost:8081/chains/osmosis-1
+    * http://localhost:8081/chains/gaia-1
+* Chain Assets:
+    * http://localhost:8081/chains/osmosis-1/assets
+    * http://localhost:8081/chains/gaia-1/assets
+* IBC Channels:
+    * http://localhost:8081/ibc/osmosis-1/gaia-1: ibc channels between osmosis and cosmos chain
+* Keys:
+    * http://localhost:8081/chains/osmosis-1/keys: all the mnemonics for osmosis chain
+    * http://localhost:8081/chains/gaia-1/keys: all the mnemonics for osmosis chain
+
+## 4.4) Check chain logs
+You can check the logs of the chain with
+```bash
+# Osmosis logs
+kubectl logs osmosis-1-genesis-0
+# OR, follow the logs with
+kubectl logs -f osmosis-1-genesis-0
+
+# Cosmos logs
+kubectl logs gaia-1-genesis-0
+# OR, follow the logs with
+kubectl logs -f gaia-1-genesis-0
+```
+
+## 4.5) Cleanup
+Once you are done with playing around, cleanup the resources with
+
+```bash
+# delete helm chart
+helm delete tutorial
+
+# cleanup port forwarding
+pkill -f "port-forward"
+```
+
+Remove kind cluster (if used) with
+```bash
+kind delete clusters starship
+```
+
+If you are using Docker Desktop for kubernetes cluster, please Disable it in Settings, Kubernetes

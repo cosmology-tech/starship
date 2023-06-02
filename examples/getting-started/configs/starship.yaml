@@ -24,3 +24,8 @@ explorer:
   enabled: true
   ports:
     rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081

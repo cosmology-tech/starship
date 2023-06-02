@@ -12,7 +12,7 @@
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "clean": "rimraf .next .turbo",
     "export": "next build && next export",
-    "invalidate": "AWS_PROFILE=myprofile1 aws cloudfront create-invalidation --distribution-id E1LIY8AZD4EEQD --paths \"/*\"",
+    "invalidate": "AWS_PROFILE=webinc aws cloudfront create-invalidation --distribution-id E1LIY8AZD4EEQD --paths \"/*\"",
     "deploy": "AWS_PROFILE=webinc aws s3 sync out/ s3://starship.cosmology.tech",
     "deploy:all": "npm run export && npm run deploy"
   },

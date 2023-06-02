@@ -5,9 +5,9 @@ Optionally if you have a Kubernetes cluster already, you can skip this step.
 
 By the end of this tutorial you should be able to run `kubectl get nodes` and see a list of nodes.
 
-Please follow on of the following sections to setup a Kubernetes cluster.
+Please **follow any one of the following** sections to setup a Kubernetes cluster.
 
-## Setup with Kind Cluster
+## 2.1.1) Setup with Kind Cluster
 
 ### Prechecks
 Make sure kind is installed
@@ -32,7 +32,7 @@ Note: Kind will create an entry in the kubeconfig file and set the context to th
 
 Detailed Reference: https://kind.sigs.k8s.io/docs/user/quick-start/#creating-a-cluster
 
-## Setup with Docker Desktop
+## 2.1.2) Setup with Docker Desktop
 Docker Desktop includes a standalone Kubernetes server and client, as well as Docker CLI integration that runs on your machine.
 
 ### Enable kubernetes
@@ -56,7 +56,7 @@ kubectl config use-context docker-desktop
 
 Detailed Reference: https://docs.docker.com/desktop/kubernetes/
 
-## Check Access to kubernetes
+## 2.2) Check Access to kubernetes
 
 Kind will run a k8s cluster with docker. You can check the nodes with
 ```bash
