@@ -4,7 +4,7 @@ In this step, we will spin up couple of cosmos chains and relayers between them.
 
 By the end of this tutorial you should be able to have osmosis and gaia chain running on your machine.
 
-## Setup Starship Helm charts
+## 3.1) Setup Starship Helm charts
 We use helm as the package manager for starship.
 
 Run
@@ -14,7 +14,7 @@ helm repo update
 helm search repo starship/devnet --version 0.1.31
 ```
 
-## Define the infrastructure
+## 3.2) Define the desired infrastructure
 We will now define the infrastructure for our starship, specify the chains and relayers run
 between them.
 
@@ -22,7 +22,8 @@ We will run:
 * Osmosis chain (single validator)
 * Cosmos hub chain (single validator)
 * Hermes relayer between osmosis and cosmos chain
-* Ping Pub explorer for the chains
+    * Opens transfer channel between osmosis and cosmos chain
+* Ping Pub explorer for the chains (experimental feature)
 
 Create a directory to play around in
 ```bash
@@ -59,15 +60,20 @@ explorer:
   enabled: true
   ports:
     rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
 ```
 
-Above configuration would use around 3 CPUs and 4GB of RAM.
-If you are constanstrained on resources, checkout the next step for `tiny-starship.yaml`
+Above configuration would use around 4 CPUs and 4GB of RAM.
+If you are constanstrained on resources, checkout the next step for [`tiny-starship.yaml`](https://github.com/cosmology-tech/starship/blob/main/examples/getting-started/configs/tiny-starship.yaml)
 
 Documentaion has more details on the configuration options and how to reduce the resource usage.
 For the tutorial we will keep it simple.
 
-## Spin up the infrastructure
+## 3.3) Spin up the infrastructure
 Spin up the infrastructure with
 ```bash
 helm install -f starship.yaml tutorial starship/devnet --version 0.1.31 --wait --timeout 20m
@@ -90,43 +96,3 @@ kubectl get pods -w
 
 You would need to wait for the pods to be in `Running` state.
 This can take upto 2-5 minutes, depending on the underlying machine.
-
-## Connect to the cluster
-Once the pods are in `Running` state, you can port forward all the nodes to local host with
-```bash
-cd getting-started/
-
-# Download the port-forward script
-curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/port-forward.sh > port-forward.sh
-# Make it executable
-chmod +x port-forward.sh
-# Run it with the config file
-./port-forward.sh --config=starship.yaml
-```
-
-This will forward the `ports` of the nodes in the `starship.yaml` to your local machine.
-
-## Interact with the chains
-You can then interact with the chain on localhost at
-* Osmosis: http://localhost:26653/status
-* Cosmos: http://localhost:26657/status
-
-And open up the explorer at http://localhost:8080
-
-## Cleanup
-Once you are done with playing around, cleanup the resources with
-
-```bash
-# delete helm chart
-helm delete tutorial
-
-# cleanup port forwarding
-pkill -f "port-forward"
-```
-
-Remove kind cluster (if used) with
-```bash
-kind delete clusters starship
-```
-
-If you are using Docker Desktop for kubernetes cluster, please Disable it in Settings, Kubernetes

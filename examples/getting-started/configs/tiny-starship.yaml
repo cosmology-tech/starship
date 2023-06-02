@@ -41,20 +41,17 @@ relayers:
         cpu: "0.1"
         memory: "100M"
 
-explorer:
+registry:
   enabled: true
   ports:
-    rest: 8080
-  # Explorer is heavy on resources, specially the ram (for now)
-  # If someone has even less resources, it might make sense to disable
-  # explorer itself
+    rest: 8081
   resources:
     limits:
-      cpu: "0.5"
-      memory: "2Gi"
+      cpu: "0.1"
+      memory: "100M"
     requests:
-      cpu: "0.5"
-      memory: "2Gi"
+      cpu: "0.1"
+      memory: "100M"
 
 # configure default resources
 resources:
