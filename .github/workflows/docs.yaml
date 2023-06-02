@@ -16,6 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.4.0
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -33,10 +38,10 @@ jobs:
         shell: bash
 
       - name: Dependencies
-        run: cd docs && yarn
+        run: cd docs/ && yarn
 
       - name: Build docs
-        run: cd docs && yarn export
+        run: cd docs/ && yarn run export
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
