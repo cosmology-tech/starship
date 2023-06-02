@@ -1,26 +1,45 @@
 name: Docs
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to deploy'
-        required: true
-        default: 'latest'
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    container:
-      image: docker.io/squidfunk/mkdocs-material
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Deploy mkdocs to GitHub Pages
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DOCS_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOCS_AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Install AWS CLI v2
         run: |
-          git config --global --add safe.directory /__w/starship/starship
-          cd docs
-          mkdocs gh-deploy --force --no-history
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+          unzip -q /tmp/awscliv2.zip -d /tmp
+          rm /tmp/awscliv2.zip
+          sudo /tmp/aws/install --update
+          rm -rf /tmp/aws/
+        shell: bash
+
+      - name: Dependencies
+        run: cd docs && yarn
+
+      - name: Build docs
+        run: cd docs && yarn export
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws s3 sync out/ s3://starship.cosmology.tech
+          aws cloudfront create-invalidation --distribution-id E1LIY8AZD4EEQD --paths "/*"
