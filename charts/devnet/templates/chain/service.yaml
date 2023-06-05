@@ -20,6 +20,10 @@ spec:
       port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
       targetPort: {{ $.Values.exposer.ports.rest | default 8081 }}
+    - name: faucet
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
   selector:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 ---
