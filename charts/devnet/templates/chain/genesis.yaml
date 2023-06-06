@@ -177,13 +177,13 @@ spec:
             - mountPath: /configs
               name: addresses
         - name: faucet
-          image: anmol1696/cosmjs-faucet:latest
+          image: {{ $.Values.faucet.image }}
           imagePullPolicy: Always
           env:
             - name: FAUCET_CONCURRENCY
               value: "10"
             - name: FAUCET_PORT
-              value: "8000"
+              value: "{{ $.Values.faucet.ports.rest }}"
             - name: FAUCET_MEMO
               value: "faucet txn"
             - name: FAUCET_GAS_PRICE
@@ -212,7 +212,7 @@ spec:
               do
                   var="FAUCET_CREDIT_AMOUNT_$(printf '%s\n' ${coin//[[:digit:]]/} | tr '[:lower:]' '[:upper:]')"
                   amt="${coin//[!0-9]/}"
-                  export $var=$((amt/100000))
+                  export $var=$((amt/10000))
               done
 
               export FAUCET_PATH_PATTERN="${HD_PATH:0:$((${#HD_PATH}-1))}a"
@@ -226,11 +226,13 @@ spec:
           volumeMounts:
             - mountPath: /configs
               name: addresses
+          resources:
+{{ toYaml $.Values.faucet.resources | nindent 12 }}
           readinessProbe:
             httpGet:
               path: /status
               port: 8000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 10
       volumes:
         - name: node

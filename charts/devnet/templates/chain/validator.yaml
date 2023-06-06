@@ -111,6 +111,13 @@ spec:
               jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
               jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
 
+              VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
+              echo "Transfer tokens to address $VAL_ADDR"
+              curl --header "Content-Type: application/json" \
+                --request POST \
+                --data '{"denom":"'"$DENOM"'","address":"'"$VAL_ADDR"'"}' \
+                http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit
+
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json

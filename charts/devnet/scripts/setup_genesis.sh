@@ -11,19 +11,10 @@ set -eu
 
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $CHAIN_ID --chain-id $CHAIN_ID --recover
 
-# Add keys to keyring and self deletegate inital coins
-for type in $(jq -r ". | keys[]" $KEYS_CONFIG)
-do
-  for ((i=0; i<$(jq -r ".$type | length" $KEYS_CONFIG); i++))
-  do
-    echo "Adding key...." $(jq -r ".$type[$i].name" $KEYS_CONFIG)
-    jq -r ".$type[$i].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".$type[$i].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-    $CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .$type[$i].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
-  done
-done
-
-NUM_KEYS=$($CHAIN_BIN keys list --keyring-backend test --output json | jq -r ". | length")
-echo "Number of keys added to keyring: $NUM_KEYS"
+# Add genesis keys to the keyring and self delegate initial coins
+echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
+jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
 echo "Creating gentx..."
 $CHAIN_BIN gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 5000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID

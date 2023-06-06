@@ -16,6 +16,7 @@ function stop_port_forward() {
   for p in $PIDS; do
     kill -15 $p
   done
+  sleep 2
 }
 
 # Default values

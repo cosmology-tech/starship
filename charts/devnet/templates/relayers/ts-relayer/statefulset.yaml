@@ -45,6 +45,10 @@ spec:
               value: /root/.ibc-setup
             - name: KEYS_CONFIG
               value: /keys/keys.json
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           command:
             - bash
             - "-c"
@@ -60,6 +64,22 @@ spec:
               sed -i -e "s/<SRC>/$SRC_CHAIN/g" $RELAYER_DIR/app.yaml
               sed -i -e "s/<DEST>/$DEST_CHAIN/g" $RELAYER_DIR/app.yaml
               sed -i -e "s/<MNEMONIC>/$MNEMONIC/g" $RELAYER_DIR/app.yaml
+
+              {{- range $i, $chain := $relayer.chains }}
+              {{- range $fullchain := $.Values.chains }}
+              {{- if eq $fullchain.name $chain }}
+              {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
+              {{ $fullchain = merge $fullchain $defaultChain }}
+              DENOM="{{ $fullchain.denom }}"
+              RLY_ADDR=$(ibc-setup keys list | grep "{{ $fullchain.name }}" | awk '{print $2}')
+              echo "Transfer funds to address $RLY_ADDR"
+              curl --header "Content-Type: application/json" \
+                --request POST \
+                --data '{"denom":"'"$DENOM"'","address":"'"$RLY_ADDR"'"}' \
+                http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              {{- end }}
+              {{- end }}
+              {{- end }}
 
               if [ $RLY_INDEX -eq 0 ]; then
                 echo "Setting up default ics20 channel"

@@ -41,6 +41,10 @@ spec:
               value: /keys/keys.json
             - name: RELAYER_DIR
               value: /root/.hermes
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           command:
             - bash
             - "-c"
@@ -57,14 +61,21 @@ spec:
               {{- range $i, $chain := $relayer.chains }}
               {{- range $fullchain := $.Values.chains }}
               {{- if eq $fullchain.name $chain }}
+              {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
+              {{ $fullchain = merge $fullchain $defaultChain }}
               echo "Creating key for {{ $chain }}..."
               hermes keys add \
                 --chain {{ $chain }} \
                 --mnemonic-file $RELAYER_DIR/mnemonic.txt \
                 --key-name {{ $chain }} \
-                {{- with index $.Values.defaultChains $fullchain.type }}
-                --hd-path {{ .hdPath | quote }}
-                {{- end }}
+                --hd-path {{ $fullchain.hdPath | quote }}
+              DENOM="{{ $fullchain.denom }}"
+              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -n +2 | jq -r '.result."{{ $chain }}".account')
+              echo "Transfer funds to address $RLY_ADDR"
+              curl --header "Content-Type: application/json" \
+                --request POST \
+                --data '{"denom":"'"$DENOM"'","address":"'"$RLY_ADDR"'"}' \
+                http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
               {{- end }}
               {{- end }}
               {{- end }}

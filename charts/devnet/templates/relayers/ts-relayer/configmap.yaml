@@ -29,7 +29,7 @@ data:
         # Bech32 prefix for addresses
         prefix: {{ $fullchain.prefix }}
         # This determines the gas payments we make (and defines the fee token)
-        gas_price: 0.25{{ $fullchain.denom }}
+        gas_price: 0.025{{ $fullchain.denom }}
         # The path we use to derive the private key from the mnemonic
         # Note: The hd paths shown have no meaningful relationship to the existing chains.
         # It is recommended practice to use a different hd_path than those commonly used for user accounts.
