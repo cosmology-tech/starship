@@ -107,7 +107,7 @@ while [ $# -gt 0 ]; do
       shift # past argument
       ;;
     -*|--*)
-      echo "Unknown option $i"
+      echo "Unknown option $1"
       exit 1
       ;;
     *)

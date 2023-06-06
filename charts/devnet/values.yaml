@@ -41,6 +41,18 @@ exposer:
       cpu: "0.2"
       memory: "200M"
 
+faucet:
+  image: anmol1696/cosmjs-faucet:latest
+  ports:
+    rest: 8000
+  resources:
+    limits:
+      cpu: "0.2"
+      memory: "200M"
+    requests:
+      cpu: "0.2"
+      memory: "200M"
+
 # Chain timeouts
 timeouts:
   time_iota_ms: 10
@@ -206,10 +218,6 @@ explorer:
     requests:
       cpu: "1"
       memory: "2Gi"
-
-
-faucet:
-  enabled: false
 
 registry:
   enabled: false
