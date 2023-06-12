@@ -1,0 +1,27 @@
+chains:
+  - name: osmosis
+    base: ghcr.io/strangelove-ventures/heighliner/osmosis
+    tags:
+      - v15.1.2
+      - v15.1.2-wasmvm1.1.2
+      - v15.1.0
+      - v15.0.0
+      - v14.0.1
+      - v13.1.2
+  - name: gaia
+    base: ghcr.io/strangelove-ventures/heighliner/gaia
+    tags:
+      - v10.0.1
+      - v9.1.1
+      - v10.0.0
+      - v9.1.0
+      - v9.0.3
+      - v8.0.0
+  - name: stride
+    base: ghcr.io/strangelove-ventures/heighliner/stride
+    tags:
+      - v9.2.1
+      - v9.1.1
+      - v9.0.1
+      - v9.0.0
+      - v8.0.0
