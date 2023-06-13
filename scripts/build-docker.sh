@@ -29,25 +29,31 @@ function is_directory {
 docker_process_build() {
   local type=$1
   local process=$2
-  local push_image=$3
-  local push_latest=$4
+  local version=$3
+  local push_image=$4
+  local push_latest=$5
 
-  local tag=latest
+  if [[ "$type" == "chains" ]]; then
+    color red "we dont build docker image anymore for chains from this script"
+    exit 1
+  fi
+
+  local base=$(yq -r ".base" $DOCKER_DIR/$type/$process/versions.yaml)
+  local tag=${version##*/}
 
   if ! is_directory "$DOCKER_DIR/$type/$process"; then
     color red "$DOCKER_DIR/$type/$process is not a valid directory, please make sure inputs are correct"
     exit 1
   fi
 
-  # Set tag as CHAIN_VERSION for all chains
-  if [[ "$type" == "chains" ]]; then
-    local tag=$(cat $DOCKER_DIR/$type/$process/Dockerfile | grep -oP 'CHAIN_VERSION=\$\{CHAIN_VERSION:-"\K[0-9.]+(?="})' | cut -d '"' -f1 | head -1)
-  fi
-
   # Build docker image if push-only is not set
   if [[ "$push_image" != "push-only" ]]; then
     color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
-    docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$process:$tag" . -f $DOCKER_DIR/$type/$process/Dockerfile
+    docker buildx build --platform linux/amd64 \
+      -t "$DOCKER_REPO/$process:$tag" . \
+      --build-arg BASE_IMAGE=$base \
+      --build-arg VERSION=$version \
+      -f $DOCKER_DIR/$type/$process/Dockerfile
     echo "$DOCKER_REPO/$process:$tag"
   fi
 
@@ -65,13 +71,23 @@ docker_process_build() {
   fi
 }
 
+build_all_versions() {
+  local type=$1
+  local process=$2
+  versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
+  for version in versions; do
+    echo "Building for $type/$process:$version"
+    docker_process_build $type $process $version ${@:4}
+  done
+}
+
 build_all_process() {
   local type=$1
   for process in $DOCKER_DIR/$type/*/; do
     process="${process%*/}"
     process="${process##*/}"
     echo "Building for $type/$process"
-    docker_process_build $type $process ${@:3}
+    build_all_versions $type $process ${@:4}
   done
 }
 
@@ -79,8 +95,12 @@ build_all_types() {
   for type in $DOCKER_DIR/*/; do
     type="${type%*/}"
     type="${type##*/}"
+    if [[ "$type" == "chains" ]]; then
+      color red "we dont build docker image anymore for chains from this script"
+      continue
+    fi
     echo "Building for all $type"
-    build_all_process $type "all" ${@:3}
+    build_all_process $type "all" ${@:4}
   done
 }
 
@@ -92,6 +112,10 @@ while [ $# -gt 0 ]; do
       ;;
     -p|--process)
       PROCESS="$2"
+      shift 2 # past argument
+      ;;
+    -v|--version)
+      VERSION="$2"
       shift 2 # past argument
       ;;
     --push)
@@ -116,13 +140,13 @@ while [ $# -gt 0 ]; do
 done
 
 if [[ $TYPE == "all" ]]; then
-  build_all_types "all" "all" $PUSH $PUSH_LATEST
+  build_all_types "all" "all" "all" $PUSH $PUSH_LATEST
   exit 0
 fi
 
 if [[ $PROCESS == "all" ]]; then
-  build_all_process $TYPE "all" $PUSH $PUSH_LATEST
+  build_all_process $TYPE "all" "all" $PUSH $PUSH_LATEST
   exit 0
 fi
 
-docker_process_build $TYPE $PROCESS $PUSH $PUSH_LATEST
+docker_process_build $TYPE $PROCESS $VERSION $PUSH $PUSH_LATEST

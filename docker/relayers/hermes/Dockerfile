@@ -1,4 +1,6 @@
-FROM informalsystems/hermes:1.1.0
+ARG BASE_IMAGE
+ARG VERSION=1.5.1
+FROM ${BASE_IMAGE}:${VERSION}
 
 USER root
 

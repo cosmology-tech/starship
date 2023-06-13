@@ -1,4 +1,6 @@
-FROM confio/faucet:0.29.0
+ARG BASE_IMAGE
+ARG VERSION=0.29.0
+FROM ${BASE_IMAGE}:${VERSION}
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed

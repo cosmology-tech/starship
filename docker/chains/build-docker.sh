@@ -21,7 +21,7 @@ build_chain_tag() {
   local tag=$2
   local push_image=$3
 
-  local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" chains.yaml)
+  local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" versions.yaml)
 
   if [[ "$push_image" != "push-only" ]]; then
     color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
@@ -40,7 +40,7 @@ build_all_tags() {
   local push_image=$2
 
   # Get all tags for the chain
-  local tags=$(yq -r ".chains[] | select(.name==\"$chain\") | .tags[]" chains.yaml)
+  local tags=$(yq -r ".chains[] | select(.name==\"$chain\") | .tags[]" versions.yaml)
 
   # Build and push all tags
   for tag in $tags; do
@@ -52,7 +52,7 @@ build_all_chains() {
   local push_image=$1
 
   # Get all chains
-  local chains=$(yq -r ".chains[].name" chains.yaml)
+  local chains=$(yq -r ".chains[].name" versions.yaml)
 
   # Build and push all chains
   for chain in $chains; do

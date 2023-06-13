@@ -1,0 +1,3 @@
+base: confio/faucet
+versions:
+  - 0.29.0

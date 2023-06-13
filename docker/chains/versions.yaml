@@ -1,0 +1,254 @@
+chains:
+  - name: osmosis
+    base: ghcr.io/strangelove-ventures/heighliner/osmosis
+    tags:
+      - v15.1.2
+      - v15.1.2-wasmvm1.1.2
+      - v15.1.0
+      - v15.1.0-wasmvm1.1.2
+      - v15.0.0
+      - v14.0.1
+      - v14.0.0
+      - v13.1.2
+      - v13.1.0
+      - v13.0.0
+      - v12.3.0
+      - v12.2.1
+      - v12.2.0
+      - v12.1.0
+      - v12.0.0
+      - v11.0.1
+      - v11.0.0
+      - v10.1.1
+      - v10.1.0
+      - v10.0.0
+      - v9.0.0
+      - v8.0.0
+      - v7.3.0
+      - v7.2.1
+      - v7.2.0
+      - v7.1.0
+      - v7.0.2
+      - v7.0.1
+      - v7.0.0
+  - name: gaia
+    base: ghcr.io/strangelove-ventures/heighliner/gaia
+    tags:
+      - v10.0.1
+      - v9.1.1
+      - v10.0.0
+      - v9.1.0
+      - v9.0.3
+      - v9.0.0
+      - v8.0.0
+      - v8.0.1
+      - v7.1.1
+      - v7.1.0
+      - v7.0.3
+      - v7.0.2
+      - v7.0.1
+      - v7.0.0
+      - v6.0.3
+      - v6.0.4
+      - v6.0.2
+      - v6.0.0
+  - name: stride
+    base: ghcr.io/strangelove-ventures/heighliner/stride
+    tags:
+      - v9.2.1
+      - v9.1.1
+      - v9.0.1
+      - v9.0.0
+      - v8.0.0
+      - v7.0.0
+      - v6.0.0
+      - v5.1.1
+      - v5.0.0
+      - v4.0.3
+  - name: injective
+    base: ghcr.io/strangelove-ventures/heighliner/injective
+    tags:
+      - v1.11-1685225746
+      - v1.10-1678709842
+      - v1.9.0-1673970775
+      - v1.8.0-1668679102
+      - v1.7.0-1666607351
+      - v1.7.0-1665417543
+      - v1.7.0-1661881062
+      - v1.6.0-1657048292
+  - name: ics
+    base: ghcr.io/strangelove-ventures/heighliner/ics
+    tags:
+      - latest
+      - v2.0.0-rc1
+      - v1.2.0-multiden
+      - v2.0.0-rc0
+      - v1.2.0-multiden-rc0
+      - v1.1.0-multiden
+      - v1.2.1
+      - v1.1.1
+      - v1.2.0
+      - v1.1.0
+      - v1.0.0
+  - name: cronos
+    base: ghcr.io/strangelove-ventures/heighliner/cronos
+    tags:
+      - latest
+      - v1.0.9
+      - v1.0.8
+      - v1.0.7
+      - v1.0.6
+      - v1.0.5
+      - v1.0.4
+      - v1.0.3
+      - v1.0.2
+      - v1.0.1
+      - v1.0.0
+  - name: cryptoorgchain
+    base: ghcr.io/strangelove-ventures/heighliner/cryptoorgchain
+    tags:
+      - latest
+      - v4.1.2-croeseid
+      - v4.1.2
+      - v4.1.0
+      - v4.0.1
+  - name: evmos
+    base: ghcr.io/strangelove-ventures/heighliner/evmos
+    tags:
+      - latest
+      - v12.1.5
+      - v12.1.4
+      - v12.1.3
+      - v12.1.2
+      - v12.1.1
+      - v12.1.0
+      - v12.0.0
+      - v11.0.2
+      - v11.0.1
+      - v11.0.0
+      - v10.0.1
+      - v10.0.0
+      - v9.1.0
+      - v9.0.0
+      - v8.2.3
+      - v8.2.2
+      - v8.2.0
+      - v8.1.1
+      - v8.1.0
+      - v8.0.0
+  - name: juno
+    base: ghcr.io/strangelove-ventures/heighliner/juno
+    tags:
+      - latest
+      - v15.0.0
+      - v14.1.0
+      - v14.0.0
+      - v13.0.1
+      - v13.0.0
+      - v12.0.0
+      - v11.0.3
+      - v11.0.0
+      - v10.1.0
+      - v10.0.1
+      - v10.0.2
+      - v10.0.0
+      - v9.0.0
+      - v8.0.0
+  - name: persistence
+    base: ghcr.io/strangelove-ventures/heighliner/persistence
+    tags:
+      - v0.2.3
+      - v0.2.2
+      - v0.1.2
+      - v0.1.3
+      - v0.2.1
+  - name: regen
+    base: ghcr.io/strangelove-ventures/heighliner/regen
+    tags:
+      - latest
+      - v5.1.2
+      - v5.1.1
+      - v5.1.0
+      - v5.0.0
+      - v4.1.5
+      - v4.1.4
+      - v4.1.3
+      - v4.1.2
+      - v4.1.1
+      - v4.0.1
+      - v4.0.0
+      - v3.0.0
+  - name: quasar
+    base: ghcr.io/strangelove-ventures/heighliner/quasar
+    tags:
+      - latest
+      - v0.1.1
+      - v0.1.0
+  - name: quicksilver
+    base: ghcr.io/strangelove-ventures/heighliner/quicksilver
+    tags:
+      - latest
+      - v0.6.6
+  - name: sei
+    base: ghcr.io/strangelove-ventures/heighliner/sei
+    tags:
+      - latest
+      - 2.0.46beta
+      - 2.0.45beta
+      - 2.0.44beta
+      - 2.0.43beta
+      - 2.0.42beta
+      - 2.0.41beta
+      - 2.0.40beta
+  - name: sommelier
+    base: ghcr.io/strangelove-ventures/heighliner/sommelier
+    tags:
+      - latest
+      - v6.0.0
+      - v5.0.0
+      - v4.0.3
+      - v4.0.2
+      - v4.0.1
+      - v3.1.1
+      - v3.1.0
+      - v4.0.0
+  - name: stargaze
+    base: ghcr.io/strangelove-ventures/heighliner/stargaze
+    tags:
+      - latest
+      - v10.0.1
+      - v10.0.0
+      - v9.1.0
+      - v9.0.1
+      - v9.0.0
+      - v8.1.0
+      - v8.0.0
+  - name: tendermint
+    base: ghcr.io/strangelove-ventures/heighliner/tendermint
+    tags:
+      - latest
+      - v0.37.0-rc2
+      - v0.34.24
+      - v0.34.23
+      - v0.37.0-rc1
+      - v0.34.22
+      - v0.35.9
+      - v0.34.21
+      - v0.34.20
+      - v0.34.19
+      - v0.35.8
+      - v0.35.7
+      - v0.35.6
+      - v0.35.5
+      - v0.35.4
+      - v0.35.3
+      - v0.35.0
+  - name: umee
+    base: ghcr.io/strangelove-ventures/heighliner/umee
+    tags:
+      - latest
+      - v3.1.0
+      - v3.0.3
+      - v3.0.2
+      - v3.0.1
+      - v3.0.0
