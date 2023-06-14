@@ -14,6 +14,9 @@ jobs:
   build-push-types:
     runs-on: ubuntu-latest
 
+    permissions:
+      packages: write
+
     # subdirs of docker/ directory to build
     strategy:
       matrix:
@@ -46,6 +49,9 @@ jobs:
 
   build-push-chains:
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
 
     env:
       DOCKER_REPO: ghcr.io/cosmology-tech/starship
