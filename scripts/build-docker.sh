@@ -38,7 +38,10 @@ docker_process_build() {
     exit 1
   fi
 
-  local base=$(yq -r ".base" $DOCKER_DIR/$type/$process/versions.yaml)
+  local base=""
+  if [ -f "$DOCKER_DIR/$type/$process/versions.yaml" ]; then
+    base=$(yq -r ".base" $DOCKER_DIR/$type/$process/versions.yaml)
+  fi
   local tag=${version##*/}
 
   if ! is_directory "$DOCKER_DIR/$type/$process"; then
@@ -56,12 +59,16 @@ docker_process_build() {
   # Build docker image if push-only is not set
   if [[ "$push_image" != "push-only" ]]; then
     color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
-    docker buildx build --platform linux/amd64 \
-      -t "$DOCKER_REPO/$process:$tag" . \
-      --build-arg BASE_IMAGE=$base \
-      --build-arg VERSION=$version \
-      -f $DOCKER_DIR/$type/$process/Dockerfile \
-      $buildx_args
+    for n in {1..3}; do
+      docker buildx build --platform linux/amd64 \
+        -t "$DOCKER_REPO/$process:$tag" . \
+        --build-arg BASE_IMAGE=$base \
+        --build-arg VERSION=$version \
+        -f $DOCKER_DIR/$type/$process/Dockerfile \
+        $buildx_args && break
+      color red "failed to build docker image, retrying in 5 seconds, retry: $n"
+      sleep 5
+    done
     echo "$DOCKER_REPO/$process:$tag"
   fi
 
@@ -76,8 +83,10 @@ docker_process_build() {
 build_all_versions() {
   local type=$1
   local process=$2
-  versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
-  [ -z "$versions" ] && versions=[ latest ]
+  versions=[ latest ]
+  if [ -f "$DOCKER_DIR/$type/$process/versions.yaml" ]; then
+    versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
+  fi
   for version in $versions; do
     echo "Building for $type/$process:$version"
     docker_process_build $type $process $version ${@:4}
