@@ -77,6 +77,7 @@ build_all_versions() {
   local type=$1
   local process=$2
   versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
+  [ -z "$versions" ] && versions=[ latest ]
   for version in $versions; do
     echo "Building for $type/$process:$version"
     docker_process_build $type $process $version ${@:4}
