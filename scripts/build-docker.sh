@@ -32,14 +32,14 @@ function image_tag_exists() {
 
   # Check if tag is latest, return false if it is
   if [[ "$tag" == "latest" ]]; then
-    return 1
+    return 1 # false
   fi
 
   out=$(docker pull $image:$tag)
   if [[ $? -eq 0 ]]; then
-    return 0
+    return 0 # true
   else
-    return 1
+    return 1 # false
   fi
 }
 
@@ -70,7 +70,7 @@ docker_process_build() {
   local buildx_args=""
   if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
     if image_tag_exists $DOCKER_REPO/$process $tag; then
-      color yellow "image $DOCKER_REPO/$chain:$tag already exists, skipping docker build"
+      color yellow "image $DOCKER_REPO/$process:$tag already exists, skipping docker build"
       return 0
     fi
     color green "will pushing docker image $DOCKER_REPO/$process:$tag"
