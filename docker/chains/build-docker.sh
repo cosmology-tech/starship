@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# todo: change repo to cosmology
-DOCKER_REPO=anmol1696
+DOCKER_REPO=${DOCKER_REPO:anmol1696}
 # Set default values for boolean arguments
 PUSH=0
 PUSH_LATEST=0

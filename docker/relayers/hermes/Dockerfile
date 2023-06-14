@@ -1,6 +1,8 @@
 ARG BASE_IMAGE
-ARG VERSION=1.5.1
+ARG VERSION
 FROM ${BASE_IMAGE}:${VERSION}
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
 USER root
 

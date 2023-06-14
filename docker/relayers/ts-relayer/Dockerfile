@@ -1,6 +1,8 @@
 ARG BASE_IMAGE
-ARG VERSION=0.9.0
+ARG VERSION
 FROM ${BASE_IMAGE}
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed

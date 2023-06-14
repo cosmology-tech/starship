@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # todo: change repo to cosmology
-DOCKER_REPO=anmol1696
+DOCKER_REPO=${DOCKER_REPO:anmol1696}
 # Set default values for boolean arguments
 PUSH=0
 PUSH_LATEST=0
@@ -75,7 +75,7 @@ build_all_versions() {
   local type=$1
   local process=$2
   versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
-  for version in versions; do
+  for version in $versions; do
     echo "Building for $type/$process:$version"
     docker_process_build $type $process $version ${@:4}
   done
@@ -87,7 +87,7 @@ build_all_process() {
     process="${process%*/}"
     process="${process##*/}"
     echo "Building for $type/$process"
-    build_all_versions $type $process ${@:4}
+    build_all_versions $type $process "all" ${@:4}
   done
 }
 
@@ -100,7 +100,7 @@ build_all_types() {
       continue
     fi
     echo "Building for all $type"
-    build_all_process $type "all" ${@:4}
+    build_all_process $type "all" "all" ${@:4}
   done
 }
 
