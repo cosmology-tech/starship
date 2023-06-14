@@ -87,7 +87,7 @@ docker_process_build() {
 build_all_versions() {
   local type=$1
   local process=$2
-  versions=[ latest ]
+  local versions=[latest]
   if [ -f "$DOCKER_DIR/$type/$process/versions.yaml" ]; then
     versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
   fi
