@@ -26,6 +26,23 @@ function is_directory {
     fi
 }
 
+function image_tag_exists() {
+  local image=$1
+  local tag=$2
+
+  # Check if tag is latest, return false if it is
+  if [[ "$tag" == "latest" ]]; then
+    return 1
+  fi
+
+  out=$(docker pull $image:$tag)
+  if [[ $? -eq 0 ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 docker_process_build() {
   local type=$1
   local process=$2
@@ -52,6 +69,10 @@ docker_process_build() {
   # Push docker image, if feature flags set
   local buildx_args=""
   if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
+    if image_tag_exists $DOCKER_REPO/$process $tag; then
+      color yellow "image $DOCKER_REPO/$chain:$tag already exists, skipping docker build"
+      return 0
+    fi
     color green "will pushing docker image $DOCKER_REPO/$process:$tag"
     buildx_args="--push"
   fi
@@ -87,7 +108,7 @@ docker_process_build() {
 build_all_versions() {
   local type=$1
   local process=$2
-  local versions=[latest]
+  local versions=(latest)
   if [ -f "$DOCKER_DIR/$type/$process/versions.yaml" ]; then
     versions=$(yq -r ".versions[]" $DOCKER_DIR/$type/$process/versions.yaml)
   fi

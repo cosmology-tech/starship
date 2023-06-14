@@ -15,6 +15,23 @@ function color() {
   printf "\033[%sm%s\033[0m\n" "$color_code" "$*"
 }
 
+function image_tag_exists() {
+  local image=$1
+  local tag=$2
+
+  # Check if tag is latest, return false if it is
+  if [[ "$tag" == "latest" ]]; then
+    return 1
+  fi
+
+  out=$(docker pull $image:$tag)
+  if [[ $? -eq 0 ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 build_chain_tag() {
   local chain=$1
   local tag=$2
@@ -25,6 +42,10 @@ build_chain_tag() {
   # Push docker image, if feature flags set
   local buildx_args=""
   if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
+    if image_tag_exists $DOCKER_REPO/$chain $tag; then
+      color yellow "image $DOCKER_REPO/$chain:$tag already exists, skipping docker build"
+      return 0
+    fi
     color green "will pushing docker image $DOCKER_REPO/$chain:$tag"
     buildx_args="--push"
   fi
@@ -44,7 +65,6 @@ build_chain_tag() {
       exit 1
     fi
   done
-
 }
 
 build_all_tags() {
