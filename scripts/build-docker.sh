@@ -68,6 +68,10 @@ docker_process_build() {
         $buildx_args && break
       color red "failed to build docker image, retrying in 5 seconds, retry: $n"
       sleep 5
+      if [[ "$n" == "3" ]]; then
+        color red "failed to build docker image, exiting"
+        exit 1
+      fi
     done
     echo "$DOCKER_REPO/$process:$tag"
   fi
