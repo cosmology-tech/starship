@@ -186,4 +186,9 @@ if [[ $PROCESS == "all" ]]; then
   exit 0
 fi
 
+if [[ $VERSION == "all" ]]; then
+  build_all_versions $TYPE $PROCESS "all" $PUSH $PUSH_LATEST
+  exit 0
+fi
+
 docker_process_build $TYPE $PROCESS $VERSION $PUSH $PUSH_LATEST
