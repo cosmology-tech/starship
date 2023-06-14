@@ -74,4 +74,4 @@ jobs:
 
       - name: Build and push all chains
         run: |
-          cd docker/chains && ./build-docker.sh --chain all --tag all --push
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push
