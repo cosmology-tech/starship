@@ -19,6 +19,8 @@ function image_tag_exists() {
   local image=$1
   local tag=$2
 
+  return 1 # false
+
   # Check if tag is latest, return false if it is
   if [[ "$tag" == "latest" ]]; then
     return 1
@@ -57,6 +59,7 @@ build_chain_tag() {
       -t "$DOCKER_REPO/$chain:$tag" \
       . -f Dockerfile \
       --build-arg BASE_IMAGE=$base \
+      --build-arg VERSION=$tag \
       $buildx_args && break
     color red "failed to build docker image, retrying in 5 seconds, retry: $n"
     sleep 5
