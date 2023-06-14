@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_REPO=${DOCKER_REPO:anmol1696}
+DOCKER_REPO=${DOCKER_REPO:=anmol1696}
 # Set default values for boolean arguments
 PUSH=0
 PUSH_LATEST=0
@@ -22,16 +22,20 @@ build_chain_tag() {
 
   local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" versions.yaml)
 
-  if [[ "$push_image" != "push-only" ]]; then
-    color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
-    docker buildx build --platform linux/amd64 -t "$DOCKER_REPO/$chain:$tag" . -f Dockerfile --build-arg BASE_IMAGE=$base
+  # Push docker image, if feature flags set
+  local buildx_args=""
+  if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
+    color green "will pushing docker image $DOCKER_REPO/$chain:$tag"
+    buildx_args="--push"
   fi
 
-  # Push docker image, if feature flags set
-  if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
-    color green "pushing docker image $DOCKER_REPO/$chain:$tag"
-    docker push "$DOCKER_REPO/$chain:$tag"
-  fi
+  color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
+  docker buildx build \
+    --platform linux/amd64 \
+    -t "$DOCKER_REPO/$chain:$tag" \
+    . -f Dockerfile \
+    --build-arg BASE_IMAGE=$base \
+    $buildx_args
 }
 
 build_all_tags() {
