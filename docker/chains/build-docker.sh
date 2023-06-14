@@ -19,8 +19,6 @@ function image_tag_exists() {
   local image=$1
   local tag=$2
 
-  return 1 # false
-
   # Check if tag is latest, return false if it is
   if [[ "$tag" == "latest" ]]; then
     return 1

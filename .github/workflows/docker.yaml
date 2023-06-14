@@ -1,13 +1,12 @@
-name: Deploy images to GHCR
+name: Docker
 
 on:
   push:
     branches:
       - main
-      - anmol/docker-chains-expansion
-#    paths:
-#      - "docker/**"
-#      - ".github/workflows/docker.yaml"
+    paths:
+      - "docker/**"
+      - ".github/workflows/docker.yaml"
   workflow_dispatch:
 
 jobs:
