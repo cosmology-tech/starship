@@ -30,12 +30,21 @@ build_chain_tag() {
   fi
 
   color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
-  docker buildx build \
-    --platform linux/amd64 \
-    -t "$DOCKER_REPO/$chain:$tag" \
-    . -f Dockerfile \
-    --build-arg BASE_IMAGE=$base \
-    $buildx_args
+  for n in {1..3}; do
+    docker buildx build \
+      --platform linux/amd64 \
+      -t "$DOCKER_REPO/$chain:$tag" \
+      . -f Dockerfile \
+      --build-arg BASE_IMAGE=$base \
+      $buildx_args && break
+    color red "failed to build docker image, retrying in 5 seconds, retry: $n"
+    sleep 5
+    if [[ "$n" == "3" ]]; then
+      color red "failed to build docker image, exiting"
+      exit 1
+    fi
+  done
+
 }
 
 build_all_tags() {
