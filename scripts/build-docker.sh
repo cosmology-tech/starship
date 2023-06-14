@@ -49,7 +49,7 @@ docker_process_build() {
   # Push docker image, if feature flags set
   local buildx_args=""
   if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
-    color green "will pushing docker image $DOCKER_REPO/$chain:$tag"
+    color green "will pushing docker image $DOCKER_REPO/$process:$tag"
     buildx_args="--push"
   fi
 
