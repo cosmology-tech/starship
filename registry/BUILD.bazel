@@ -73,10 +73,10 @@ go_image(
 container_bundle(
     name = "image_bundle",
     images = {
-        "index.docker.io/anmol1696/registry:latest": ":image",
-        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)": ":image",
-        "index.docker.io/anmol1696/registry:latest-arm64": ":image_arm64",
-        "index.docker.io/anmol1696/registry:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
+        "$(DOCKER_REPO)/registry:latest": ":image",
+        "$(DOCKER_REPO)/registry:$(DOCKER_TAG_NAME)": ":image",
+        "$(DOCKER_REPO)/registry:latest-arm64": ":image_arm64",
+        "$(DOCKER_REPO)/registry:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
     },
     tags = ["manual"],
 )
