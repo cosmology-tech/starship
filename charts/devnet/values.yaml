@@ -360,3 +360,6 @@ registry:
     requests:
       cpu: "0.2"
       memory: "200M"
+
+collector:
+  enabled: false
