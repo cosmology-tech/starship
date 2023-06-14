@@ -239,3 +239,7 @@ chains:
       - v3.0.2
       - v3.0.1
       - v3.0.0
+  - name: wasmd
+    base: ghcr.io/strangelove-ventures/heighliner/wasmd
+    tags:
+      - v0.0.1
