@@ -33,7 +33,7 @@ sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
 function get_next_line_number() {
   local txt=$1
   local file=$2
-  local line_number=$(grep -n $txt $file | cut -d: -f1)
+  local line_number=$(grep -n "$txt" $file | cut -d: -f1)
   echo $((line_number + 1))
 }
 
@@ -41,13 +41,13 @@ line_number=$(get_next_line_number "Enable defines if the API server should be e
 sed -i -e "${line_number}s/enable = false/enable = true/g" $CHAIN_DIR/config/app.toml
 
 line_number=$(get_next_line_number "Address defines the API server to listen on." $CHAIN_DIR/config/app.toml)
-sed -i -e "${line_number}s/address = \".*\"/address = \"tcp://0.0.0.0:1317\"/g" $CHAIN_DIR/config/app.toml
+sed -i -e "${line_number}s#address = \".*\"#address = \"tcp://0.0.0.0:1317\"#g" $CHAIN_DIR/config/app.toml
 
 line_number=$(get_next_line_number "Enable defines if the gRPC server should be enabled." $CHAIN_DIR/config/app.toml)
 sed -i -e "${line_number}s/enable = false/enable = true/g" $CHAIN_DIR/config/app.toml
 
 line_number=$(get_next_line_number "Address defines the gRPC server address to bind to." $CHAIN_DIR/config/app.toml)
-sed -i -e "${line_number}s/address = \".*\"/address = \"0.0.0.0:9090\"/g" $CHAIN_DIR/config/app.toml
+sed -i -e "${line_number}s#address = \".*\"#address = \"0.0.0.0:9090\"#g" $CHAIN_DIR/config/app.toml
 
 
 echo "Update consensus params in config.toml"
