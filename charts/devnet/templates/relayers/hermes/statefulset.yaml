@@ -70,7 +70,7 @@ spec:
                 --key-name {{ $chain }} \
                 --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
-              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -n +2 | jq -r '.result."{{ $chain }}".account')
+              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
               echo "Transfer funds to address $RLY_ADDR"
               curl --header "Content-Type: application/json" \
                 --request POST \
