@@ -6,6 +6,7 @@ CHAIN_ID="${CHAIN_ID:=osmosis}"
 CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
+WASM_PERMISSIONLESS="${WASM_PERMISSIONLESS:=true}"
 
 set -eu
 
