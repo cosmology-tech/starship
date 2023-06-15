@@ -44,10 +44,15 @@ spec:
         - name: explorer
           image: {{ .Values.explorer.image }}
           imagePullPolicy: Always
+          command:
+            - bash
+            - "-c"
+            - |
+              yarn serve --host 0.0.0.0 --port 8080
           resources:
 {{ toYaml .Values.explorer.resources | indent 12 }}
           volumeMounts:
-            - mountPath: /home/explorer/src/chains/mainnet
+            - mountPath: /home/explorer/chains/mainnet
               name: explorer-configs
           readinessProbe:
             tcpSocket:
