@@ -26,7 +26,7 @@ NUM_KEYS=$($CHAIN_BIN keys list --keyring-backend test --output json | jq -r ". 
 echo "Number of keys added to keyring: $NUM_KEYS"
 
 echo "Creating gentx..."
-$CHAIN_BIN gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 5000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
+$CHAIN_BIN gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 50000000000000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
 
 echo "Output of gentx"
 cat $CHAIN_DIR/config/gentx/*.json | jq
@@ -48,6 +48,11 @@ jq -r '.app_state.gov.voting_params.voting_period |= "30s"' $CHAIN_DIR/config/ge
 jq -r '.app_state.gov.tally_params.quorum |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
 jq -r '.app_state.gov.tally_params.threshold |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
 jq -r '.app_state.gov.tally_params.veto_threshold |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+
+jq -r '.app_state.epochs.epochs[0].duration |= "30s"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+jq -r '.app_state.epochs.epochs[1].duration |= "15s"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+jq -r '.app_state.epochs.epochs[2].duration |= "300s"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+jq -r '.app_state.interchainaccounts.host_genesis_state.params.allow_messages = ["/cosmos.bank.v1beta1.MsgSend", "/cosmos.bank.v1beta1.MsgMultiSend", "/cosmos.staking.v1beta1.MsgDelegate", "/cosmos.staking.v1beta1.MsgUndelegate", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress", "/ibc.applications.transfer.v1.MsgTransfer","/cosmos.staking.v1beta1.MsgUndelegate"]' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
 
 # Set wasm as permissioned or permissionless based on environment variable
 wasm_permission="Nobody"

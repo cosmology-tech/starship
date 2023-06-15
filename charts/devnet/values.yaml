@@ -15,10 +15,10 @@ resources:
   init:
     limits:
       cpu: "1"
-      memory: "1G"
+      memory: "1Gi"
     requests:
-      cpu: "0.5"
-      memory: "500M"
+      cpu: "1"
+      memory: "1Gi"
   wait:
     limits:
       cpu: "0.1"
@@ -33,8 +33,8 @@ exposer:
     rest: 8081
   resources:
     limits:
-      cpu: "0.5"
-      memory: "500M"
+      cpu: "0.2"
+      memory: "200M"
     requests:
       cpu: "0.2"
       memory: "200M"
@@ -55,12 +55,12 @@ timeouts:
 # after the chain has been initialized, get the chain to a state and then complete
 defaultChains:
   osmosis:
-    image: anmol1696/osmosis:latest
+    image: marcpt/osmosis:15.0.0-amd64
     home: /root/.osmosisd
     binary: osmosisd
     prefix: osmo
     denom: uosmo
-    coins: 100000000000000uosmo,100000000000000uion
+    coins: 100000000000000000000uosmo,100000000000000000000uion
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/osmosis-labs/osmosis
@@ -85,106 +85,105 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmos:
-    image: anmol1696/gaiad:latest
+    image: marcpt/gaia:9.1.0-perl-amd64
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
     denom: uatom
-    coins: 100000000000000stake,100000000000000uatom
+    coins: 100000000000000000000stake,100000000000000000000uatom
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
   persistencecore:
-    image: anmol1696/persistencecore:latest
-    home: /root/.persistenceCore
-    binary: persistenceCore
+    image: marcpt/persistenceone-pstake:latest-amd64
+    home: /root/.pstaked
+    binary: pstaked
     prefix: persistence
     denom: uxprt
-    coins: 100000000000000uxprt
+    coins: 100000000000000000000uxprt
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
-    repo: https://github.com/persistenceOne/persistenceCore
+    repo: https://github.com/persistenceOne/pstake-native
 
 defaultRelayers:
   ts-relayer:
     image: anmol1696/ts-relayer:latest
   hermes:
-    image: anmol1696/hermes:latest
+    image: marcpt/hermes:1.5.1-amd64
   go-relayer:
     image: anmol1696/go-relayer:latest
+  icq:
+    image: marcpt/persistenceone-icq:latest-amd64
 
-chains: []
-  # Examples running chains
-  # - name: osmosis-1
-  #   type: osmosis
-  #   numValidators: 4
-  #   upgrade:
-  #     enabled: true
-  #     # type will indicate the way in which the upgrade binaries is supposed to be handled
-  #     # can be build, docker, fetch
-  #     # build: run build scripts for various versions
-  #     # docker: copy binaries from docker images
-  #     # fetch: fetch binaries directly from github releases
-  #     type: build
-  #     genesis: v11.0.1
-  #     upgrades:
-  #       - name: v12
-  #         version: v12.2.0
-  #   ports:
-  #     rpc: 26653
-  #     rest: 1313
-  # - name: core-1
-  #   type: persistencecore
-  #   numValidators: 3
-  #   upgrade:
-  #     enabled: true
-  #     type: build
-  #     genesis: v3.2.0
-  #     upgrades:
-  #       - name: v4
-  #         version: v4.0.0
-  #   ports:
-  #     rpc: 26657
-  #     rest: 1317
-  # - name: core-2
-  #   type: persistencecore
-  #   numValidators: 3
-  #   build:
-  #     # build directive will instruct the chart to build the chain source from
-  #     # given version tag or branch name
-  #     enabled: true
-  #     source: v3.2.0
-  #   ports:
-  #     rpc: 26658
-  #     rest: 1318
-  # - name: juno-1
-  #   type: juno
-  #   numValidators: 2
-  #   ports:
-  #     rpc: 26654
-  #     rest: 1314
-  # - name: wasmd
-  #   type: wasmd
-  #   numValidators: 3
-  #   ports:
-  #     rpc: 26659
-  #     rest: 1319
+chains:
+#  Examples running chains
+   - name: gaia-1
+     type: cosmos
+     numValidators: 4
+     ports:
+       rpc: 26653
+       rest: 1313
+     resources:
+       limits:
+         cpu: "1"
+         memory: "1Gi"
+       requests:
+         cpu: "1"
+         memory: "1Gi"
+   - name: osmosis-1
+     type: osmosis
+     numValidators: 4
+     ports:
+       rpc: 26654
+       rest: 1314
+     resources:
+       limits:
+         cpu: "1"
+         memory: "1Gi"
+       requests:
+         cpu: "1"
+         memory: "1Gi"
+   - name: core-1
+     type: persistencecore
+     numValidators: 1
+     ports:
+       rpc: 26657
+       rest: 1317
+     resources:
+       limits:
+         cpu: "1"
+         memory: "1Gi"
+       requests:
+         cpu: "1"
+         memory: "1Gi"
 
 # TODO: ability to check the srcConnection and destConnection to use
-relayers: []
+relayers:
 # Example relayers, default is set to none
-#  - name: osmo-wasm
-#    type: ts-relayer
-#    replicas: 1 # these are unique replicas, currently only support a single replica
-#    chains:
-#      - osmosis-1
-#      - wasmd
-#  - name: osmo-juno
-#    type: ts-relayer
-#    replicas: 1
-#    chains:
-#      - osmosis-1
-#      - juno-1
+  - name: persistence-cosmos
+    type: icq
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - core-1
+      - gaia-1
+  - name: persistence-cosmos
+    type: hermes
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - gaia-1
+      - core-1
+  - name: persistence-osmosis
+    type: icq
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - core-1
+      - osmosis-1
+  - name: persistence-osmosis
+    type: hermes
+    replicas: 1 # these are unique replicas, currently only support a single replica
+    chains:
+      - osmosis-1
+      - core-1
 
 explorer:
   # Flag to enable explorer for cluster

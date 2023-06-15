@@ -22,7 +22,7 @@ echo "Running txn for create-validator"
 $CHAIN_BIN tx staking create-validator \
   --pubkey=$($CHAIN_BIN tendermint show-validator) \
   --moniker $VAL_NAME \
-  --amount 5000000000$DENOM \
+  --amount 50000000000000000000$DENOM \
   --keyring-backend="test" \
   --chain-id $CHAIN_ID \
   --from $VAL_NAME \

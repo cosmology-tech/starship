@@ -13,18 +13,25 @@ sed -i -e 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:26657"#g' $CHAIN_DIR/config/
 sed -i -e 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAIN_DIR/config/config.toml
 sed -i -e 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAIN_DIR/config/config.toml
 sed -i -e 's/index_all_keys = false/index_all_keys = true/g' $CHAIN_DIR/config/config.toml
+sed -i -e 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/g' $CHAIN_DIR/config/config.toml
 sed -i -e 's/seeds = ".*"/seeds = ""/g' $CHAIN_DIR/config/config.toml
 
 echo "Update client.toml file"
 sed -i -e 's#keyring-backend = "os"#keyring-backend = "test"#g' $CHAIN_DIR/config/client.toml
 sed -i -e 's#output = "text"#output = "json"#g' $CHAIN_DIR/config/client.toml
-sed -i -e 's#broadcast-mode = "sync"#broadcast-mode = "block"#g' $CHAIN_DIR/config/client.toml
+#sed -i -e 's#broadcast-mode = "sync"#broadcast-mode = "block"#g' $CHAIN_DIR/config/client.toml
 sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/client.toml
 
 echo "Update app.toml file"
+sed -i -e 's#"localhost:9090"#"0.0.0.0:9090"#g' $CHAIN_DIR/config/app.toml
+sed -i -e 's#"tcp://localhost:1317"#"tcp://0.0.0.0:1317"#g' $CHAIN_DIR/config/app.toml
+
+perl -i~ -0777 -pe 's/# Enable defines if the API server should be enabled.
+enable = false/# Enable defines if the API server should be enabled.
+enable = true/g' $CHAIN_DIR/config/app.toml
+
 sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0$DENOM\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e "s#pruning = \".*\"#pruning = \"default\"#g" $CHAIN_DIR/config/app.toml
-sed -i -z -e 's/Enable defines if the API server should be enabled.\nenable = false/Enable defines if the API server should be enabled.\nenable = true/g' $CHAIN_DIR/config/app.toml
 sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DIR/config/app.toml
 sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
 
