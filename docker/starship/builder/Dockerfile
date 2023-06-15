@@ -1,5 +1,7 @@
 FROM golang:1.19-alpine3.16
 
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+
 # Set up dependencies
 ENV PACKAGES curl unzip make git libusb-dev libc-dev bash gcc linux-headers eudev-dev python3 musl-dev
 

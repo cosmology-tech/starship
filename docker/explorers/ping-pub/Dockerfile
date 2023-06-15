@@ -1,19 +1,21 @@
-ARG CODE_VERSION
-ARG CODE_REF
+ARG BASE_IMAGE
+ARG VERSION
 
-FROM node:16
+FROM ${BASE_IMAGE}
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
 ENV CODE_NAME="explorer"
-ENV CODE_VERSION=${CODE_VERSION:-"master"}
-ENV CODE_REF=${CODE_REF:-"https://github.com/ping-pub/explorer/archive/refs/heads"}
+ENV VERSION=${VERSION:-"refs/heads/master"}
+ENV CODE_REF=${CODE_REF:-"https://github.com/ping-pub/explorer/archive"}
 
 WORKDIR /home/explorer
 
 RUN apt-get update -y && apt-get install  ca-certificates jq bash curl -y
 
 # Add source files
-ADD $CODE_REF/$CODE_VERSION.zip /tmp
-RUN cd /tmp && unzip ${CODE_VERSION}.zip && mv /tmp/${CODE_NAME}-${CODE_VERSION}/* /home/explorer
+ADD $CODE_REF/$VERSION.zip /tmp
+RUN cd /tmp && unzip ${VERSION##*/}.zip && mv /tmp/${CODE_NAME}-${VERSION##*/}/* /home/explorer
 
 RUN echo "*.js\nsrc/\n" > .eslintignore
 

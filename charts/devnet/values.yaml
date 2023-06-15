@@ -30,7 +30,7 @@ resources:
       memory: "100M"
 
 exposer:
-  image: anmol1696/exposer:20230319-e41e51f
+  image: ghcr.io/cosmology-tech/starship/exposer:20230614-7173db2
   ports:
     rest: 8081
   resources:
@@ -42,7 +42,7 @@ exposer:
       memory: "200M"
 
 faucet:
-  image: anmol1696/cosmjs-faucet:latest
+  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:0.29.0
   ports:
     rest: 8000
   resources:
@@ -69,7 +69,7 @@ timeouts:
 # after the chain has been initialized, get the chain to a state and then complete
 defaultChains:
   osmosis:
-    image: anmol1696/osmosis:latest
+    image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
     home: /root/.osmosisd
     binary: osmosisd
     prefix: osmo
@@ -79,7 +79,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/osmosis-labs/osmosis
   juno:
-    image: anmol1696/juno:latest
+    image: ghcr.io/cosmology-tech/starship/juno:v15.0.0
     home: /root/.juno
     binary: junod
     prefix: juno
@@ -99,7 +99,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmos:
-    image: anmol1696/gaiad:latest
+    image: ghcr.io/cosmology-tech/starship/gaia:v9.1.1
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
@@ -118,14 +118,142 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/persistenceOne/persistenceCore
+  stride:
+    image: ghcr.io/cosmology-tech/starship/stride:v9.2.1
+    home: /root/.stride
+    binary: strided
+    prefix: stride
+    denom: ustrd
+    coins: 100000000000000ustrd
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/Stride-Labs/stride
+  injective:
+    image: ghcr.io/cosmology-tech/starship/injective:v1.11-1685225746
+    home: /root/.injectived
+    binary: injectived
+    prefix: inj
+    denom: inj
+    coins: 100000000000000inj
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/InjectiveLabs/injective-chain-releases
+  ics:
+    image: ghcr.io/cosmology-tech/starship/ics:v0.1.0
+    home: /root/.ics
+    binary: interchain-security-pd
+    prefix: cosmos
+    denom: uatom
+    coins: 100000000000000stake,100000000000000uatom
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmos/interchain-security
+  cronos:
+    image: ghcr.io/cosmology-tech/starship/cronos:v1.0.4
+    home: /root/.cronos
+    binary: cronosd
+    prefix: crc
+    denom: basecro
+    coins: 100000000000000basecro
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/crypto-org-chain/cronos
+  cryptoorgchain:
+    image: ghcr.io/cosmology-tech/starship/cryptoorgchain:v4.1.2
+    home: /root/.cryptoorgchain
+    binary: chain-maind
+    prefix: cro
+    denom: basecro
+    coins: 100000000000000basecro
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/crypto-org-chain/chain-main
+  evmos:
+    image: ghcr.io/cosmology-tech/starship/evmos:v12.1.5
+    home: /root/.evmosd
+    binary: evmosd
+    prefix: evmos
+    denom: aevmos
+    coins: 100000000000000aevmos
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/evmos/evmos
+  regen:
+    image: ghcr.io/cosmology-tech/starship/regen:v5.0.0
+    home: /root/.regen
+    binary: regen
+    prefix: regen
+    denom: uregen
+    coins: 100000000000000uregen
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/regen-network/regen-ledger
+  quasar:
+    image: ghcr.io/cosmology-tech/starship/quasar:v0.1.1
+    home: /root/.quasarnode
+    binary: quasarnoded
+    prefix: quasar
+    denom: uqsr
+    coins: 100000000000000uqsr
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/quasar-finance/quasar-preview
+  quicksilver:
+    image: ghcr.io/cosmology-tech/starship/quicksilver:v0.6.6
+    home: /root/.quicksilverd
+    binary: quicksilverd
+    prefix: quick
+    denom: uqck
+    coins: 100000000000000uqck
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/ingenuity-build/quicksilver
+  sei:
+    image: ghcr.io/cosmology-tech/starship/sei:2.0.46beta
+    home: /root/.seid
+    binary: seid
+    prefix: sei
+    denom: usei
+    coins: 100000000000000usei
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/sei-protocol/sei-chain
+  sommelier:
+    image: ghcr.io/cosmology-tech/starship/sommelier:v6.0.0
+    home: /root/.sommelier
+    binary: sommelier
+    prefix: somm
+    denom: usomm
+    coins: 100000000000000usomm
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/PeggyJV/sommelier
+  stargaze:
+    image: ghcr.io/cosmology-tech/starship/stargaze:v10.0.1
+    home: /root/.starsd
+    binary: starsd
+    prefix: stars
+    denom: ustars
+    coins: 100000000000000ustars
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/public-awesome/stargaze
+  umee:
+    image: ghcr.io/cosmology-tech/starship/umee:v3.1.0
+    home: /root/.umee
+    binary: umeed
+    prefix: umee
+    denom: uumee
+    coins: 100000000000000uumee
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/umee-network/umee
 
 defaultRelayers:
   ts-relayer:
-    image: anmol1696/ts-relayer:latest
+    image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
   hermes:
-    image: anmol1696/hermes:latest
-  go-relayer:
-    image: anmol1696/go-relayer:latest
+    image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
 
 chains: []
   # Examples running chains
@@ -204,7 +332,7 @@ explorer:
   # Flag to enable explorer for cluster
   enabled: false
   type: ping-pub
-  image: anmol1696/explorer
+  image: ghcr.io/cosmology-tech/starship/ping-pub:6437369d84c374ee357370a219508948e605f7cc
   localhost: true
   ports:
     rest: 8080
@@ -221,7 +349,7 @@ explorer:
 
 registry:
   enabled: false
-  image: anmol1696/registry
+  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
   ports:
     rest: 6060
     grpc: 7070
@@ -235,14 +363,3 @@ registry:
 
 collector:
   enabled: false
-  image: anmol1696/collector:latest
-  localhost: true
-  ports:
-    rest: 8070
-  resources:
-    limits:
-      cpu: "0.5"
-      memory: "500M"
-    requests:
-      cpu: "0.5"
-      memory: "500M"
