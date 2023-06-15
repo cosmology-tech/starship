@@ -18,6 +18,14 @@ inputs:
     description: "AWS EKS cluster name"
     required: true
 
+outputs:
+  namespace:
+    description: "Kubernetes namespace to which helm charts were deployed"
+    value: ${{ steps.starship-action.outputs.namespace }}
+  name:
+    description: "Helm chart release name for installing helm chart"
+    value: ${{ steps.starship-action.outputs.name }}
+
 runs:
   using: composite
   steps:
@@ -85,14 +93,3 @@ runs:
           --test_env=TEST_CONFIG_FILE=${{ inputs.config-file }} \
           //tests:tests
       shell: bash
-
-    # todo: change this to be post step of the action
-    - name: Cleanup cluster
-      if: always()
-      run: |
-        helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
-        kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
-      shell: bash
-      env:
-        DEVNET_NAME: ${{ steps.starship-action.outputs.name }}
-        DEVNET_NAMESPACE: ${{ steps.starship-action.outputs.namespace }}

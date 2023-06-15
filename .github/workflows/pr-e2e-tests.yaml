@@ -42,6 +42,7 @@ jobs:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
 
       - name: Run remote e2e test
+        id: e2e-test
         uses: ./.github/actions/e2e-test
         with:
           config-file: ${{ env.CONFIG_FILE }}
@@ -74,3 +75,14 @@ jobs:
               repo: context.repo.repo,
               body: body
             })
+
+      # todo: change this to be post step of the action
+      - name: Cleanup cluster
+        if: always()
+        run: |
+          helm delete $DEVNET_NAME --debug --namespace $DEVNET_NAMESPACE --wait || true
+          kubectl delete namespace $DEVNET_NAMESPACE --wait=true || true
+        shell: bash
+        env:
+          DEVNET_NAME: ${{ steps.e2e-test.outputs.name }}
+          DEVNET_NAMESPACE: ${{ steps.e2e-test.outputs.namespace }}
