@@ -68,9 +68,7 @@ go_image(
 container_bundle(
     name = "image_bundle",
     images = {
-        "$(DOCKER_REPO)/exposer:latest": ":image",
         "$(DOCKER_REPO)/exposer:$(DOCKER_TAG_NAME)": ":image",
-        "$(DOCKER_REPO)/exposer:latest-arm64": ":image_arm64",
         "$(DOCKER_REPO)/exposer:$(DOCKER_TAG_NAME)-arm64": ":image_arm64",
     },
     tags = ["manual"],

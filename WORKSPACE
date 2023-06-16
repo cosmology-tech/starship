@@ -125,8 +125,9 @@ container_pull(
 
 container_pull(
     name = "base_linux_arm64",
-    digest = "sha256:ac49c4bee880c15e6a79811ce8893140a5086d3be69fc75a1c5cc02297c6ecdc",
+    digest = "sha256:a3bd9d59e4227b96f85d9aee90aae657917746a9b6ddbdfb3aac2ae92fe910eb",
     registry = "index.docker.io",
     repository = "anmol1696/base",
     tag = "latest-arm64",
 )
+
