@@ -7,6 +7,12 @@ on:
     paths:
       - "docker/**"
       - ".github/workflows/docker.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docker/**"
+      - ".github/workflows/docker.yaml"
   workflow_dispatch:
 
 jobs:
@@ -72,6 +78,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build chains
+        if: github.event_name == 'pull_request'
+        run: |
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all
+
       - name: Build and push all chains
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push

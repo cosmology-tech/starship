@@ -243,3 +243,12 @@ chains:
     base: ghcr.io/strangelove-ventures/heighliner/wasmd
     tags:
       - v0.0.1
+  - name: simapp
+    base: ghcr.io/strangelove-ventures/heighliner/sim
+    tags:
+      - v0.47.3
+      - v0.50.0-alpha.0
+      - v0.47.2
+      - v0.46.12
+      - v0.47.1
+      - v0.45.15
