@@ -71,11 +71,8 @@ spec:
                 --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
-              echo "Transfer funds to address $RLY_ADDR"
-              curl --header "Content-Type: application/json" \
-                --request POST \
-                --data '{"denom":"'"$DENOM"'","address":"'"$RLY_ADDR"'"}' \
-                http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer_tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
               {{- end }}
               {{- end }}
               {{- end }}
