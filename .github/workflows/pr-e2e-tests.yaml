@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        config-file: ["one-chain.yaml", "two-chain.yaml", "build-chain.yaml", "one-custom-chain.yaml"]
+        config-file: [ "one-chain.yaml", "two-chain.yaml", "build-chain.yaml", "one-custom-chain.yaml", "multi-validator.yaml" ]
       fail-fast: true
       max-parallel: 1
 
