@@ -1,13 +1,24 @@
 chains:
   - name: simapp
-    type: cosmos
-    numValidators: 1
-    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
-    home: /root/.simd
-    binary: simd
+    type: simapp
+    numValidators: 2
+    ports:
+      rest: 1317
+      rpc: 26657
+    resources:
+      limits:
+        cpu: "1"
+        memory: "2Gi"
+      requests:
+        cpu: "1"
+        memory: "2Gi"
 
 registry:
   enabled: true
+  ports:
+    rest: 8081
 
 explorer:
   enabled: true
+  ports:
+    rest: 8080

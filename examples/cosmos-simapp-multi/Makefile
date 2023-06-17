@@ -1,4 +1,4 @@
-NAME = starship-getting-started
+NAME = cosmos-simapp-multi
 FILE = configs/local.yaml
 
 HELM_REPO = starship
@@ -11,9 +11,6 @@ HELM_VERSION = v0.1.34
 
 .PHONY: setup
 setup: setup-deps setup-helm setup-kind
-
-.PHONY: start
-start: install port-forward
 
 .PHONY: stop
 stop: stop-forward delete
@@ -39,10 +36,10 @@ setup-helm:
 	helm search repo $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 install:
-	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION) --wait --debug --timeout 20m
+	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
-install-tiny:
-	$(MAKE) install FILE=$(TINY_FILE)
+install-base:
+	helm install -f $(FILE) $(NAME) ../../charts/$(HELM_CHART)
 
 delete:
 	-helm delete $(NAME)

@@ -185,7 +185,7 @@ spec:
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
                     [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
-                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
 
                     $CHAIN_BIN keys list | jq
 
