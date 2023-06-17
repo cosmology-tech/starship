@@ -48,7 +48,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build all build types
+      - name: Build
+        if: github.event_name == 'pull_request'
+        run: |
+          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
+
+      - name: Build and push
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
 
