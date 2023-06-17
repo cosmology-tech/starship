@@ -123,10 +123,6 @@ spec:
                 $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
               fi
 
-              VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
-              echo "Transfer tokens to address $VAL_ADDR"
-              bash -e /scripts/transfer_tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit
-
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
@@ -183,6 +179,10 @@ spec:
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
                     [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
+
+                    VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
+                    echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
+                    bash -e /scripts/transfer_tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
 
                     $CHAIN_BIN keys list | jq
 

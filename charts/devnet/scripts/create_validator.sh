@@ -17,12 +17,6 @@ do
   sleep 30
 done
 
-echo "Get account into for $VAL_NAME"
-VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a)
-echo "$VAL_NAME address: $VAL_ADDR"
-VAL_ACC=$($CHAIN_BIN query account $VAL_ADDR --chain-id $CHAIN_ID -o json | jq ".value.account_number")
-echo "$VAL_NAME account number: $VAL_ACC"
-
 # Run create validator tx command
 echo "Running txn for create-validator"
 $CHAIN_BIN tx staking create-validator \

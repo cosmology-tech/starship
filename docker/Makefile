@@ -14,4 +14,3 @@ docker-build-push:
 
 docker-run:
 	$(DOCKER) run --rm -it --entrypoint /bin/bash $(DOCKER_REPO_NAME)/$(PROCESS):$(DOCKER_TAG_NAME)
-
