@@ -12,7 +12,7 @@ chains:
         memory: 200M
       requests:
         cpu: "0.2"
-        memory: 500M
+        memory: 200M
 
 registry:
   enabled: true
