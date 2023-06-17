@@ -15,10 +15,10 @@ ADD $CODE_REF cosmjs.tar.gz
 RUN tar --strip-components=1 -xvf cosmjs.tar.gz
 RUN rm -rf cosmjs.tar.gz
 
-RUN apk add --update --no-cache alpine-sdk linux-headers build-base gcc libusb-dev python3 py3-pip eudev-dev
+RUN apk add --update --no-cache alpine-sdk linux-headers build-base gcc libusb-dev python3 py3-pip eudev-dev nodejs yarn
 RUN ln -sf python3 /usr/bin/python
 
-RUN yarn cache clean --all && yarn install --no-lockfile --ignore-optional && yarn run build
+RUN yarn cache clean --all && yarn install && yarn run build
 RUN (cd packages/faucet && SKIP_BUILD=1 yarn pack-node)
 
 # Use Alpine and install Node.js which is 50% smaller than the -alpine version of the node
