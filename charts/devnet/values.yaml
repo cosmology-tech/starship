@@ -42,7 +42,7 @@ exposer:
       memory: "200M"
 
 faucet:
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:0.29.0
+  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
   ports:
     rest: 8000
   resources:
@@ -272,6 +272,12 @@ chains: []
   #     upgrades:
   #       - name: v12
   #         version: v12.2.0
+  #   faucet:
+  #     # if not mentioned will use the default directive
+  #     # faucet directive will instruct the chart to deploy a certain version
+  #     # of the cosmjs-faucet with the chain. Make sure to use a version compatible
+  #     # with the chain version. Available images: https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fcosmjs-faucet
+  #     image: <faucet image to use>
   #   ports:
   #     rpc: 26653
   #     rest: 1313
