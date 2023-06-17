@@ -98,6 +98,11 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
+              if [ -f $CHAIN_DIR/config/genesis.json ]; then
+                echo "Genesis file exists, exiting init container"
+                exit 0
+              fi
+
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
               bash -e /scripts/setup_config.sh

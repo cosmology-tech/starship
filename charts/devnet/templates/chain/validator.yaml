@@ -103,13 +103,25 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
-              rm -rf $HOME_DIR
+              if [ -f $CHAIN_DIR/config/genesis.json ]; then
+                echo "Genesis file exists, exiting init container"
+                exit 0
+              fi
 
+              RECOVER=true
               VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" $KEYS_CONFIG)
+              [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX" && RECOVER=false
               echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
-              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
+              if [[ $RECOVER == "true" ]]; then
+                echo "Recover validator $VAL_NAME"
+                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
+                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
+              else
+                echo "Create validator $VAL_NAME"
+                $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
+                $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
+              fi
 
               VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
               echo "Transfer tokens to address $VAL_ADDR"
@@ -172,6 +184,7 @@ spec:
                   - |
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
+                    [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
                     $CHAIN_BIN keys list | jq
