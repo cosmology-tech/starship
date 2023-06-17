@@ -15,7 +15,7 @@ function transfer_token() {
 }
 
 echo "Try to send tokens, if failed, wait for 5 seconds and try again"
-max_tries=10
+max_tries=5
 while [[ max_tries -gt 0 ]]
 do
   status_code=$(transfer_token)
