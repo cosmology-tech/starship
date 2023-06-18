@@ -1,7 +1,7 @@
 chains:
   - name: simapp
     type: simapp
-    image: ghcr.io/strangelove-ventures/heighliner/simapp:v0.47.3
+    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
     numValidators: 20
     ports:
       rest: 1317
