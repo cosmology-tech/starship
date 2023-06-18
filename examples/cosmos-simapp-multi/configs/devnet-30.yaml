@@ -1,10 +1,24 @@
 chains:
   - name: simapp
     type: simapp
+    image: ghcr.io/strangelove-ventures/heighliner/simapp:v0.47.3
     numValidators: 30
     ports:
       rest: 1317
       rpc: 26657
+    faucet:
+      # use v0.31.0-alpha.2 cosmjs-faucet for compatibility with simapp v0.47.3
+      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0-alpha.2
+      # provide more resources to faucet since the number of validators is higher
+      # only a single faucet is spun up with the genesis node, so resources wont multiply
+      # with the number of validators
+      resources:
+        limits:
+          cpu: "0.4"
+          memory: "500M"
+        requests:
+          cpu: "0.4"
+          memory: "500M"
 
 registry:
   enabled: true
@@ -24,12 +38,3 @@ exposer:
     requests:
       cpu: "0.1"
       memory: "100M"
-
-faucet:
-    resources:
-      limits:
-        cpu: "0.4"
-        memory: "500M"
-      requests:
-        cpu: "0.4"
-        memory: "500M"

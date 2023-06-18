@@ -1,10 +1,13 @@
 chains:
   - name: simapp
     type: simapp
+    image: ghcr.io/strangelove-ventures/heighliner/simapp:v0.47.3
     numValidators: 20
     ports:
       rest: 1317
       rpc: 26657
+    faucet:
+      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0-alpha.2
 
 registry:
   enabled: true
