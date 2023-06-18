@@ -90,6 +90,8 @@ spec:
               name: relayer-config
             - mountPath: /keys
               name: keys
+            - mountPath: /scripts
+              name: scripts
           resources:
 {{ toYaml $.Values.resources.init | indent 12 }}
       containers:
@@ -125,6 +127,9 @@ spec:
         - name: keys
           configMap:
             name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
 ---
 {{- end }}
 {{- end }}

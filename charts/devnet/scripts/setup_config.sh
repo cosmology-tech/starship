@@ -20,7 +20,6 @@ sed -i -e 's/seeds = ".*"/seeds = ""/g' $CHAIN_DIR/config/config.toml
 echo "Update client.toml file"
 sed -i -e 's#keyring-backend = "os"#keyring-backend = "test"#g' $CHAIN_DIR/config/client.toml
 sed -i -e 's#output = "text"#output = "json"#g' $CHAIN_DIR/config/client.toml
-sed -i -e 's#broadcast-mode = "sync"#broadcast-mode = "block"#g' $CHAIN_DIR/config/client.toml
 sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/client.toml
 
 

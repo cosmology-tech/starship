@@ -30,7 +30,7 @@ resources:
       memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230614-7173db2
+  image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
   ports:
     rest: 8081
   resources:
@@ -108,6 +108,16 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
+  simapp:
+    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
+    home: /root/.simapp
+    binary: simd
+    prefix: cosmos
+    denom: stake
+    coins: 100000000000000stake
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmos/cosmos-sdk/tree/main/simapp
   persistencecore:
     image: anmol1696/persistencecore:latest
     home: /root/.persistenceCore

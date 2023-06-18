@@ -8,10 +8,10 @@ set -eu
 
 function transfer_token() {
   status_code=$(curl --header "Content-Type: application/json" \
-    --request POST --write-out %{http_code} --silent \
+    --request POST --write-out %{http_code} --silent --output /dev/null \
     --data '{"denom":"'"$DENOM"'","address":"'"$ADDRESS"'"}' \
     $FAUCET_URL)
-  return $status_code
+  echo $status_code
 }
 
 echo "Try to send tokens, if failed, wait for 5 seconds and try again"
@@ -23,7 +23,7 @@ do
     echo "Successfully sent tokens"
     exit 0
   fi
-  echo "Failed to send tokens. Sleeping for 10 secs. Tries left $max_tries"
+  echo "Failed to send tokens. Sleeping for 2 secs. Tries left $max_tries"
   ((max_tries--))
-  sleep 5
+  sleep 2
 done
