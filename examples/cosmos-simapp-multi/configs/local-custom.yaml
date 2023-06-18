@@ -1,8 +1,16 @@
 chains:
   - name: simapp
-    type: simapp
+    type: custom
     image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
     numValidators: 2
+    home: /root/.simapp
+    binary: simd
+    prefix: cosmos
+    denom: stake
+    coins: 100000000000000stake
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmos/cosmos-sdk/tree/main/simapp
     ports:
       rest: 1317
       rpc: 26657
