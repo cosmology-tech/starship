@@ -21,11 +21,11 @@ chains:
     # increased, pods will crash. Takes around 8 mins to spin up
     resources:
       limits:
-        cpu: "1"
-        memory: "1Gi"
+        cpu: "2"
+        memory: "2Gi"
       requests:
-        cpu: "1"
-        memory: "1Gi"
+        cpu: "2"
+        memory: "2Gi"
 
 relayers:
   - name: persistence-cosmos
