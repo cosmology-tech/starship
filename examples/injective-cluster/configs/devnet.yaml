@@ -1,0 +1,17 @@
+chains:
+  - name: injective-1
+    type: injective
+    numValidators: 20
+    ports:
+      rest: 1317
+      rpc: 26657
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
