@@ -53,7 +53,7 @@ build_chain_tag() {
   color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
   for n in {1..3}; do
     docker buildx build \
-      --platform linux/amd64 \
+      --platform linux/amd64,linux/arm64 \
       -t "$DOCKER_REPO/$chain:$tag" \
       . -f Dockerfile \
       --build-arg BASE_IMAGE=$base \
