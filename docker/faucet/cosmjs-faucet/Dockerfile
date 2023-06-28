@@ -37,4 +37,3 @@ WORKDIR /app
 EXPOSE 8000
 
 ENTRYPOINT ["/app/packages/faucet/bin/cosmos-faucet-dist"]
-

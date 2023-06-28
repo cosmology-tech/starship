@@ -20,7 +20,7 @@ RUN cd /tmp && unzip ${VERSION##*/}.zip && mv /tmp/${CODE_NAME}-${VERSION##*/}/*
 RUN echo "*.js\nsrc/\n" > .eslintignore
 
 RUN rm -rf node_modules
-RUN yarn install --frozen-lockfile
+RUN yarn install --no-lockfile
 
 EXPOSE 8080
 ENTRYPOINT ["yarn", "serve"]
