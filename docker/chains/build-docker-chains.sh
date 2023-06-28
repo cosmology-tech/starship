@@ -16,6 +16,15 @@ function color() {
   printf "\033[%sm%s\033[0m\n" "$color_code" "$*"
 }
 
+function set_docker_buildx() {
+  set +e
+  out=$(docker buildx create --name chain-builder --use > /dev/null 2>&1)
+  if [[ $? -ne 0 ]]; then
+    docker buildx use chain-builder
+  fi
+  set -e
+}
+
 function image_tag_exists() {
   local image=$1
   local tag=$2
@@ -130,6 +139,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+set_docker_buildx
 
 if [[ $CHAIN == "all" ]]; then
   build_all_chains $PUSH
