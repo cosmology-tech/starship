@@ -4,6 +4,7 @@ DOCKER_REPO=${DOCKER_REPO:=anmol1696}
 # Set default values for boolean arguments
 PUSH=0
 PUSH_LATEST=0
+FORCE=0
 
 set -euo pipefail
 
@@ -39,13 +40,17 @@ build_chain_tag() {
 
   local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" versions.yaml)
 
-  # Push docker image, if feature flags set
-  local buildx_args=""
-  if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
+  if [[ "$FORCE" -ne 1 ]]; then
     if image_tag_exists $DOCKER_REPO/$chain $tag; then
       color yellow "image $DOCKER_REPO/$chain:$tag already exists, skipping docker build"
       return 0
     fi
+    color green "image not found remote, will build docker image $DOCKER_REPO/$chain:$tag"
+  fi
+
+  # Push docker image, if feature flags set
+  local buildx_args=""
+  if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
     color green "will pushing docker image $DOCKER_REPO/$chain:$tag"
     buildx_args="--push"
   fi
@@ -110,6 +115,10 @@ while [ $# -gt 0 ]; do
       ;;
     --push-only)
       PUSH="push-only"
+      shift # past argument
+      ;;
+    --force)
+      FORCE=1
       shift # past argument
       ;;
     -*|--*)

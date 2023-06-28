@@ -104,7 +104,7 @@ spec:
               {{- end }}
 
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
-                echo "Genesis file exists, exiting init container"
+                echo "Genesis file exists, exiting early"
                 exit 0
               fi
 
@@ -122,13 +122,6 @@ spec:
                 $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
                 $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
               fi
-
-              VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
-              echo "Transfer tokens to address $VAL_ADDR"
-              curl --header "Content-Type: application/json" \
-                --request POST \
-                --data '{"denom":"'"$DENOM"'","address":"'"$VAL_ADDR"'"}' \
-                http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
@@ -185,7 +178,11 @@ spec:
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
                     [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
-                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
+
+                    VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
+                    echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
+                    bash -e /scripts/transfer_tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
 
                     $CHAIN_BIN keys list | jq
 

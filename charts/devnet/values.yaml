@@ -30,7 +30,7 @@ resources:
       memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230614-7173db2
+  image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
   ports:
     rest: 8081
   resources:
@@ -42,7 +42,7 @@ exposer:
       memory: "200M"
 
 faucet:
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:0.29.0
+  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
   ports:
     rest: 8000
   resources:
@@ -108,6 +108,16 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
+  simapp:
+    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
+    home: /root/.simapp
+    binary: simd
+    prefix: cosmos
+    denom: stake
+    coins: 100000000000000stake
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmos/cosmos-sdk/tree/main/simapp
   persistencecore:
     image: anmol1696/persistencecore:latest
     home: /root/.persistenceCore
@@ -272,6 +282,12 @@ chains: []
   #     upgrades:
   #       - name: v12
   #         version: v12.2.0
+  #   faucet:
+  #     # if not mentioned will use the default directive
+  #     # faucet directive will instruct the chart to deploy a certain version
+  #     # of the cosmjs-faucet with the chain. Make sure to use a version compatible
+  #     # with the chain version. Available images: https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fcosmjs-faucet
+  #     image: <faucet image to use>
   #   ports:
   #     rpc: 26653
   #     rest: 1313
