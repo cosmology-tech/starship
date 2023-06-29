@@ -1,0 +1,142 @@
+# Chains YAML Syntax
+
+Here we will go into details of the `chains` top level directive in the Starship config file.
+
+## `name`
+Name of the chain, this is used as the `chain-id` of the chain
+```yaml
+chains:
+- name: osmosis-1
+  ...
+- name: gaia-2
+  ...
+```
+
+## `type`
+Type of chain is a short hand to use the default key values for a chain found [here](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml#L54...#L244)
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  ...
+- name: gaia-2
+  type: cosmos
+  ...
+```
+
+One can overide the default values supported by `defaultChain` by simpliy mentioning it in the chain directive.
+Here is how one can set the docker image of the default values
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  image: ghcr.io/cosmology-tech/starship/osmosis:v15.0.0
+  ...
+```
+
+### `type: custom`
+Optionally one can define the type to `custom`, and pass all the default params directly into the chain directive. This is useful when one is
+trying setup a chain not supported in the `defaultChains`.
+```yaml
+chains:
+- name: osmosis-1
+  type: custom
+  image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
+  home: /root/.osmosisd
+  binary: osmosisd
+  prefix: osmo
+  denom: uosmo
+  coins: 100000000000000uosmo,100000000000000uion
+  hdPath: m/44'/118'/0'/0/0
+  coinType: 118
+  repo: https://github.com/osmosis-labs/osmosis
+  ...
+```
+
+## `image` (optional)
+Already mentioned above, but here we will go deeper into how the docker images are used for the chain. By default this value is taken from
+the `type` directive.
+
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  image: "<docker-image>"
+  ...
+```
+
+> One can use any docker image as long as it follows the following rules:
+> * Packages `curl,make,bash,jq,sed`
+> * Chain binaries installed in $PATH
+
+We create docker images with this [Dockerfile](https://github.com/cosmology-tech/starship/blob/main/docker/chains/Dockerfile), using Heighliner base
+images. All supported docker images can be found [here](https://github.com/orgs/cosmology-tech/packages?repo_name=starship)
+
+## `numValidators`
+Number of validators to run for the chain. It must be greater than 1, can go upto as many resources available.
+
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 2
+```
+
+> Note: The first node spun up is a `genesis` node, which spins up before all other validators. Once the genesis node starts
+> then all other validator nodes are spun up simultaneously
+
+If number of validators is more than the mnemonics available in the [`keys.json`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/configs/keys.json#L9) file
+which is 5, then other validators are created with random mnemonic on initialization.
+
+## `ports`
+Ports directive in the `chains` directive is used for `kubectl port-forward` forwarding kubernetes service ports to local host.
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 2
+  ports:
+    rest: 1317     # Rest endpoint of the Genesis validator node (most used)
+    rpc: 26657     # RPC endpoint of the genesis validator node (most used)
+    faucet: 8001   # Cosmjs faucet running next to the genesis node (most used)
+    exposer: 9090  # Exposer sidecar port (less used)
+```
+
+Avialble endpoints for extra services:
+* `exposer`: https://github.com/cosmology-tech/starship/blob/main/proto/exposer/service.proto#L15
+* `faucet`: https://github.com/cosmos/cosmjs/blob/main/packages/faucet/README.md#using-the-faucet
+
+> Note: Make sure the ports are not overlapping in the config file
+
+## `resources` (optional)
+Resource directive is something with which you can control how much resources to provide to each of the chain node.
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 1
+  resources:
+    cpu: 1       # 1 CPU
+    memory: 1Gi  # 1 GB
+```
+
+Main benifit of this directive is to closely control the resources provided for each of the validator node.
+One can provide fractional cpus and memory as per the resource constraints of the system
+
+Usually when running in the CI or loaclly you can provide partial resources like following:
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 1
+  resources:
+    cpu: "0.2"      # 0.2 CPU
+    memory: "400M"  # 0.4 GB
+```
+
+For more details on the resource directive have a look at [kubernetes resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu)
+
+> Note: If one provides less resources, the devnet will be stable for shorter timeframe. Nodes will start dying or restarting
+> We recommend to specify resources as per your requirements
+
+## `faucet` (optional)

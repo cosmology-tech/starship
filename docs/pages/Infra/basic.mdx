@@ -1,0 +1,45 @@
+# Basic Configuration
+
+In Starship one can define the infra required with a simple config file. Each of the configuration directive.
+Here is a basic example that will spin up:
+* 2 chains with 2 validators each
+* Hermes relayer between them (by default will create the IBC-transfer ports and channels)
+* Explorer instance: ping-pub with the 2 chains configuration
+* Registry service: Analogus to cosmos/chain-registry, following the same schemas
+
+```yaml
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 2
+    ports:
+      rest: 1313
+      rpc: 26653
+  - name: gaia-1
+    type: cosmos
+    numValidators: 2
+    ports:
+      rest: 1317
+      rpc: 26657
+
+relayers:
+  - name: osmos-gaia
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - gaia-1
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+```
+
+Note this is a basic configuration file. We have various other directives and operations we can perform just with
+the config file directives that we will go into details into.
