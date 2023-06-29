@@ -259,8 +259,8 @@ chains: []
   #     # type will indicate the way in which the upgrade binaries is supposed to be handled
   #     # can be build, docker, fetch
   #     # build: run build scripts for various versions
-  #     # docker: copy binaries from docker images
-  #     # fetch: fetch binaries directly from github releases
+  #     # docker (todo): copy binaries from docker images
+  #     # fetch (todo): fetch binaries directly from github releases
   #     type: build
   #     genesis: v11.0.1
   #     upgrades:

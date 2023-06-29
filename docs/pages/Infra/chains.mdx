@@ -10,6 +10,8 @@ chains:
   ...
 - name: gaia-2
   ...
+- name: juno-1
+  ...
 ```
 
 ## `type`
@@ -31,6 +33,7 @@ chains:
 - name: osmosis-1
   type: osmosis
   image: ghcr.io/cosmology-tech/starship/osmosis:v15.0.0
+  coins: 100000000000000uosmo
   ...
 ```
 
@@ -55,7 +58,7 @@ chains:
 
 ## `image` (optional)
 Already mentioned above, but here we will go deeper into how the docker images are used for the chain. By default this value is taken from
-the `type` directive.
+the `type` directive. This is the standard way of running chains at specific versions.
 
 ```yaml
 chains:
@@ -140,3 +143,57 @@ For more details on the resource directive have a look at [kubernetes resources]
 > We recommend to specify resources as per your requirements
 
 ## `faucet` (optional)
+Every genesis node runs a [cosmjs faucet](https://github.com/cosmos/cosmjs/tree/main/packages/faucet), by default
+setting for faucet [here](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml#L32...#L38) but can be
+overiden with this directive, specially for compatible cosmjs version with the chain version.
+
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 1
+  faucet:
+    image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
+    resources:
+      cpu: "0.3"
+      memory: "600M"
+```
+
+## `build` (optional)
+With the `build` directive in the chain, one can basically build chain binaries on the fly before starting the chain.
+When the directive is `enabled`, then the docker image is set to a [`runner` docker image](https://github.com/cosmology-tech/starship/blob/main/docker/starship/runner/Dockerfile)
+which is a basic alpine image with starship dependencies.
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 2
+  build:
+    enabled: true
+    source: v15.0.0  # can be a tag or a commit or a branch
+```
+We fetch the source from the `repo` defined in the `defaultChains`.
+
+If you are using the `type: custom`, then you need to specify `repo` directive, from where to get the source.
+
+## `upgrade` (optional)
+If you want to perform a software upgrade on a chain, then this directive is here help. This will not perform the chain
+upgrade, but prepare the chain nodes to be able to do an actual software upgrade.
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 2
+  upgrade:
+    enabled: true             # enable the directive
+    type: build               # type build specifies, this will be similar to the `build` directive
+    genesis: v13.0.0          # current chain version, tag, branch or commit
+    upgrades:
+      - name: v14             # upgrade proposal name
+        version: v14.0.0      # upgrade chain version, tag, branch or commit
+      - name: v15
+        version: v15.0.0-rc1  # next chain upgrade version
+```
+
+We use [cosmovisor](https://docs.cosmos.network/v0.47/tooling/cosmovisor)
+to run the validators when this directive is enabled, which allows for external software-upgrade-proposal.
