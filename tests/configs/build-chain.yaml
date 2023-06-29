@@ -20,12 +20,8 @@ chains:
     # Minimum resources required is 1 CPU and 1 GB Ram, if resources are not
     # increased, pods will crash. Takes around 8 mins to spin up
     resources:
-      limits:
-        cpu: "2"
-        memory: "2Gi"
-      requests:
-        cpu: "2"
-        memory: "2Gi"
+      cpu: "2"
+      memory: "2Gi"
 
 relayers:
   - name: persistence-cosmos

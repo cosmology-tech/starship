@@ -131,7 +131,7 @@ Usage:
       echo "Ready to start"
       exit 0
   resources:
-{{ toYaml .context.Values.resources.wait | indent 4 }}
+{{- include "getResourceObject" .context.Values.resources.wait | indent 4 }}
 {{- end }}
 
 {{/*
@@ -139,9 +139,9 @@ Returns resources for a validator
 */}}
 {{- define "devnet.node.resources" }}
 {{- if hasKey .node "resources" }}
-{{ toYaml .node.resources }}
+{{- include "getResourceObject" .node.resources }}
 {{- else }}
-{{ toYaml .context.Values.resources.node }}
+{{- include "getResourceObject" .context.Values.resources.node }}
 {{- end }}
 {{- end }}
 
@@ -178,3 +178,21 @@ Returns a comma seperated list of urls for the Exposer address
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
+
+{{/*
+Returns a resource object based on the input resource
+Usage:
+{{ include "getResourceObject" .Values.resources }}
+*/}}
+{{- define "getResourceObject" -}}
+{{- if hasKey . "cpu" }}
+limits:
+  cpu: {{ .cpu }}
+  memory: {{ .memory }}
+requests:
+  cpu: {{ .cpu }}
+  memory: {{ .memory }}
+{{- else }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}

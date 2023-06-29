@@ -178,8 +178,7 @@ spec:
             - name: EXPOSER_PRIV_VAL_FILE
               value: {{ $chain.home }}/config/priv_validator_key.json
           command: [ "/app/exposer/exposer" ]
-          resources:
-{{ toYaml $.Values.exposer.resources | nindent 12 }}
+          resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
@@ -235,8 +234,7 @@ spec:
           volumeMounts:
             - mountPath: /configs
               name: addresses
-          resources:
-{{ toYaml $faucet.resources | nindent 12 }}
+          resources: {{- include "getResourceObject" $faucet.resources | trim | nindent 12 }}
           readinessProbe:
             httpGet:
               path: /status

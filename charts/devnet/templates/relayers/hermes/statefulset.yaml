@@ -92,8 +92,7 @@ spec:
               name: keys
             - mountPath: /scripts
               name: scripts
-          resources:
-{{ toYaml $.Values.resources.init | indent 12 }}
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
       containers:
         - name: relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
