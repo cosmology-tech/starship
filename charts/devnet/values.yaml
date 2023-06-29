@@ -42,7 +42,7 @@ exposer:
       memory: "200M"
 
 faucet:
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
+  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
   ports:
     rest: 8000
   resources:
@@ -348,7 +348,7 @@ explorer:
   # Flag to enable explorer for cluster
   enabled: false
   type: ping-pub
-  image: ghcr.io/cosmology-tech/starship/ping-pub:6437369d84c374ee357370a219508948e605f7cc
+  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
   localhost: true
   ports:
     rest: 8080
