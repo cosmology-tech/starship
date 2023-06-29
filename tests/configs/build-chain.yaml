@@ -35,11 +35,6 @@ relayers:
       - core-1
       - cosmoshub-4
 
-explorer:
-  enabled: true
-  ports:
-    rest: 8080
-
 registry:
   enabled: true
   ports:
