@@ -51,12 +51,17 @@ jobs:
       - name: Build
         if: github.event_name == 'pull_request'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --force --push
+          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
 
       - name: Build and push
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push'
         run: |
           ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
+
+      - name: Force Build and Push for workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
 
   build-push-chains:
     runs-on: ubuntu-latest
@@ -87,9 +92,14 @@ jobs:
       - name: Build chains
         if: github.event_name == 'pull_request'
         run: |
-          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --force --push
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all
 
       - name: Build and push all chains
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push'
         run: |
           cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push
+
+      - name: Force Build and Push for workflow dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force
