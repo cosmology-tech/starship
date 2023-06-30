@@ -7,12 +7,8 @@ chains:
       rpc: 26653
       exposer: 38083
     resources:
-      limits:
-        cpu: "0.5"
-        memory: 500M
-      requests:
-        cpu: "0.5"
-        memory: 500M
+      cpu: "0.5"
+      memory: 500M
 
 registry:
   enabled: true
@@ -20,18 +16,10 @@ registry:
     rest: 8081
     grpc: 9091
   resources:
-    limits:
-      cpu: "0.1"
-      memory: 100M
-    requests:
-      cpu: "0.1"
-      memory: 100M
+    cpu: "0.1"
+    memory: 100M
 
 resources:
   wait:
-    limits:
-      cpu: "0.1"
-      memory: 100M
-    requests:
-      cpu: "0.1"
-      memory: 100M
+    cpu: "0.1"
+    memory: 100M

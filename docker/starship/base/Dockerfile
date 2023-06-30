@@ -1,5 +1,7 @@
 FROM alpine:3.16
 
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+
 # Set up dependencies
 ENV PACKAGES --update ca-certificates curl make bash jq sed
 

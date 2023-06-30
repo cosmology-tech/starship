@@ -1,4 +1,8 @@
-FROM node:18-alpine3.16
+ARG BASE_IMAGE
+ARG VERSION
+FROM ${BASE_IMAGE}
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed
@@ -6,7 +10,9 @@ ENV PACKAGES curl make bash jq sed
 # Install minimum necessary dependencies
 RUN apk add --no-cache $PACKAGES
 
+ENV VERSION=${VERSION}
+
 # Install the relayer
-RUN npm i -g @confio/relayer@main
+RUN npm i -g @confio/relayer@${VERSION}
 
 WORKDIR /opt

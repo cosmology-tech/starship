@@ -9,6 +9,7 @@ chains:
       faucet: 8001
   - name: cosmoshub-4
     type: cosmos
+    image: anmol1696/gaia:v10.0.1
     numValidators: 2
     ports:
       rest: 1317
@@ -25,9 +26,12 @@ relayers:
       - cosmoshub-4
 
 explorer:
-  enabled: false
+  enabled: true
   ports:
     rest: 8080
+  resources:
+    cpu: 1
+    memory: 1Gi
 
 registry:
   enabled: true

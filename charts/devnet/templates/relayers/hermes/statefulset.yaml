@@ -70,12 +70,9 @@ spec:
                 --key-name {{ $chain }} \
                 --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
-              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -n +2 | jq -r '.result."{{ $chain }}".account')
-              echo "Transfer funds to address $RLY_ADDR"
-              curl --header "Content-Type: application/json" \
-                --request POST \
-                --data '{"denom":"'"$DENOM"'","address":"'"$RLY_ADDR"'"}' \
-                http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer_tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
               {{- end }}
               {{- end }}
               {{- end }}
@@ -93,8 +90,9 @@ spec:
               name: relayer-config
             - mountPath: /keys
               name: keys
-          resources:
-{{ toYaml $.Values.resources.init | indent 12 }}
+            - mountPath: /scripts
+              name: scripts
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
       containers:
         - name: relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
@@ -128,6 +126,9 @@ spec:
         - name: keys
           configMap:
             name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
 ---
 {{- end }}
 {{- end }}

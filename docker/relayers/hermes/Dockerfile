@@ -1,4 +1,8 @@
-FROM informalsystems/hermes:1.1.0
+ARG BASE_IMAGE
+ARG VERSION
+FROM ${BASE_IMAGE}:${VERSION}
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
 USER root
 

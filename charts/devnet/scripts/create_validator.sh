@@ -23,7 +23,6 @@ $CHAIN_BIN tx staking create-validator \
   --pubkey=$($CHAIN_BIN tendermint show-validator) \
   --moniker $VAL_NAME \
   --amount 5000000000$DENOM \
-  --keyring-backend="test" \
   --chain-id $CHAIN_ID \
   --from $VAL_NAME \
   --commission-rate="0.10" \

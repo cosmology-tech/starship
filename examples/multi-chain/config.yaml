@@ -7,8 +7,8 @@ chains:
     ports:
       rest: 1313
       rpc: 26653
-  - name: core-1
-    type: persistencecore
+  - name: juno-1
+    type: juno
     numValidators: 1
     ports:
       rest: 1315

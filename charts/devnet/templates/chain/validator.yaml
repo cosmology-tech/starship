@@ -103,20 +103,25 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
-              rm -rf $HOME_DIR
+              if [ -f $CHAIN_DIR/config/genesis.json ]; then
+                echo "Genesis file exists, exiting early"
+                exit 0
+              fi
 
+              RECOVER=true
               VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" $KEYS_CONFIG)
+              [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX" && RECOVER=false
               echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
-              jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
-
-              VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
-              echo "Transfer tokens to address $VAL_ADDR"
-              curl --header "Content-Type: application/json" \
-                --request POST \
-                --data '{"denom":"'"$DENOM"'","address":"'"$VAL_ADDR"'"}' \
-                http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit
+              if [[ $RECOVER == "true" ]]; then
+                echo "Recover validator $VAL_NAME"
+                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
+                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
+              else
+                echo "Create validator $VAL_NAME"
+                $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
+                $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
+              fi
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
@@ -172,7 +177,12 @@ spec:
                   - |
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
-                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+                    [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
+                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
+
+                    VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
+                    echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
+                    bash -e /scripts/transfer_tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
 
                     $CHAIN_BIN keys list | jq
 
@@ -218,7 +228,7 @@ spec:
             - name: EXPOSER_PRIV_VAL_FILE
               value: {{ $chain.home }}/config/priv_validator_key.json
           command: [ "/app/exposer/exposer" ]
-          resources: {{- toYaml $.Values.exposer.resources | nindent 12 }}
+          resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node

@@ -51,7 +51,7 @@ spec:
               value: /opt/collector
           command: [ "collector" ]
           resources:
-{{ toYaml .Values.collector.resources | indent 12 }}
+{{- include "getResourceObject" .Values.collector.resources | indent 12 }}
           volumeMounts:
             - mountPath: /opt/collector
               name: collector

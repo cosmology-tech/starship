@@ -9,6 +9,10 @@
 {{- $build := .build | default (dict "enabled" false) -}}
 {{- $toBuild := or $build.enabled $upgrade.enabled }}
 
+# read faucet from chain values and merge with default faucet values
+{{ $faucet := get $chain "faucet" | default dict }}
+{{ $faucet = merge $faucet $.Values.faucet }}
+
 {{ $image := $chain.image }}
 {{- if $toBuild }}
 {{ $image = "anmol1696/runner:latest" }}
@@ -98,6 +102,11 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
+              if [ -f $CHAIN_DIR/config/genesis.json ]; then
+                echo "Genesis file exists, exiting init container"
+                exit 0
+              fi
+
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
               bash -e /scripts/setup_config.sh
@@ -169,21 +178,20 @@ spec:
             - name: EXPOSER_PRIV_VAL_FILE
               value: {{ $chain.home }}/config/priv_validator_key.json
           command: [ "/app/exposer/exposer" ]
-          resources:
-{{ toYaml $.Values.exposer.resources | nindent 12 }}
+          resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
               name: addresses
         - name: faucet
-          image: {{ $.Values.faucet.image }}
+          image: {{ $faucet.image }}
           imagePullPolicy: Always
           env:
             - name: FAUCET_CONCURRENCY
               value: "10"
             - name: FAUCET_PORT
-              value: "{{ $.Values.faucet.ports.rest }}"
+              value: "{{ $faucet.ports.rest }}"
             - name: FAUCET_MEMO
               value: "faucet txn"
             - name: FAUCET_GAS_PRICE
@@ -226,8 +234,7 @@ spec:
           volumeMounts:
             - mountPath: /configs
               name: addresses
-          resources:
-{{ toYaml $.Values.faucet.resources | nindent 12 }}
+          resources: {{- include "getResourceObject" $faucet.resources | trim | nindent 12 }}
           readinessProbe:
             httpGet:
               path: /status

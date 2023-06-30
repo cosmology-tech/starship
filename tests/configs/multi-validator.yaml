@@ -1,0 +1,35 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 2
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+    resources:
+      cpu: "0.2"
+      memory: 400M
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
+  resources:
+    cpu: "0.1"
+    memory: 100M
+
+resources:
+  wait:
+    cpu: "0.1"
+    memory: 100M
+
+exposer:
+  resources:
+    cpu: "0.1"
+    memory: 100M
+
+faucet:
+  resources:
+    cpu: "0.1"
+    memory: "300M"
