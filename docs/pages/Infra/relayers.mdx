@@ -1,0 +1,86 @@
+# Relayers YAML Syntax
+
+We will go into details of the `relayers` top level directive in the Starship config file.
+
+> Note: By default the `relayers` will open up a `transfer` port
+
+## `name`
+Name of the relayer, this is used as a unique identifier for the relayer.
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  ...
+```
+
+## `type`
+Type of the relayer to spin up. Currently we support:
+* [hermes](https://github.com/informalsystems/hermes)
+* [ts-relayer](https://github.com/confio/ts-relayer)
+
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  ...
+- name: ts-relayer-cosmos-juno
+  type: ts-relayer
+  ...
+```
+
+## `image` (optional)
+If one wants to use a specific version of the relayer we support,
+then it can be mentioned via this image directive.
+
+Supported version of relayers can be found:
+* [`hermes` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fhermes/versions?filters%5Bversion_type%5D=tagged)
+* [`ts-relayer` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fts-relayer/versions?filters%5Bversion_type%5D=tagged)
+
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
+  ...
+- name: ts-relayer-cosmos-juno
+  type: ts-relayer
+  image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
+  ...
+```
+
+## `replicas`
+Number of relayers to spin up. Currently we just support 1 replica for now.
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  replicas: 1
+  ...
+```
+
+## `chains`
+List of chains to connect to each other, via the Relayer.
+Must be `name` of chains defined in the `chains` directive.
+
+```yaml
+chains:
+- name: osmosis-1
+  ...
+- name: juno-2
+  ...
+- name: gaia-4
+  ...
+
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  replicas: 1
+  chains:
+  - osmosis-1
+  - juno-2
+- name: ts-relayer-osmo-gaia
+  type: ts-relayer
+  replicas: 1
+  chains:
+  - osmosis-1
+  - gaia-4
+```
