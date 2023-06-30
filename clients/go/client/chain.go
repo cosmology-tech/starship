@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"os"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
+	ibcsm "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
+	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
@@ -85,7 +87,12 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		GasPrices:      fmt.Sprintf("%f%s", registry.Fees.FeeTokens[0].HighGasPrice, registry.Fees.FeeTokens[0].Denom),
 		MinGasAmount:   10000,
 		Slip44:         int(registry.Slip44),
-		Modules:        lens.ModuleBasics,
+		Modules: append(
+			lens.ModuleBasics,
+			ibctm.AppModuleBasic{},
+			ibcsm.AppModuleBasic{},
+			// TODO: An arg can be added to add more modules here
+		),
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
