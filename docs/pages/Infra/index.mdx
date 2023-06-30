@@ -1,6 +1,9 @@
 # Configuration
 
-In Starship one can define the infra required with a simple config file. Each of the configuration directive.
+In Starship one can define the infra required with a simple config file.
+The config file one specifies is merged with the default [`values.yaml`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml)
+file before the infra is spun up. All supported directives are present in the default `values.yaml`. We will go over most used ones here.
+
 Here is a basic example that will spin up:
 * 2 chains with 2 validators each
 * Hermes relayer between them (by default will create the IBC-transfer ports and channels)

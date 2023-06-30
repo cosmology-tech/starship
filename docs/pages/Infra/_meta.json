@@ -1,4 +1,5 @@
 {
   "index": "Introduction",
-  "chains": "Chains Syntax"
+  "chains": "Chains Directive Syntax",
+  "relayers": "Relayers Directive Syntax"
 }
