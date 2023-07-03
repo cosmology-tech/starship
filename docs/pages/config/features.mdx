@@ -28,17 +28,16 @@ registry:
 ### Usage
 
 Here is a list of avialable endpoints and how to use them:
--------------------------------------------------
-Endpoint            | Returns
---------------------------------------------------
-`/chain_ids`        | List of all chain-ids in the current setup
-`/chains`           | List of all chain items
-`/chains/{chain}` | Chain schema for the given chain ids (`name` in the `chains` directive)
-`/chains/{chain}/assets` | Assets of the given chain
-`/chains/{chain}/keys` | List of mnemonics used for the setup
-`/ibc` | List all ibc info for all chains
-`/ibc/{chain_1}/{chain_2}` | IBC information between the 2 chains specified
---------------------
+
+| Endpoint                      | Returns
+| ----------------------------- |----------------------------------------------------------------------------
+| `/chain_ids`                  | List of all chain-ids in the current setup
+|`/chains`                      | List of all chain items
+| `/chains/{chain}`             | Chain schema for the given chain ids (`name` in the `chains` directive)
+| `/chains/{chain}/assets`      | Assets of the given chain
+| `/chains/{chain}/keys`        | List of mnemonics used for the setup
+| `/ibc`                        | List all ibc info for all chains
+| `/ibc/{chain_1}/{chain_2}`    | IBC information between the 2 chains specified
 
 Proto defination for the service is [here]()
 
