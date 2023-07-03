@@ -1,0 +1,71 @@
+# Feature Toggles
+
+Starship allows you to have toggles for some additional
+services to run with your infra setup. A few of them are
+mentioned bellow.
+
+## Registry
+
+Following the schema of the `cosmos/chain-registry` repos,
+if enabled this service spins up a rest api chain-registry service
+for the infra you spin up.
+
+### Syntax
+
+```yaml
+registry:
+  enabled: true  # enable registry service
+  ports:
+    rest: 8081   # localhost port for redirecting traffic
+  # Optional: resources directive, defualt cpu: 0.2, memory: 200M
+  resources:
+    cpu: 0.5
+    memory: 200M
+  # Optional: image directive, default image:ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
+  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
+```
+
+### Usage
+
+Here is a list of avialable endpoints and how to use them:
+-------------------------------------------------
+Endpoint            | Returns
+--------------------------------------------------
+`/chain_ids`        | List of all chain-ids in the current setup
+`/chains`           | List of all chain items
+`/chains/{chain}` | Chain schema for the given chain ids (`name` in the `chains` directive)
+`/chains/{chain}/assets` | Assets of the given chain
+`/chains/{chain}/keys` | List of mnemonics used for the setup
+`/ibc` | List all ibc info for all chains
+`/ibc/{chain_1}/{chain_2}` | IBC information between the 2 chains specified
+--------------------
+
+Proto defination for the service is [here]()
+
+## Explorer
+Inorder to provide a full fleged emulation environment, we have
+a handy toggle to spin up an explorer for the infra.
+
+Currently we support only Ping Pub explorer, but we will be adding more
+
+### Syntax
+
+```yaml
+explorer:
+  enabled: true  # enable registry service
+  type: ping-pub # currently only support for ping-pub explorer
+  ports:
+    rest: 8080   # localhost port for redirecting traffic
+  # Optional: resources directive, defualt cpu: 1, memory: 2Gi
+  resources:
+    cpu: 2
+    memory: 4Gi
+  # Optional: image directive, default image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
+  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
+```
+
+Available versions for the explorer can be found [here]()
+
+### Usage
+
+After performing `port-forward`, open explorer at: http://localhost:8080
