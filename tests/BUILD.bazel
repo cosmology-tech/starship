@@ -22,40 +22,27 @@ go_test(
         "e2e_test.go",
         "exposer_test.go",
         "registry_test.go",
+        "client_test.go",
     ],
     data = [
         ":configfiles",
+        ".kubeconfig",
     ],
     embed = [":tests_lib"],
     env = {
         "GO_TEST_WRAP_TESTV": "1",
+        "KUBECONFIG": "./.kubeconfig",
     },
     deps = [
         "//proto/exposer:exposer_go_proto",
         "//proto/registry:registry_go_proto",
-        "@com_github_golang_protobuf//jsonpb",
-        "@com_github_golang_protobuf//proto",
-        "@com_github_json_iterator_go//:go",
-        "@com_github_stretchr_testify//suite",
-        "@in_gopkg_yaml_v3//:yaml_v3",
-        "@org_uber_go_zap//:zap",
-    ],
-)
-
-go_test(
-    name = "tests_test",
-    srcs = [
-        "e2e_test.go",
-        "exposer_test.go",
-        "registry_test.go",
-    ],
-    embed = [":tests"],
-    deps = [
-        "//proto/exposer:exposer_go_proto",
-        "//proto/registry:registry_go_proto",
+        "//clients/go/client:lib",
         "@com_github_golang_protobuf//jsonpb",
         "@com_github_golang_protobuf//proto",
         "@com_github_stretchr_testify//suite",
+        "@com_github_cosmos_cosmos_sdk//types",
+        "@com_github_cosmos_cosmos_sdk//x/bank/types",
+        "@com_github_tendermint_tendermint//rpc/core/types",
         "@in_gopkg_yaml_v3//:yaml_v3",
         "@org_uber_go_zap//:zap",
     ],
