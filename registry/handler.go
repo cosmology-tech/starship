@@ -277,12 +277,7 @@ func (a *AppServer) ListChainIBC(ctx context.Context, requestChain *pb.RequestCh
 		return nil, err
 	}
 
-	var resData []*pb.IBCData
-	for _, info := range infos {
-		resData = append(resData, info.ToProto())
-	}
-
-	return &pb.ResponseListIBC{Data: resData}, nil
+	return &pb.ResponseListIBC{Data: infos.ToProto()}, nil
 }
 
 func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIBCInfo) (*pb.IBCData, error) {
@@ -296,9 +291,10 @@ func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIB
 		return nil, err
 	}
 
-	for _, info := range infos {
-		if info.Counterparty.ChainId == requestIBCInfo.Chain_2 {
-			return info.ToProto(), nil
+	infoProtos := infos.ToProto()
+	for _, info := range infoProtos {
+		if info.Chain_2.ChainName == requestIBCInfo.Chain_2 {
+			return info, nil
 		}
 	}
 
