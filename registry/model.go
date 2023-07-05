@@ -2,6 +2,8 @@ package main
 
 import (
 	pb "github.com/cosmology-tech/starship/registry/registry"
+	"sort"
+	"strings"
 )
 
 type ChannelPort struct {
@@ -36,6 +38,62 @@ type IBCInfo struct {
 	PortId       string `json:"port_id"`
 	ConnectionId string `json:"connection_id"`
 	ClientId     string `json:"client_id"`
+}
+
+type ChainIBCInfos []*ChainIBCInfo
+
+func (infos ChainIBCInfos) ToProto() []*pb.IBCData {
+	chainsIBCData := map[string]*pb.IBCData{}
+	for _, ibcInfo := range infos {
+		chain1 := &pb.IBCChain{
+			ChainName:    ibcInfo.ChainId,
+			ClientId:     ibcInfo.ClientId,
+			ConnectionId: ibcInfo.ConnectionId,
+		}
+		chain2 := &pb.IBCChain{
+			ChainName:    ibcInfo.Counterparty.ChainId,
+			ClientId:     ibcInfo.Counterparty.ClientId,
+			ConnectionId: ibcInfo.Counterparty.ConnectionId,
+		}
+		keys := []string{chain1.String(), chain2.String()}
+		sort.Strings(keys)
+		keyMap := strings.Join(keys, "--")
+		_, ok := chainsIBCData[keyMap]
+
+		if !ok {
+			chainsIBCData[keyMap] = ibcInfo.ToProto()
+			continue
+		}
+
+		// append channel to IBCData
+		channel := &pb.ChannelData{
+			Chain_1: &pb.ChannelData_ChannelPort{
+				ChannelId: ibcInfo.ChannelId,
+				PortId:    ibcInfo.PortId,
+			},
+			Chain_2: &pb.ChannelData_ChannelPort{
+				ChannelId: ibcInfo.Counterparty.ChannelId,
+				PortId:    ibcInfo.Counterparty.PortId,
+			},
+			Ordering: ibcInfo.Ordering,
+			Version:  ibcInfo.Version,
+			Tags: &pb.ChannelData_Tags{
+				// todo: fetch status from client status instead of hardcoding
+				Status:    "live",
+				Perferred: true,
+			},
+		}
+
+		chainsIBCData[keyMap].Channels = append(chainsIBCData[keyMap].Channels, channel)
+	}
+
+	values := []*pb.IBCData{}
+
+	for _, value := range chainsIBCData {
+		values = append(values, value)
+	}
+
+	return values
 }
 
 type ChainIBCInfo struct {
@@ -82,8 +140,6 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 		},
 	}
 }
-
-type ChainIBCInfos []*ChainIBCInfo
 
 // GetCounterpartyChainInfo returns ChainIBCInfo struct for given counterparty
 // chain id.

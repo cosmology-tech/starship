@@ -63,7 +63,7 @@ type ChainClient struct {
 	client *lens.ChainClient
 
 	mu           sync.Mutex
-	chainIBCInfo []*ChainIBCInfo
+	chainIBCInfo ChainIBCInfos
 }
 
 func NewChainClient(logger *zap.Logger, chainID, rpcAddr, exposerAddr, home string) (*ChainClient, error) {
@@ -251,13 +251,13 @@ func (c *ChainClient) getChainIdFromClient(clientId string) (string, error) {
 }
 
 // GetChainInfo will fetch all the IBC channels for the chain
-func (c *ChainClient) GetChainInfo() ([]*ChainIBCInfo, error) {
+func (c *ChainClient) GetChainInfo() (ChainIBCInfos, error) {
 	channelsInfo, err := c.getChannelsPorts()
 	if err != nil {
 		return nil, err
 	}
 
-	var chainIBCInfos []*ChainIBCInfo
+	var chainIBCInfos ChainIBCInfos
 	for _, channelInfo := range channelsInfo {
 		connectionInfo, err := c.getConnectionClient(channelInfo.ConnectionId)
 		if err != nil {
@@ -296,7 +296,7 @@ func (c *ChainClient) GetChainInfo() ([]*ChainIBCInfo, error) {
 }
 
 // GetCachedChainInfo will return cached chain info, if no cache, then will cache the info
-func (c *ChainClient) GetCachedChainInfo() ([]*ChainIBCInfo, error) {
+func (c *ChainClient) GetCachedChainInfo() (ChainIBCInfos, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
