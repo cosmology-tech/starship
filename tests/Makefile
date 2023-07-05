@@ -36,7 +36,8 @@ delete:
 
 .PHONY: test
 test:
-	bazel test --cache_test_results=no --test_output=all --test_env=TEST_CONFIG_FILE=$(HELM_FILE) //tests:tests
+	cp -rf ~/.kube/config .kubeconfig || true
+	bazel test --cache_test_results=no --local_test_jobs=1 --test_output=all --test_env=TEST_CONFIG_FILE=$(HELM_FILE) //tests:tests
 
 ###############################################################################
 ###                              Port forward                              ###

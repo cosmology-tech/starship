@@ -1,7 +1,9 @@
 package client
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -170,6 +172,9 @@ func (c *ChainClient) CreateWallet(keyName, mnemonic string) (string, error) {
 }
 
 func (c *ChainClient) CreateRandWallet(keyName string) (string, error) {
+	// delete key if already exists
+	_ = c.Client.DeleteKey(keyName)
+
 	entropy, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err
@@ -275,6 +280,33 @@ func (c *ChainClient) GetStatus() (*coretypes.ResultStatus, error) {
 	}
 
 	return status, nil
+}
+
+// CreditFromFaucet will request facuet of the chain for tokens to address
+func (c *ChainClient) CreditFromFaucet(address string) error {
+	url := fmt.Sprintf("%s/credit", c.Config.GetChain(c.ChainID).GetFaucetAddr())
+
+	body := map[string]string{
+		"address": address,
+		"denom":   c.MustGetChainDenom(),
+	}
+
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	res, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return err
+	}
+
+	// Check the response status code
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("request failed with status code:", res.StatusCode)
+	}
+
+	return nil
 }
 
 func (c *ChainClient) GetHeight() (int64, error) {

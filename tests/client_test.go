@@ -88,24 +88,29 @@ func (s *TestClientSuite) TestChainClient_Status() {
 func (s *TestClientSuite) TestChainClient_TokenTransfer() {
 	chain := s.chainClients[0]
 
-	keyName := "test-transfer"
 	amount := 1230000
-	address, err := chain.CreateRandWallet(keyName)
+	address1, err := chain.CreateRandWallet("test-transfer-1")
+	s.Require().NoError(err)
+	address2, err := chain.CreateRandWallet("test-transfer-2")
+	s.Require().NoError(err)
+
+	// credit tokens to address1 from faucet
+	err = chain.CreditFromFaucet(address1)
 	s.Require().NoError(err)
 
 	denom, err := chain.GetChainDenom()
 	s.Require().NoError(err)
 
-	// transfer token to address from genesis address
+	// transfer token from genesis to address1
 	coin, err := sdk.ParseCoinNormalized(fmt.Sprintf("%d%s", amount, denom))
 	s.Require().NoError(err)
 
 	req := &banktypes.MsgSend{
-		FromAddress: chain.Address,
-		ToAddress:   address,
+		FromAddress: address1,
+		ToAddress:   address2,
 		Amount:      sdk.Coins{coin},
 	}
-	res, err := chain.Client.SendMsg(context.Background(), req, "transfer tokens e2e test")
+	res, err := chain.CustomSendMsg(context.Background(), "test-transfer-1", req, "transfer tokens e2e test")
 	s.Require().NoError(err)
 	// wait for tx
 	s.WaitForTx(chain, res.TxHash)
@@ -113,7 +118,7 @@ func (s *TestClientSuite) TestChainClient_TokenTransfer() {
 	// verifty the address has recived the token
 	balance, err := chain.Client.QueryBalanceWithDenomTraces(
 		context.Background(),
-		sdk.MustAccAddressFromBech32(address),
+		sdk.MustAccAddressFromBech32(address1),
 		nil)
 	s.Require().NoError(err)
 

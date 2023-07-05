@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - anmol/remote-exec-commands
   release:
     types:
       - published

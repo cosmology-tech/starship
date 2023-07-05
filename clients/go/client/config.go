@@ -20,6 +20,10 @@ func (c *Chain) GetRESTAddr() string {
 	return fmt.Sprintf("http://localhost:%d", c.Ports.Rest)
 }
 
+func (c *Chain) GetFaucetAddr() string {
+	return fmt.Sprintf("http://localhost:%d", c.Ports.Faucet)
+}
+
 type Upgrade struct {
 	Enabled  bool   `name:"eanbled" json:"enabled" yaml:"enabled"`
 	Type     string `name:"type" json:"type" yaml:"type"`
@@ -35,6 +39,7 @@ type Port struct {
 	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
 	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
 	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
+	Faucet  int `name:"faucet" json:"faucet" yaml:"faucet"`
 }
 
 type Relayer struct {
