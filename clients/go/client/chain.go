@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"go.uber.org/zap"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
