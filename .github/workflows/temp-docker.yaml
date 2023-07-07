@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - anmol/remote-exec-commands
-    paths:
-      - "docker/**"
-      - ".github/workflows/docker.yaml"
 
 jobs:
   build-push-hermes:
