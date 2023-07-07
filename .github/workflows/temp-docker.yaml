@@ -37,5 +37,5 @@ jobs:
 
       - name: Build and Push
         run: |
-          docker buildx build --platform linux/arm64,linux/amd64 -t ${{ env.DOCKER_REPO }}/hermes:39033cdee9e7aaa2274aeca3ab152542bf93d8bd -f docker/relayers/hermes/Dockerfile.native . --push
+          docker buildx build --platform linux/amd64 -t ${{ env.DOCKER_REPO }}/hermes:39033cdee9e7aaa2274aeca3ab152542bf93d8bd-amd64 -f docker/relayers/hermes/Dockerfile.native . --push
 
