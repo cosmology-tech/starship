@@ -5,6 +5,7 @@
 # merge defaultChain values into the $chain dict
 {{ $chain = merge $chain $defaultChain }}
 
+{{ $imagePullSecrets := $chain.imagePullSecrets | default list }}
 {{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
 {{- $build := .build | default (dict "enabled" false) -}}
 {{- $toBuild := or $build.enabled $upgrade.enabled }}
@@ -241,6 +242,10 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+      imagePullSecrets:
+      {{- range $imagePullSecrets }}
+        - name: {{ .name }}
+      {{- end }}
       volumes:
         - name: node
           emptyDir: { }
