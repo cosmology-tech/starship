@@ -63,8 +63,8 @@ Host: `ac7cbb684e7fd41eca0866ec659b4de2-1861589237.ap-southeast-1.elb.amazonaws.
 Port: [8080](http://ac7cbb684e7fd41eca0866ec659b4de2-1861589237.ap-southeast-1.elb.amazonaws.com:8080/chains)
 
 Endpoints:
-* Chains: `/chains/{chain-id}`
-* IBC: `/ibc/{chain-1}/{chain-2}`
-* Mnemonics: `/chains/{chain-id}/keys`
+* Chains: [`/chains/{chain-id}`](http://ac7cbb684e7fd41eca0866ec659b4de2-1861589237.ap-southeast-1.elb.amazonaws.com:8080/chains/provider)
+* IBC: [`/ibc/{chain-1}/{chain-2}`](http://ac7cbb684e7fd41eca0866ec659b4de2-1861589237.ap-southeast-1.elb.amazonaws.com:8080/ibc/provider/consumer)
+* Mnemonics: [`/chains/{chain-id}/keys`](http://ac7cbb684e7fd41eca0866ec659b4de2-1861589237.ap-southeast-1.elb.amazonaws.com:8080/chains/provider/keys)
 
 
