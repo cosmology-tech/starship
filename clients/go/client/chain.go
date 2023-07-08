@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/go-bip39"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
-	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"go.uber.org/zap"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
@@ -21,7 +21,7 @@ import (
 
 type ChainClients []*ChainClient
 
-func NewChainClients(logger *zap.Logger, config *Config) (ChainClients, error) {
+func NewChainClients(logger *zap.Logger, config *Config, chainModuleBasic map[string][]module.AppModuleBasic) (ChainClients, error) {
 	var clients []*ChainClient
 	for _, chain := range config.Chains {
 		client, err := NewChainClient(logger, config, chain.Name)
@@ -60,7 +60,7 @@ type ChainClient struct {
 	Client      *lens.ChainClient
 }
 
-func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainClient, error) {
+func NewChainClient(logger *zap.Logger, config *Config, chainID string, moduleBasics []module.AppModuleBasic) (*ChainClient, error) {
 	cc := config.GetChain(chainID)
 
 	chainClient := &ChainClient{

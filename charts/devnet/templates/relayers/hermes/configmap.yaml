@@ -44,7 +44,7 @@ data:
     # Interval (in number of blocks) at which pending packets
     # should be periodically cleared. A value of '0' will disable
     # periodic packet clearing. [Default: 100]
-    clear_interval = 100
+    clear_interval = 50
     # Whether or not to clear packets on start. [Default: false]
     clear_on_start = true
     # Toggle the transaction confirmation mechanism.
@@ -88,9 +88,9 @@ data:
     key_name = "{{ $chain }}"
     rpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
     grpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
-    websocket_addr = "ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
     account_prefix = "{{ $fullchain.prefix }}"
     gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    event_source = { mode = 'push', url = 'ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket', batch_delay = '100ms' }
     default_gas = 500000000
     max_gas = 1000000000
     rpc_timeout = "10s"

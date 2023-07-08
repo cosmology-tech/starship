@@ -1,4 +1,4 @@
-EXAMPLE = multi-chain
+EXAMPLE = mesh-security
 FILE = config.yaml
 
 HELM_REPO = starship
@@ -33,7 +33,7 @@ delete:
 
 .PHOY: port-forward-all
 port-forward-all:
-	bash $(CURDIR)/../scripts/port-forward.sh -c=$(FILE)
+	bash $(CURDIR)/../scripts/port-forward.sh -c=$(EXAMPLE)/$(FILE)
 
 .PHONY: stop-forward
 stop-forward:

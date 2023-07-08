@@ -21,6 +21,9 @@ resources:
     cpu: "0.1"
     memory: "100M"
 
+service:
+  type: ClusterIP
+
 exposer:
   image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
   ports:

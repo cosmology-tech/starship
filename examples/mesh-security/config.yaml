@@ -1,0 +1,59 @@
+service:
+  type: LoadBalancer
+
+chains:
+  - name: provider
+    type: custom
+    numValidators: 1
+    image: anmol1696/meshd:local
+    home: /root/.meshd
+    binary: meshd
+    prefix: mesh
+    denom: ustake
+    coins: 100000000000000ustake
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/osmosis/mesh-security-sdk
+    ports:
+      rest: 1313
+      rpc: 26653
+      faucet: 8003
+    resource:
+      cpu: 1
+      memory: 2Gi
+  - name: consumer
+    type: custom
+    numValidators: 1
+    image: anmol1696/meshd:local
+    home: /root/.meshd
+    binary: meshd
+    prefix: mesh
+    denom: ustake
+    coins: 100000000000000ustake
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/osmosis/mesh-security-sdk
+    ports:
+      rest: 1317
+      rpc: 26657
+      faucet: 8007
+    resource:
+      cpu: 1
+      memory: 2Gi
+
+relayers:
+  - name: provider-consumer
+    type: hermes
+    replicas: 1
+    image: ghcr.io/cosmology-tech/starship/hermes:39033cdee9e7aaa2274aeca3ab152542bf93d8bd
+    chains:
+      - provider
+      - consumer
+    resource:
+      cpu: 1
+      memory: 2Gi
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
