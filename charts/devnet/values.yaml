@@ -128,7 +128,7 @@ defaultChains:
     binary: injectived
     prefix: inj
     denom: inj
-    coins: 100000000000000inj
+    coins: 100000000000000000000000000inj
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/InjectiveLabs/injective-chain-releases

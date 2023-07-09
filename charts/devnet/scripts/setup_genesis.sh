@@ -10,6 +10,15 @@ WASM_PERMISSIONLESS="${WASM_PERMISSIONLESS:=true}"
 
 set -eu
 
+# Args and vars specific to chains
+ARGS_ADD_GENESIS_ACCOUNT=""
+GENTX_AMT=5000000000
+if [ $CHAIN_BIN == "injectived" ]
+then
+  ARGS_ADD_GENESIS_ACCOUNT="${ARGS_ADD_GENESIS_ACCOUNT} --chain-id ${CHAIN_ID}"
+  GENTX_AMT=5000000000000000000000
+fi
+
 # check if the binary has genesis subcommand or not, if not, set CHAIN_GENESIS_CMD to empty
 CHAIN_GENESIS_CMD=$($CHAIN_BIN 2>&1 | grep -q "genesis-related subcommands" && echo "genesis" || echo "")
 
@@ -18,10 +27,11 @@ jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $CHAIN_ID --chain-id
 # Add genesis keys to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test" $ARGS_ADD_GENESIS_ACCOUNT
 
 echo "Creating gentx..."
-$CHAIN_BIN $CHAIN_GENESIS_CMD gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 5000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
+$CHAIN_BIN $CHAIN_GENESIS_CMD gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) $GENTX_AMT$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
 
 echo "Output of gentx"
 cat $CHAIN_DIR/config/gentx/*.json | jq

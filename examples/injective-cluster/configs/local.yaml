@@ -1,10 +1,17 @@
 chains:
-  - name: injective-1
+  - name: injective-2
     type: injective
-    numValidators: 2
+    numValidators: 1
+    image: anmol1696/injective:v1.11.5
     ports:
       rest: 1317
       rpc: 26657
+  - name: cosmos-4
+    type: cosmos
+    numValidators: 1
+    ports:
+      rest: 1313
+      rpc: 26653
 
 registry:
   enabled: true

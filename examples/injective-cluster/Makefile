@@ -1,9 +1,9 @@
 NAME = cosmos-injective-cluster
-FILE = configs/devnet.yaml
+FILE = configs/local.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.35
+HELM_VERSION = v0.1.39
 
 ###############################################################################
 ###                              All commands                               ###
@@ -38,11 +38,24 @@ setup-helm:
 install:
 	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
-install-base:
+install-dev:
 	helm install -f $(FILE) $(NAME) ../../charts/$(HELM_CHART)
 
 delete:
 	-helm delete $(NAME)
+
+###############################################################################
+###                               Custom Docker                             ###
+###############################################################################
+DOCKER_REPO := public.ecr.aws
+
+.PHONY: docker-build
+docker-build:
+	docker buildx build --platform linux/amd64 -t $(DOCKER_REPO)/a6c1y1k3/injective:v1.11.5 . --push
+
+.PHONY: docker-run
+docker-run:
+	docker run --rm -it --entrypoint /bin/bash $(DOCKER_REPO)/a6c1y1k3/injective:v1.11.5
 
 ###############################################################################
 ###                                 Port forward                            ###
