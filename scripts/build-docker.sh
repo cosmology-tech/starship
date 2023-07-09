@@ -19,6 +19,15 @@ function color() {
   printf "\033[%sm%s\033[0m\n" "$color_code" "$*"
 }
 
+function set_docker_buildx() {
+  set +e
+  out=$(docker buildx create --name chain-builder --use > /dev/null 2>&1)
+  if [[ $? -ne 0 ]]; then
+    docker buildx use chain-builder
+  fi
+  set -e
+}
+
 function is_directory {
     if [ -d "$1" ]; then
         return 0 # true
@@ -86,7 +95,8 @@ docker_process_build() {
   if [[ "$push_image" != "push-only" ]]; then
     color yellow "building docker image $DOCKER_REPO/$process:$tag from file $DOCKER_DIR/$type/$process/Dockerfile"
     for n in {1..3}; do
-      docker buildx build --platform linux/amd64 \
+      docker buildx build \
+        --platform linux/amd64,linux/arm64 \
         -t "$DOCKER_REPO/$process:$tag" . \
         --build-arg BASE_IMAGE=$base \
         --build-arg VERSION=$version \
@@ -184,6 +194,8 @@ while [ $# -gt 0 ]; do
       ;;
   esac
 done
+
+set_docker_buildx
 
 if [[ $TYPE == "all" ]]; then
   build_all_types "all" "all" "all" $PUSH $PUSH_LATEST

@@ -6,12 +6,8 @@ chains:
       rest: 1313
       rpc: 26653
     resources:
-      limits:
-        cpu: "0.3"
-        memory: "300M"
-      requests:
-        cpu: "0.3"
-        memory: "300M"
+      cpu: "0.3"
+      memory: "300M"
   - name: gaia-1
     type: cosmos
     numValidators: 1
@@ -19,12 +15,8 @@ chains:
       rest: 1317
       rpc: 26657
     resources:
-      limits:
-        cpu: "0.3"
-        memory: "300M"
-      requests:
-        cpu: "0.3"
-        memory: "300M"
+      cpu: "0.3"
+      memory: "300M"
 
 relayers:
   - name: osmos-gaia
@@ -34,41 +26,24 @@ relayers:
       - osmosis-1
       - gaia-1
     resources:
-      limits:
-        cpu: "0.1"
-        memory: "100M"
-      requests:
-        cpu: "0.1"
-        memory: "100M"
+      cpu: "0.1"
+      memory: "100M"
 
 registry:
   enabled: true
   ports:
     rest: 8081
   resources:
-    limits:
-      cpu: "0.1"
-      memory: "100M"
-    requests:
-      cpu: "0.1"
-      memory: "100M"
+    cpu: "0.1"
+    memory: "100M"
 
 # configure default resources
 resources:
   node:
-    resources:
-      limits:
-        cpu: "0.3"
-        memory: "300M"
-      requests:
-        cpu: "0.3"
-        memory: "300M"
+    cpu: "0.3"
+    memory: "300M"
 
 exposer:
   resources:
-    limits:
-      cpu: "0.1"
-      memory: "100M"
-    requests:
-      cpu: "0.1"
-      memory: "100M"
+    cpu: "0.1"
+    memory: "100M"

@@ -15,43 +15,27 @@ resources:
   node:
     # Default values for resources for chain and validator nodes
     # Preference would be given to the resources directive in chain/relayer
-    limits:
-      cpu: "0.5"
-      memory: "500M"
-    requests:
-      cpu: "0.5"
-      memory: "500M"
+    cpu: "0.5"
+    memory: "500M"
   wait:
-    limits:
-      cpu: "0.1"
-      memory: "100M"
-    requests:
-      cpu: "0.1"
-      memory: "100M"
+    cpu: "0.1"
+    memory: "100M"
 
 exposer:
   image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
   ports:
     rest: 8081
   resources:
-    limits:
-      cpu: "0.2"
-      memory: "200M"
-    requests:
-      cpu: "0.2"
-      memory: "200M"
+    cpu: "0.2"
+    memory: "200M"
 
 faucet:
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
+  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
   ports:
     rest: 8000
   resources:
-    limits:
-      cpu: "0.2"
-      memory: "200M"
-    requests:
-      cpu: "0.2"
-      memory: "200M"
+    cpu: "0.2"
+    memory: "200M"
 
 # Chain timeouts
 timeouts:
@@ -275,8 +259,8 @@ chains: []
   #     # type will indicate the way in which the upgrade binaries is supposed to be handled
   #     # can be build, docker, fetch
   #     # build: run build scripts for various versions
-  #     # docker: copy binaries from docker images
-  #     # fetch: fetch binaries directly from github releases
+  #     # docker (todo): copy binaries from docker images
+  #     # fetch (todo): fetch binaries directly from github releases
   #     type: build
   #     genesis: v11.0.1
   #     upgrades:
@@ -348,7 +332,7 @@ explorer:
   # Flag to enable explorer for cluster
   enabled: false
   type: ping-pub
-  image: ghcr.io/cosmology-tech/starship/ping-pub:6437369d84c374ee357370a219508948e605f7cc
+  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
   localhost: true
   ports:
     rest: 8080
@@ -356,12 +340,8 @@ explorer:
   # at runtime (with custom configs). Anything bellow 2Gi will crash the pods on startup
   # todo: make this more efficient with faster startuptime
   resources:
-    limits:
-      cpu: "1"
-      memory: "2Gi"
-    requests:
-      cpu: "1"
-      memory: "2Gi"
+    cpu: "1"
+    memory: "2Gi"
 
 registry:
   enabled: false
@@ -370,12 +350,8 @@ registry:
     rest: 6060
     grpc: 7070
   resources:
-    limits:
-      cpu: "0.2"
-      memory: "200M"
-    requests:
-      cpu: "0.2"
-      memory: "200M"
+    cpu: "0.2"
+    memory: "200M"
 
 collector:
   enabled: false

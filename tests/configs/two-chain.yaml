@@ -26,9 +26,12 @@ relayers:
       - cosmoshub-4
 
 explorer:
-  enabled: false
+  enabled: true
   ports:
     rest: 8080
+  resources:
+    cpu: 1
+    memory: 1Gi
 
 registry:
   enabled: true

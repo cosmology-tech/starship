@@ -19,7 +19,7 @@ data:
       {{ $chain }}:
         {{- range $fullchain := $.Values.chains }}
         {{- if eq $fullchain.name $chain }}
-        {{ $defaultChain := get $.Values.defaultChains $fullchain.type }}
+        {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
         {{ $fullchain = merge $fullchain $defaultChain }}
         chain_id: {{ $chain }}
         # You can include multiple RPC endpoints and it will rotate through them if
