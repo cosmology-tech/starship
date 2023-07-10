@@ -1,4 +1,5 @@
 {{- range $chain := .Values.chains }}
+{{- if ne $chain.type "virtual" }}
 {{- if gt $chain.numValidators 1.0 }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultChain := get $.Values.defaultChains $chain.type | default dict }}
@@ -244,5 +245,6 @@ spec:
           configMap:
             name: setup-scripts
 ---
+{{- end }}
 {{- end }}
 {{- end }}
