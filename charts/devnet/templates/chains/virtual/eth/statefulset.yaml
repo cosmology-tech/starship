@@ -1,0 +1,196 @@
+{{- range $chain := .Values.chains }}
+{{- if eq $chain.type "virtual" }}
+{{- if eq $chain.subtype "eth" }}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prysm
+spec:
+  serviceName: "prysm"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prysm
+  template:
+    metadata:
+      labels:
+        app: prysm
+    # adapted from https://github.com/rauljordan/eth-pos-devnet/blob/master/docker-compose.yml
+    spec:
+      initContainers:
+        - name: init
+          image: alpine/openssl
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; \
+            rm -rf /ethereum/{execution,consensus}; \
+            mkdir -p /ethereum/consensus/{beacon,validator} /ethereum/execution \
+            && cd /ethereum/consensus; \
+            stat genesis.ssz || wget -S https://github.com/eth-clients/eth2-networks/raw/master/shared/prater/genesis.ssz"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+        - name: init-chmod-data
+          image: busybox
+          command: ['sh', '-c', 'chmod -R 0600 /ethereum/consensus/']
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+        - name: prysm-beacon-init
+          image: ghcr.io/polymerdao/prysm-prysmctl:v4.0.3-light-client-1
+          command: ['prysmctl']
+          args:
+            - testnet
+            - generate-genesis
+            - --num-validators=36
+            - --output-ssz=/ethereum/consensus/genesis.ssz
+            - --chain-config-file=/etc/config/config.yml
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+        - name: geth-account-init
+          image: ethereum/client-go:v1.10.26
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: secrets
+              mountPath: /etc/secrets
+              readOnly: true
+        - name: geth-genesis-init
+          image: ethereum/client-go:v1.10.26
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution init /etc/config/genesis.json"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+        - name: init-done
+          image: alpine/openssl
+          command: ['sh', '-c', "touch /ethereum/.init"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+      containers:
+        - name: geth
+          image: ethereum/client-go:v1.10.26
+          # TODO: use --config-file with a YAML file and make it a ConfigMap
+          args:
+            - --http
+            - --http.api=eth,engine
+            - --http.addr=0.0.0.0
+            - --authrpc.vhosts=*
+            - --authrpc.jwtsecret=/etc/secrets/jwt.hex
+            - --datadir=/ethereum/execution
+            - --allow-insecure-unlock
+            - --unlock=0x123463a4b065722e99115d6c222f267d9cabb524
+            - --password=/dev/null
+            - --nodiscover
+            - --syncmode=full
+            - --mine
+            - --miner.etherbase=0x123463a4b065722e99115d6c222f267d9cabb524
+          workingDir: /ethereum/execution
+          ports:
+            - name: geth-http
+              containerPort: 8545
+            - name: geth-authrpc
+              containerPort: 8551
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: secrets
+              mountPath: /etc/secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+        - name: beacon-chain
+          image: ghcr.io/polymerdao/prysm-beacon-chain:v4.0.3-light-client-1
+          # TODO: use --config with a TOML file and make it a ConfigMap
+          command: ['beacon-chain']
+          args:
+            - --datadir=/ethereum/consensus/beacon
+            - --min-sync-peers=0
+            - --no-discovery
+            - --genesis-state=/ethereum/consensus/genesis.ssz
+            - --interop-eth1data-votes
+            - --bootstrap-node=
+            # chain configuration file used for setting up prysm
+            - --chain-config-file=/etc/config/config.yml
+            # specify the chain id used by our execution client
+            - --chain-id=32382
+            - --rpc-host=0.0.0.0
+            - --grpc-gateway-host=0.0.0.0
+            - --execution-endpoint=http://geth:8551
+            - --jwt-secret=/etc/secrets/jwt.hex
+            - --accept-terms-of-use
+            - --suggested-fee-recipient=0x123463a4b065722e99115d6c222f267d9cabb524
+          workingDir: /ethereum/consensus
+          ports:
+            - name: beacon-api
+              containerPort: 3500
+            - name: beacon-grpc
+              containerPort: 4000
+            - name: beacon-web
+              containerPort: 8080
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+            - name: secrets
+              mountPath: /etc/secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+        - name: validator
+          image: ghcr.io/polymerdao/prysm-validator:v4.0.3-light-client-1
+          # TODO: use --config with a TOML file and make it a ConfigMap
+          command: ['validator']
+          args:
+            - --beacon-rpc-provider=beacon-chain:4000
+            - --datadir=/ethereum/consensus/validator
+            - --accept-terms-of-use
+            - --interop-num-validators=64
+            - --interop-start-index=0
+            - --chain-config-file=/etc/config/config.yml
+          workingDir: /ethereum/consensus
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+      imagePullSecrets:
+        - name: ghcr
+      volumes:
+        - name: secrets
+          secret:
+            secretName: geth
+        - name: config
+          configMap:
+            name: eth2
+  volumeClaimTemplates:
+    - metadata:
+        name: ethereum
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 10Gi
+
+{{- end }}
+{{- end }}
+{{- end }}
