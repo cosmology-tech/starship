@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        config-file: ["two-chain.yaml", "build-chain.yaml", "multi-validator.yaml"]
+        config-file: ["two-chain.yaml", "build-chain.yaml", "multi-validator.yaml", "two-chain-gorelayer.yaml"]
       fail-fast: true
       max-parallel: 1
 
