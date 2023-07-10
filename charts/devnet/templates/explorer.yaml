@@ -10,7 +10,7 @@ spec:
   {{- if eq $.Values.service.type "ClusterIP" }}
   clusterIP: None
   {{- end }}
-  type: ${{ $.Values.service.type }}
+  type: {{ $.Values.service.type }}
   ports:
     - name: http
       port: 8080
