@@ -18,7 +18,7 @@ is to have a single easy to use developer environment with full testing support
 for multichain use cases
 
 ## Installation
-Inorder to get started with starship, one needs to install the following
+In order to get started with starship, one needs to install the following
 * `kubectl`: https://kubernetes.io/docs/tasks/tools/
 * `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 * `helm`: https://helm.sh/docs/intro/install/
