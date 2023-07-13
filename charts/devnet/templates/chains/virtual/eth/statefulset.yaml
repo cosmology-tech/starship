@@ -77,7 +77,6 @@ spec:
       containers:
         - name: geth
           image: ethereum/client-go:v1.10.26
-          # TODO: use --config-file with a YAML file and make it a ConfigMap
           args:
             - --http
             - --http.api=eth,engine
@@ -110,7 +109,6 @@ spec:
               memory: 1Gi
         - name: beacon-chain
           image: ghcr.io/polymerdao/prysm-beacon-chain:v4.0.3-light-client-1
-          # TODO: use --config with a TOML file and make it a ConfigMap
           command: ['beacon-chain']
           args:
             - --datadir=/ethereum/consensus/beacon
@@ -119,9 +117,7 @@ spec:
             - --genesis-state=/ethereum/consensus/genesis.ssz
             - --interop-eth1data-votes
             - --bootstrap-node=
-            # chain configuration file used for setting up prysm
             - --chain-config-file=/etc/config/config.yml
-            # specify the chain id used by our execution client
             - --chain-id=32382
             - --rpc-host=0.0.0.0
             - --grpc-gateway-host=0.0.0.0
@@ -152,7 +148,6 @@ spec:
               memory: 1Gi
         - name: validator
           image: ghcr.io/polymerdao/prysm-validator:v4.0.3-light-client-1
-          # TODO: use --config with a TOML file and make it a ConfigMap
           command: ['validator']
           args:
             - --beacon-rpc-provider=beacon-chain:4000
