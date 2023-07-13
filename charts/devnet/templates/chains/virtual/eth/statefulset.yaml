@@ -61,7 +61,7 @@ spec:
               readOnly: true
         - name: geth-genesis-init
           image: ethereum/client-go:v1.10.26
-          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution init /etc/config/genesis.json"]
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -78,19 +78,20 @@ spec:
         - name: geth
           image: ethereum/client-go:v1.10.26
           args:
+            - --nodiscover
             - --http
-            - --http.api=eth,engine
+            - --http.api=eth,net,web3,debug
             - --http.addr=0.0.0.0
             - --authrpc.vhosts=*
+            - --authrpc.addr=0.0.0.0
             - --authrpc.jwtsecret=/etc/secrets/jwt.hex
             - --datadir=/ethereum/execution
             - --allow-insecure-unlock
-            - --unlock=0x123463a4b065722e99115d6c222f267d9cabb524
+            - --unlock=0x123463a4B065722E99115D6c222f267d9cABb524
             - --password=/dev/null
-            - --nodiscover
             - --syncmode=full
             - --mine
-            - --miner.etherbase=0x123463a4b065722e99115d6c222f267d9cabb524
+            - --networkid=32382
           workingDir: /ethereum/execution
           ports:
             - name: geth-http
@@ -114,17 +115,18 @@ spec:
             - --datadir=/ethereum/consensus/beacon
             - --min-sync-peers=0
             - --no-discovery
-            - --genesis-state=/ethereum/consensus/genesis.ssz
+            - --interop-genesis-state=/ethereum/consensus/genesis.ssz
             - --interop-eth1data-votes
             - --bootstrap-node=
             - --chain-config-file=/etc/config/config.yml
             - --chain-id=32382
+            - --execution-endpoint=http://localhost:8551
+            - --accept-terms-of-use
             - --rpc-host=0.0.0.0
             - --grpc-gateway-host=0.0.0.0
-            - --execution-endpoint=http://localhost:8551
+            - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
             - --jwt-secret=/etc/secrets/jwt.hex
-            - --accept-terms-of-use
-            - --suggested-fee-recipient=0x123463a4b065722e99115d6c222f267d9cabb524
+            - --enable-polymer-devnet-mode
           workingDir: /ethereum/consensus
           ports:
             - name: beacon-api
@@ -150,12 +152,16 @@ spec:
           image: ghcr.io/polymerdao/prysm-validator:v4.0.3-light-client-1
           command: ['validator']
           args:
-            - --beacon-rpc-provider=beacon-chain:4000
+            - --beacon-rpc-provider=localhost:4000
             - --datadir=/ethereum/consensus/validator
             - --accept-terms-of-use
-            - --interop-num-validators=64
+            - --interop-num-validators=36
             - --interop-start-index=0
+            - --force-clear-db
             - --chain-config-file=/etc/config/config.yml
+            - --config-file=/etc/config/config.yml
+            - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
+            - --enable-polymer-devnet-mode
           workingDir: /ethereum/consensus
           volumeMounts:
             - name: ethereum
