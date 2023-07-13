@@ -121,7 +121,7 @@ spec:
             - --chain-id=32382
             - --rpc-host=0.0.0.0
             - --grpc-gateway-host=0.0.0.0
-            - --execution-endpoint=http://geth:8551
+            - --execution-endpoint=http://localhost:8551
             - --jwt-secret=/etc/secrets/jwt.hex
             - --accept-terms-of-use
             - --suggested-fee-recipient=0x123463a4b065722e99115d6c222f267d9cabb524
