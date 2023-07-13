@@ -9,7 +9,6 @@ chains:
       faucet: 8001
   - name: cosmoshub-4
     type: cosmos
-    image: anmol1696/gaia:v10.0.1
     numValidators: 2
     ports:
       rest: 1317

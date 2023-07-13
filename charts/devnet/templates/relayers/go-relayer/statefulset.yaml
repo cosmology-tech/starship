@@ -88,6 +88,9 @@ spec:
                 $PATHEND \
                 --file "/configs/path.json"
 
+              echo "Creating a channel"
+              rly transact link $PATHEND --src-port transfer --dst-port transfer -d
+
               echo "Creating a client on $PATHEND"
               rly transact clients $PATHEND
 
