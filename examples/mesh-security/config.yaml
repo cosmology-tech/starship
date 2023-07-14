@@ -55,5 +55,6 @@ relayers:
 
 registry:
   enabled: true
+  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
   ports:
     rest: 8081

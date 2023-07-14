@@ -5,6 +5,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ $chain.name }}-genesis
+  annotations:
+    {{- if eq $.Values.service.type "LoadBalancer" }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    {{- end }}
+    {{- if eq $chain.name "consumer" }}
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-024965f9be1f81ba4
+    {{- else if eq $chain.name "provider" }}
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0474d55d551e65f3e
+    {{- end }}
   labels:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 spec:
