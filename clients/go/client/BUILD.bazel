@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "chain.go",
         "config.go",
+        "runner.go",
     ],
     importpath = "github.com/cosmology-tech/starship/clients/go/client",
     visibility = ["//visibility:public"],

@@ -40,6 +40,7 @@ spec:
       labels:
         app.kubernetes.io/instance: {{ $chain.type }}
         app.kubernetes.io/type: {{ $chain.name }}
+        app.kubernetes.io/rawname: {{ $chain.name }}
         app.kubernetes.io/name: {{ $chain.name }}-genesis
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:

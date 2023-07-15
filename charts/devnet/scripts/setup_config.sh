@@ -15,19 +15,20 @@ sed -i -e 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $CHAIN_DIR/config/co
 sed -i -e 's/timeout_propose = "3s"/timeout_propose = "1s"/g' $CHAIN_DIR/config/config.toml
 sed -i -e 's/index_all_keys = false/index_all_keys = true/g' $CHAIN_DIR/config/config.toml
 sed -i -e 's/seeds = ".*"/seeds = ""/g' $CHAIN_DIR/config/config.toml
-
+sed -i -e 's#cors_allowed_origins = \[\]#cors_allowed_origins = \["*"\]#g' $CHAIN_DIR/config/config.toml
 
 echo "Update client.toml file"
 sed -i -e 's#keyring-backend = "os"#keyring-backend = "test"#g' $CHAIN_DIR/config/client.toml
 sed -i -e 's#output = "text"#output = "json"#g' $CHAIN_DIR/config/client.toml
 sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/client.toml
 
-
 echo "Update app.toml file"
 sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0$DENOM\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e "s#pruning = \".*\"#pruning = \"default\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DIR/config/app.toml
 sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
+sed -i -e 's/enable-unsafe-cors = false/enable-unsafe-cors = true/g' $CHAIN_DIR/config/app.toml
+sed -i -e 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' $CHAIN_DIR/config/app.toml
 
 function get_next_line_number() {
   local txt=$1

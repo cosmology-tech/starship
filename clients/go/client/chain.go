@@ -1,28 +1,34 @@
 package client
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
+	pb "github.com/cosmology-tech/starship/registry/registry"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
-
-	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
 type ChainClients []*ChainClient
 
-func NewChainClients(logger *zap.Logger, config *Config) (ChainClients, error) {
+func NewChainClients(logger *zap.Logger, config *Config, chainModuleBasic map[string][]module.AppModuleBasic) (ChainClients, error) {
 	var clients []*ChainClient
+	var moduleBasic []module.AppModuleBasic
 	for _, chain := range config.Chains {
-		client, err := NewChainClient(logger, config, chain.Name)
+		if chainModuleBasic != nil {
+			moduleBasic = chainModuleBasic[chain.Name]
+		}
+		client, err := NewChainClient(logger, config, chain.Name, moduleBasic)
 		if err != nil {
 			logger.Error("unable to create client for chain",
 				zap.String("chain_id", chain.Name),
@@ -58,9 +64,12 @@ type ChainClient struct {
 	Client      *lens.ChainClient
 }
 
-func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainClient, error) {
+func NewChainClient(logger *zap.Logger, config *Config, chainID string, moduleBasics []module.AppModuleBasic) (*ChainClient, error) {
 	cc := config.GetChain(chainID)
 
+	if moduleBasics == nil {
+		moduleBasics = lens.ModuleBasics
+	}
 	chainClient := &ChainClient{
 		Logger:  logger,
 		Config:  config,
@@ -85,7 +94,7 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string) (*ChainC
 		GasPrices:      fmt.Sprintf("%f%s", registry.Fees.FeeTokens[0].HighGasPrice, registry.Fees.FeeTokens[0].Denom),
 		MinGasAmount:   10000,
 		Slip44:         int(registry.Slip44),
-		Modules:        lens.ModuleBasics,
+		Modules:        moduleBasics,
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
@@ -170,6 +179,9 @@ func (c *ChainClient) CreateWallet(keyName, mnemonic string) (string, error) {
 }
 
 func (c *ChainClient) CreateRandWallet(keyName string) (string, error) {
+	// delete key if already exists
+	_ = c.Client.DeleteKey(keyName)
+
 	entropy, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err
@@ -275,6 +287,33 @@ func (c *ChainClient) GetStatus() (*coretypes.ResultStatus, error) {
 	}
 
 	return status, nil
+}
+
+// CreditFromFaucet will request facuet of the chain for tokens to address
+func (c *ChainClient) CreditFromFaucet(address string) error {
+	url := fmt.Sprintf("%s/credit", c.Config.GetChain(c.ChainID).GetFaucetAddr())
+
+	body := map[string]string{
+		"address": address,
+		"denom":   c.MustGetChainDenom(),
+	}
+
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	res, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return err
+	}
+
+	// Check the response status code
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("request failed with status code:", res.StatusCode)
+	}
+
+	return nil
 }
 
 func (c *ChainClient) GetHeight() (int64, error) {

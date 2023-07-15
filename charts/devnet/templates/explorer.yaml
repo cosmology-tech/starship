@@ -7,7 +7,10 @@ metadata:
   labels:
     app.kubernetes.io/name: explorer
 spec:
+  {{- if eq $.Values.service.type "ClusterIP" }}
   clusterIP: None
+  {{- end }}
+  type: {{ $.Values.service.type }}
   ports:
     - name: http
       port: 8080
@@ -81,6 +84,7 @@ data:
   {{- if not $.Values.explorer.localhost }}
   {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
   {{- end }}
+  {{/*todo: chain rpc would need to be converted to external ip for service LoadBalancer*/}}
   {{ $chain.name }}.json: |-
     {
       "chain_name": "{{ $chain.name }}",

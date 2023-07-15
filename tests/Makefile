@@ -19,7 +19,7 @@ stop: stop-forward delete
 ###############################################################################
 
 install:
-	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART) --wait --debug
+	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART)
 
 upgrade:
 	helm upgrade --debug $(HELM_NAME) ../charts/$(HELM_CHART) -f $(HELM_FILE)
@@ -36,7 +36,8 @@ delete:
 
 .PHONY: test
 test:
-	bazel test --cache_test_results=no --test_output=all --test_env=TEST_CONFIG_FILE=$(HELM_FILE) //tests:tests
+	cp -rf ~/.kube/config .kubeconfig || true
+	bazel test --cache_test_results=no --local_test_jobs=1 --test_output=all --test_env=TEST_CONFIG_FILE=$(HELM_FILE) //tests:tests
 
 ###############################################################################
 ###                              Port forward                              ###

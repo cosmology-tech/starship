@@ -1,7 +1,7 @@
 chains:
   - name: gaia-4
     type: cosmos
-    numValidators: 1
+    numValidators: 4
     ports:
       rpc: 26653
       rest: 1313

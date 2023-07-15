@@ -1,0 +1,65 @@
+chains:
+  - name: mesh-osmosis-1
+    type: custom
+    numValidators: 1
+    image: anmol1696/meshd:osmo
+    home: /root/.meshd
+    binary: meshd
+    prefix: osmo
+    denom: uosmo
+    coins: 100000000000000uosmo
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/osmosis/mesh-security-sdk
+    ports:
+      rest: 1313
+      rpc: 26653
+      faucet: 8003
+    resources:
+      cpu: 1
+      memory: 2Gi
+    faucet:
+      resources:
+        cpu: 0.5
+        memory: 1Gi
+  - name: mesh-juno-1
+    type: custom
+    numValidators: 1
+    image: anmol1696/meshd:juno
+    home: /root/.meshd
+    binary: meshd
+    prefix: juno
+    denom: ujuno
+    coins: 100000000000000ujuno
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/osmosis/mesh-security-sdk
+    ports:
+      rest: 1317
+      rpc: 26657
+      faucet: 8007
+    resources:
+      cpu: 1
+      memory: 2Gi
+    faucet:
+      resources:
+        cpu: 0.5
+        memory: 1Gi
+
+relayers:
+  - name: juno-osmo
+    type: hermes
+    replicas: 1
+    image: ghcr.io/cosmology-tech/starship/hermes:39033cdee9e7aaa2274aeca3ab152542bf93d8bd
+    chains:
+      - mesh-juno-1
+      - mesh-osmosis-1
+    resources:
+      cpu: 1
+      memory: 2Gi
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+

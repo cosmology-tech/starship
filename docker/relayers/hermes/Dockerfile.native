@@ -1,0 +1,33 @@
+#
+# Used for running hermes in docker containers
+#
+# Usage:
+#   docker build . --build-arg TAG=v0.3.0 -t informalsystems/hermes:0.3.0 -f hermes.Dockerfile
+
+FROM rust:1-buster AS build-env
+
+ARG TAG=master
+WORKDIR /root
+
+RUN git clone -b ${TAG} --depth 1 https://github.com/informalsystems/hermes
+RUN cd hermes && cargo build --release
+
+FROM ubuntu:rolling
+
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+
+RUN update-ca-certificates
+
+RUN useradd -m hermes -s /bin/bash
+WORKDIR /home/hermes
+USER hermes:hermes
+ENTRYPOINT ["/usr/bin/hermes"]
+
+COPY --chown=0:0 --from=build-env /root/hermes/target/release/hermes /usr/bin/hermes
+
+LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+
+USER root
+
+ENV PACKAGES curl sed jq
+RUN apt update && apt -y install $PACKAGES

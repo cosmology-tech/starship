@@ -1,5 +1,6 @@
-EXAMPLE = multi-chain
+EXAMPLE = mesh-security
 FILE = config.yaml
+DEV_FILE = config-dev.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
@@ -11,6 +12,10 @@ setup:
 
 install:
 	helm install -f $(EXAMPLE)/$(FILE) $(EXAMPLE) ../charts/$(HELM_CHART)
+
+.PHONY: install-dev
+install-dev:
+	helm install -f $(EXAMPLE)/$(DEV_FILE) $(EXAMPLE) ../charts/$(HELM_CHART)
 
 upgrade:
 	helm upgrade --debug $(EXAMPLE) ../charts/$(HELM_CHART) -f $(EXAMPLE)/$(FILE)
@@ -33,9 +38,13 @@ delete:
 
 .PHOY: port-forward-all
 port-forward-all:
-	bash $(CURDIR)/../scripts/port-forward.sh -c=$(FILE)
+	bash $(CURDIR)/../scripts/port-forward.sh -c=$(EXAMPLE)/$(FILE)
+
+.PHOY: port-forward-dev
+port-forward-dev:
+	bash $(CURDIR)/../scripts/port-forward.sh -c=$(EXAMPLE)/$(DEV_FILE)
+
 
 .PHONY: stop-forward
 stop-forward:
 	-pkill -f "port-forward"
-
