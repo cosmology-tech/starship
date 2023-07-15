@@ -1,7 +1,7 @@
 chains:
   - name: mesh-osmosis-1
     type: custom
-    numValidators: 1
+    numValidators: 4
     image: anmol1696/meshd:osmo
     home: /root/.meshd
     binary: meshd
@@ -24,7 +24,7 @@ chains:
         memory: 1Gi
   - name: mesh-juno-1
     type: custom
-    numValidators: 1
+    numValidators: 4
     image: anmol1696/meshd:juno
     home: /root/.meshd
     binary: meshd
@@ -63,3 +63,7 @@ registry:
   ports:
     rest: 8081
 
+explorer:
+  enabled: true
+  ports:
+    rest: 8080

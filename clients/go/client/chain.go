@@ -9,14 +9,14 @@ import (
 	"os"
 
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
+	pb "github.com/cosmology-tech/starship/registry/registry"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
 	"go.uber.org/zap"
-
-	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
 type ChainClients []*ChainClient
