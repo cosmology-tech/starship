@@ -23,8 +23,12 @@ type ChainClients []*ChainClient
 
 func NewChainClients(logger *zap.Logger, config *Config, chainModuleBasic map[string][]module.AppModuleBasic) (ChainClients, error) {
 	var clients []*ChainClient
+	var moduleBasic []module.AppModuleBasic
 	for _, chain := range config.Chains {
-		client, err := NewChainClient(logger, config, chain.Name)
+		if chainModuleBasic != nil {
+			moduleBasic = chainModuleBasic[chain.Name]
+		}
+		client, err := NewChainClient(logger, config, chain.Name, moduleBasic)
 		if err != nil {
 			logger.Error("unable to create client for chain",
 				zap.String("chain_id", chain.Name),
@@ -63,6 +67,9 @@ type ChainClient struct {
 func NewChainClient(logger *zap.Logger, config *Config, chainID string, moduleBasics []module.AppModuleBasic) (*ChainClient, error) {
 	cc := config.GetChain(chainID)
 
+	if moduleBasics == nil {
+		moduleBasics = lens.ModuleBasics
+	}
 	chainClient := &ChainClient{
 		Logger:  logger,
 		Config:  config,
@@ -87,7 +94,7 @@ func NewChainClient(logger *zap.Logger, config *Config, chainID string, moduleBa
 		GasPrices:      fmt.Sprintf("%f%s", registry.Fees.FeeTokens[0].HighGasPrice, registry.Fees.FeeTokens[0].Denom),
 		MinGasAmount:   10000,
 		Slip44:         int(registry.Slip44),
-		Modules:        lens.ModuleBasics,
+		Modules:        moduleBasics,
 	}
 
 	client, err := lens.NewChainClient(logger, ccc, os.Getenv("HOME"), os.Stdin, os.Stdout)
