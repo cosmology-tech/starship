@@ -248,6 +248,8 @@ defaultRelayers:
     image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
   hermes:
     image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
+  go-relayer:
+    image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
 
 chains: []
   # Examples running chains

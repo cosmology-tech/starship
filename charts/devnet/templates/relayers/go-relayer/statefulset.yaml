@@ -1,0 +1,145 @@
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "go-relayer" }}
+{{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
+{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
+
+{{ $imagePullSecrets := $relayer.imagePullSecrets | default list }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $relayer.type }}-{{ $relayer.name }}
+spec:
+  serviceName: {{ $relayer.type }}-{{ $relayer.name }}
+  replicas: {{ $relayer.replicas }}
+  podManagementPolicy: "Parallel"
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: relayer
+      app.kubernetes.io/type: {{ $relayer.type }}
+      app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: relayer
+        app.kubernetes.io/type: {{ $relayer.type }}
+        app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      imagePullSecrets:
+      {{- range $imagePullSecrets }}
+        - name: {{ .name }}
+      {{- end }}
+      initContainers:
+        {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
+        - name: init-relayer
+          image: {{ $relayer.image | default $defaultRelayer.image }}
+          imagePullPolicy: Always
+          env:
+            - name: KEYS_CONFIG
+              value: /keys/keys.json
+            - name: RELAYER_DIR
+              value: /home/relayer/.relayer
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - bash
+            - "-c"
+            - |
+              RLY_INDEX=${HOSTNAME##*-}
+              MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
+
+              rly config init
+
+              {{- range $i, $chain := $relayer.chains }}
+              {{- range $fullchain := $.Values.chains }}
+              {{- if eq $fullchain.name $chain }}
+              {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
+              {{ $fullchain = merge $fullchain $defaultChain }}
+
+              echo "Adding {{ $fullchain.name }} chain"
+              rly chains add --file "/configs/{{ $fullchain.name }}.json" {{ $fullchain.name }}
+
+              echo "Restoring {{ $fullchain.name }} keys"
+              rly keys restore {{ $fullchain.name }} default "$MNEMONIC"
+
+              DENOM="{{ $fullchain.denom }}"
+              RLY_ADDR=$(rly address "{{ $fullchain.name }}" | awk 'END{print}')
+              echo "Transfer tokens to address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM"
+              bash -e /scripts/transfer_tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              {{- end }}
+              {{- end }}
+              {{- end }}
+
+              PATHEND="{{ index $relayer.chains 0 }}-{{ index $relayer.chains 1 }}"
+              echo "Creating path $PATHEND"
+              rly paths add \
+                {{ index $relayer.chains 0 }} \
+                {{ index $relayer.chains 1 }} \
+                $PATHEND \
+                --file "/configs/path.json"
+
+              echo "Creating a channel"
+              rly transact link $PATHEND --src-port transfer --dst-port transfer -d
+
+              echo "Creating a client on $PATHEND"
+              rly transact clients $PATHEND
+
+              echo "Creating a connection on $PATHEND"
+              rly transact connection $PATHEND
+          volumeMounts:
+            - mountPath: /home/relayer
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+            - mountPath: /keys
+              name: keys
+            - mountPath: /scripts
+              name: scripts
+          resources:
+{{ toYaml $.Values.resources.init | indent 12 }}
+      containers:
+        - name: relayer
+          image: {{ $relayer.image | default $defaultRelayer.image }}
+          imagePullPolicy: Always
+          env:
+            - name: RELAYER_DIR
+              value: /home/relayer/.relayer
+          command:
+            - bash
+            - "-c"
+            - |
+              rly start --home $RELAYER_DIR
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /home/relayer
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+      volumes:
+        - name: relayer
+          emptyDir: { }
+        - name: relayer-config
+          configMap:
+            name: "{{ $relayer.type }}-{{ $relayer.name }}"
+        - name: keys
+          configMap:
+            name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
+---
+{{- end }}
+{{- end }}
