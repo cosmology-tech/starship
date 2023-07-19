@@ -235,9 +235,11 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+      {{-if $imagePullSecrets }}
       imagePullSecrets:
       {{- range $imagePullSecrets }}
         - name: {{ .name }}
+      {{- end }}
       {{- end }}
       volumes:
         - name: node
