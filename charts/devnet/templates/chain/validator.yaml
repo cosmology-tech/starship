@@ -5,7 +5,6 @@
 # merge defaultChain values into the $chain dict
 {{ $chain = merge $chain $defaultChain }}
 
-{{ $imagePullSecrets := $chain.imagePullSecrets | default list }}
 {{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
 {{- $build := .build | default (dict "enabled" false) -}}
 {{- $toBuild := or $build.enabled $upgrade.enabled }}
@@ -43,6 +42,7 @@ spec:
         app.kubernetes.io/name: {{ $chain.name }}-validator
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
+      {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
         {{- if $toBuild }}
         - name: init-build-images
@@ -235,12 +235,6 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
-      {{-if $imagePullSecrets }}
-      imagePullSecrets:
-      {{- range $imagePullSecrets }}
-        - name: {{ .name }}
-      {{- end }}
-      {{- end }}
       volumes:
         - name: node
           emptyDir: { }

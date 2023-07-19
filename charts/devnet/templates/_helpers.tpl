@@ -196,3 +196,13 @@ requests:
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{- define "imagePullSecrets" }}
+{{- $imagePullSecrets := .imagePullSecrets | default list }}
+{{- if $imagePullSecrets }}
+imagePullSecrets:
+{{- range $secret := $imagePullSecrets }}
+- name: {{ $secret.name }}
+{{- end }}
+{{- end }}
+{{- end }}
