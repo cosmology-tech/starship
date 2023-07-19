@@ -242,9 +242,11 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+      {{-if $imagePullSecrets }}
       imagePullSecrets:
       {{- range $imagePullSecrets }}
         - name: {{ .name }}
+      {{- end }}
       {{- end }}
       volumes:
         - name: node
