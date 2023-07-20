@@ -2,6 +2,10 @@
 {{- if eq $chain.type "virtual" }}
 {{- if eq $chain.subtype "eth" }}
 
+{{ $defaultChain := get $.Values.defaultChains $chain.subtype | default dict }}
+{{ $chain = merge $chain $defaultChain }}
+
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -36,14 +40,12 @@ spec:
             - name: ethereum
               mountPath: /ethereum
         - name: prysm-beacon-init
-          image: ghcr.io/polymerdao/prysm-prysmctl:v4.0.3-light-client-1
-          command: ['prysmctl']
+          image: {{ $chain.prysmCtl.image }}
+          command: {{ $chain.prysmCtl.command }}
           args:
-            - testnet
-            - generate-genesis
-            - --num-validators=36
-            - --output-ssz=/ethereum/consensus/genesis.ssz
-            - --chain-config-file=/etc/config/config.yml
+            {{- range $arg := $chain.prysmCtl.args }}
+            - {{ $arg -}}
+            {{ end }}
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -51,7 +53,7 @@ spec:
               mountPath: /etc/config
               readOnly: true
         - name: geth-account-init
-          image: ethereum/client-go:v1.10.26
+          image: {{ $chain.geth.image }}
           command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
           volumeMounts:
             - name: ethereum
@@ -60,7 +62,7 @@ spec:
               mountPath: /etc/secrets
               readOnly: true
         - name: geth-genesis-init
-          image: ethereum/client-go:v1.10.26
+          image: {{ $chain.geth.image }}
           command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
           volumeMounts:
             - name: ethereum
@@ -76,22 +78,11 @@ spec:
               mountPath: /ethereum
       containers:
         - name: geth
-          image: ethereum/client-go:v1.10.26
+          image: {{ $chain.geth.image }}
           args:
-            - --nodiscover
-            - --http
-            - --http.api=eth,net,web3,debug
-            - --http.addr=0.0.0.0
-            - --authrpc.vhosts=*
-            - --authrpc.addr=0.0.0.0
-            - --authrpc.jwtsecret=/etc/secrets/jwt.hex
-            - --datadir=/ethereum/execution
-            - --allow-insecure-unlock
-            - --unlock=0x123463a4B065722E99115D6c222f267d9cABb524
-            - --password=/dev/null
-            - --syncmode=full
-            - --mine
-            - --networkid=32382
+            {{- range $arg := $chain.geth.args }}
+            - {{ $arg -}}
+            {{ end }}
           workingDir: /ethereum/execution
           ports:
             - name: geth-http
@@ -109,24 +100,12 @@ spec:
               cpu: 100m
               memory: 1Gi
         - name: beacon-chain
-          image: ghcr.io/polymerdao/prysm-beacon-chain:v4.0.3-light-client-1
-          command: ['beacon-chain']
+          image: {{ $chain.beaconChain.image }}
+          command: {{ $chain.beaconChain.command }}
           args:
-            - --datadir=/ethereum/consensus/beacon
-            - --min-sync-peers=0
-            - --no-discovery
-            - --interop-genesis-state=/ethereum/consensus/genesis.ssz
-            - --interop-eth1data-votes
-            - --bootstrap-node=
-            - --chain-config-file=/etc/config/config.yml
-            - --chain-id=32382
-            - --execution-endpoint=http://localhost:8551
-            - --accept-terms-of-use
-            - --rpc-host=0.0.0.0
-            - --grpc-gateway-host=0.0.0.0
-            - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
-            - --jwt-secret=/etc/secrets/jwt.hex
-            - --enable-polymer-devnet-mode
+            {{- range $arg := $chain.beaconChain.args }}
+            - {{ $arg -}}
+            {{ end }}
           workingDir: /ethereum/consensus
           ports:
             - name: beacon-api
@@ -149,19 +128,12 @@ spec:
               cpu: 100m
               memory: 1Gi
         - name: validator
-          image: ghcr.io/polymerdao/prysm-validator:v4.0.3-light-client-1
-          command: ['validator']
+          image: {{ $chain.validator.image }}
+          command: {{ $chain.validator.command }}
           args:
-            - --beacon-rpc-provider=localhost:4000
-            - --datadir=/ethereum/consensus/validator
-            - --accept-terms-of-use
-            - --interop-num-validators=36
-            - --interop-start-index=0
-            - --force-clear-db
-            - --chain-config-file=/etc/config/config.yml
-            - --config-file=/etc/config/config.yml
-            - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
-            - --enable-polymer-devnet-mode
+            {{- range $arg := $chain.validator.args }}
+            - {{ $arg -}}
+            {{ end }}
           workingDir: /ethereum/consensus
           volumeMounts:
             - name: ethereum
@@ -173,8 +145,7 @@ spec:
             requests:
               cpu: 100m
               memory: 1Gi
-      imagePullSecrets:
-        - name: ghcr
+      {{- include "imagePullSecrets" $chain | indent 6 }}
       volumes:
         - name: secrets
           secret:

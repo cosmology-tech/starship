@@ -242,6 +242,64 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/umee-network/umee
+  eth:
+    prysmCtl:
+      image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
+      command: ["/app/cmd/prysmctl/prysmctl"]
+      args:
+        - testnet
+        - generate-genesis
+        - --num-validators=36
+        - --output-ssz=/ethereum/consensus/genesis.ssz
+        - --chain-config-file=/etc/config/config.yml
+    geth:
+      image: ethereum/client-go:v1.10.26
+      args:
+        - --nodiscover
+        - --http
+        - --http.api=eth,net,web3,debug
+        - --http.addr=0.0.0.0
+        - --authrpc.vhosts=*
+        - --authrpc.addr=0.0.0.0
+        - --authrpc.jwtsecret=/etc/secrets/jwt.hex
+        - --datadir=/ethereum/execution
+        - --allow-insecure-unlock
+        - --unlock=0x123463a4B065722E99115D6c222f267d9cABb524
+        - --password=/dev/null
+        - --syncmode=full
+        - --mine
+        - --networkid=32382
+    beaconChain:
+        image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.7
+        command: ["/app/cmd/beacon-chain/beacon-chain"]
+        args:
+          - --datadir=/ethereum/consensus/beacon
+          - --min-sync-peers=0
+          - --genesis-state=/ethereum/consensus/genesis.ssz
+          - --bootstrap-node=
+          - --chain-config-file=/etc/config/config.yml
+          - --chain-id=32382
+          - --rpc-host=0.0.0.0
+          - --contract-deployment-block=0
+          - --grpc-gateway-host=0.0.0.0
+          - --execution-endpoint=http://localhost:8551
+          - --accept-terms-of-use
+          - --jwt-secret=/etc/secrets/jwt.hex
+          - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
+    validator:
+      image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
+      command: ["/app/cmd/validator/validator"]
+      args:
+        - --accept-terms-of-use
+        - --beacon-rpc-provider=localhost:4000
+        - --datadir=/ethereum/consensus/validator
+        - --interop-num-validators=36
+        - --interop-start-index=0
+        - --force-clear-db
+        - --chain-config-file=/etc/config/config.yml
+        - --config-file=/etc/config/config.yml
+        - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
+
 
 defaultRelayers:
   ts-relayer:
