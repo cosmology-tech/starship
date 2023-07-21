@@ -299,6 +299,7 @@ defaultChains:
         - --chain-config-file=/etc/config/config.yml
         - --config-file=/etc/config/config.yml
         - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
+    contracts: []
 
 
 defaultRelayers:
