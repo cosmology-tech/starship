@@ -17,14 +17,17 @@ spec:
       protocol: TCP
       port: 3500
       targetPort: 3500
+      nodePort: 30500
     - name: geth-http
       protocol: TCP
       port: 8545
       targetPort: 8545
+      nodePort: 30545
     - name: geth-authrpc
       protocol: TCP
       port: 8551
       targetPort: 8551
+      nodePort: 30551
 
 {{- end }}
 {{- end }}
