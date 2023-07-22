@@ -259,7 +259,7 @@ defaultChains:
         - --http
         - --http.api=eth,net,web3,debug
         - --http.addr=0.0.0.0
-        - --authrpc.vhosts=*
+        - --http.vhosts=*
         - --authrpc.addr=0.0.0.0
         - --authrpc.jwtsecret=/etc/secrets/jwt.hex
         - --datadir=/ethereum/execution
