@@ -2,7 +2,7 @@ chains:
   - name: mesh-osmosis-1
     type: custom
     numValidators: 4
-    image: anmol1696/meshd:osmo
+    image: anmol1696/meshd:osmo-v2
     home: /root/.meshd
     binary: meshd
     prefix: osmo
@@ -25,7 +25,7 @@ chains:
   - name: mesh-juno-1
     type: custom
     numValidators: 4
-    image: anmol1696/meshd:juno
+    image: anmol1696/meshd:juno-v2
     home: /root/.meshd
     binary: meshd
     prefix: juno
