@@ -271,24 +271,24 @@ defaultChains:
         - --miner.etherbase=0x123463a4b065722e99115d6c222f267d9cabb524
         - --networkid=32382
     beaconChain:
-        image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.7
-        command: ["/app/cmd/beacon-chain/beacon-chain"]
-        args:
-          - --datadir=/ethereum/consensus/beacon
-          - --min-sync-peers=0
-          - --genesis-state=/ethereum/consensus/genesis.ssz
-          - --bootstrap-node=
-          - --chain-config-file=/etc/config/config.yml
-          - --config-file=/etc/config/config.yml
-          - --chain-id=32382
-          - --rpc-host=0.0.0.0
-          - --contract-deployment-block=0
-          - --grpc-gateway-host=0.0.0.0
-          - --execution-endpoint=http://localhost:8551
-          - --accept-terms-of-use
-          - --jwt-secret=/etc/secrets/jwt.hex
-          - --contract-deployment-block=0
-          - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
+      image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.7
+      command: ["/app/cmd/beacon-chain/beacon-chain"]
+      args:
+        - --datadir=/ethereum/consensus/beacon
+        - --min-sync-peers=0
+        - --genesis-state=/ethereum/consensus/genesis.ssz
+        - --bootstrap-node=
+        - --chain-config-file=/etc/config/config.yml
+        - --config-file=/etc/config/config.yml
+        - --chain-id=32382
+        - --rpc-host=0.0.0.0
+        - --contract-deployment-block=0
+        - --grpc-gateway-host=0.0.0.0
+        - --execution-endpoint=http://localhost:8551
+        - --accept-terms-of-use
+        - --jwt-secret=/etc/secrets/jwt.hex
+        - --contract-deployment-block=0
+        - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
     validator:
       image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
       command: ["/app/cmd/validator/validator"]
