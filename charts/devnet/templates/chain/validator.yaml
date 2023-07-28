@@ -42,6 +42,7 @@ spec:
         app.kubernetes.io/name: {{ $chain.name }}-validator
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
+      {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
         {{- if $toBuild }}
         - name: init-build-images
