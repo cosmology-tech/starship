@@ -12,6 +12,7 @@ metadata:
   name: prysm
 spec:
   serviceName: "prysm"
+  # todo: support multiple nodes
   replicas: 1
   selector:
     matchLabels:
