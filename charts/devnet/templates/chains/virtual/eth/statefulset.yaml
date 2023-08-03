@@ -30,7 +30,7 @@ spec:
             rm -rf /ethereum/{execution,consensus}; \
             mkdir -p /ethereum/consensus/{beacon,validator} /ethereum/execution \
             && cd /ethereum/consensus; \
-            stat genesis.ssz || wget -S https://github.com/eth-clients/eth2-networks/raw/master/shared/prater/genesis.ssz"]
+            stat genesis.ssz || wget -S {{ $chain.genesisStateUrl }};" ]
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -40,19 +40,6 @@ spec:
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
-        - name: prysm-beacon-init
-          image: {{ $chain.prysmCtl.image }}
-          command: {{ $chain.prysmCtl.command }}
-          args:
-            {{- range $arg := $chain.prysmCtl.args }}
-            - {{ $arg -}}
-            {{ end }}
-          volumeMounts:
-            - name: ethereum
-              mountPath: /ethereum
-            - name: config
-              mountPath: /etc/config
-              readOnly: true
         - name: geth-account-init
           image: {{ $chain.geth.image }}
           command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
@@ -61,15 +48,6 @@ spec:
               mountPath: /ethereum
             - name: secrets
               mountPath: /etc/secrets
-              readOnly: true
-        - name: geth-genesis-init
-          image: {{ $chain.geth.image }}
-          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
-          volumeMounts:
-            - name: ethereum
-              mountPath: /ethereum
-            - name: config
-              mountPath: /etc/config
               readOnly: true
         - name: init-done
           image: alpine/openssl
@@ -90,6 +68,10 @@ spec:
               containerPort: 8545
             - name: geth-authrpc
               containerPort: 8551
+            - name: p2p-tcp
+              containerPort: 30303
+            - name: p2p-udp
+              containerPort: 30303
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -123,24 +105,6 @@ spec:
               readOnly: true
             - name: secrets
               mountPath: /etc/secrets
-              readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
-        - name: validator
-          image: {{ $chain.validator.image }}
-          command: {{ $chain.validator.command }}
-          args:
-            {{- range $arg := $chain.validator.args }}
-            - {{ $arg -}}
-            {{ end }}
-          workingDir: /ethereum/consensus
-          volumeMounts:
-            - name: ethereum
-              mountPath: /ethereum
-            - name: config
-              mountPath: /etc/config
               readOnly: true
           resources:
             requests:
