@@ -28,15 +28,6 @@ spec:
       port: 8551
       targetPort: 8551
       nodePort: 30551
-    - name: p2p-tcp
-      protocol: TCP
-      port: 30303
-      nodePort: 30303
-    - name: p2p-udp
-      protocol: UDP
-      port: 30303
-      nodePort: 30303
-
 
 {{- end }}
 {{- end }}

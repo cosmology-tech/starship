@@ -91,10 +91,6 @@ spec:
               containerPort: 8545
             - name: geth-authrpc
               containerPort: 8551
-            - name: p2p-tcp
-              containerPort: 30303
-            - name: p2p-udp
-              containerPort: 30303
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
