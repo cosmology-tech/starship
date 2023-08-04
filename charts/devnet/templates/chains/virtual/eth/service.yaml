@@ -18,14 +18,6 @@ spec:
       port: 3500
       targetPort: 3500
       nodePort: 30500
-    - name: p2p-tcp
-      protocol: TCP
-      port: 30303
-      nodePort: 30303
-    - name: p2p-udp
-      protocol: UDP
-      port: 30303
-      nodePort: 30303
     - name: geth-http
       protocol: TCP
       port: 8545
@@ -36,6 +28,15 @@ spec:
       port: 8551
       targetPort: 8551
       nodePort: 30551
+    - name: p2p-tcp
+      protocol: TCP
+      port: 30303
+      nodePort: 30303
+    - name: p2p-udp
+      protocol: UDP
+      port: 30303
+      nodePort: 30303
+
 
 {{- end }}
 {{- end }}
