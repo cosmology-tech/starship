@@ -5,7 +5,6 @@
 {{ $defaultChain := get $.Values.defaultChains $chain.subtype | default dict }}
 {{ $chain = merge $chain $defaultChain }}
 
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -40,6 +39,30 @@ spec:
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
+        - name: prysm-beacon-init
+          image: {{ $chain.prysmCtl.image }}
+          command: {{ $chain.prysmCtl.command }}
+          args:
+            {{- range $arg := $chain.prysmCtl.args }}
+            - {{ $arg -}}
+            {{ end }}
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+        {{- if not $chain.joinNetwork }}
+        - name: geth-genesis-init
+          image: {{ $chain.geth.image }}
+          command: ['sh', '-c', "echo {{$chain.geth}}; if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+        {{- end }}
         - name: geth-account-init
           image: {{ $chain.geth.image }}
           command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
@@ -78,10 +101,7 @@ spec:
             - name: secrets
               mountPath: /etc/secrets
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          resources: {{- include "getResourceObject" $chain.geth.resources | trim | nindent 12 }}
         - name: beacon-chain
           image: {{ $chain.beaconChain.image }}
           command: {{ $chain.beaconChain.command }}
@@ -106,10 +126,7 @@ spec:
             - name: secrets
               mountPath: /etc/secrets
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
       {{- include "imagePullSecrets" $chain | indent 6 }}
       volumes:
         - name: secrets
