@@ -39,6 +39,7 @@ spec:
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
+        {{- if not $chain.joinNetwork }}
         - name: prysm-beacon-init
           image: {{ $chain.prysmCtl.image }}
           command: {{ $chain.prysmCtl.command }}
@@ -52,7 +53,6 @@ spec:
             - name: config
               mountPath: /etc/config
               readOnly: true
-        {{- if not $chain.joinNetwork }}
         - name: geth-genesis-init
           image: {{ $chain.geth.image }}
           command: ['sh', '-c', "echo {{$chain.geth}}; if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
@@ -127,6 +127,23 @@ spec:
               mountPath: /etc/secrets
               readOnly: true
           resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
+        {{- if $chain.validator.enabled }}
+        - name: validator
+          image: {{ $chain.validator.image }}
+          command: {{ $chain.validator.command }}
+          args:
+            {{- range $arg := $chain.validator.args }}
+            - {{ $arg -}}
+            {{ end }}
+          workingDir: /ethereum/consensus
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: config
+              mountPath: /etc/config
+              readOnly: true
+          resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
+      {{- end }}
       {{- include "imagePullSecrets" $chain | indent 6 }}
       volumes:
         - name: secrets
