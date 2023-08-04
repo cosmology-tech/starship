@@ -55,7 +55,7 @@ spec:
               readOnly: true
         - name: geth-genesis-init
           image: {{ $chain.geth.image }}
-          command: ['sh', '-c', "echo {{$chain.geth}}; if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
