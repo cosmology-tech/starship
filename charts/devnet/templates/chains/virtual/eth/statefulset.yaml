@@ -123,10 +123,10 @@ spec:
         name: ethereum
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: hostpath
+        storageClassName: {{ $chain.storageClassName }}
         resources:
           requests:
-            storage: 10Gi
+            storage: {{ $chain.storage }}
 
 {{- end }}
 {{- end }}

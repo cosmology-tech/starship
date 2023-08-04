@@ -244,6 +244,7 @@ defaultChains:
     repo: https://github.com/umee-network/umee
   eth:
     network: sepolia
+    storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
     prysmCtl:
       enabled: true
