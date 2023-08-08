@@ -154,10 +154,15 @@ chains:
   numValidators: 1
   faucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
+    concurrency: 2          # default is 10
     resources:
       cpu: "0.3"
       memory: "600M"
 ```
+
+Note `concurrency` in `faucet` is the number of concurrent requests the faucet can handle.
+If you are running a chain with less resources, or want faster startup time,
+then you can reduce the `concurrency` to a lower number.
 
 ## `build` (optional)
 With the `build` directive in the chain, one can basically build chain binaries on the fly before starting the chain.
