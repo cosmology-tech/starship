@@ -79,13 +79,13 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 10
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 10
       volumes:
         {{- range $chain := .Values.chains }}
         - name: registry-configs-{{ $chain.name }}
@@ -94,7 +94,8 @@ spec:
         {{- end }}
 ---
 {{- range $chain := .Values.chains }}
-{{ $defaultChain := get $.Values.defaultChains $chain.type | default dict }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
 {{ $chain = merge $chain $defaultChain }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}

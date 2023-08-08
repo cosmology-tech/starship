@@ -1,6 +1,7 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "hermes" }}
-{{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
 {{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
@@ -62,7 +63,8 @@ spec:
               {{- range $i, $chain := $relayer.chains }}
               {{- range $fullchain := $.Values.chains }}
               {{- if eq $fullchain.name $chain }}
-              {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
+              {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+              {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
               {{ $fullchain = merge $fullchain $defaultChain }}
               echo "Creating key for {{ $chain }}..."
               hermes keys add \

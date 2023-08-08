@@ -1,54 +1,3 @@
-# Default values for devnet.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-nameOverride: ""
-fullnameOverride: ""
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-resources:
-  node:
-    # Default values for resources for chain and validator nodes
-    # Preference would be given to the resources directive in chain/relayer
-    cpu: "0.5"
-    memory: "500M"
-  wait:
-    cpu: "0.1"
-    memory: "100M"
-
-exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
-  ports:
-    rest: 8081
-  resources:
-    cpu: "0.2"
-    memory: "200M"
-
-faucet:
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
-  concurrency: 10
-  ports:
-    rest: 8000
-  resources:
-    cpu: "0.2"
-    memory: "200M"
-
-# Chain timeouts
-timeouts:
-  time_iota_ms: 10
-  timeout_propose: 400ms
-  timeout_propose_delta: 400ms
-  timeout_prevote: 400ms
-  timeout_prevote_delta: 400ms
-  timeout_precommit: 400ms
-  timeout_precommit_delta: 400ms
-  timeout_commit: 800ms
-
 # API for interacting with the charts for devnet
 # TODO: need a way to create state reaching jobs, those will run user bash scripts
 # after the chain has been initialized, get the chain to a state and then complete
@@ -244,9 +193,6 @@ defaultChains:
     coinType: 118
     repo: https://github.com/umee-network/umee
   eth:
-    storageClassName: hostpath
-    genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
-    joinNetwork: false
     prysmCtl:
       image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
       command: ["/app/cmd/prysmctl/prysmctl"]
@@ -257,7 +203,7 @@ defaultChains:
         - --output-ssz=/ethereum/consensus/genesis.ssz
         - --chain-config-file=/etc/config/config.yml
     geth:
-      image: ethereum/client-go:v1.12.0
+      image: ethereum/client-go:v1.10.26
       args:
         - --nodiscover
         - --http
@@ -294,7 +240,6 @@ defaultChains:
         - --contract-deployment-block=0
         - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
     validator:
-      enabled: false
       image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
       command: ["/app/cmd/validator/validator"]
       args:
@@ -309,7 +254,6 @@ defaultChains:
         - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
     contracts: []
 
-
 defaultRelayers:
   ts-relayer:
     image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
@@ -317,110 +261,3 @@ defaultRelayers:
     image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
   go-relayer:
     image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
-
-chains: []
-  # Examples running chains
-  # - name: osmosis-1
-  #   type: osmosis
-  #   numValidators: 4
-  #   upgrade:
-  #     enabled: true
-  #     # type will indicate the way in which the upgrade binaries is supposed to be handled
-  #     # can be build, docker, fetch
-  #     # build: run build scripts for various versions
-  #     # docker (todo): copy binaries from docker images
-  #     # fetch (todo): fetch binaries directly from github releases
-  #     type: build
-  #     genesis: v11.0.1
-  #     upgrades:
-  #       - name: v12
-  #         version: v12.2.0
-  #   faucet:
-  #     # if not mentioned will use the default directive
-  #     # faucet directive will instruct the chart to deploy a certain version
-  #     # of the cosmjs-faucet with the chain. Make sure to use a version compatible
-  #     # with the chain version. Available images: https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fcosmjs-faucet
-  #     image: <faucet image to use>
-  #   ports:
-  #     rpc: 26653
-  #     rest: 1313
-  # - name: core-1
-  #   type: persistencecore
-  #   numValidators: 3
-  #   upgrade:
-  #     enabled: true
-  #     type: build
-  #     genesis: v3.2.0
-  #     upgrades:
-  #       - name: v4
-  #         version: v4.0.0
-  #   ports:
-  #     rpc: 26657
-  #     rest: 1317
-  # - name: core-2
-  #   type: persistencecore
-  #   numValidators: 3
-  #   build:
-  #     # build directive will instruct the chart to build the chain source from
-  #     # given version tag or branch name
-  #     enabled: true
-  #     source: v3.2.0
-  #   ports:
-  #     rpc: 26658
-  #     rest: 1318
-  # - name: juno-1
-  #   type: juno
-  #   numValidators: 2
-  #   ports:
-  #     rpc: 26654
-  #     rest: 1314
-  # - name: wasmd
-  #   type: wasmd
-  #   numValidators: 3
-  #   ports:
-  #     rpc: 26659
-  #     rest: 1319
-
-# TODO: ability to check the srcConnection and destConnection to use
-relayers: []
-# Example relayers, default is set to none
-#  - name: osmo-wasm
-#    type: ts-relayer
-#    replicas: 1 # these are unique replicas, currently only support a single replica
-#    chains:
-#      - osmosis-1
-#      - wasmd
-#  - name: osmo-juno
-#    type: ts-relayer
-#    replicas: 1
-#    chains:
-#      - osmosis-1
-#      - juno-1
-
-explorer:
-  # Flag to enable explorer for cluster
-  enabled: false
-  type: ping-pub
-  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
-  localhost: true
-  ports:
-    rest: 8080
-  # Currently the ping-pub explorer is using alot of memory dues to building the site
-  # at runtime (with custom configs). Anything bellow 2Gi will crash the pods on startup
-  # todo: make this more efficient with faster startuptime
-  resources:
-    cpu: "1"
-    memory: "2Gi"
-
-registry:
-  enabled: false
-  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
-  ports:
-    rest: 6060
-    grpc: 7070
-  resources:
-    cpu: "0.2"
-    memory: "200M"
-
-collector:
-  enabled: false

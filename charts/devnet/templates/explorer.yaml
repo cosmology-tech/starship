@@ -76,7 +76,8 @@ metadata:
   name: explorer
 data:
   {{- range $chain := .Values.chains }}
-  {{ $defaultChain := get $.Values.defaultChains $chain.type | default dict }}
+  {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+  {{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
   {{ $chain = merge $chain $defaultChain }}
   {{ $host := "localhost" }}
   {{- if not $.Values.explorer.localhost }}

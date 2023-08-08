@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/golang/protobuf/jsonpb"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
@@ -66,19 +68,25 @@ func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.Respon
 	return resPubKey, nil
 }
 
-func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*pb.GenesisState, error) {
+func (a *AppServer) GetGenesisFile(ctx context.Context, _ *emptypb.Empty) (*structpb.Struct, error) {
 	jsonFile, err := os.Open(a.config.GenesisFile)
 	if err != nil {
 		return nil, err
 	}
 
-	state := &pb.GenesisState{}
-	err = jsonpb.Unmarshal(jsonFile, state)
+	byteValue, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return state, nil
+	state := map[string]interface{}{}
+
+	err = json.Unmarshal(byteValue, &state)
+	if err != nil {
+		return nil, err
+	}
+
+	return structpb.NewStruct(state)
 }
 
 func (a *AppServer) GetKeys(ctx context.Context, _ *emptypb.Empty) (*pb.Keys, error) {

@@ -33,6 +33,10 @@ func (s *TestSuite) SetupTest() {
 
 	// read config file from yaml
 	configFile := os.Getenv(configEnvKey)
+	if configFile == "" {
+		s.T().Log(fmt.Errorf("env var %s not set, using default value", configEnvKey))
+		configFile = "configs/two-chain.yaml"
+	}
 	configFile = strings.Replace(configFile, "tests/", "", -1)
 	yamlFile, err := os.ReadFile(configFile)
 	s.Require().NoError(err)

@@ -3,8 +3,12 @@ build-proto: build-exposer build-registry
 
 .PHONY: build-registry
 build-registry:
-	buf generate --path $(CURDIR)/registry/ --output $(CURDIR)/../registry
+	bazel build //proto/registry:registry_go_proto
 
 .PHONY: build-exposer
 build-exposer:
-	buf generate --path $(CURDIR)/exposer/ --output $(CURDIR)/../exposer
+	bazel build //proto/exposer:exposer_go_proto
+
+.PHONY: update-go-pbs
+update-go-pbs:
+	cd $(CURDIR)/../ && bash scripts/update-go-pbs.sh
