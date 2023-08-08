@@ -7,8 +7,13 @@ chains:
       rpc: 26653
       exposer: 38083
     resources:
-      cpu: "0.2"
-      memory: 400M
+      cpu: "0.3"
+      memory: 600M
+    faucet:
+      concurrency: 2
+      resources:
+        cpu: "0.1"
+        memory: "300M"
 
 registry:
   enabled: true
@@ -28,8 +33,3 @@ exposer:
   resources:
     cpu: "0.1"
     memory: 100M
-
-faucet:
-  resources:
-    cpu: "0.1"
-    memory: "300M"

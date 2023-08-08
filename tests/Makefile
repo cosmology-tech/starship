@@ -19,7 +19,7 @@ stop: stop-forward delete
 ###############################################################################
 
 install:
-	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART) --wait --debug
+	helm install -f $(HELM_FILE) $(HELM_NAME) ../charts/$(HELM_CHART)
 
 upgrade:
 	helm upgrade --debug $(HELM_NAME) ../charts/$(HELM_CHART) -f $(HELM_FILE)
