@@ -79,13 +79,13 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 10
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 10
       volumes:
         {{- range $chain := .Values.chains }}
         - name: registry-configs-{{ $chain.name }}
