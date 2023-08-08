@@ -1,16 +1,20 @@
 chains:
   - name: simapp
     type: simapp
-    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
+    image: ghcr.io/cosmos/simapp:latest
     numValidators: 2
     ports:
       rest: 1317
       rpc: 26657
+      grpc: 9091
+      faucet: 8001
     faucet:
-      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0-alpha.2
-    resources:
-      cpu: "1"
-      memory: "2Gi"
+      # use v0.31.0-alpha.2 cosmjs-faucet for compatibility with simapp v0.47.3
+      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
+      concurrency: 4
+
+exposer:
+  image: ghcr.io/cosmology-tech/starship/exposer:20230808-2333929
 
 registry:
   enabled: true
