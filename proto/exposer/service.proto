@@ -3,11 +3,11 @@ package exposer;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
 import "proto/exposer/mnemonic.proto";
-import "proto/exposer/genesis.proto";
 
 option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
 
@@ -22,7 +22,7 @@ service Exposer {
     option (google.api.http) = { get: "/pub_key" };
   }
   // GetGenesisFile returns the genesis file of the node
-  rpc GetGenesisFile(google.protobuf.Empty) returns (GenesisState) {
+  rpc GetGenesisFile(google.protobuf.Empty) returns (google.protobuf.Struct) {
     option (google.api.http) = { get: "/genesis" };
   }
   // GetKeysFile returns the keys of the node
