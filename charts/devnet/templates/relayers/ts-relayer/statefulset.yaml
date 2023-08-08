@@ -1,6 +1,7 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "ts-relayer" }}
-{{ $defaultRelayer := get $.Values.defaultRelayers $relayer.type }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
 {{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
