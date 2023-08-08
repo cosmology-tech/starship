@@ -6,7 +6,6 @@
 {{ $defaultChain := get $defaultFile.defaultChains $chain.subtype | default dict }}
 {{ $chain = merge $chain $defaultChain }}
 
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -31,7 +30,7 @@ spec:
             rm -rf /ethereum/{execution,consensus}; \
             mkdir -p /ethereum/consensus/{beacon,validator} /ethereum/execution \
             && cd /ethereum/consensus; \
-            stat genesis.ssz || wget -S https://github.com/eth-clients/eth2-networks/raw/master/shared/prater/genesis.ssz"]
+            stat genesis.ssz || wget -S {{ $chain.genesisStateUrl }};" ]
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -41,6 +40,7 @@ spec:
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
+        {{- if not $chain.joinNetwork }}
         - name: prysm-beacon-init
           image: {{ $chain.prysmCtl.image }}
           command: {{ $chain.prysmCtl.command }}
@@ -54,15 +54,6 @@ spec:
             - name: config
               mountPath: /etc/config
               readOnly: true
-        - name: geth-account-init
-          image: {{ $chain.geth.image }}
-          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
-          volumeMounts:
-            - name: ethereum
-              mountPath: /ethereum
-            - name: secrets
-              mountPath: /etc/secrets
-              readOnly: true
         - name: geth-genesis-init
           image: {{ $chain.geth.image }}
           command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
@@ -71,6 +62,16 @@ spec:
               mountPath: /ethereum
             - name: config
               mountPath: /etc/config
+              readOnly: true
+        {{- end }}
+        - name: geth-account-init
+          image: {{ $chain.geth.image }}
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth --datadir=/ethereum/execution account import --password /dev/null /etc/secrets/secret.json"]
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: secrets
+              mountPath: /etc/secrets
               readOnly: true
         - name: init-done
           image: alpine/openssl
@@ -97,10 +98,7 @@ spec:
             - name: secrets
               mountPath: /etc/secrets
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          resources: {{- include "getResourceObject" $chain.geth.resources | trim | nindent 12 }}
         - name: beacon-chain
           image: {{ $chain.beaconChain.image }}
           command: {{ $chain.beaconChain.command }}
@@ -125,10 +123,8 @@ spec:
             - name: secrets
               mountPath: /etc/secrets
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
+        {{- if $chain.validator.enabled }}
         - name: validator
           image: {{ $chain.validator.image }}
           command: {{ $chain.validator.command }}
@@ -143,10 +139,8 @@ spec:
             - name: config
               mountPath: /etc/config
               readOnly: true
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
+      {{- end }}
       {{- include "imagePullSecrets" $chain | indent 6 }}
       volumes:
         - name: secrets
@@ -160,10 +154,10 @@ spec:
         name: ethereum
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: hostpath
+        storageClassName: {{ $chain.storageClassName }}
         resources:
           requests:
-            storage: 10Gi
+            storage: {{ $chain.storage }}
 
 {{- end }}
 {{- end }}
