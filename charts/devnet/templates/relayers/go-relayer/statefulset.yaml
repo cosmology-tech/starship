@@ -61,7 +61,8 @@ spec:
               {{- range $i, $chain := $relayer.chains }}
               {{- range $fullchain := $.Values.chains }}
               {{- if eq $fullchain.name $chain }}
-              {{ $defaultChain := get $.Values.defaultChains $fullchain.type | default dict }}
+              {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+              {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
               {{ $fullchain = merge $fullchain $defaultChain }}
 
               echo "Adding {{ $fullchain.name }} chain"
