@@ -132,7 +132,13 @@ spec:
               echo "Setup config files"
               bash -e /scripts/setup_config.sh
 
-              GENESIS_NODE_P2P=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
+              curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id
+              NODE_ID=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")
+              if [[ $NODE_ID == "" ]]; then
+                echo "Node ID is null, exiting early"
+                exit 1
+              fi
+              GENESIS_NODE_P2P=$NODE_ID@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
 
