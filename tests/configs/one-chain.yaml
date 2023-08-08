@@ -9,6 +9,8 @@ chains:
     resources:
       cpu: "0.5"
       memory: 500M
+    faucet:
+      concurrency: 2
 
 registry:
   enabled: true

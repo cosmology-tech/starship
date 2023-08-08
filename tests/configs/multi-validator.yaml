@@ -9,6 +9,11 @@ chains:
     resources:
       cpu: "0.2"
       memory: 400M
+    faucet:
+      concurrency: 1
+      resources:
+        cpu: "0.1"
+        memory: "300M"
 
 registry:
   enabled: true
@@ -28,8 +33,3 @@ exposer:
   resources:
     cpu: "0.1"
     memory: 100M
-
-faucet:
-  resources:
-    cpu: "0.1"
-    memory: "300M"
