@@ -2,7 +2,8 @@
 {{- if eq $chain.type "virtual" }}
 {{- if eq $chain.subtype "eth" }}
 
-{{ $defaultChain := get $.Values.defaultChains $chain.subtype | default dict }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultChain := get $defaultFile.defaultChains $chain.subtype | default dict }}
 {{ $chain = merge $chain $defaultChain }}
 
 
