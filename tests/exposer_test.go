@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
@@ -48,12 +49,12 @@ func (s *TestSuite) TestExposer_GetGenesisFile() {
 	s.Require().NoError(err)
 
 	// todo: fix unmarshalling of genesis into proto
-	resp := &pb.GenesisState{}
+	resp := &structpb.Struct{}
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
 	s.Assert().NotNil(resp)
-	s.Assert().Equal(chain.Name, resp.ChainId)
+	s.Assert().Equal(chain.Name, resp.AsMap()["chain_id"])
 }
 
 func (s *TestSuite) TestExposer_GetPubKey() {
