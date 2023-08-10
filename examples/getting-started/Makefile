@@ -4,7 +4,7 @@ TINY_FILE = configs/tiny-starship.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.36
+HELM_VERSION = v0.1.42
 
 ###############################################################################
 ###                              All commands                               ###
@@ -12,12 +12,6 @@ HELM_VERSION = v0.1.36
 
 .PHONY: setup
 setup: setup-deps setup-helm setup-kind
-
-.PHONY: start
-start: install port-forward
-
-.PHONY: start-tiny
-start-tiny: install-tiny port-forward
 
 .PHONY: stop
 stop: stop-forward delete
@@ -43,7 +37,7 @@ setup-helm:
 	helm search repo $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 install:
-	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION) --wait --debug --timeout 20m
+	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 
 install-tiny:
 	$(MAKE) install FILE=$(TINY_FILE)
