@@ -85,7 +85,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmos:
-    image: marcpt/gaia:9.1.0-perl-amd64
+    image: mkoijn6/gaia-lsm
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
@@ -95,7 +95,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/cosmos/gaia
   persistencecore:
-    image: marcpt/persistenceone-pstake:latest-amd64
+    image: mkoijn6/pstake-lsm
     home: /root/.pstaked
     binary: pstaked
     prefix: persistence

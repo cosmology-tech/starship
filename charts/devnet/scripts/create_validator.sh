@@ -19,19 +19,39 @@ done
 
 # Run create validator tx command
 echo "Running txn for create-validator"
-$CHAIN_BIN tx staking create-validator \
-  --pubkey=$($CHAIN_BIN tendermint show-validator) \
-  --moniker $VAL_NAME \
-  --amount 50000000000000000000$DENOM \
-  --keyring-backend="test" \
-  --chain-id $CHAIN_ID \
-  --from $VAL_NAME \
-  --commission-rate="0.10" \
-  --commission-max-rate="0.20" \
-  --commission-max-change-rate="0.01" \
-  --min-self-delegation="1000000" \
-  --fees 100000$DENOM \
-  --gas="auto" \
-  --gas-adjustment 1.5 --yes > /validator.log
+
+if [ "$DENOM" == "uatom" ]; then
+  $CHAIN_BIN tx staking create-validator \
+    --pubkey=$($CHAIN_BIN tendermint show-validator) \
+    --moniker $VAL_NAME \
+    --amount 50000000000000000000$DENOM \
+    --keyring-backend="test" \
+    --chain-id $CHAIN_ID \
+    --from $VAL_NAME \
+    --commission-rate="0.10" \
+    --commission-max-rate="0.20" \
+    --commission-max-change-rate="0.01" \
+    --fees 100000$DENOM \
+    --gas="auto" \
+    --gas-adjustment 1.5 --yes > /validator.log
+else
+  $CHAIN_BIN tx staking create-validator \
+    --pubkey=$($CHAIN_BIN tendermint show-validator) \
+    --moniker $VAL_NAME \
+    --amount 50000000000000000000$DENOM \
+    --keyring-backend="test" \
+    --chain-id $CHAIN_ID \
+    --from $VAL_NAME \
+    --commission-rate="0.10" \
+    --commission-max-rate="0.20" \
+    --commission-max-change-rate="0.01" \
+    --min-self-delegation="1000000" \
+    --fees 100000$DENOM \
+    --gas="auto" \
+    --gas-adjustment 1.5 --yes > /validator.log
+fi
+
 
 cat /validator.log | jq
+
+#gaiad tx staking create-validator --pubkey=$(gaiad tendermint show-validator) --moniker llanwa --amount 5000000000000uatom --keyring-backend="test"  --chain-id test-1 --from test2 --commission-rate="0.10" --commission-max-rate="0.20" --commission-max-change-rate="0.01"  --fees 100000uatom --gas="auto"   --gas-adjustment 1.5 --yes

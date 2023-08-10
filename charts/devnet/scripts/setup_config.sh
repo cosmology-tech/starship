@@ -32,6 +32,10 @@ enable = true/g' $CHAIN_DIR/config/app.toml
 
 sed -i -e "s#minimum-gas-prices = \".*\"#minimum-gas-prices = \"0$DENOM\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e "s#pruning = \".*\"#pruning = \"default\"#g" $CHAIN_DIR/config/app.toml
+#sed -i -e "s#pruning = \".*\"#pruning = \"custom\"#g" $CHAIN_DIR/config/app.toml
+#sed -i -e "s#pruning-keep-recent = \".*\"#pruning-keep-recent = \"100\"#g" $CHAIN_DIR/config/app.toml
+#sed -i -e "s#pruning-keep-every = \".*\"#pruning-keep-every = \"10000\"#g" $CHAIN_DIR/config/app.toml
+#sed -i -e "s#pruning-interval = \".*\"#pruning-interval = \"10\"#g" $CHAIN_DIR/config/app.toml
 sed -i -e 's#enabled-unsafe-cors = false#enabled-unsafe-cors = true#g' $CHAIN_DIR/config/app.toml
 sed -i -e 's#swagger = false#swagger = true#g' $CHAIN_DIR/config/app.toml
 
