@@ -1,4 +1,4 @@
-package tests
+package e2e
 
 type Chain struct {
 	Name          string `name:"name" json:"name" yaml:"name"`
