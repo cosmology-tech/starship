@@ -193,6 +193,9 @@ defaultChains:
     coinType: 118
     repo: https://github.com/umee-network/umee
   eth:
+    storageClassName: hostpath
+    genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
+    joinNetwork: false
     prysmCtl:
       image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
       command: ["/app/cmd/prysmctl/prysmctl"]
@@ -203,7 +206,7 @@ defaultChains:
         - --output-ssz=/ethereum/consensus/genesis.ssz
         - --chain-config-file=/etc/config/config.yml
     geth:
-      image: ethereum/client-go:v1.10.26
+      image: ethereum/client-go:v1.12.0
       args:
         - --nodiscover
         - --http
@@ -240,6 +243,7 @@ defaultChains:
         - --contract-deployment-block=0
         - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
     validator:
+      enabled: false
       image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
       command: ["/app/cmd/validator/validator"]
       args:
