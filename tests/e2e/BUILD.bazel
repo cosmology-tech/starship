@@ -6,7 +6,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_bundle", "con
 go_library(
     name = "tests_lib",
     srcs = ["config.go"],
-    importpath = "github.com/cosmology-tech/starship/tests",
+    importpath = "github.com/cosmology-tech/starship/tests/e2e",
     visibility = ["//visibility:public"],
 )
 

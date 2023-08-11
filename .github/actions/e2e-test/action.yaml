@@ -91,5 +91,5 @@ runs:
           --cache_test_results=no \
           --test_output=all \
           --test_env=TEST_CONFIG_FILE=${{ inputs.config-file }} \
-          //tests:tests
+          //tests/e2e:tests
       shell: bash
