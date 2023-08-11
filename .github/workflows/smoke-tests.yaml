@@ -1,9 +1,9 @@
 name: Smoke tests
 
 on:
-  # Run every day at 18:00 UTC
+  # Run every 2 hours
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch: {}
   # debug ci for smoke tests
   pull_request:
