@@ -8,10 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	pb "github.com/cosmology-tech/starship/exposer/exposer"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
+
+	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
 
 var configEnvKey = "TEST_CONFIG_FILE"

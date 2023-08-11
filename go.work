@@ -8,6 +8,6 @@ use (
 	./examples/upgrade-test
 	./exposer
 	./registry
-	./tests
 	./tools
+	./tests/e2e
 )

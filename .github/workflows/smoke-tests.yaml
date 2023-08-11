@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         config-file: [ "one-chain.yaml", "osmojs.yaml", "simapp.yaml", "multi-validator.yaml" ]
-      fail-fast: true
+      fail-fast: false
       max-parallel: 4
 
     env:
