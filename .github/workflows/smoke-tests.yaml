@@ -12,6 +12,8 @@ on:
 
 jobs:
   smoke-test-1:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
         config-file: [ "one-chain.yaml", "osmojs.yaml", "simapp.yaml", "multi-validator.yaml" ]
@@ -46,6 +48,7 @@ jobs:
 
   smoke-test-2:
     needs: [smoke-test-1]
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -81,6 +84,7 @@ jobs:
 
   smoke-test-3:
     needs: [smoke-test-2]
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
