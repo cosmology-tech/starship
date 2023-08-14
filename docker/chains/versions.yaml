@@ -253,3 +253,11 @@ chains:
       - v0.46.12
       - v0.47.1
       - v0.45.15
+  - name: cheqd
+    base: ghcr.io/strangelove-ventures/heighliner/cheqd
+    tags:
+      - v1.4.4
+  - name: neutron
+    base: ghcr.io/strangelove-ventures/heighliner/neutron
+    tags:
+      - v1.0.4
