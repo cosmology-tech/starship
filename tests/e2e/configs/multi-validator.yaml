@@ -1,7 +1,7 @@
 chains:
   - name: osmosis-1
     type: osmosis
-    numValidators: 2
+    numValidators: 4
     ports:
       rest: 1313
       rpc: 26653
@@ -10,7 +10,7 @@ chains:
       cpu: "0.3"
       memory: 600M
     faucet:
-      concurrency: 2
+      concurrency: 4
       resources:
         cpu: "0.1"
         memory: "300M"

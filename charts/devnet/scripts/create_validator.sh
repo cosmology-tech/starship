@@ -9,6 +9,7 @@ set -eu
 
 # Wait for the node to be synced
 max_tries=10
+# todo: SyncInfo is changed to sync_info in newer versions of tendermint, figure out a way to handle both
 while [[ $($CHAIN_BIN status 2>&1 | jq ".SyncInfo.catching_up") == true ]]
 do
   if [[ max_tries -lt 0 ]]; then echo "Not able to sync with genesis node"; exit 1; fi
@@ -16,6 +17,11 @@ do
   ((max_tries--))
   sleep 30
 done
+
+# Check if node is a validator already or not
+is_validator() {
+  $CHAIN_BIN status 2>&1 | jq ".ValidatorInfo.voting_power"
+}
 
 # Function to compare version numbers
 version_compare() {

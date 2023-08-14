@@ -106,6 +106,8 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
+              ls -l $CHAIN_DIR || true
+
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
                 echo "Genesis file exists, exiting early"
                 exit 0
