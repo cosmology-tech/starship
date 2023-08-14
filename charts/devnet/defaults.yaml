@@ -192,6 +192,26 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/umee-network/umee
+  cheqd:
+    image: ghcr.io/cosmology-tech/starship/cheqd:v1.4.4
+    home: /root/.cheqdnode
+    binary: cheqd-noded
+    prefix: cheqd
+    denom: ncheq
+    coins: 100000000000000ncheq
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cheqd/cheqd-node
+  neutron:
+    image: ghcr.io/cosmology-tech/starship/neutron:v1.0.4
+    home: /root/.neutrond
+    binary: neutrond
+    prefix: neutron
+    denom: untrn
+    coins: 100000000000000untrn
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/neutron-org/neutron
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
