@@ -285,3 +285,30 @@ defaultRelayers:
     image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
   go-relayer:
     image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
+
+defaultScripts:
+  createGenesis:
+    file: scripts/create-genesis.sh
+    data: |-
+      {{ .Files.Get "scripts/create-genesis.sh" | nindent 4 }}
+  updateGenesis:
+    file: scripts/update-genesis.sh
+    data: |-
+      {{ .Files.Get "scripts/update-genesis.sh" | nindent 4 }}
+  updateConfig:
+    file: scripts/update-config.sh
+    data: |-
+      {{ .Files.Get "scripts/update-config.sh" | nindent 4 }}
+  createValidator:
+    file: scripts/create-validator.sh
+    data: |-
+      {{ .Files.Get "scripts/create-validator.sh" | nindent 4 }}
+  transferTokens:
+    file: scripts/transfer-tokens.sh
+    data: |-
+      {{ .Files.Get "scripts/transfer-tokens.sh" | nindent 4 }}
+  buildChain:
+    file: scripts/build-chain.sh
+    data: |-
+      {{ .Files.Get "scripts/build-chain.sh" | nindent 4 }}
+  
