@@ -198,7 +198,7 @@ defaultChains:
     binary: cheqd-noded
     prefix: cheqd
     denom: ncheq
-    coins: 100000000000000ncheq
+    coins: 100000000000000000ncheq
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cheqd/cheqd-node

@@ -22,8 +22,10 @@ fi
 
 echo "Fetch wasmvm if needed"
 cd /tmp/chains/$CHAIN_NAME/$code_dir
+ls
 WASM_VERSION=$(cat go.mod | grep -oe "github.com/CosmWasm/wasmvm v[0-9.]*" | cut -d ' ' -f 2)
-if [[ WASM_VERSION != "" ]]; then
+echo "Wasmvm version: $WASM_VERSION"
+if [[ $WASM_VERSION != "" ]]; then
   mkdir -p /tmp/chains/libwasmvm_muslc
   cd /tmp/chains/libwasmvm_muslc
   curl -LO https://github.com/CosmWasm/wasmvm/releases/download/$WASM_VERSION/libwasmvm_muslc.x86_64.a

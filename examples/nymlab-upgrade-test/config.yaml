@@ -1,0 +1,44 @@
+chains:
+  - name: cheqd
+    type: cheqd # pending pr #178
+    repo: https://github.com/nymlab/cheqd-node
+    numValidators: 3
+    ports:
+      rpc: 26653
+      rest: 1313
+      faucet: 8001
+#    upgrade:
+#      enabled: true # enable the directive
+#      type: build
+#      genesis: v1.4.3
+#      upgrades:
+#        - name: v2 # upgrade proposal name
+#          version: prop31
+    resources:
+      cpu: 1
+      memory: "2Gi"
+  - name: gaia
+    type: cosmos # pending pr #178
+    numValidators: 1
+    ports:
+      rpc: 26657
+      rest: 1317
+      faucet: 8003
+
+relayers:
+  - name: cheqd-gaia
+    type: hermes
+    replicas: 1
+    chains:
+      - gaia-1
+      - cheqd
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
