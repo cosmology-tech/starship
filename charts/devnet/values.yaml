@@ -111,6 +111,45 @@ chains: []
   #   ports:
   #     rpc: 26659
   #     rest: 1319
+  # - name: osmosis-2
+  #   type: osmosis
+  #   numValidators: 2
+  #   # scripts directive will replace the default scripts with the given scripts
+  #   # please make sure the current scripts are compatible with Starship
+  #   scripts:
+  #     ## createGenesis script will be run before the chain is started
+  #     ## to create the genesis.json file. Can be used to fetch the genesis file too.
+  #     createGenesis:
+  #       file: local/scripts/create-genesis.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  #     ## updateGenesis script will be run on the genesis.json file
+  #     ## run after create-genesis
+  #     updateGenesis:
+  #       file: local/scripts/overwrite-genesis.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  #     updateConfig:
+  #       file: local/scripts/overwrite-config.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  #     ## run as the post-start hook in k8s, to create the validator
+  #     createValidator:
+  #       file: local/scripts/create-validator.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  #     ## transferTokens script will be run to get tokens from the faucet
+  #     transferTokens:
+  #       file: local/scripts/transfer-tokens.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  #     ## buildChain script that can be used for building the chain from source
+  #     buildChain:
+  #       file: local/scripts/build-chain.sh
+  #       data: |- # data is a multiline string injected from --set-file in helm
+  # - name: osmosis-4
+  #   type: osmosis
+  #   numValidators: 2
+  #   # genesis override local to genesis.json
+  #   # this genesis directive is converted to a patch.json file
+  #   # then then `jq -s '.[0] * .[1]' genesis.json patch.json > genesis.json` is run
+  #   genesis:
+  #     auth: ...
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers: []
