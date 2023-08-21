@@ -61,8 +61,9 @@ function set_helm_args() {
     if [[ "$scripts" == "null" ]]; then
       return 0
     fi
+    datadir="$(cd "$(dirname -- "${CONFIGFILE}")" >/dev/null; pwd -P)"
     for script in $(yq -r ".chains[$i].scripts | keys | .[]" ${CONFIGFILE}); do
-      args="$args --set-file chains[$i].scripts.$script.data=$(dirname ${CONFIGFILE})/$(yq -r ".chains[$i].scripts.$script.file" ${CONFIGFILE})"
+      args="$args --set-file chains[$i].scripts.$script.data=$datadir/$(yq -r ".chains[$i].scripts.$script.file" ${CONFIGFILE})"
     done
   done
 }
@@ -71,7 +72,7 @@ function install_chart() {
   args=""
   set_helm_args
   echo "args: $args"
-  helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
+  #helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
 }
 
 while [ $# -gt 0 ]; do
