@@ -72,7 +72,7 @@ function install_chart() {
   args=""
   set_helm_args
   echo "args: $args"
-  #helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
+  helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
 }
 
 while [ $# -gt 0 ]; do

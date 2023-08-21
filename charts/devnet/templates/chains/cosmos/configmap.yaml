@@ -17,7 +17,8 @@ metadata:
 data:
   {{- range $k, $v := $scripts }}
   {{- if hasKey $v "data" }}
-  {{ $v.name }}: {{- $v.data | nindent 4 }}
+  {{ $v.name }}: |-
+    {{- $v.data | nindent 4 }}
   {{- else }}
   {{ $v.name }}: |-
     {{- $.Files.Get $v.file | nindent 4 }}
