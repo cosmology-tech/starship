@@ -59,12 +59,12 @@ spec:
 
               # Build genesis
               {{- if $upgrade.enabled  }}
-              UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build_chain.sh
+              UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build-chain.sh
               {{- range $upgrade := $chain.upgrade.upgrades }}
-              UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build_chain.sh
+              UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build-chain.sh
               {{- end }}
               {{- else if $build.enabled }}
-              UPGRADE_NAME=genesis CODE_TAG={{ $chain.build.source }} bash -e /scripts/build_chain.sh
+              UPGRADE_NAME=genesis CODE_TAG={{ $chain.build.source }} bash -e /scripts/build-chain.sh
               {{- end }}
           env:
             - name: CODE_REF
@@ -131,7 +131,7 @@ spec:
               cat $CHAIN_DIR/config/genesis.json
 
               echo "Setup config files"
-              bash -e /scripts/setup_config.sh
+              bash -e /scripts/setup-config.sh
 
               curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id
               NODE_ID=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")
@@ -195,22 +195,7 @@ spec:
 
                     $CHAIN_BIN keys list | jq
 
-                    VAL_NAME=$VAL_NAME bash -e /scripts/create_validator.sh
-            {{- if $.Values.collector.enabled }}
-            preStop:
-              exec:
-                command:
-                  - bash
-                  - "-c"
-                  - "-e"
-                  - |
-                    VAL_INDEX=${HOSTNAME##*-}
-                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
-                    echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
-
-                    COLLECTOR_HOST=http://$COLLECTOR_SERVICE.$NAMESPACE.svc.cluster.local:$COLLECTOR_PORT
-                    VAL_NAME=$VAL_NAME COLLECTOR_HOST=$COLLECTOR_HOST bash -e /scripts/register_snapshots.sh
-            {{- end }}
+                    VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
@@ -251,7 +236,7 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts
+            name: setup-scripts-{{ $chain.name }}
 ---
 {{- end }}
 {{- end }}

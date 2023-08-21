@@ -288,27 +288,20 @@ defaultRelayers:
 
 defaultScripts:
   createGenesis:
+    name: create-genesis.sh
     file: scripts/create-genesis.sh
-    data: |-
-      {{ .Files.Get "scripts/create-genesis.sh" | nindent 4 }}
   updateGenesis:
+    name: update-genesis.sh
     file: scripts/update-genesis.sh
-    data: |-
-      {{ .Files.Get "scripts/update-genesis.sh" | nindent 4 }}
   updateConfig:
+    name: update-config.sh
     file: scripts/update-config.sh
-    data: |-
-      {{ .Files.Get "scripts/update-config.sh" | nindent 4 }}
   createValidator:
+    name: create-validator.sh
     file: scripts/create-validator.sh
-    data: |-
-      {{ .Files.Get "scripts/create-validator.sh" | nindent 4 }}
   transferTokens:
+    name: transfer-tokens.sh
     file: scripts/transfer-tokens.sh
-    data: |-
-      {{ .Files.Get "scripts/transfer-tokens.sh" | nindent 4 }}
   buildChain:
+    name: build-chain.sh
     file: scripts/build-chain.sh
-    data: |-
-      {{ .Files.Get "scripts/build-chain.sh" | nindent 4 }}
-  

@@ -2,7 +2,7 @@
 
 ## Script used to install the helm chart for the devnet from a config file
 ## Usage:
-## ./scripts/install.sh <config_file>
+## ./scripts/install.sh --coinfig <config_file>
 ## Options:
 ## -c|--config: config file to use (default: config.yaml)
 ## -v|--version: helm chart version (default: 0.1.43)
@@ -10,7 +10,10 @@
 set -euo pipefail
 
 # read config file from args into variable
-CONFIGFILE=$1
+CONFIGFILE="config.yaml"
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+echo "Script dir: ${SCRIPT_DIR}"
 
 # default values
 HELM_REPO="starship"
@@ -47,17 +50,53 @@ function set_helm_args() {
       return 0
     fi
     for script in $(yq -r ".chains[$i].scripts | keys | .[]" ${CONFIGFILE}); do
-      args="$args --set-file chains[$i].scripts.$script=$(yq -r ".chains[$i].scripts.$script.file" ${CONFIGFILE})"
+      args="$args --set-file chains[$i].scripts.$script.data=$(dirname ${CONFIGFILE})/$(yq -r ".chains[$i].scripts.$script.file" ${CONFIGFILE})"
     done
   done
+}
+
+function install_local_chart() {
+  args=""
+  set_helm_args
+  echo "args: $args"
+  helm install ${HELM_CHART} ${SCRIPT_DIR}/../charts/${HELM_CHART} -f ${CONFIGFILE} --dry-run $args
 }
 
 function install_chart() {
   args=""
   set_helm_args
+  echo "args: $args"
   helm install ${HELM_CHART} ${HELM_REPO}/${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} --dry-run $args
 }
 
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -c|--config)
+      CONFIGFILE="$2"
+      shift 2 # past argument=value
+      ;;
+    -v|--version)
+      HELM_CHART_VERSION="$2"
+      shift 2 # past argument
+      ;;
+    --local-chart)
+      LOCAL_CHART=1
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
+
 check_helm
 setup_helm
-install_chart
+
+if [[ -n "${LOCAL_CHART:-}" ]]; then
+  install_local_chart
+else
+  install_chart
+fi
