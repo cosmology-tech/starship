@@ -38,6 +38,15 @@ function setup_helm() {
 }
 
 function set_helm_args() {
+  if [[ $TIMEOUT ]]; then
+    args="$args --timeout $TIMEOUT --wait --debug"
+  fi
+  if [[ $NAMESPACE ]]; then
+    args="$args --namespace $NAMESPACE --create-namespace"
+  fi
+  if [[ $DRY_RUN ]]; then
+    args="$args --dry-run"
+  fi
   num_chains=$(yq -r ".chains | length - 1" ${CONFIGFILE})
   if [[ $num_chains -lt 0 ]]; then
     echo "No chains to parse: num: $num_chains"
@@ -55,18 +64,11 @@ function set_helm_args() {
   done
 }
 
-function install_local_chart() {
-  args=""
-  set_helm_args
-  echo "args: $args"
-  helm install ${HELM_CHART} ${SCRIPT_DIR}/../charts/${HELM_CHART} -f ${CONFIGFILE} --dry-run $args
-}
-
 function install_chart() {
   args=""
   set_helm_args
   echo "args: $args"
-  helm install ${HELM_CHART} ${HELM_REPO}/${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} --dry-run $args
+  helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
 }
 
 while [ $# -gt 0 ]; do
@@ -79,9 +81,25 @@ while [ $# -gt 0 ]; do
       HELM_CHART_VERSION="$2"
       shift 2 # past argument
       ;;
-    --local-chart)
-      LOCAL_CHART=1
-      shift # past argument
+    -t|--timeout)
+      TIMEOUT="$2"
+      shift 2 # past argument
+      ;;
+    -n|--name)
+      HELM_NAME="$2"
+      shift 2 # past argument
+      ;;
+    --namespace)
+      NAMESPACE="$2"
+      shift 2 # past argument
+      ;;
+    --chart)
+      HELM_CHART="$2"
+      shift 2 # past argument
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      shift 2 # past argument
       ;;
     -*|--*)
       echo "Unknown option $1"
@@ -94,9 +112,4 @@ done
 
 check_helm
 setup_helm
-
-if [[ -n "${LOCAL_CHART:-}" ]]; then
-  install_local_chart
-else
-  install_chart
-fi
+install_chart
