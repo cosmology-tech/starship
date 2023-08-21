@@ -16,6 +16,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo "Script dir: ${SCRIPT_DIR}"
 
 # default values
+DRY_RUN=""
+TIMEOUT=""
+NAMESPACE=""
 HELM_REPO="starship"
 HELM_CHART="devnet"
 HELM_REPO_URL="https://cosmology-tech.github.io/starship/"
