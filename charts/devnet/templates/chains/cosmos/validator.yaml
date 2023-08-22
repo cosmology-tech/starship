@@ -131,7 +131,7 @@ spec:
               cat $CHAIN_DIR/config/genesis.json
 
               echo "Setup config files"
-              bash -e /scripts/setup-config.sh
+              bash -e /scripts/update-config.sh
 
               curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id
               NODE_ID=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")
