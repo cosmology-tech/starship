@@ -191,7 +191,7 @@ spec:
 
                     VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
                     echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
-                    bash -e /scripts/transfer_tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
+                    bash -e /scripts/transfer-tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
 
                     $CHAIN_BIN keys list | jq
 

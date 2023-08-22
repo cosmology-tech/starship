@@ -74,7 +74,7 @@ spec:
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(rly address "{{ $fullchain.name }}" | awk 'END{print}')
               echo "Transfer tokens to address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM"
-              bash -e /scripts/transfer_tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              bash -e /scripts/transfer-tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
               {{- end }}
               {{- end }}
               {{- end }}
