@@ -1,10 +1,11 @@
 package e2e
 
 type Chain struct {
-	Name          string `name:"name" json:"name" yaml:"name"`
-	Type          string `name:"type" json:"type" yaml:"type"`
-	NumValidators int    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
-	Ports         Port   `name:"ports" json:"ports" yaml:"ports"`
+	Name          string                 `name:"name" json:"name" yaml:"name"`
+	Type          string                 `name:"type" json:"type" yaml:"type"`
+	NumValidators int                    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
+	Ports         Port                   `name:"ports" json:"ports" yaml:"ports"`
+	Genesis       map[string]interface{} `name:"genesis" json:"genesis" yaml:"genesis"`
 }
 
 type Port struct {

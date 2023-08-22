@@ -11,6 +11,16 @@ chains:
       memory: 500M
     faucet:
       concurrency: 2
+    genesis:
+      app_state:
+        staking:
+          params:
+            unbonding_time: "5s"
+        gamm:
+          params:
+            pool_creation_fee:
+              - amount: "500000"
+                denom: uosmo
 
 registry:
   enabled: true
