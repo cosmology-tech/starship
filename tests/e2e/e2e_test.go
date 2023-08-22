@@ -80,10 +80,12 @@ func (s *TestSuite) TestChains_Status() {
 func (s *TestSuite) TestChains_StakingParams() {
 	s.T().Log("runing test for /staking/parameters endpoint for each chain")
 
-	expUnbondingTime := "90s"
-	// run tests only for one-chain.yaml file which overrides genesis
-	if s.configFile == "configs/one-chain.yaml" {
+	expUnbondingTime := "90s" // default value
+	switch s.configFile {
+	case "configs/one-chain.yaml":
 		expUnbondingTime = "5s" // based on genesis override in one-chain.yaml file
+	case "configs/one-chain-custom-scripts.yaml":
+		expUnbondingTime = "15s" // based on genesis override in the custom script
 	}
 
 	url := fmt.Sprintf("http://0.0.0.0:%d/cosmos/staking/v1beta1/params", s.config.Chains[0].Ports.Rest)
