@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -21,7 +22,8 @@ var configEnvKey = "TEST_CONFIG_FILE"
 type TestSuite struct {
 	suite.Suite
 
-	config *Config
+	configFile string
+	config     *Config
 }
 
 func TestE2ETestSuite(t *testing.T) {
@@ -45,6 +47,7 @@ func (s *TestSuite) SetupTest() {
 	s.Require().NoError(err)
 
 	s.config = config
+	s.configFile = configFile
 }
 
 func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
@@ -72,4 +75,25 @@ func (s *TestSuite) TestChains_Status() {
 		// assert chain id
 		s.Assert().Equal(chain.Name, resp.Result.NodeInfo.Network)
 	}
+}
+
+func (s *TestSuite) TestChains_StakingParams() {
+	s.T().Log("runing test for /staking/parameters endpoint for each chain")
+
+	expUnbondingTime := "90s"
+	// run tests only for one-chain.yaml file which overrides genesis
+	if s.configFile == "configs/one-chain.yaml" {
+		expUnbondingTime = "5s" // based on genesis override in one-chain.yaml file
+	}
+
+	url := fmt.Sprintf("http://0.0.0.0:%d/cosmos/staking/v1beta1/params", s.config.Chains[0].Ports.Rest)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	s.Require().NoError(err)
+	body := s.MakeRequest(req, 200)
+	data := map[string]interface{}{}
+
+	err = json.NewDecoder(body).Decode(&data)
+	s.Require().NoError(err)
+
+	s.Require().Equal(expUnbondingTime, data["params"].(map[string]interface{})["unbonding_time"])
 }

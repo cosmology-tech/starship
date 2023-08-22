@@ -111,6 +111,14 @@ chains: []
   #   ports:
   #     rpc: 26659
   #     rest: 1319
+  # - name: osmosis-4
+  #   type: osmosis
+  #   numValidators: 2
+  #   # genesis override local to genesis.json
+  #   # this genesis directive is converted to a patch.json file
+  #   # then then `jq -s '.[0] * .[1]' genesis.json patch.json > genesis.json` is run
+  #   genesis:
+  #     auth: ...
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers: []

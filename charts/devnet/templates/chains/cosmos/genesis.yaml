@@ -112,6 +112,9 @@ spec:
 
               echo "Running setup and config files..."
               bash -e /scripts/setup_genesis.sh
+              {{- if hasKey $chain "genesis" }}
+              jq -s '.[0] * .[1]' $CHAIN_DIR/config/genesis.json /patch/genesis.json > $CHAIN_DIR/config/genesis.json.tmp && mv $CHAIN_DIR/config/genesis.json.tmp $CHAIN_DIR/config/genesis.json
+              {{- end }}
               bash -e /scripts/setup_config.sh
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
@@ -121,6 +124,10 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+            {{- if hasKey $chain "genesis" }}
+            - mountPath: /patch
+              name: patch
+            {{- end }}
       containers:
         - name: validator
           image: {{ $image }}
@@ -253,6 +260,11 @@ spec:
         - name: scripts
           configMap:
             name: setup-scripts
+        {{- if hasKey $chain "genesis" }}
+        - name: patch
+          configMap:
+            name: patch-{{ $chain.name }}
+        {{- end }}
 ---
 {{- end }}
 {{- end }}
