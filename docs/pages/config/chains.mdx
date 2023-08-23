@@ -202,3 +202,65 @@ chains:
 
 We use [cosmovisor](https://docs.cosmos.network/v0.47/tooling/cosmovisor)
 to run the validators when this directive is enabled, which allows for external software-upgrade-proposal.
+
+## `genesis` (optional)
+Patch `genesis.json` file directly from the config file using this directive. Once the genesis node creates the genesis file, then the
+patch for genesis is applied.
+```yaml
+chains:
+- name: osmosis-1
+  type: osmosis
+  numValidators: 2
+  genesis:
+    app_state:
+      staking:
+        params:
+          unbonding_time: "5s"
+```
+
+## `scripts` (optional)
+Scripts directive will replace the default scripts with the given scripts. Inorder to use this directive,
+one must use [`scripts/install.sh`](https://github.com/cosmology-tech/starship/blob/main/scripts/install.sh) script for running the helm chart.
+
+> Since the local scripts are converted into configmaps that are then created in the kubernetes cluster, there is a limit of 1MBi
+
+Types of scripts that are allowed inside the `scripts` dir are:
+* `createGenesis`: Script used in the genesis node that will create the `genesis.json` file. Default: [`create-genesis.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/create-genesis.sh)
+* `updateGenesis`: Script used to make custom changes to the genesis file. Default: [`update-genesis.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/update-genesis.sh)
+* `updateConfig`: Script used to make custom changes to the config files. Default: [`update-config.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/update-config.sh)
+* `createValidator`: Script to run the `create-validator` txn on the validator nodes after spinup. Note this script is run as part of the `PostStartHook` of the validator pods. Default: [`create-validator.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/create-validator.sh)
+* `transferTokens`: Script run as part of the Starship glue code. This script is related to the faucet that we run. Default: [`transfer-tokens.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/transfer-tokens.sh)
+* `buildChain`: Script that builds chain binaries, based on the `build` directive. Default: [`build-chain.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/build-chain.sh)
+
+One can choose the sub-scripts that needs to be overwritten, default scripts will be used instead.
+
+```yaml
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    scripts:
+      createGenesis:
+        file: scripts/create-custom-genesis.sh
+      updateGenesis:
+        file: scripts/update-custom-genesis.sh
+      updateConfig:
+        file: scripts/update-custom-config.sh
+      createValidator:
+        file: scripts/create-custom-validator.sh
+      transferTokens:
+        file: scripts/transfer-custom-tokens.sh
+```
+
+> Note `file` path is relative to the config file itself
+
+Dir structure should look something like:
+```bash
+config.yaml
+scripts/
+  create-custom-genesis.sh
+  update-custom-genesis.sh
+  update-custom-config.sh
+  create-custom-validator.sh
+  transfer-custom-tokens.sh
+```
