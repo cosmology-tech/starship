@@ -1,13 +1,32 @@
+{{- range $chain := .Values.chains }}
+{{- if ne $chain.type "virtual" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultScripts := $defaultFile.defaultScripts }}
+{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
+
+# merge defaultChain values into the $chain dict
+{{ $chain = merge $chain $defaultChain }}
+
+{{ $scripts := get $chain "scripts" | default dict }}
+{{ $scripts = merge $scripts $defaultScripts }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: setup-scripts
+  name: setup-scripts-{{ $chain.name }}
 data:
-  {{- range $path, $_ := .Files.Glob "scripts/*.sh" }}
-  {{ base $path }}: |-
-    {{- $.Files.Get $path | nindent 4 }}
+  {{- range $k, $v := $scripts }}
+  {{- if hasKey $v "data" }}
+  {{ $v.name }}: |-
+    {{- $v.data | nindent 4 }}
+  {{- else }}
+  {{ $v.name }}: |-
+    {{- $.Files.Get $v.file | nindent 4 }}
   {{- end }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
 ---
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
@@ -38,4 +57,13 @@ data:
   {{ base $path }}: |-
     {{- $.Files.Get $path | nindent 4}}
   {{- end }}
+---
+# Configmap with setup-scripts that are not chain specific
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: setup-scripts
+data:
+  transfer-tokens.sh: |-
+    {{- $.Files.Get "scripts/transfer-tokens.sh" | nindent 4 }}
 ---

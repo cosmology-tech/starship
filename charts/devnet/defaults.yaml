@@ -285,3 +285,23 @@ defaultRelayers:
     image: ghcr.io/cosmology-tech/starship/hermes:1.5.1
   go-relayer:
     image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
+
+defaultScripts:
+  createGenesis:
+    name: create-genesis.sh
+    file: scripts/create-genesis.sh
+  updateGenesis:
+    name: update-genesis.sh
+    file: scripts/update-genesis.sh
+  updateConfig:
+    name: update-config.sh
+    file: scripts/update-config.sh
+  createValidator:
+    name: create-validator.sh
+    file: scripts/create-validator.sh
+  transferTokens:
+    name: transfer-tokens.sh
+    file: scripts/transfer-tokens.sh
+  buildChain:
+    name: build-chain.sh
+    file: scripts/build-chain.sh
