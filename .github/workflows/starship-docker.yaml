@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
+  cancel-in-progress: true
+
 jobs:
   deploy-docker:
     runs-on: ubuntu-latest

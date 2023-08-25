@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-pr-tests
+  cancel-in-progress: true
+
 jobs:
   pr-test:
     runs-on: ubuntu-latest
