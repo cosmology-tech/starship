@@ -136,10 +136,6 @@ spec:
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
-            - name: COLLECTOR_SERVICE
-              value: collector
-            - name: COLLECTOR_PORT
-              value: "8070"
           command:
             - bash
             - "-c"
