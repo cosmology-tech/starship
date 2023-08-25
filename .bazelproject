@@ -9,7 +9,6 @@ additional_languages:
 targets:
   //exposer:exposer
   //registry:registry
-  //collector:collector
   //tests:tests
   //cmd/starship:starship
 
