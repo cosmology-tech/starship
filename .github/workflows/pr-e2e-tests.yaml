@@ -6,14 +6,14 @@ on:
       - created
       - edited
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-pr-e2e-tests
+  cancel-in-progress: true
+
 jobs:
   pr-e2e-test:
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run_e2e')
-
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
 
     strategy:
       matrix:

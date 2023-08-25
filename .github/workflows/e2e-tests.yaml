@@ -9,14 +9,14 @@ on:
     - cron: '0 18 * * *'
   workflow_dispatch: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-e2e-tests
+  cancel-in-progress: true
+
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
