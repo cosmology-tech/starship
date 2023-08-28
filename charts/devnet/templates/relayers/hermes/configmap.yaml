@@ -15,7 +15,7 @@ data:
     [global]
     # Specify the verbosity for the relayer logging output. Default: 'info'
     # Valid options are 'error', 'warn', 'info', 'debug', 'trace'.
-    log_level = {{ $relayer.config.global.log_level }}
+    log_level = {{ $relayer.config.global.log_level | squote }}
     # Specify the mode to be used by the relayer. [Required]
     [mode]
     # Specify the client mode.
@@ -66,10 +66,10 @@ data:
     enabled = {{ $relayer.config.rest.enabled }}
     # Specify the IPv4/6 host over which the built-in HTTP server will serve the RESTful
     # API requests. Default: 127.0.0.1
-    host =  {{ $relayer.config.rest.host }}
+    host =  {{ $relayer.config.rest.host | squote }}
     # Specify the port over which the built-in HTTP server will serve the restful API
     # requests. Default: 3000
-    port = {{ $relayer.config.rest.port }}
+    port = {{ $relayer.config.rest.port | squote }}
     # The telemetry section defines parameters for Hermes' built-in telemetry capabilities.
     # https://hermes.informal.systems/telemetry.html
     [telemetry]
@@ -77,10 +77,10 @@ data:
     enabled = {{ $relayer.config.telemetry.enabled }}
     # Specify the IPv4/6 host over which the built-in HTTP server will serve the metrics
     # gathered by the telemetry service. Default: 127.0.0.1
-    host = {{ $relayer.config.telemetry.host }}
+    host = {{ $relayer.config.telemetry.host | squote }}
     # Specify the port over which the built-in HTTP server will serve the metrics gathered
     # by the telemetry service. Default: 3001
-    port = {{ $relayer.config.telemetry.port }}
+    port = {{ $relayer.config.telemetry.port | squote }}
     {{- range $i, $chain := $relayer.chains }}
     {{- range $fullchain := $.Values.chains }}
     {{- if eq $fullchain.name $chain }}
