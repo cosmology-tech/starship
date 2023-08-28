@@ -84,3 +84,30 @@ relayers:
   - osmosis-1
   - gaia-4
 ```
+
+## `config` (optional, hermes only)
+
+For `type: hermes` relayer, we support overriding the default config params with the `config` directive.
+User specified overrides are performed at the start.
+
+> Note: Currently we only allow overrides of non chain specific values
+
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  replicas: 1
+  chains:
+  - osmosis-1
+  - juno-1
+  config:
+    global:
+      log_level: "error"
+    rest:
+      enabled: false
+    telemetry:
+      enabled: false
+```
+
+All allowed config params can be found in the [default values](https://github.com/cosmology-tech/starship/pull/185/files#diff-b6d755bc9ec9f0229fa0fc7beff17964f31889df81dbd5a16764ed8cdecbfa96R286-R310)
+(Basically everything in [config.toml](https://github.com/informalsystems/hermes/blob/master/config.toml#L8...L111) file for the hermes relayer)
