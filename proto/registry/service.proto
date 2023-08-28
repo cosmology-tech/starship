@@ -5,9 +5,9 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/descriptor.proto";
 
-import "proto/registry/chain.proto";
-import "proto/registry/ibc.proto";
-import "proto/registry/mnemonic.proto";
+import "registry/chain.proto";
+import "registry/ibc.proto";
+import "registry/mnemonic.proto";
 
 option go_package = "github.com/cosmology-tech/starship/registry/registry";
 

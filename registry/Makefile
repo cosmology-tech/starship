@@ -11,7 +11,14 @@ DOCKER_ARGS += --platform linux/amd64
 all: build run
 
 build:
-	bazel build //$(BINARY_NAME):$(BINARY_NAME)
+	go build -o $(CURDIR)/../build/ ./...
+	#bazel build //$(BINARY_NAME):$(BINARY_NAME)
+
+build-linux:
+	GOOS=linux GOARCH=amd go build -o $(CURDIR)/../build ./...
+
+build-arm:
+	GOOS=darwin GOARCH=arm64 go build -o $(CURDIR)/../build ./...
 
 run:
 	bazel run //$(BINARY_NAME):$(BINARY_NAME) -- \
