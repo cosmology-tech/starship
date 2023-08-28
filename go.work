@@ -3,11 +3,10 @@ go 1.19
 use (
 	./clients/go/client
 	./cmd/starship
-	./collector
 
 	./examples/upgrade-test
 	./exposer
 	./registry
-	./tools
 	./tests/e2e
+	./tools
 )

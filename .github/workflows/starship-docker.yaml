@@ -5,12 +5,21 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
+  cancel-in-progress: true
+
 jobs:
-  deploy-docker:
+  deploy-docker-registry:
     runs-on: ubuntu-latest
 
     permissions:
       packages: write
+
+    strategy:
+      matrix:
+        type: [ "registry", "exposer" ]
+      fail-fast: false
 
     env:
       DOCKER_REPO: ghcr.io/cosmology-tech/starship
@@ -25,28 +34,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Bazel cache
-        id: bazel-cache
-        uses: actions/cache@v3
-        env:
-          version: 4.2.1
-        with:
-          path: "~/.cache/bazel"
-          key: ${{ runner.os }}-${{ env.version }}-bazel-cache
-
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install bazelisk
-        run: |
-          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
-          mkdir -p "${GITHUB_WORKSPACE}/bin/"
-          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
       - name: Determine tag
         id: docker-tag
@@ -55,20 +48,10 @@ jobs:
           echo Tag will be $tag
           echo ::set-output name=version::$tag
 
-      - name: Build and push docker image for registry
-        run: |
-          bazel run \
-            --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} \
-            --define=DOCKER_REPO=${{ env.DOCKER_REPO }} \
-            //registry:image_push
-        env:
-          DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
-
-      - name: Build and push docker image for exposer
-        run: |
-          bazel run \
-            --define=DOCKER_TAG_NAME=${{ env.DOCKER_TAG_NAME }} \
-            --define=DOCKER_REPO=${{ env.DOCKER_REPO }} \
-            //exposer:image_push
-        env:
-          DOCKER_TAG_NAME: ${{ steps.docker-tag.outputs.version }}
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: ${{ matrix.type }}/
+          tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
+          platforms: linux/amd64,linux/arm64
