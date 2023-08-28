@@ -3,7 +3,7 @@
 {{- if eq $relayer.type "hermes" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
-{{ $relayer = merge $relayer $defaultRelayer }}
+{{ $relayer = mergeOverwrite $defaultRelayer $relayer }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -69,7 +69,7 @@ data:
     host =  {{ $relayer.config.rest.host | squote }}
     # Specify the port over which the built-in HTTP server will serve the restful API
     # requests. Default: 3000
-    port = {{ $relayer.config.rest.port | squote }}
+    port = {{ $relayer.config.rest.port }}
     # The telemetry section defines parameters for Hermes' built-in telemetry capabilities.
     # https://hermes.informal.systems/telemetry.html
     [telemetry]
@@ -80,7 +80,7 @@ data:
     host = {{ $relayer.config.telemetry.host | squote }}
     # Specify the port over which the built-in HTTP server will serve the metrics gathered
     # by the telemetry service. Default: 3001
-    port = {{ $relayer.config.telemetry.port | squote }}
+    port = {{ $relayer.config.telemetry.port }}
     {{- range $i, $chain := $relayer.chains }}
     {{- range $fullchain := $.Values.chains }}
     {{- if eq $fullchain.name $chain }}
