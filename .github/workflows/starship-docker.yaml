@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  # debug
-  pull_request:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
@@ -55,7 +51,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          push: false
+          push: true
           context: ${{ matrix.type }}/
           tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
           platforms: linux/amd64,linux/arm64
