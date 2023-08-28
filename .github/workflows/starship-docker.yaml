@@ -14,11 +14,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-docker:
+  deploy-docker-registry:
     runs-on: ubuntu-latest
 
     permissions:
       packages: write
+
+    strategy:
+      matrix:
+        type: [ "registry", "exposer" ]
+      fail-fast: false
 
     env:
       DOCKER_REPO: ghcr.io/cosmology-tech/starship
@@ -47,18 +52,10 @@ jobs:
           echo Tag will be $tag
           echo ::set-output name=version::$tag
 
-      - name: Build and push docker image for registry
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          push: true
-          context: registry/
-          tags: ghcr.io/cosmology-tech/starship/registry:${{ steps.docker-tag.outputs.version }}
-          platforms: linux/amd64,linux/arm64
-
-      - name: Build and push docker image for exposer
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          context: exposer/
-          tags: ghcr.io/cosmology-tech/starship/exposer:${{ steps.docker-tag.outputs.version }}
+          push: ${{ github.event_name != pull_request }}
+          context: ${{ matrix.type }}/
+          tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
           platforms: linux/amd64,linux/arm64
