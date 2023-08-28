@@ -2,6 +2,11 @@ module github.com/cosmology-tech/starship/tests/e2e
 
 go 1.19
 
+replace (
+	github.com/cosmology-tech/starship/exposer => ../../exposer
+	github.com/cosmology-tech/starship/registry => ../../registry
+)
+
 require (
 	github.com/cosmology-tech/starship/exposer v0.0.0-20230413092908-7da9e8a24b31
 	github.com/cosmology-tech/starship/registry v0.0.0-20230411094226-129001b2f52a

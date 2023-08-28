@@ -58,22 +58,10 @@ runs:
       with:
         path: /tmp/kubeconfig
 
-    - name: Bazel cache
-      id: bazel-cache
-      uses: actions/cache@v3
-      env:
-        version: 4.2.1
+    - uses: actions/setup-go@v4
       with:
-        path: "~/.cache/bazel"
-        key: ${{ runner.os }}-${{ env.version }}-bazel-cache
-
-    - name: Install bazelisk
-      run: |
-        curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
-        mkdir -p "${GITHUB_WORKSPACE}/bin/"
-        mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-        chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
-      shell: bash
+        go-version: "1.19"
+        check-latest: true
 
     - name: Setup Test infra
       id: starship-action
@@ -87,9 +75,7 @@ runs:
 
     - name: Run tests
       run: |
-        bazel test \
-          --cache_test_results=no \
-          --test_output=all \
-          --test_env=TEST_CONFIG_FILE=${{ inputs.config-file }} \
-          //tests/e2e:tests
+        cd tests/e2e/ && go test -v ./...
+      env:
+        TEST_CONFIG_FILE: ${{ inputs.config-file }}
       shell: bash

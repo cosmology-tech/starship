@@ -20,25 +20,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Bazel cache
-        id: bazel-cache
-        uses: actions/cache@v3
-        env:
-          version: 4.2.1
+      - uses: actions/setup-go@v4
         with:
-          path: "~/.cache/bazel"
-          key: ${{ runner.os }}-${{ env.version }}-bazel-cache
-
-      - name: Install bazelisk
-        run: |
-          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
-          mkdir -p "${GITHUB_WORKSPACE}/bin/"
-          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+          go-version: "1.19"
+          check-latest: true
 
       - name: Build exposer
         run: |
-          bazel build //exposer:exposer
+          cd exposer && make build
 
   build-registry:
     runs-on: ubuntu-latest
@@ -47,22 +36,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Bazel cache
-        id: bazel-cache
-        uses: actions/cache@v3
-        env:
-          version: 4.2.1
+      - uses: actions/setup-go@v4
         with:
-          path: "~/.cache/bazel"
-          key: ${{ runner.os }}-${{ env.version }}-bazel-cache
-
-      - name: Install bazelisk
-        run: |
-          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
-          mkdir -p "${GITHUB_WORKSPACE}/bin/"
-          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+          go-version: "1.19"
+          check-latest: true
 
       - name: Build registry
         run: |
-          bazel build //registry:registry
+          cd registry && make build

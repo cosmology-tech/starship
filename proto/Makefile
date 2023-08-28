@@ -1,14 +1,12 @@
-.PHONY: build-proto
-build-proto: build-exposer build-registry
+all: build
 
-.PHONY: build-registry
-build-registry:
-	bazel build //proto/registry:registry_go_proto
+.PHONY: build
+build:
+	buf generate --path registry/ -o $(CURDIR)/../registry
+	buf generate --path registry/ -o $(CURDIR)/../exposer
 
-.PHONY: build-exposer
-build-exposer:
-	bazel build //proto/exposer:exposer_go_proto
-
-.PHONY: update-go-pbs
-update-go-pbs:
-	cd $(CURDIR)/../ && bash scripts/update-go-pbs.sh
+.PHONY: docker-build
+docker-build:
+	docker run --volume "$(CURDIR):/workspace" --workdir /workspace bufbuild/buf generate -o build/
+	rm -rf $(CURDIR)/../registry/registry && mv -f build/registry $(CURDIR)/../registry
+	rm -rf $(CURDIR)/../exposer/exposer && mv -f build/exposer $(CURDIR)/../exposer

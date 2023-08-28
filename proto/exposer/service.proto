@@ -7,7 +7,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
-import "proto/exposer/mnemonic.proto";
+import "exposer/mnemonic.proto";
 
 option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
 
