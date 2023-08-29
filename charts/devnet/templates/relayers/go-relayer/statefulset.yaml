@@ -45,7 +45,7 @@ spec:
             - name: KEYS_CONFIG
               value: /keys/keys.json
             - name: RELAYER_DIR
-              value: /home/relayer/.relayer
+              value: /root
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
@@ -97,7 +97,7 @@ spec:
               echo "Creating a connection on $PATHEND"
               rly transact connection $PATHEND
           volumeMounts:
-            - mountPath: /home/relayer
+            - mountPath: /root
               name: relayer
             - mountPath: /configs
               name: relayer-config
@@ -113,18 +113,18 @@ spec:
           imagePullPolicy: Always
           env:
             - name: RELAYER_DIR
-              value: /home/relayer/.relayer
+              value: /root
           command:
             - bash
             - "-c"
             - |
-              rly start --home $RELAYER_DIR
+              rly start
           resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 0
           volumeMounts:
-            - mountPath: /home/relayer
+            - mountPath: /root
               name: relayer
             - mountPath: /configs
               name: relayer-config
