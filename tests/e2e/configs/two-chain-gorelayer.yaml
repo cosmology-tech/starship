@@ -19,7 +19,7 @@ chains:
 relayers:
   - name: osmos-cosmos
     type: go-relayer
-    image: anmol1696/go-relayer:v2.4.1 # todo: change this to ghcr.io image
+    image: ghcr.io/cosmology-tech/starship/go-relayer:v2.4.1
     replicas: 1
     chains:
       - osmosis-1
