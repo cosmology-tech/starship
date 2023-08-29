@@ -11,7 +11,7 @@ Run
 ```bash
 helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version 0.1.36
+helm search repo starship/devnet --version 0.1.45
 ```
 
 ## 3.2) Define the desired infrastructure
@@ -76,13 +76,13 @@ For the tutorial we will keep it simple.
 ## 3.3) Spin up the infrastructure
 Spin up the infrastructure with
 ```bash
-helm install -f starship.yaml tutorial starship/devnet --version 0.1.31
+helm install -f starship.yaml tutorial starship/devnet --version 0.1.45
 
 # Where
 # -f starship.yaml: use the starship.yaml file as the configuration
 # tutorial: name of the helm release
 # starship/devnet: helm chart to use
-# --version 0.1.27: version of the helm chart to use
+# --version 0.1.45: version of the helm chart to use
 ```
 
 This will take some time to spin up the infrastructure, you can check the status in another terminal with
