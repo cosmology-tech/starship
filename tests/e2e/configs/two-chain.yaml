@@ -24,6 +24,13 @@ relayers:
     chains:
       - osmosis-1
       - cosmoshub-4
+    config:
+      global:
+        log_level: "error"
+      rest:
+        enabled: false
+      telemetry:
+        enabled: false
 
 explorer:
   enabled: true

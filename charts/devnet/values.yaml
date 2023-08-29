@@ -166,6 +166,41 @@ relayers: []
 #    chains:
 #      - osmosis-1
 #      - juno-1
+#  - name: osmos-gaia
+#    type: hermes
+#    replicas: 1
+#    chains:
+#      - osmosis-1
+#      - gaia-2
+#    # hermes config.toml file which is read from the yaml file
+#    config:
+#      global:
+#        log_level: "info"
+#      mode:
+#        clients:
+#          enabled: true
+#          refresh: true
+#          misbehaviour: true
+#        connections:
+#          enabled: true
+#        channels:
+#          enabled: true
+#        packets:
+#          enabled: true
+#          clear_interval: 100
+#          clear_on_start: true
+#          tx_confirmation: true
+#      rest:
+#        enabled: true
+#        host: "127.0.0.1"
+#        port: 3000
+#      telemetry:
+#        enabled: true
+#        host: "127.0.0.1"
+#        port: 3001
+#      chains:
+#      - id:
+#        key_name:
 
 explorer:
   # Flag to enable explorer for cluster
