@@ -26,7 +26,7 @@ func (s *TestSuite) MakeExposerRequest(chain *Chain, req *http.Request, unmarsha
 }
 
 func (s *TestSuite) TestExposer_GetNodeID() {
-	s.T().Log("runing test for /node_id endpoint for exposer")
+	s.T().Log("running test for /node_id endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
@@ -41,7 +41,7 @@ func (s *TestSuite) TestExposer_GetNodeID() {
 }
 
 func (s *TestSuite) TestExposer_GetGenesisFile() {
-	s.T().Log("runing test for /genesis endpoint for exposer")
+	s.T().Log("running test for /genesis endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
@@ -58,7 +58,7 @@ func (s *TestSuite) TestExposer_GetGenesisFile() {
 }
 
 func (s *TestSuite) TestExposer_GetPubKey() {
-	s.T().Log("runing test for /pub_key endpoint for exposer")
+	s.T().Log("running test for /pub_key endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
@@ -75,7 +75,7 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 }
 
 func (s *TestSuite) TestExposer_GetPrivKey() {
-	s.T().Log("runing test for /priv_key endpoint for exposer")
+	s.T().Log("running test for /priv_key endpoint for exposer")
 	s.T().Skip("not implemented yet")
 
 	chain := s.config.Chains[0]
@@ -93,7 +93,7 @@ func (s *TestSuite) TestExposer_GetPrivKey() {
 }
 
 func (s *TestSuite) TestExposer_GetKeys() {
-	s.T().Log("runing test for /keys endpoint for exposer")
+	s.T().Log("running test for /keys endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
