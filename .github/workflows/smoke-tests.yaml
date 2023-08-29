@@ -1,6 +1,10 @@
 name: Smoke tests
 
 on:
+  # debug CI for PR
+  pull_request:
+    branches:
+      - main
   # Run every 6 hours
   schedule:
     - cron: '0 */6 * * *'
