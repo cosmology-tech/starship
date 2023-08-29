@@ -20,7 +20,7 @@ chains:
 relayers:
   - name: osmos-cosmos
     type: hermes
-    image: anmol1696/hermes:1.6.0
+    image: anmol1696/hermes:1.6.0  # todo: replace this with ghcr.io image after merge
     replicas: 1
     chains:
       - osmosis-1
