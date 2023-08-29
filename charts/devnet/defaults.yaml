@@ -309,7 +309,7 @@ defaultRelayers:
         host: "127.0.0.1"
         port: 3001
   go-relayer:
-    image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
+    image: anmol1696/go-relayer:v2.4.1 # todo: change this to ghcr.io image
 
 defaultScripts:
   createGenesis:
