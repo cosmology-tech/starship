@@ -312,7 +312,7 @@ defaultRelayers:
       event_source:
         mode: push # allowed values: push, pull. Valid only for 1.6.0+
   go-relayer:
-    image: ghcr.io/polymerdao/relayer-ibcx:starship-integration
+    image: anmol1696/go-relayer:v2.4.1 # todo: change this to ghcr.io image
 
 defaultScripts:
   createGenesis:
