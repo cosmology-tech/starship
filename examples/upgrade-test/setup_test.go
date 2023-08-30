@@ -13,7 +13,7 @@ func TestE2ETestSuite(t *testing.T) {
 }
 
 func (s *TestSuite) TestChainsStatus() {
-	s.T().Log("runing test for /status endpoint for each chain")
+	s.T().Log("running test for /status endpoint for each chain")
 
 	for _, chainClient := range s.chainClients {
 		status, err := chainClient.GetStatus()

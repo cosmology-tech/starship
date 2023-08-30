@@ -22,7 +22,7 @@ resources:
     memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230617-eea58bd
+  image: ghcr.io/cosmology-tech/starship/exposer:20230830-b3c162c
   ports:
     rest: 8081
   resources:
@@ -219,7 +219,7 @@ explorer:
 
 registry:
   enabled: false
-  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
+  image: ghcr.io/cosmology-tech/starship/registry:20230829-eaeeb62
   ports:
     rest: 6060
     grpc: 7070

@@ -9,7 +9,7 @@ chains:
       faucet: 8001
   - name: cosmoshub-4
     type: cosmos
-    image: anmol1696/gaia:v10.0.1
+    image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 2
     ports:
       rest: 1317
@@ -20,7 +20,7 @@ chains:
 relayers:
   - name: osmos-cosmos
     type: hermes
-    image: anmol1696/hermes:1.6.0  # todo: replace this with ghcr.io image after merge
+    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0  # todo: replace this with ghcr.io image after merge
     replicas: 1
     chains:
       - osmosis-1

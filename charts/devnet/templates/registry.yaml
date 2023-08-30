@@ -47,6 +47,7 @@ spec:
         app.kubernetes.io/instance: registry
         app.kubernetes.io/type: registry
         app.kubernetes.io/name: registry
+        app.kubernetes.io/rawname: registry
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" .Values.registry | indent 6 }}
@@ -69,6 +70,7 @@ spec:
               value: "/configs"
             - name: REGISTRY_CHAIN_CLIENT_EXPOSERS
               value: "{{ include "devnet.chains.exposer.addrs" . }}"
+          command: [ "registry" ]
           resources:
 {{- include "getResourceObject" .Values.registry.resources | indent 12 }}
           volumeMounts:

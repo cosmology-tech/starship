@@ -13,7 +13,7 @@
 
 {{ $image := $chain.image }}
 {{- if $toBuild }}
-{{ $image = "anmol1696/runner:latest" }}
+{{ $image = "ghcr.io/cosmology-tech/starship/runner:latest" }}
 {{- end }}
 
 {{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
@@ -48,7 +48,7 @@ spec:
       initContainers:
         {{- if $toBuild }}
         - name: init-build-images
-          image: anmol1696/builder:latest
+          image: ghcr.io/cosmology-tech/starship/builder:latest
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -217,7 +217,7 @@ spec:
               value: /configs/keys.json
             - name: EXPOSER_PRIV_VAL_FILE
               value: {{ $chain.home }}/config/priv_validator_key.json
-          command: [ "/app/exposer/exposer" ]
+          command: [ "exposer" ]
           resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
