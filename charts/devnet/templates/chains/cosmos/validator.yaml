@@ -107,6 +107,8 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
+              exit 0
+
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
                 echo "Genesis file exists, exiting early"
                 exit 0
@@ -166,6 +168,7 @@ spec:
             - bash
             - "-c"
             - |
+              sleep 1000000000
               # Starting the chain
               {{- if $toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
@@ -181,6 +184,7 @@ spec:
                   - "-c"
                   - "-e"
                   - |
+                    exit 0
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
                     [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
