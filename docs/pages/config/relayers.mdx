@@ -107,6 +107,11 @@ relayers:
       enabled: false
     telemetry:
       enabled: false
+    ## event_source is a custom configuration, in hermes is set of each of the chains
+    ## one just needs to mention the mode (push or pull), and we do the rest
+    ## For reference: https://github.com/informalsystems/hermes/releases/tag/v1.6.0
+    event_source:
+      mode: "pull" # default is "push"
 ```
 
 All allowed config params can be found in the [default values](https://github.com/cosmology-tech/starship/pull/185/files#diff-b6d755bc9ec9f0229fa0fc7beff17964f31889df81dbd5a16764ed8cdecbfa96R286-R310)

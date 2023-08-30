@@ -308,6 +308,9 @@ defaultRelayers:
         enabled: true
         host: "127.0.0.1"
         port: 3001
+      # custom config args
+      event_source:
+        mode: push # allowed values: push, pull. Valid only for 1.6.0+
   go-relayer:
     image: ghcr.io/cosmology-tech/starship/go-relayer:v2.4.1
 

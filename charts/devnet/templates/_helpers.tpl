@@ -206,3 +206,13 @@ imagePullSecrets:
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Given the docker image, returns the tag
+Usage:
+{{ include "image.tag" "username/repo:1.1.0" }}
+*/}}
+{{- define "image.tag" -}}
+{{- $tag := regexFind "[^:]+$" . -}}
+{{ $tag }}
+{{- end -}}
