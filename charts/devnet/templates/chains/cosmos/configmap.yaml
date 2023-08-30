@@ -37,6 +37,7 @@ data:
 # merge defaultChain values into the $chain dict
 {{ $chain = merge $chain $defaultChain }}
 {{- if hasKey $chain "genesis" }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -44,6 +45,7 @@ metadata:
 data:
   genesis.json: |-
     {{ toJson $chain.genesis | nindent 4 }}
+---
 {{- end }}
 {{- end }}
 {{- end }}
