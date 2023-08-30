@@ -60,7 +60,7 @@ func (s *TestSuite) MakeRequest(req *http.Request, expCode int) io.Reader {
 }
 
 func (s *TestSuite) TestChains_Status() {
-	s.T().Log("runing test for /status endpoint for each chain")
+	s.T().Log("running test for /status endpoint for each chain")
 
 	for _, chain := range s.config.Chains {
 		url := fmt.Sprintf("http://0.0.0.0:%d/status", chain.Ports.Rpc)
@@ -78,7 +78,7 @@ func (s *TestSuite) TestChains_Status() {
 }
 
 func (s *TestSuite) TestChains_StakingParams() {
-	s.T().Log("runing test for /staking/parameters endpoint for each chain")
+	s.T().Log("running test for /staking/parameters endpoint for each chain")
 
 	expUnbondingTime := "90s" // default value
 	switch s.configFile {

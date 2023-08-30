@@ -29,6 +29,7 @@ spec:
         app.kubernetes.io/instance: relayer
         app.kubernetes.io/type: {{ $relayer.type }}
         app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+        app.kubernetes.io/rawname: {{ $relayer.name }}
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" $relayer | indent 6 }}
