@@ -29,7 +29,6 @@ registry:
     memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230808-2333929
   resources:
     cpu: "0.1"
     memory: "100M"
