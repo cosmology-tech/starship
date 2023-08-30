@@ -111,13 +111,13 @@ spec:
               echo "Genesis file that we got....."
 
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
-                diff "$file1" "$file2" > /dev/null
+                diff "$CHAIN_DIR/config/genesis.json" "/tmp/genesis.json" > /dev/null
                 if [ $? -eq 0 ]; then
                   echo "Genesis file exists, exiting early"
                   exit 0
                 else
                   echo "Genesis found does not match..., performing cleanup"
-                  rm -rf $CHAIN_DIR
+                  rm -rf $CHAIN_DIR/*
                 fi
               fi
 
