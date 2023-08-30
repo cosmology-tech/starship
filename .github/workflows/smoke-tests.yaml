@@ -33,7 +33,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.2.16-rc0
+        uses: cosmology-tech/starship-action@9c80712239104ea08c62424aec5ad0f875203fb4
         with:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
@@ -70,7 +70,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.2.16-rc0
+        uses: cosmology-tech/starship-action@9c80712239104ea08c62424aec5ad0f875203fb4
         with:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
@@ -107,7 +107,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.2.16-rc0
+        uses: cosmology-tech/starship-action@9c80712239104ea08c62424aec5ad0f875203fb4
         with:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
