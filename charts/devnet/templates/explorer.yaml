@@ -38,6 +38,7 @@ spec:
         app.kubernetes.io/instance: explorer
         app.kubernetes.io/type: {{ .Values.explorer.type }}
         app.kubernetes.io/name: explorer
+        app.kubernetes.io/rawname: explorer
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" .Values.explorer | indent 6 }}

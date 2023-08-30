@@ -26,7 +26,7 @@ func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal proto.Messa
 }
 
 func (s *TestSuite) TestRegistry_ListChainIds() {
-	s.T().Log("runing test for /chain_ids endpoint for registry")
+	s.T().Log("running test for /chain_ids endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chain_ids", nil)
 	s.Require().NoError(err)
@@ -39,7 +39,7 @@ func (s *TestSuite) TestRegistry_ListChainIds() {
 }
 
 func (s *TestSuite) TestRegistry_ListChains() {
-	s.T().Log("runing test for /chains endpoint for registry")
+	s.T().Log("running test for /chains endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chains", nil)
 	s.Require().NoError(err)
@@ -59,7 +59,7 @@ func (s *TestSuite) TestRegistry_ListChains() {
 }
 
 func (s *TestSuite) TestRegistry_GetChain() {
-	s.T().Log("runing test for /chains/{chain} endpoint for registry")
+	s.T().Log("running test for /chains/{chain} endpoint for registry")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.Name), nil)
@@ -74,7 +74,7 @@ func (s *TestSuite) TestRegistry_GetChain() {
 }
 
 func (s *TestSuite) TestRegistry_ListChainPeers() {
-	s.T().Log("runing test for /chains/{chain}/peers endpoint for registry")
+	s.T().Log("running test for /chains/{chain}/peers endpoint for registry")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/peers", chain.Name), nil)
@@ -89,7 +89,7 @@ func (s *TestSuite) TestRegistry_ListChainPeers() {
 }
 
 func (s *TestSuite) TestRegistry_ListChainApis() {
-	s.T().Log("runing test for /chains/{chain}/apis endpoint for registry")
+	s.T().Log("running test for /chains/{chain}/apis endpoint for registry")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/apis", chain.Name), nil)
@@ -103,7 +103,7 @@ func (s *TestSuite) TestRegistry_ListChainApis() {
 }
 
 func (s *TestSuite) TestRegistry_GetChainAssets() {
-	s.T().Log("runing test for /chains/{chain}/assets endpoint for registry")
+	s.T().Log("running test for /chains/{chain}/assets endpoint for registry")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.Name), nil)
@@ -118,7 +118,10 @@ func (s *TestSuite) TestRegistry_GetChainAssets() {
 }
 
 func (s *TestSuite) TestRegistry_ListIBC() {
-	s.T().Log("runing test for /ibc endpoint for registry")
+	s.T().Log("running test for /ibc endpoint for registry")
+	if len(s.config.Relayers) == 0 {
+		s.T().Skip("skip running ibc test for chains without relayers")
+	}
 
 	req, err := http.NewRequest(http.MethodGet, "/ibc", nil)
 	s.Require().NoError(err)
@@ -131,7 +134,7 @@ func (s *TestSuite) TestRegistry_ListIBC() {
 }
 
 func (s *TestSuite) TestRegistry_GetChainKeys() {
-	s.T().Log("runing test for /chains/{chain}/keys endpoint for registry")
+	s.T().Log("running test for /chains/{chain}/keys endpoint for registry")
 
 	for _, chain := range s.config.Chains {
 		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/keys", chain.Name), nil)
