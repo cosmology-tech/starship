@@ -15,3 +15,5 @@ FROM ghcr.io/cosmology-tech/starship/base:latest
 COPY --from=builder /usr/local/app/build/exposer /bin
 
 WORKDIR /opt
+
+ENTRYPOINT ["exposer"]
