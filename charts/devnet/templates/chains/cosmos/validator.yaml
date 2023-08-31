@@ -110,6 +110,10 @@ spec:
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o /tmp/genesis.json
               echo "Genesis file that we got....."
+              echo "check tmp genesis"
+              ls -lhG /tmp/genesis.json
+              echo "check chain dir"
+              ls -lhG $CHAIN_DIR
 
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
                 if cmp -s $CHAIN_DIR/config/genesis.json /tmp/genesis.json; then
