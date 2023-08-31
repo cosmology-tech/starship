@@ -101,7 +101,6 @@ spec:
             - bash
             - "-c"
             - |
-              set -e
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
               {{- if $toBuild }}
