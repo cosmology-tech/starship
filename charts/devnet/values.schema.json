@@ -14,12 +14,43 @@
             },
             "memory": {
               "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
             }
           },
-          "required": [
-            "cpu",
-            "memory"
-          ]
+          "oneOf": [
+            {
+              "required": ["cpu", "memory"]
+            },
+            {
+              "required": ["limits", "requests"]
+            }
+          ],
+          "additionalProperties": false
         },
         "wait": {
           "type": "object",
@@ -29,18 +60,46 @@
             },
             "memory": {
               "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
             }
           },
-          "required": [
-            "cpu",
-            "memory"
-          ]
+          "oneOf": [
+            {
+              "required": ["cpu", "memory"]
+            },
+            {
+              "required": ["limits", "requests"]
+            }
+          ],
+          "additionalProperties": false
         }
       },
-      "required": [
-        "node",
-        "wait"
-      ]
+      "additionalProperties": false
     },
     "exposer": {
       "type": "object",
@@ -75,6 +134,7 @@
           ]
         }
       },
+      "additionalProperties": false,
       "required": [
         "image",
         "ports",
@@ -90,17 +150,6 @@
         "concurrency": {
           "type": "number"
         },
-        "ports": {
-          "type": "object",
-          "properties": {
-            "rest": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "rest"
-          ]
-        },
         "resources": {
           "type": "object",
           "properties": {
@@ -109,14 +158,46 @@
             },
             "memory": {
               "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
             }
           },
-          "required": [
-            "cpu",
-            "memory"
-          ]
+          "oneOf": [
+            {
+              "required": ["cpu", "memory"]
+            },
+            {
+              "required": ["limits", "requests"]
+            }
+          ],
+          "additionalProperties": false
         }
       },
+      "additionalProperties":  false,
       "required": [
         "image",
         "concurrency",
@@ -152,16 +233,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "time_iota_ms",
-        "timeout_propose",
-        "timeout_propose_delta",
-        "timeout_prevote",
-        "timeout_prevote_delta",
-        "timeout_precommit",
-        "timeout_precommit_delta",
-        "timeout_commit"
-      ]
+      "additionalProperties": false
     },
     "chains": {
       "type": "array",
@@ -172,7 +244,31 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "custom",
+              "osmosis",
+              "gaia",
+              "juno",
+              "stride",
+              "ics",
+              "cronos",
+              "cryptoorgchain",
+              "evmos",
+              "persistence",
+              "regen",
+              "quasar",
+              "quicksilver",
+              "sei",
+              "sommelier",
+              "stargaze",
+              "tendermint",
+              "umee",
+              "wasmd",
+              "simapp",
+              "cheqd",
+              "neutron"
+            ]
           },
           "numValidators": {
             "type": "number",
@@ -509,10 +605,16 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "go-relayer",
+              "hermes",
+              "ts-relayer"
+            ]
           },
           "replicas": {
-            "type": "number"
+            "type": "number",
+            "exclusiveMinimum": 1
           },
           "chains": {
             "type": "array",
@@ -521,141 +623,56 @@
             }
           },
           "config": {
+            "type": "object"
+          },
+          "resources": {
             "type": "object",
             "properties": {
-              "global": {
+              "cpu": {
+                "type": "string"
+              },
+              "memory": {
+                "type": "string"
+              },
+              "limits": {
                 "type": "object",
                 "properties": {
-                  "log_level": {
+                  "cpu": {
+                    "type": "string"
+                  },
+                  "memory": {
                     "type": "string"
                   }
                 },
-                "required": [
-                  "log_level"
-                ]
+                "required": ["cpu", "memory"],
+                "additionalProperties": false
               },
-              "mode": {
+              "requests": {
                 "type": "object",
                 "properties": {
-                  "clients": {
-                    "type": "object",
-                    "properties": {
-                      "enabled": {
-                        "type": "boolean"
-                      },
-                      "refresh": {
-                        "type": "boolean"
-                      },
-                      "misbehaviour": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "enabled",
-                      "refresh",
-                      "misbehaviour"
-                    ]
-                  },
-                  "connections": {
-                    "type": "object",
-                    "properties": {
-                      "enabled": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "enabled"
-                    ]
-                  },
-                  "channels": {
-                    "type": "object",
-                    "properties": {
-                      "enabled": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "enabled"
-                    ]
-                  },
-                  "packets": {
-                    "type": "object",
-                    "properties": {
-                      "enabled": {
-                        "type": "boolean"
-                      },
-                      "clear_interval": {
-                        "type": "number"
-                      },
-                      "clear_on_start": {
-                        "type": "boolean"
-                      },
-                      "tx_confirmation": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "enabled",
-                      "clear_interval",
-                      "clear_on_start",
-                      "tx_confirmation"
-                    ]
-                  }
-                },
-                "required": [
-                  "clients",
-                  "connections",
-                  "channels",
-                  "packets"
-                ]
-              },
-              "rest": {
-                "type": "object",
-                "properties": {
-                  "enabled": {
-                    "type": "boolean"
-                  },
-                  "host": {
+                  "cpu": {
                     "type": "string"
                   },
-                  "port": {
-                    "type": "number"
-                  }
-                },
-                "required": [
-                  "enabled",
-                  "host",
-                  "port"
-                ]
-              },
-              "telemetry": {
-                "type": "object",
-                "properties": {
-                  "enabled": {
-                    "type": "boolean"
-                  },
-                  "host": {
+                  "memory": {
                     "type": "string"
-                  },
-                  "port": {
-                    "type": "number"
                   }
                 },
-                "required": [
-                  "enabled",
-                  "host",
-                  "port"
-                ]
+                "required": ["cpu", "memory"],
+                "additionalProperties": false
               }
             },
-            "required": [
-              "global",
-              "mode",
-              "rest",
-              "telemetry"
-            ]
+            "oneOf": [
+              {
+                "required": ["cpu", "memory"]
+              },
+              {
+                "required": ["limits", "requests"]
+              }
+            ],
+            "additionalProperties": false
           }
         },
+        "additionalProperties": false,
         "required": [
           "name",
           "type",
@@ -671,13 +688,11 @@
           "type": "boolean"
         },
         "type": {
-          "type": "string"
+          "type": "string",
+          "enum": ["ping-pub"]
         },
         "image": {
           "type": "string"
-        },
-        "localhost": {
-          "type": "boolean"
         },
         "ports": {
           "type": "object",
@@ -698,21 +713,49 @@
             },
             "memory": {
               "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
             }
           },
-          "required": [
-            "cpu",
-            "memory"
-          ]
+          "oneOf": [
+            {
+              "required": ["cpu", "memory"]
+            },
+            {
+              "required": ["limits", "requests"]
+            }
+          ],
+          "additionalProperties": false
         }
       },
+      "additionalProperties": false,
       "required": [
         "enabled",
-        "type",
-        "image",
-        "localhost",
-        "ports",
-        "resources"
+        "type"
       ]
     },
     "registry": {
@@ -735,8 +778,7 @@
             }
           },
           "required": [
-            "rest",
-            "grpc"
+            "rest"
           ]
         },
         "resources": {
@@ -747,30 +789,52 @@
             },
             "memory": {
               "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "additionalProperties": false
             }
           },
-          "required": [
-            "cpu",
-            "memory"
-          ]
+          "oneOf": [
+            {
+              "required": ["cpu", "memory"]
+            },
+            {
+              "required": ["limits", "requests"]
+            }
+          ],
+          "additionalProperties": false
         }
       },
+      "additionalProperties": false,
       "required": [
-        "enabled",
-        "image",
-        "ports",
-        "resources"
+        "enabled"
       ]
     }
   },
   "required": [
-    "resources",
-    "exposer",
-    "faucet",
-    "timeouts",
-    "chains",
-    "relayers",
-    "explorer",
-    "registry"
+    "chains"
   ]
 }
