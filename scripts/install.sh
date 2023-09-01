@@ -35,6 +35,10 @@ function check_helm() {
 
 # setup_helm function adds the helm repo and updates it
 function setup_helm() {
+  if [ -d "$HELM_CHART" ]; then
+    echo "using local helm chart"
+    return
+  fi
   helm repo add ${HELM_REPO} ${HELM_REPO_URL}
   helm repo update
   helm search repo ${HELM_CHART} --version ${HELM_CHART_VERSION}
@@ -47,7 +51,7 @@ function set_helm_args() {
   if [[ $NAMESPACE ]]; then
     args="$args --namespace $NAMESPACE --create-namespace"
   fi
-  if [[ "$DRY_RUN" == 0 ]]; then
+  if [[ $DRY_RUN ]]; then
     args="$args --dry-run --debug"
   fi
   num_chains=$(yq -r ".chains | length - 1" ${CONFIGFILE})
