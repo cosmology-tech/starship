@@ -276,7 +276,7 @@
           },
           "numValidators": {
             "type": "number",
-            "exclusiveMinimum": 1
+            "exclusiveMinimum": 0
           },
           "image": {
             "type": "string"
@@ -618,7 +618,7 @@
           },
           "replicas": {
             "type": "number",
-            "exclusiveMinimum": 1
+            "exclusiveMinimum": 0
           },
           "chains": {
             "type": "array",
