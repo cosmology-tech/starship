@@ -6,98 +6,8 @@
     "resources": {
       "type": "object",
       "properties": {
-        "node": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            },
-            "limits": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            },
-            "requests": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            }
-          },
-          "oneOf": [
-            {
-              "required": ["cpu", "memory"]
-            },
-            {
-              "required": ["limits", "requests"]
-            }
-          ],
-          "additionalProperties": false
-        },
-        "wait": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            },
-            "limits": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            },
-            "requests": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            }
-          },
-          "oneOf": [
-            {
-              "required": ["cpu", "memory"]
-            },
-            {
-              "required": ["limits", "requests"]
-            }
-          ],
-          "additionalProperties": false
-        }
+        "node": { "$ref":  "#/$def/resources" },
+        "wait": { "$ref":  "#/$def/resources" }
       },
       "additionalProperties": false
     },
@@ -118,21 +28,7 @@
             "rest"
           ]
         },
-        "resources": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "cpu",
-            "memory"
-          ]
-        }
+        "resources": { "$ref":  "#/$def/resources" }
       },
       "additionalProperties": false,
       "required": [
@@ -160,52 +56,7 @@
           "additionalProperties": false,
           "required": ["rest"]
         },
-        "resources": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            },
-            "limits": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            },
-            "requests": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            }
-          },
-          "oneOf": [
-            {
-              "required": ["cpu", "memory"]
-            },
-            {
-              "required": ["limits", "requests"]
-            }
-          ],
-          "additionalProperties": false
-        }
+        "resources": { "$ref":  "#/$def/resources" }
       },
       "additionalProperties":  false
     },
@@ -252,7 +103,7 @@
             "enum": [
               "custom",
               "osmosis",
-              "gaia",
+              "cosmos",
               "juno",
               "stride",
               "ics",
@@ -545,52 +396,7 @@
             },
             "additionalProperties": false
           },
-          "resources": {
-            "type": "object",
-            "properties": {
-              "cpu": {
-                "type": "string"
-              },
-              "memory": {
-                "type": "string"
-              },
-              "limits": {
-                "type": "object",
-                "properties": {
-                  "cpu": {
-                    "type": "string"
-                  },
-                  "memory": {
-                    "type": "string"
-                  }
-                },
-                "required": ["cpu", "memory"],
-                "additionalProperties": false
-              },
-              "requests": {
-                "type": "object",
-                "properties": {
-                  "cpu": {
-                    "type": "string"
-                  },
-                  "memory": {
-                    "type": "string"
-                  }
-                },
-                "required": ["cpu", "memory"],
-                "additionalProperties": false
-              }
-            },
-            "oneOf": [
-              {
-                "required": ["cpu", "memory"]
-              },
-              {
-                "required": ["limits", "requests"]
-              }
-            ],
-            "additionalProperties": false
-          }
+          "resources": { "$ref":  "#/$def/resources" }
         },
         "additionalProperties": false,
         "required": [
@@ -616,6 +422,9 @@
               "ts-relayer"
             ]
           },
+          "image": {
+            "type": "string"
+          },
           "replicas": {
             "type": "number",
             "exclusiveMinimum": 0
@@ -629,52 +438,7 @@
           "config": {
             "type": "object"
           },
-          "resources": {
-            "type": "object",
-            "properties": {
-              "cpu": {
-                "type": "string"
-              },
-              "memory": {
-                "type": "string"
-              },
-              "limits": {
-                "type": "object",
-                "properties": {
-                  "cpu": {
-                    "type": "string"
-                  },
-                  "memory": {
-                    "type": "string"
-                  }
-                },
-                "required": ["cpu", "memory"],
-                "additionalProperties": false
-              },
-              "requests": {
-                "type": "object",
-                "properties": {
-                  "cpu": {
-                    "type": "string"
-                  },
-                  "memory": {
-                    "type": "string"
-                  }
-                },
-                "required": ["cpu", "memory"],
-                "additionalProperties": false
-              }
-            },
-            "oneOf": [
-              {
-                "required": ["cpu", "memory"]
-              },
-              {
-                "required": ["limits", "requests"]
-              }
-            ],
-            "additionalProperties": false
-          }
+          "resources": { "$ref":  "#/$def/resources" }
         },
         "additionalProperties": false,
         "required": [
@@ -712,52 +476,7 @@
             "rest"
           ]
         },
-        "resources": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            },
-            "limits": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            },
-            "requests": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            }
-          },
-          "oneOf": [
-            {
-              "required": ["cpu", "memory"]
-            },
-            {
-              "required": ["limits", "requests"]
-            }
-          ],
-          "additionalProperties": false
-        }
+        "resources": { "$ref":  "#/$def/resources" }
       },
       "additionalProperties": false,
       "required": [
@@ -788,52 +507,7 @@
             "rest"
           ]
         },
-        "resources": {
-          "type": "object",
-          "properties": {
-            "cpu": {
-              "type": "string"
-            },
-            "memory": {
-              "type": "string"
-            },
-            "limits": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            },
-            "requests": {
-              "type": "object",
-              "properties": {
-                "cpu": {
-                  "type": "string"
-                },
-                "memory": {
-                  "type": "string"
-                }
-              },
-              "required": ["cpu", "memory"],
-              "additionalProperties": false
-            }
-          },
-          "oneOf": [
-            {
-              "required": ["cpu", "memory"]
-            },
-            {
-              "required": ["limits", "requests"]
-            }
-          ],
-          "additionalProperties": false
-        }
+        "resources": { "$ref":  "#/$def/resources" }
       },
       "additionalProperties": false,
       "required": [
@@ -843,5 +517,53 @@
   },
   "required": [
     "chains"
-  ]
+  ],
+  "$def": {
+    "resources": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": ["string", "number"]
+        },
+        "memory": {
+          "type": ["string", "number"]
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": ["string", "number"]
+            },
+            "memory": {
+              "type": ["string", "number"]
+            }
+          },
+          "required": ["cpu", "memory"],
+          "additionalProperties": false
+        },
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": ["string", "number"]
+            },
+            "memory": {
+              "type": ["string", "number"]
+            }
+          },
+          "required": ["cpu", "memory"],
+          "additionalProperties": false
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["cpu", "memory"]
+        },
+        {
+          "required": ["limits", "requests"]
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
 }
