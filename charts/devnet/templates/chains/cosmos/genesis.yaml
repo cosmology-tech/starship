@@ -154,6 +154,31 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 1317
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 1317
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /status
+              port: 1317
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: Always
@@ -176,6 +201,22 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+          readinessProbe:
+            httpGet:
+              path: /node_id
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /node_id
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
         - name: faucet
           image: {{ $faucet.image }}
           imagePullPolicy: Always
@@ -233,6 +274,16 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
       volumes:
         - name: node
           emptyDir: { }
