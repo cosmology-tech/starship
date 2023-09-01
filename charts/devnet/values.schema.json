@@ -150,6 +150,16 @@
         "concurrency": {
           "type": "number"
         },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "rest": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["rest"]
+        },
         "resources": {
           "type": "object",
           "properties": {
@@ -197,13 +207,7 @@
           "additionalProperties": false
         }
       },
-      "additionalProperties":  false,
-      "required": [
-        "image",
-        "concurrency",
-        "ports",
-        "resources"
-      ]
+      "additionalProperties":  false
     },
     "timeouts": {
       "type": "object",
@@ -693,6 +697,9 @@
         },
         "image": {
           "type": "string"
+        },
+        "localhost": {
+          "type": "boolean"
         },
         "ports": {
           "type": "object",
