@@ -300,7 +300,7 @@
             "type": "string"
           },
           "coinType": {
-            "type": "string"
+            "type": "number"
           },
           "repo": {
             "type": "string"
