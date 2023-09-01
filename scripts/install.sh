@@ -20,7 +20,7 @@ DRY_RUN=""
 TIMEOUT=""
 NAMESPACE=""
 HELM_REPO="starship"
-HELM_CHART="devnet"
+HELM_CHART="starship/devnet"
 HELM_REPO_URL="https://cosmology-tech.github.io/starship/"
 HELM_CHART_VERSION="0.1.43"
 
@@ -37,7 +37,7 @@ function check_helm() {
 function setup_helm() {
   helm repo add ${HELM_REPO} ${HELM_REPO_URL}
   helm repo update
-  helm search repo ${HELM_REPO}/${HELM_CHART} --version ${HELM_CHART_VERSION}
+  helm search repo ${HELM_CHART} --version ${HELM_CHART_VERSION}
 }
 
 function set_helm_args() {
@@ -47,8 +47,8 @@ function set_helm_args() {
   if [[ $NAMESPACE ]]; then
     args="$args --namespace $NAMESPACE --create-namespace"
   fi
-  if [[ $DRY_RUN ]]; then
-    args="$args --dry-run"
+  if [[ "$DRY_RUN" == 0 ]]; then
+    args="$args --dry-run --debug"
   fi
   num_chains=$(yq -r ".chains | length - 1" ${CONFIGFILE})
   if [[ $num_chains -lt 0 ]]; then
@@ -71,7 +71,7 @@ function set_helm_args() {
 function install_chart() {
   args=""
   set_helm_args
-  echo "args: $args"
+  echo "name: ${HELM_NAME}, args: $args, chart: ${HELM_CHART}, version: ${HELM_CHART_VERSION}"
   helm install ${HELM_NAME} ${HELM_CHART} --version ${HELM_CHART_VERSION} -f ${CONFIGFILE} $args
 }
 
@@ -103,7 +103,7 @@ while [ $# -gt 0 ]; do
       ;;
     --dry-run)
       DRY_RUN=1
-      shift 2 # past argument
+      shift # past argument
       ;;
     -*|--*)
       echo "Unknown option $1"
