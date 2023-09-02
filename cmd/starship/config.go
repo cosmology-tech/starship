@@ -15,7 +15,7 @@ func NewDefaultConfig() *Config {
 		HelmRepoName:  "starship",
 		HelmChartName: "devnet",
 		Verbose:       true,
-		Wait:          true,
+		Wait:          false,
 		Version:       "0.1.45",
 		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
 		ConfigFile:    "config.yaml",
