@@ -19,13 +19,13 @@ stop: stop-forward delete
 ###############################################################################
 
 install:
-	helm install -f $(HELM_FILE) $(HELM_NAME) ../../charts/$(HELM_CHART)
+	bash $(CURDIR)/../../scripts/install.sh --config $(HELM_FILE) --name $(HELM_NAME) --chart ../../charts/$(HELM_CHART)
 
 upgrade:
 	helm upgrade --debug $(HELM_NAME) ../../charts/$(HELM_CHART) -f $(HELM_FILE)
 
 debug:
-	helm install --dry-run --debug -f $(HELM_FILE) $(HELM_NAME) ../../charts/$(HELM_CHART)
+	bash $(CURDIR)/../../scripts/install.sh --config $(HELM_FILE) --name $(HELM_NAME) --dry-run --chart ../../charts/$(HELM_CHART)
 
 delete:
 	-helm delete $(HELM_NAME)
