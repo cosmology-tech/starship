@@ -1,0 +1,569 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Generated schema for Root",
+  "type": "object",
+  "properties": {
+    "resources": {
+      "type": "object",
+      "properties": {
+        "node": { "$ref":  "#/$def/resources" },
+        "wait": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false
+    },
+    "exposer": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "rest": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "rest"
+          ]
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "image",
+        "ports",
+        "resources"
+      ]
+    },
+    "faucet": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "concurrency": {
+          "type": "number"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "rest": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["rest"]
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties":  false
+    },
+    "timeouts": {
+      "type": "object",
+      "properties": {
+        "time_iota_ms": {
+          "type": "number"
+        },
+        "timeout_propose": {
+          "type": "string"
+        },
+        "timeout_propose_delta": {
+          "type": "string"
+        },
+        "timeout_prevote": {
+          "type": "string"
+        },
+        "timeout_prevote_delta": {
+          "type": "string"
+        },
+        "timeout_precommit": {
+          "type": "string"
+        },
+        "timeout_precommit_delta": {
+          "type": "string"
+        },
+        "timeout_commit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "chains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "custom",
+              "osmosis",
+              "cosmos",
+              "juno",
+              "stride",
+              "ics",
+              "cronos",
+              "cryptoorgchain",
+              "evmos",
+              "persistencecore",
+              "regen",
+              "quasar",
+              "quicksilver",
+              "sei",
+              "sommelier",
+              "stargaze",
+              "tendermint",
+              "umee",
+              "wasmd",
+              "simapp",
+              "cheqd",
+              "neutron"
+            ]
+          },
+          "numValidators": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "image": {
+            "type": "string"
+          },
+          "home": {
+            "type": "string"
+          },
+          "binary": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "denom": {
+            "type": "string"
+          },
+          "coins": {
+            "type": "string"
+          },
+          "hdPath": {
+            "type": "string"
+          },
+          "coinType": {
+            "type": "number"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "upgrade": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["build"]
+              },
+              "genesis": {
+                "type": "string"
+              },
+              "upgrades": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "version"
+                  ]
+                }
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "enabled",
+              "type",
+              "genesis",
+              "upgrades"
+            ]
+          },
+          "faucet": {
+            "type": "object",
+            "properties": {
+              "image": {
+                "type": "string"
+              },
+              "concurrency": {
+                "type": "number",
+                "exclusiveMinimum": 1
+              },
+              "resources": {
+                "type": "object",
+                "properties": {
+                  "cpu": {
+                    "type": "string"
+                  },
+                  "memory": {
+                    "type": "string"
+                  },
+                  "limits": {
+                    "type": "object",
+                    "properties": {
+                      "cpu": {
+                        "type": "string"
+                      },
+                      "memory": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["cpu", "memory"],
+                    "additionalProperties": false
+                  },
+                  "requests": {
+                    "type": "object",
+                    "properties": {
+                      "cpu": {
+                        "type": "string"
+                      },
+                      "memory": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["cpu", "memory"],
+                    "additionalProperties": false
+                  }
+                },
+                "oneOf": [
+                  {
+                    "required": ["cpu", "memory"]
+                  },
+                  {
+                    "required": ["limits", "requests"]
+                  }
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "ports": {
+            "type": "object",
+            "properties": {
+              "rpc": {
+                "type": "number"
+              },
+              "rest": {
+                "type": "number"
+              },
+              "grpc": {
+                "type": "number"
+              },
+              "exposer": {
+                "type": "number"
+              },
+              "faucet": {
+                "type": "number"
+              }
+            }
+          },
+          "build": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "source": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "enabled",
+              "source"
+            ]
+          },
+          "genesis": {
+            "type": "object"
+          },
+          "scripts": {
+            "type": "object",
+            "properties": {
+              "createGenesis": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              },
+              "updateGenesis": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              },
+              "updateConfig": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              },
+              "createValidator": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              },
+              "transferTokens": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              },
+              "buildChain": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "resources": { "$ref":  "#/$def/resources" }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type",
+          "numValidators"
+        ]
+      }
+    },
+    "relayers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "go-relayer",
+              "hermes",
+              "ts-relayer"
+            ]
+          },
+          "image": {
+            "type": "string"
+          },
+          "replicas": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "chains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "config": {
+            "type": "object"
+          },
+          "resources": { "$ref":  "#/$def/resources" }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type",
+          "replicas",
+          "chains"
+        ]
+      }
+    },
+    "explorer": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["ping-pub"]
+        },
+        "image": {
+          "type": "string"
+        },
+        "localhost": {
+          "type": "boolean"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "rest": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "rest"
+          ]
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "type"
+      ]
+    },
+    "registry": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "string"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "rest": {
+              "type": "number"
+            },
+            "grpc": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "rest"
+          ]
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "enabled"
+      ]
+    }
+  },
+  "required": [
+    "chains"
+  ],
+  "$def": {
+    "resources": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": ["string", "number"]
+        },
+        "memory": {
+          "type": ["string", "number"]
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": ["string", "number"]
+            },
+            "memory": {
+              "type": ["string", "number"]
+            }
+          },
+          "required": ["cpu", "memory"],
+          "additionalProperties": false
+        },
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": ["string", "number"]
+            },
+            "memory": {
+              "type": ["string", "number"]
+            }
+          },
+          "required": ["cpu", "memory"],
+          "additionalProperties": false
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["cpu", "memory"]
+        },
+        {
+          "required": ["limits", "requests"]
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}
