@@ -16,9 +16,9 @@ func NewDefaultConfig() *Config {
 		HelmChartName: "devnet",
 		Verbose:       true,
 		Wait:          true,
-		Version:       "0.1.23",
+		Version:       "0.1.45",
 		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
-		ConfigFile:    "tests/configs/one-chain.yaml",
+		ConfigFile:    "config.yaml",
 	}
 }
 
