@@ -493,6 +493,9 @@
         "image": {
           "type": "string"
         },
+        "localhost": {
+          "type": "boolean"
+        },
         "ports": {
           "type": "object",
           "properties": {

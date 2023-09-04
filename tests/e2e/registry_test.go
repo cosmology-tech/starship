@@ -70,6 +70,9 @@ func (s *TestSuite) TestRegistry_GetChain() {
 
 		s.Assert().Equal(chain.Name, respChain.ChainId)
 		s.Assert().Equal(chain.Type, respChain.ChainName)
+		s.Assert().Equal(fmt.Sprintf("http://localhost:%d", chain.Ports.Rpc), respChain.Apis.Rpc)
+		s.Assert().Equal(fmt.Sprintf("http://localhost:%d", chain.Ports.Grpc), respChain.Apis.Grpc)
+		s.Assert().Equal(fmt.Sprintf("http://localhost:%d", chain.Ports.Rest), respChain.Apis.Rest)
 	}
 }
 

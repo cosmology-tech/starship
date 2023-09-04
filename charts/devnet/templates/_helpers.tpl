@@ -162,7 +162,43 @@ Returns a comma seperated list of urls for the RPC address
 {{- define "devnet.chains.rpc.addrs" -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
+  {{- if .Values.registry.localhost -}}
+  {{- $values = printf "http://localhost:%s" $chain.ports.rpc | append $values -}}
+  {{- else -}}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the GRPC address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.grpc.addrs" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if .Values.registry.localhost -}}
+  {{- $values = printf "http://localhost:%s" $chain.ports.grpc | append $values -}}
+  {{- else -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:9091" $chain.name | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the Rest address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.rest.addrs" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if .Values.registry.localhost -}}
+  {{- $values = printf "http://localhost:%s" $chain.ports.rest | append $values -}}
+  {{- else -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:1317" $chain.name | append $values -}}
+  {{- end -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
