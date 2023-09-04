@@ -162,6 +162,7 @@ Returns a comma seperated list of urls for the RPC address
 {{- define "devnet.chains.rpc.addrs" -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
+  {{/*todo: check weather chain ports has rpc port or not. 2 checks: hasKey ports, hasKey ports.rpc*/}}
   {{- if .Values.registry.localhost -}}
   {{- $values = printf "http://localhost:%s" $chain.ports.rpc | append $values -}}
   {{- else -}}
