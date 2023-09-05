@@ -163,9 +163,8 @@ Returns a comma seperated list of urls for the RPC address
 {{- $localhost := .Values.registry.localhost -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{/*todo: check weather chain ports has rpc port or not. 2 checks: hasKey ports, hasKey ports.rpc*/}}
-  {{- if $localhost -}}
-  {{- $values = printf "http://localhost:%s" $chain.ports.rpc | append $values -}}
+  {{- if and ($localhost) (($chain.ports).rpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rpc | append $values -}}
   {{- else -}}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
   {{- end -}}
@@ -181,8 +180,8 @@ If registry.localhost is set to true, then use $chain ports
 {{- $localhost := .Values.registry.localhost -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- if $localhost -}}
-  {{- $values = printf "http://localhost:%s" $chain.ports.grpc | append $values -}}
+  {{- if and ($localhost) (($chain.ports).grpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.grpc | append $values -}}
   {{- else -}}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:9091" $chain.name | append $values -}}
   {{- end -}}
@@ -198,8 +197,8 @@ If registry.localhost is set to true, then use $chain ports
 {{- $localhost := .Values.registry.localhost -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- if $localhost -}}
-  {{- $values = printf "http://localhost:%s" $chain.ports.rest | append $values -}}
+  {{- if and ($localhost) (($chain.ports).rest) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rest | append $values -}}
   {{- else -}}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:1317" $chain.name | append $values -}}
   {{- end -}}
