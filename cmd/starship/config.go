@@ -11,11 +11,11 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Namespace:     "default",
+		Namespace:     "aws-starship",
+		Name:          "starship",
 		HelmRepoName:  "starship",
 		HelmChartName: "devnet",
 		Verbose:       true,
-		Wait:          false,
 		Version:       "0.1.45",
 		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
 		ConfigFile:    "config.yaml",
@@ -25,11 +25,13 @@ func NewDefaultConfig() *Config {
 type Config struct {
 	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment, default: default"`
 	ConfigFile    string `name:"config-file" json:"config_file" usage:"path to the config file"`
+	Name          string `name:"name" json:"name" usage:"name of the deployment"`
 	Version       string `name:"version" json:"version" usage:"version of the helm chart"`
 	HelmRepoURL   string `name:"helm-repo-url" json:"helm_repo_url" usage:"helm repo url"`
 	HelmRepoName  string `name:"helm-repo-name" json:"helm_repo_name" usage:"helm repo name"`
 	HelmChartName string `name:"helm-chart-name" json:"helm_chart_name" usage:"helm chart name"`
 	Wait          bool   `name:"wait" json:"wait" usage:"wait for the helm chart to be ready"`
+	Atomic        bool   `name:"atomic" json:"atomic" usage:"atomic creation of helm chart, delete incase of error"`
 	Verbose       bool   `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	OnlyFatalLog  bool   `name:"only-fatal-log" json:"only_fatal_log" usage:"used while running test"`
 }
