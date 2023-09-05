@@ -15,6 +15,7 @@ for the infra you spin up.
 ```yaml
 registry:
   enabled: true  # enable registry service
+  localhost: true # default: true, will set chain registry output with api endpoints pointing to localhost, using the chains[].ports for localhost endpoints
   ports:
     rest: 8081   # localhost port for redirecting traffic
   # Optional: resources directive, defualt cpu: 0.2, memory: 200M
@@ -24,6 +25,8 @@ registry:
   # Optional: image directive, default image:ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
   image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
 ```
+
+> Note: `registry.localhost` is set to true by default, meaning if the ports are specified in chains[].ports, then we set the various api endpoints of the chain registry to `localhost:<port>`. Make sure `rest`, `grpc`, `rpc` are set as [chain ports](https://starship.cosmology.tech/config/chains#ports). If set to false, then it is set to kubernetes internal DNS endpoints.
 
 ### Usage
 
