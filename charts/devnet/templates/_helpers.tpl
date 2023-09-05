@@ -157,12 +157,62 @@ Returns a comma seperated list of chain id
 {{- end -}}
 
 {{/*
-Returns a comma seperated list of urls for the RPC address
+Returns a comma seperated list of urls for the RPC address based on internal DNS
 */}}
-{{- define "devnet.chains.rpc.addrs" -}}
+{{- define "devnet.chains.internal.rpc.addrs" -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the RPC address
+*/}}
+{{- define "devnet.chains.rpc.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if and ($localhost) (($chain.ports).rpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rpc | append $values -}}
+  {{- else -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the GRPC address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.grpc.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if and ($localhost) (($chain.ports).grpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.grpc | append $values -}}
+  {{- else -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:9091" $chain.name | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the Rest address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.rest.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if and ($localhost) (($chain.ports).rest) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rest | append $values -}}
+  {{- else -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:1317" $chain.name | append $values -}}
+  {{- end -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}

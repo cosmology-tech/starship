@@ -219,7 +219,8 @@ explorer:
 
 registry:
   enabled: false
-  image: ghcr.io/cosmology-tech/starship/registry:20230829-eaeeb62
+  image: ghcr.io/cosmology-tech/starship/registry:20230905-b18b37a
+  localhost: true
   ports:
     rest: 6060
     grpc: 7070
