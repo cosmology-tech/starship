@@ -65,7 +65,13 @@ spec:
             - name: REGISTRY_CHAIN_CLIENT_IDS
               value: "{{ include "devnet.chains.ids" . }}"
             - name: REGISTRY_CHAIN_CLIENT_RPCS
+              value: "{{ include "devnet.chains.internal.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_RPCS
               value: "{{ include "devnet.chains.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_GRPCS
+              value: "{{ include "devnet.chains.grpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_RESTS
+              value: "{{ include "devnet.chains.rest.addrs" . }}"
             - name: REGISTRY_CHAIN_REGISTRY
               value: "/configs"
             - name: REGISTRY_CHAIN_CLIENT_EXPOSERS

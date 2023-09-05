@@ -203,9 +203,9 @@ func (a *AppServer) getChainAPIs(ctx context.Context, client *ChainClient) (*pb.
 	}
 
 	apis := &pb.APIs{
-		Rpc:  apiFactory(a.config.ChainClientRPCs),
-		Grpc: apiFactory(a.config.ChainClientGRPCs),
-		Rest: apiFactory(a.config.ChainClientRESTs),
+		Rpc:  apiFactory(a.config.ChainAPIRPCs),
+		Grpc: apiFactory(a.config.ChainAPIGRPCs),
+		Rest: apiFactory(a.config.ChainAPIRESTs),
 	}
 
 	return apis, nil

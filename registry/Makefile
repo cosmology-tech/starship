@@ -33,6 +33,7 @@ run-local:
 
 ## Docker commands
 docker-setup:
+	-docker buildx rm starship
 	docker buildx create --use --name starship
 
 docker-build:
