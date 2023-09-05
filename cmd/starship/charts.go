@@ -121,13 +121,13 @@ func (c *Client) createOrGetRepoFile() (*repo.File, *flock.Flock, error) {
 
 func (c *Client) createInstallClient(config *action.Configuration) *action.Install {
 	client := action.NewInstall(config)
-	client.Namespace = "aws-starship"
-	client.ReleaseName = c.config.HelmChartName
+	client.Namespace = c.config.Namespace
+	client.ReleaseName = c.config.Name
 	client.Version = c.config.Version
-	client.Wait = true
+	client.Wait = c.config.Wait
 	client.Timeout = 300 * time.Second
-	client.Atomic = true
-	client.Force = true
+	client.Atomic = c.config.Atomic
+	client.Force = false
 
 	return client
 }
@@ -143,7 +143,7 @@ func (c *Client) InstallChart() error {
 	}
 
 	// if chart exists, provide warning to user
-	r, err := c.GetChart()
+	r, err := c.GetChart(c.config.Name)
 	if err != nil {
 		if err.Error() != "not found" {
 			return nil
@@ -199,9 +199,22 @@ func (c *Client) createListClient(config *action.Configuration) *action.List {
 	return client
 }
 
-// GetChart gets the current chart
-// todo: handle non deployed chart status
-func (c *Client) GetChart() (*release.Release, error) {
+func (c *Client) ListCharts() ([]*release.Release, error) {
+	actionConfig := new(action.Configuration)
+	err := actionConfig.Init(c.settings.RESTClientGetter(), "", "configmap", func(format string, v ...interface{}) {
+		c.logger.Debug(fmt.Sprintf(format, v...))
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	client := c.createListClient(actionConfig)
+
+	return client.Run()
+}
+
+// GetChart gets the chart by name
+func (c *Client) GetChart(name string) (*release.Release, error) {
 	actionConfig := new(action.Configuration)
 	err := actionConfig.Init(c.settings.RESTClientGetter(), "", "configmap", func(format string, v ...interface{}) {
 		c.logger.Debug(fmt.Sprintf(format, v...))
@@ -221,19 +234,15 @@ func (c *Client) GetChart() (*release.Release, error) {
 
 	var r *release.Release
 	for _, r = range releases {
-		if r.Name == c.config.HelmChartName {
-			break
+		if r.Name == name {
+			return r, nil
 		}
 	}
 
-	if r == nil {
-		return nil, fmt.Errorf("not found")
-	}
-
-	return r, nil
+	return nil, fmt.Errorf("not found")
 }
 
-func (c *Client) DeleteChart() error {
+func (c *Client) DeleteChart(name string) error {
 	actionConfig := new(action.Configuration)
 	err := actionConfig.Init(c.settings.RESTClientGetter(), c.settings.Namespace(), "configmap", func(format string, v ...interface{}) {
 		c.logger.Debug(fmt.Sprintf(format, v...))
@@ -243,7 +252,7 @@ func (c *Client) DeleteChart() error {
 	}
 
 	client := action.NewUninstall(actionConfig)
-	_, err = client.Run(c.config.HelmChartName)
+	_, err = client.Run(name)
 	if err != nil {
 		return err
 	}
