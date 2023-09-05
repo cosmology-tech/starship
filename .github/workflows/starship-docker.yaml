@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-docker-registry:
+  deploy-docker:
     runs-on: ubuntu-latest
 
     permissions:
