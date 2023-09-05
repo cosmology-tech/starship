@@ -157,6 +157,17 @@ Returns a comma seperated list of chain id
 {{- end -}}
 
 {{/*
+Returns a comma seperated list of urls for the RPC address based on internal DNS
+*/}}
+{{- define "devnet.chains.internal.rpc.addrs" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
 Returns a comma seperated list of urls for the RPC address
 */}}
 {{- define "devnet.chains.rpc.addrs" -}}
