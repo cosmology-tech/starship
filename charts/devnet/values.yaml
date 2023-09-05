@@ -219,9 +219,7 @@ explorer:
 
 registry:
   enabled: false
-  # test image, todo: change this to registry service image
-  image: anmol1696/registry:20230905-7b331fe
-  # image: ghcr.io/cosmology-tech/starship/registry:20230829-eaeeb62
+  image: ghcr.io/cosmology-tech/starship/registry:20230905-b18b37a
   localhost: true
   ports:
     rest: 6060
