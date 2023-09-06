@@ -64,6 +64,7 @@ func (c *Client) AddOrUpdateChartRepo() error {
 
 	// Update the repo file with the new entry
 	//repoFile.Update(repoEntry)
+	c.logger.Debug("repofile", zap.Any("repoFile", repoFile))
 	if !repoFile.Has(repoEntry.Name) {
 		c.logger.Info("repo file does not have entry", zap.String("name", repoEntry.Name))
 	}
@@ -122,6 +123,7 @@ func (c *Client) createOrGetRepoFile() (*repo.File, *flock.Flock, error) {
 func (c *Client) createInstallClient(config *action.Configuration) *action.Install {
 	client := action.NewInstall(config)
 	client.Namespace = c.config.Namespace
+	client.CreateNamespace = true
 	client.ReleaseName = c.config.Name
 	client.Version = c.config.Version
 	client.Wait = c.config.Wait

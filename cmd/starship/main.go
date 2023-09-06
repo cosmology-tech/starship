@@ -19,8 +19,8 @@ func NewClient(config *Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Info(
-		"Starting the service",
+	log.Debug(
+		"starting Starship",
 		zap.String("prog", Prog),
 		zap.String("version", Version),
 		zap.Any("config", config),
@@ -34,7 +34,7 @@ func NewClient(config *Config) (*Client, error) {
 	// Set settings
 	settings := cli.New()
 	settings.KubeConfig = os.Getenv("KUBECONFIG")
-	settings.SetNamespace("aws-starship")
+	settings.SetNamespace(config.Namespace)
 	settings.Debug = config.Verbose
 	client.settings = settings
 
