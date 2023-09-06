@@ -21,7 +21,7 @@ func NewDefaultConfig() *Config {
 }
 
 type Config struct {
-	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment, default: default"`
+	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment"`
 	ConfigFile    string `name:"config-file" json:"config_file" usage:"path to the config file"`
 	Name          string `name:"name" json:"name" usage:"name of the deployment"`
 	Version       string `name:"version" json:"version" usage:"version of the helm chart"`
