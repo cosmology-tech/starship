@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/urfave/cli/v2"
@@ -11,30 +10,31 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Namespace:     "default",
+		Namespace:     "",
+		Name:          "starship",
 		HelmRepoName:  "starship",
 		HelmChartName: "devnet",
 		Verbose:       true,
-		Wait:          true,
-		Version:       "0.1.23",
+		Version:       "0.1.45",
 		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
-		ConfigFile:    "tests/configs/one-chain.yaml",
 	}
 }
 
 type Config struct {
-	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment, default: default"`
+	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment"`
 	ConfigFile    string `name:"config-file" json:"config_file" usage:"path to the config file"`
+	Name          string `name:"name" json:"name" usage:"name of the deployment"`
 	Version       string `name:"version" json:"version" usage:"version of the helm chart"`
 	HelmRepoURL   string `name:"helm-repo-url" json:"helm_repo_url" usage:"helm repo url"`
 	HelmRepoName  string `name:"helm-repo-name" json:"helm_repo_name" usage:"helm repo name"`
 	HelmChartName string `name:"helm-chart-name" json:"helm_chart_name" usage:"helm chart name"`
 	Wait          bool   `name:"wait" json:"wait" usage:"wait for the helm chart to be ready"`
+	Atomic        bool   `name:"atomic" json:"atomic" usage:"atomic creation of helm chart, delete incase of error"`
 	Verbose       bool   `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	OnlyFatalLog  bool   `name:"only-fatal-log" json:"only_fatal_log" usage:"used while running test"`
 }
 
-func GetCommandLineOptions() []cli.Flag {
+func GetCommandLineOptions(flagNames ...string) []cli.Flag {
 	defaults := NewDefaultConfig()
 	var flags []cli.Flag
 	count := reflect.TypeOf(Config{}).NumField()
@@ -50,14 +50,30 @@ func GetCommandLineOptions() []cli.Flag {
 		}
 		optName := field.Tag.Get("name")
 
+		needed := func() bool {
+			// if no flag names are defined, then consider it to be true
+			if flagNames == nil {
+				return true
+			}
+			for _, flagName := range flagNames {
+				if flagName == optName {
+					return true
+				}
+			}
+			return false
+		}()
+		if !needed {
+			continue
+		}
+
 		switch t := field.Type; t.Kind() {
 		case reflect.Bool:
 			dv := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).Bool()
-			msg := fmt.Sprintf("%s (default: %t)", usage, dv)
 			flags = append(flags, &cli.BoolFlag{
 				Name:    optName,
-				Usage:   msg,
+				Usage:   usage,
 				EnvVars: []string{envName},
+				Value:   dv,
 			})
 		case reflect.String:
 			defaultValue := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).String()
@@ -93,7 +109,7 @@ func ParseCLIOptions(cx *cli.Context, config *Config) (err error) {
 }
 
 func NewLogger(config *Config) (*zap.Logger, error) {
-	c := zap.NewProductionConfig()
+	c := zap.NewDevelopmentConfig()
 	c.DisableCaller = true
 	c.Encoding = "console"
 	c.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder

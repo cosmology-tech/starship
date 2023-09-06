@@ -1,17 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"github.com/urfave/cli/v2"
 )
 
 func newStartCommand(config *Config) *cli.Command {
 	return &cli.Command{
-		Name:  "start",
-		Usage: "start starship resources from a config file",
-		Flags: GetCommandLineOptions(),
+		Name:      "start",
+		Usage:     "start starship resources from a config file",
+		UsageText: "start [path to config-file] [options]",
+		Flags:     GetCommandLineOptions(),
 		Action: func(c *cli.Context) error {
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
+			}
+			// set configfile to the Config struct from args if not set
+			if config.ConfigFile == "" {
+				if c.NArg() > 0 {
+					config.ConfigFile = c.Args().Get(0)
+				} else {
+					return cli.Exit("config file need to be specified", 1)
+				}
 			}
 
 			client, err := NewClient(config)
@@ -34,11 +44,11 @@ func newStartCommand(config *Config) *cli.Command {
 	}
 }
 
-func newStopCommand(config *Config) *cli.Command {
+func newListCommand(config *Config) *cli.Command {
 	return &cli.Command{
-		Name:  "stop",
-		Usage: "stop running starship resources",
-		Flags: GetCommandLineOptions(),
+		Name:  "list",
+		Usage: "list starship charts deployed",
+		Flags: GetCommandLineOptions("verbose"),
 		Action: func(c *cli.Context) error {
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
@@ -50,7 +60,36 @@ func newStopCommand(config *Config) *cli.Command {
 			}
 			defer client.logger.Sync()
 
-			err = client.DeleteChart()
+			res, err := client.ListCharts()
+			if err != nil {
+				return cli.Exit(err, 1)
+			}
+			for _, r := range res {
+				fmt.Printf("name: %s,\tstatus: %s,\tnamespace: %s\n", r.Name, r.Info.Status, r.Namespace)
+			}
+
+			return nil
+		},
+	}
+}
+
+func newStopCommand(config *Config) *cli.Command {
+	return &cli.Command{
+		Name:  "stop",
+		Usage: "stop running starship resources",
+		Flags: GetCommandLineOptions("name", "version", "verbose"),
+		Action: func(c *cli.Context) error {
+			if err := ParseCLIOptions(c, config); err != nil {
+				return cli.Exit(err, 1)
+			}
+
+			client, err := NewClient(config)
+			if err != nil {
+				return cli.Exit(err, 1)
+			}
+			defer client.logger.Sync()
+
+			err = client.DeleteChart(config.Name)
 			if err != nil {
 				return cli.Exit(err, 1)
 			}
@@ -73,6 +112,7 @@ func NewApp() *cli.App {
 	}
 	app.Commands = []*cli.Command{
 		newStartCommand(config),
+		newListCommand(config),
 		newStopCommand(config),
 	}
 
