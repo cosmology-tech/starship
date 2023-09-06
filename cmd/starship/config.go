@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/urfave/cli/v2"
@@ -70,11 +69,11 @@ func GetCommandLineOptions(flagNames ...string) []cli.Flag {
 		switch t := field.Type; t.Kind() {
 		case reflect.Bool:
 			dv := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).Bool()
-			msg := fmt.Sprintf("%s (default: %t)", usage, dv)
 			flags = append(flags, &cli.BoolFlag{
 				Name:    optName,
-				Usage:   msg,
+				Usage:   usage,
 				EnvVars: []string{envName},
+				Value:   dv,
 			})
 		case reflect.String:
 			defaultValue := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).String()
