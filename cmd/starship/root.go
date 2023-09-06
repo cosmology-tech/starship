@@ -36,11 +36,10 @@ func newStartCommand(config *Config) *cli.Command {
 }
 
 func newListCommand(config *Config) *cli.Command {
-	fmt.Printf("here....")
 	return &cli.Command{
 		Name:  "list",
 		Usage: "list starship charts deployed",
-		Flags: GetCommandLineOptions(),
+		Flags: GetCommandLineOptions("verbose"),
 		Action: func(c *cli.Context) error {
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
@@ -69,7 +68,7 @@ func newStopCommand(config *Config) *cli.Command {
 	return &cli.Command{
 		Name:  "stop",
 		Usage: "stop running starship resources",
-		Flags: GetCommandLineOptions(),
+		Flags: GetCommandLineOptions("name", "version", "verbose"),
 		Action: func(c *cli.Context) error {
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)

@@ -18,7 +18,6 @@ func NewDefaultConfig() *Config {
 		Verbose:       true,
 		Version:       "0.1.45",
 		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
-		ConfigFile:    "config.yaml",
 	}
 }
 
@@ -36,7 +35,7 @@ type Config struct {
 	OnlyFatalLog  bool   `name:"only-fatal-log" json:"only_fatal_log" usage:"used while running test"`
 }
 
-func GetCommandLineOptions() []cli.Flag {
+func GetCommandLineOptions(flagNames ...string) []cli.Flag {
 	defaults := NewDefaultConfig()
 	var flags []cli.Flag
 	count := reflect.TypeOf(Config{}).NumField()
@@ -51,6 +50,22 @@ func GetCommandLineOptions() []cli.Flag {
 			envName = envPrefix + envName
 		}
 		optName := field.Tag.Get("name")
+
+		needed := func() bool {
+			// if no flag names are defined, then consider it to be true
+			if flagNames == nil {
+				return true
+			}
+			for _, flagName := range flagNames {
+				if flagName == optName {
+					return true
+				}
+			}
+			return false
+		}()
+		if !needed {
+			continue
+		}
 
 		switch t := field.Type; t.Kind() {
 		case reflect.Bool:
