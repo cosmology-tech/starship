@@ -12,7 +12,6 @@ func newStartCommand(config *Config) *cli.Command {
 		UsageText: "start [path to config-file] [options]",
 		Flags:     GetCommandLineOptions(),
 		Action: func(c *cli.Context) error {
-			fmt.Printf("here.... \n")
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
 			}
