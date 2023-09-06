@@ -7,12 +7,22 @@ import (
 
 func newStartCommand(config *Config) *cli.Command {
 	return &cli.Command{
-		Name:  "start",
-		Usage: "start starship resources from a config file",
-		Flags: GetCommandLineOptions(),
+		Name:      "start",
+		Usage:     "start starship resources from a config file",
+		UsageText: "start [path to config-file] [options]",
+		Flags:     GetCommandLineOptions(),
 		Action: func(c *cli.Context) error {
+			fmt.Printf("here.... \n")
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
+			}
+			// set configfile to the Config struct from args if not set
+			if config.ConfigFile == "" {
+				if c.NArg() > 0 {
+					config.ConfigFile = c.Args().Get(0)
+				} else {
+					return cli.Exit("config file need to be specified", 1)
+				}
 			}
 
 			client, err := NewClient(config)
