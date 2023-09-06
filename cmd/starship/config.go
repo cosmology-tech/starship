@@ -10,7 +10,7 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Namespace:     "aws-starship",
+		Namespace:     "",
 		Name:          "starship",
 		HelmRepoName:  "starship",
 		HelmChartName: "devnet",
@@ -109,7 +109,7 @@ func ParseCLIOptions(cx *cli.Context, config *Config) (err error) {
 }
 
 func NewLogger(config *Config) (*zap.Logger, error) {
-	c := zap.NewProductionConfig()
+	c := zap.NewDevelopmentConfig()
 	c.DisableCaller = true
 	c.Encoding = "console"
 	c.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
