@@ -73,12 +73,12 @@ defaultChains:
     coinType: 118
     repo: https://github.com/Stride-Labs/stride
   injective:
-    image: ghcr.io/cosmology-tech/starship/injective:v1.11-1685225746
+    image: ghcr.io/cosmology-tech/starship/injective:v1.11.6
     home: /root/.injectived
     binary: injectived
     prefix: inj
     denom: inj
-    coins: 100000000000000inj
+    coins: 100000000000000000000000000inj
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/InjectiveLabs/injective-chain-releases

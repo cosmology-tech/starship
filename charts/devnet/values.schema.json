@@ -122,7 +122,8 @@
               "wasmd",
               "simapp",
               "cheqd",
-              "neutron"
+              "neutron",
+              "injective"
             ]
           },
           "numValidators": {
