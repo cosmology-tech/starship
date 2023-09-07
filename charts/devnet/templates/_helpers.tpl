@@ -51,6 +51,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Convert $chain.name to name usable by templates
+*/}}
+{{- define "devnet.chain.name" -}}
+{{- printf "%s" . | replace "_" "-" | trunc 63 }}
+{{- end }}
+
+{{/*
 Environment variables for chain from configmaps
 */}}
 {{- define "devnet.defaultEvnVars" }}

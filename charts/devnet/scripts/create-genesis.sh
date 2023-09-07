@@ -17,6 +17,10 @@ then
   ARGS_ADD_GENESIS_ACCOUNT="${ARGS_ADD_GENESIS_ACCOUNT} --chain-id ${CHAIN_ID}"
   GENTX_AMT=5000000000000000000000
 fi
+if [ $CHAIN_BIN == "evmosd" ]
+then
+  GENTX_AMT=5000000000000
+fi
 
 # check if the binary has genesis subcommand or not, if not, set CHAIN_GENESIS_CMD to empty
 CHAIN_GENESIS_CMD=$($CHAIN_BIN 2>&1 | grep -q "genesis-related subcommands" && echo "genesis" || echo "")

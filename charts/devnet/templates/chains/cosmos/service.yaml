@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $chain.name }}-genesis
+  name: {{ include "devnet.chain.name" $chain.name }}-genesis
   labels:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 spec:

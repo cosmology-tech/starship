@@ -232,7 +232,7 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{ $chain.name }}
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
 ---
 {{- end }}
 {{- end }}

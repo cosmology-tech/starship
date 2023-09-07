@@ -82,7 +82,7 @@ spec:
           volumeMounts:
             {{- range $chain := .Values.chains }}
             - mountPath: /configs/{{ $chain.name }}
-              name: registry-configs-{{ $chain.name }}
+              name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
             {{- end }}
           readinessProbe:
             tcpSocket:
@@ -96,9 +96,9 @@ spec:
             periodSeconds: 10
       volumes:
         {{- range $chain := .Values.chains }}
-        - name: registry-configs-{{ $chain.name }}
+        - name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
           configMap:
-            name: registry-{{ $chain.name }}
+            name: registry-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
 {{- range $chain := .Values.chains }}
@@ -112,7 +112,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: registry-{{ $chain.name }}
+  name: registry-{{- include "devnet.chain.name" $chain.name }}
 data:
   assetlist.json: |-
     {
