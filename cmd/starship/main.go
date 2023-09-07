@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gopkg.in/yaml.v3"
 	"os"
 
 	"go.uber.org/zap"
@@ -11,7 +12,8 @@ type Client struct {
 	config *Config
 	logger *zap.Logger
 
-	settings *cli.EnvSettings
+	helmConfig *HelmConfig
+	settings   *cli.EnvSettings
 }
 
 func NewClient(config *Config) (*Client, error) {
@@ -31,10 +33,26 @@ func NewClient(config *Config) (*Client, error) {
 		logger: log,
 	}
 
+	if config.ConfigFile != "" {
+		helmConfig := &HelmConfig{}
+		yamlFile, err := os.ReadFile(config.ConfigFile)
+		if err != nil {
+			return nil, err
+		}
+		err = yaml.Unmarshal(yamlFile, helmConfig)
+		if err != nil {
+			return nil, err
+		}
+
+		client.helmConfig = helmConfig
+	}
+
 	// Set settings
 	settings := cli.New()
 	settings.KubeConfig = os.Getenv("KUBECONFIG")
-	settings.SetNamespace(config.Namespace)
+	if config.Namespace != "" {
+		settings.SetNamespace(config.Namespace)
+	}
 	settings.Debug = config.Verbose
 	client.settings = settings
 

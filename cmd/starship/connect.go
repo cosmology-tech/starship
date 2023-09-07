@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"time"
 )
 
 // File responsible for having functions that will perform kubectl port-froward.
@@ -29,12 +30,13 @@ var defaultPorts = map[string]map[string]int{
 // portForward function with perform port-forwarding based on
 // kubectl port-forward <resource> <localPort>:<removePort>
 func execPortForward(resource string, localPort, remotePort int) error {
-	cmd := exec.Command("kubectl", "port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort), ">", "/dev/null", "2>&1", "&")
+	cmd := exec.Command("kubectl", "port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort))
 	return cmd.Run()
 }
 
 // PortForward function performs the exec commands to run the port-forwarding
-func (c *Client) PortForward(config HelmConfig) error {
+func (c *Client) PortForward() error {
+	config := c.helmConfig
 	// port-forward all chains
 	for _, chain := range config.Chains {
 		for portType, remotePort := range defaultPorts["chain"] {
@@ -77,6 +79,7 @@ func (c *Client) PortForward(config HelmConfig) error {
 			c.logger.Info(fmt.Sprintf("port-forwarding: registry, %s to http://localhost:%v", portType, port))
 		}
 	}
+	time.Sleep(120 * time.Second)
 	return nil
 }
 

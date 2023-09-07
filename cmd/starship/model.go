@@ -86,6 +86,8 @@ func (f *Feature) GetRESTAddr() string {
 }
 
 // HelmConfig is the struct for the config.yaml setup file
+// Need not be fully compatible with the values.schema.json file, just need
+// parts of the config file for performing  various functions, mainly port-forwarding
 // todo: move this to a more common place, outside just tests
 // todo: can be moved to proto defination
 type HelmConfig struct {
