@@ -23,9 +23,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-genesis
+  name: {{ include "devnet.chain.name" $chain.name }}-genesis
 spec:
-  serviceName: {{ $chain.name }}-genesis
+  serviceName: {{ include "devnet.chain.name" $chain.name }}-genesis
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -241,11 +241,11 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{ $chain.name }}
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
         {{- if hasKey $chain "genesis" }}
         - name: patch
           configMap:
-            name: patch-{{ $chain.name }}
+            name: patch-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
 {{- end }}
