@@ -117,6 +117,9 @@ data:
     {{- if eq $fullchain.type "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
+    {{- else if eq $fullchain.type "injective" }}
+    address_type = { derivation = 'ethermint', proto_type = { pk_type = '/injective.crypto.v1beta1.ethsecp256k1.PubKey' } }
+    gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
     {{- else }}
     address_type = { derivation = 'cosmos' }
     gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }

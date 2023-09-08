@@ -1,5 +1,5 @@
 HELM_NAME ?= starship-support-tests
-HELM_FILE ?= chains/evmos.yaml
+HELM_FILE ?= chains/injective.yaml
 
 HELM_REPO ?= starship
 HELM_CHART ?= devnet
