@@ -107,7 +107,7 @@ spec:
 {{ $chain = merge $chain $defaultChain }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
-{{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+{{ $host := printf "%s-genesis.%s.svc.cluster.local" (include "devnet.chain.name" $chain.name) $.Release.Namespace }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
