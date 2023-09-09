@@ -13,7 +13,7 @@
 
 # read faucet from chain values and merge with default faucet values
 {{ $faucet := get $chain "faucet" | default dict }}
-{{ $faucet = mergeOverwrite $.Values.faucet $faucet }}
+{{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy)  $faucet }}
 
 {{ $image := $chain.image }}
 {{- if $toBuild }}
