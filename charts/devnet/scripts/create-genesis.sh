@@ -34,7 +34,7 @@ $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq
 
 echo "Creating gentx..."
 COIN=$(echo $COINS | cut -d ',' -f1)
-AMT=$((${COIN//[!0-9]/}/10000))
+AMT=$((${COIN//[!0-9]/}/100))
 $CHAIN_BIN $CHAIN_GENESIS_CMD gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) $AMT$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
 
 echo "Output of gentx"
