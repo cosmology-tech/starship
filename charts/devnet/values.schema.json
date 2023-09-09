@@ -40,6 +40,9 @@
     "faucet": {
       "type": "object",
       "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
         "image": {
           "type": "string"
         },
@@ -201,6 +204,9 @@
           "faucet": {
             "type": "object",
             "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
               "image": {
                 "type": "string"
               },
