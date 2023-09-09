@@ -30,6 +30,7 @@ exposer:
     memory: "200M"
 
 faucet:
+  enabled: true
   image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
   concurrency: 10
   ports:

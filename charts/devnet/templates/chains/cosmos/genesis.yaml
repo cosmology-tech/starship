@@ -13,7 +13,7 @@
 
 # read faucet from chain values and merge with default faucet values
 {{ $faucet := get $chain "faucet" | default dict }}
-{{ $faucet = merge $faucet $.Values.faucet }}
+{{ $faucet = mergeOverwrite $.Values.faucet $faucet }}
 
 {{ $image := $chain.image }}
 {{- if $toBuild }}
@@ -176,6 +176,7 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+        {{- if $faucet.enabled }}
         - name: faucet
           image: {{ $faucet.image }}
           imagePullPolicy: Always
@@ -233,6 +234,7 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+        {{- end }}
       volumes:
         - name: node
           emptyDir: { }
