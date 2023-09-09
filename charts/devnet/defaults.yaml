@@ -114,7 +114,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/crypto-org-chain/chain-main
   evmos:
-    image: ghcr.io/cosmology-tech/starship/evmos:v12.1.5
+    image: ghcr.io/cosmology-tech/starship/evmos:v13.0.1
     home: /root/.evmosd
     binary: evmosd
     prefix: evmos

@@ -107,7 +107,13 @@ chains:
       - v4.0.1
   - name: evmos
     base: ghcr.io/strangelove-ventures/heighliner/evmos
+    file: Dockerfile.evmos
     tags:
+      - v14.0.0-rc4
+      - v13.0.2
+      - v13.0.1
+      - v12.1.6
+      - v13.0.0
       - v12.1.5
       - v12.1.4
       - v12.1.3
