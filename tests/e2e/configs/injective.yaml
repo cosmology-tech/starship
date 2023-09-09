@@ -3,6 +3,8 @@ chains:
     type: injective
     image: anmol1696/injective:v1.11.5
     numValidators: 1
+    faucet:
+      enabled: false
     ports:
       rest: 1313
       rpc: 26653

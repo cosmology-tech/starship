@@ -119,7 +119,7 @@ defaultChains:
     binary: evmosd
     prefix: evmos
     denom: aevmos
-    coins: 1000000000000000000aevmos
+    coins: 100000000000000000000000000aevmos
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/evmos/evmos
