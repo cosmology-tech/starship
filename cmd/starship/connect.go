@@ -34,11 +34,11 @@ var defaultPorts = map[string]map[string]int{
 // portForward function with perform port-forwarding based on
 // kubectl port-forward <resource> <localPort>:<removePort>
 func (c *Client) execPortForwardCmd(resource string, localPort, remotePort int) *exec.Cmd {
-	cmdArgs := []string{"port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort)}
+	cmdArgs := fmt.Sprintf("port-forward %s %v:%v", resource, localPort, remotePort)
 	if c.config.Namespace != "" {
-		cmdArgs = append(cmdArgs, []string{"-n", c.config.Namespace}...)
+		cmdArgs += fmt.Sprintf(" -n %s", c.config.Namespace)
 	}
-	cmd := exec.Command("kubectl", cmdArgs...)
+	cmd := exec.Command("kubectl", strings.Split(cmdArgs, " ")...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ() // pass through environment variables
@@ -170,9 +170,9 @@ func (c *Client) CheckKubectl() error {
 func (c *Client) CheckPortForward() error {
 	config := c.helmConfig
 
-	cmdArgs := "get pods --field-selector=status.phase=Running --no-headers -o=name"
+	cmdArgs := "get pods --field-selector=status.phase=Running --no-headers --output name"
 	if c.config.Namespace != "" {
-		cmdArgs += fmt.Sprintf("-n=%s", c.config.Namespace)
+		cmdArgs += fmt.Sprintf(" -n=%s", c.config.Namespace)
 	}
 
 	cmd := exec.Command("kubectl", strings.Split(cmdArgs, " ")...)
