@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 )
 
@@ -90,6 +91,12 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 
 // RunPortForward function performs the exec commands to run the port-forwarding
 func (c *Client) RunPortForward(cliCtx context.Context) error {
+	// check status of pods
+	if err := c.CheckPortForward(); err != nil {
+		c.logger.Error("pods are not found in running state, check manually with `kubectl get pods` to make sure all pods are `Running` before trying to connect", zap.Error(err))
+		return err
+	}
+
 	cmds, msgs, err := c.PortForwardCmds()
 	if err != nil {
 		return err
@@ -141,7 +148,56 @@ func (c *Client) RunPortForward(cliCtx context.Context) error {
 	return nil
 }
 
+func strInList(strs []string, str string) bool {
+	for _, s := range strs {
+		if strings.Contains(s, str) {
+			return true
+		}
+	}
+	return false
+}
+
 // CheckPortForward verfify if all pods are in running state, and ready to be port-forwarded
+// * perform kubectl get pods
+// * check status of pods to be running based on the config
+// * return error if port-forwarding is not ready
 func (c *Client) CheckPortForward() error {
+	config := c.helmConfig
+
+	cmdArgs := "get pods --field-selector=status.phase=Running --no-headers -o=name"
+
+	cmd := exec.Command("kubectl", strings.Split(cmdArgs, " ")...)
+	cmd.Env = os.Environ()
+	out, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	pods := strings.Split(string(out), "\n")
+
+	c.logger.Debug(fmt.Sprintf("pods in running state: %s", strings.Join(pods, ",")))
+
+	// check chain pods are running
+	for _, chain := range config.Chains {
+		if !strInList(pods, fmt.Sprintf("%s-genesis-0", chain.Name)) {
+			return fmt.Errorf("chain %s pod not found in running pods: %s", chain.Name, strings.Join(pods, ","))
+		}
+	}
+	// check registry pods are running
+	if config.Registry != nil {
+		if config.Registry.Enabled {
+			if !strInList(pods, "registry-") {
+				return fmt.Errorf("registry pod not found in running pods: %s", strings.Join(pods, ","))
+			}
+		}
+	}
+	// check explorer pods are running
+	if config.Explorer != nil {
+		if config.Explorer.Enabled {
+			if !strInList(pods, "explorer-") {
+				return fmt.Errorf("explorer pod not found in running pods: %s", strings.Join(pods, ","))
+			}
+		}
+	}
+
 	return nil
 }
