@@ -124,7 +124,7 @@ func newConnectCommand(config *Config) *cli.Command {
 			}
 			defer client.logger.Sync()
 
-			err = client.PortForward()
+			err = client.RunPortForward(c.Context)
 			if err != nil {
 				return cli.Exit(err, 1)
 			}

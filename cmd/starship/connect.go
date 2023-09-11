@@ -1,10 +1,12 @@
 package main
 
 import (
-	"bytes"
+	"context"
 	"fmt"
+	"go.uber.org/zap"
+	"os"
 	"os/exec"
-	"time"
+	"sync"
 )
 
 // File responsible for having functions that will perform kubectl port-froward.
@@ -30,23 +32,25 @@ var defaultPorts = map[string]map[string]int{
 
 // portForward function with perform port-forwarding based on
 // kubectl port-forward <resource> <localPort>:<removePort>
-func execPortForward(resource string, localPort, remotePort int) error {
-	cmd := exec.Command("kubectl", "port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort))
-	//cmd := exec.Command("kubectl", "get", resource)
-	var outb, errb bytes.Buffer
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-	err := cmd.Run()
-	fmt.Println("out:", outb.String(), "err:", errb.String())
-	if err != nil {
-		return err
+func (c *Client) execPortForwardCmd(resource string, localPort, remotePort int) *exec.Cmd {
+	cmdArgs := []string{"port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort)}
+	if c.config.Namespace != "" {
+		cmdArgs = append(cmdArgs, []string{"-n", c.config.Namespace}...)
 	}
-	return nil
+	cmd := exec.Command("kubectl", cmdArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ() // pass through environment variables
+	return cmd
 }
 
-// PortForward function performs the exec commands to run the port-forwarding
-func (c *Client) PortForward() error {
+// PortForwardCmds returns a list of exec commands for port-fowrarding from a config file
+func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 	config := c.helmConfig
+
+	var cmds []*exec.Cmd
+	var msgs []string
+
 	// port-forward all chains
 	for _, chain := range config.Chains {
 		for portType, remotePort := range defaultPorts["chain"] {
@@ -54,12 +58,8 @@ func (c *Client) PortForward() error {
 			if port == 0 {
 				continue
 			}
-			c.logger.Debug(fmt.Sprintf("port-forwarding: chain %s, %s to http://localhost:%v", chain.Name, portType, port))
-			err := execPortForward(fmt.Sprintf("pods/%s-genesis-0", chain.Name), port, remotePort)
-			if err != nil {
-				return err
-			}
-			c.logger.Info(fmt.Sprintf("port-forwarded: chain %s, %s to http://localhost:%v", chain.Name, portType, port))
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", chain.Name, portType, port))
+			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-genesis-0", chain.Name), port, remotePort))
 		}
 	}
 	// port-forward explorer
@@ -69,11 +69,8 @@ func (c *Client) PortForward() error {
 			if port == 0 {
 				continue
 			}
-			err := execPortForward("svc/explorer", port, remotePort)
-			if err != nil {
-				return err
-			}
-			c.logger.Info(fmt.Sprintf("port-forwarding: explorer, %s to http://localhost:%v", portType, port))
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", "explorer", portType, port))
+			cmds = append(cmds, c.execPortForwardCmd("svc/explorer", port, remotePort))
 		}
 	}
 	// port-forward registry
@@ -83,19 +80,68 @@ func (c *Client) PortForward() error {
 			if port == 0 {
 				continue
 			}
-			err := execPortForward("svc/registry", port, remotePort)
-			if err != nil {
-				return err
-			}
-			c.logger.Info(fmt.Sprintf("port-forwarding: registry, %s to http://localhost:%v", portType, port))
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", "registry", portType, port))
+			cmds = append(cmds, c.execPortForwardCmd("svc/registry", port, remotePort))
 		}
 	}
-	time.Sleep(120 * time.Second)
+
+	return cmds, msgs, nil
+}
+
+// RunPortForward function performs the exec commands to run the port-forwarding
+func (c *Client) RunPortForward(cliCtx context.Context) error {
+	cmds, msgs, err := c.PortForwardCmds()
+	if err != nil {
+		return err
+	}
+
+	// run all cmds in parallel go-routines
+	ctx, cancel := context.WithCancel(cliCtx)
+	defer cancel()
+
+	var wg sync.WaitGroup
+	resultChan := make(chan error, len(cmds))
+
+	c.logger.Debug("commands to run", zap.Int("num_cmds", len(cmds)))
+	for _, cmd := range cmds {
+		wg.Add(1)
+		c.logger.Debug(fmt.Sprintf("runing cmd: %s", cmd.String()))
+		go func(ctx context.Context, cmd *exec.Cmd, g *sync.WaitGroup, resultChan chan error) {
+			if err := cmd.Run(); err != nil {
+				select {
+				case resultChan <- err:
+				case <-ctx.Done():
+				}
+			}
+		}(ctx, cmd, &wg, resultChan)
+	}
+
+	// log port forwarded endpoints to localhost
+	c.logger.Info("Port forwarding")
+	for _, msg := range msgs {
+		c.logger.Info(msg)
+	}
+
+	// Start a goroutine to monitor the result channel and cancel if any error occurs
+	go func() {
+		for err := range resultChan {
+			fmt.Printf("Command failed: %v\n", err)
+			cancel()
+		}
+	}()
+
+	// Wait for all commands to finish
+	wg.Wait()
+
+	// Close the result channel
+	close(resultChan)
+
+	c.logger.Debug("port-forward in progress... exit with Ctlr+C")
+
 	return nil
 }
 
-// StopPortForward will kill the processes that ran the kubectl exec commands
-func (c *Client) StopPortForward(config HelmConfig) error {
-	cmd := exec.Command("pkill", "-f", "port-forward")
-	return cmd.Run()
+// CheckPortForward verfify if all pods are in running state, and ready to be port-forwarded
+func (c *Client) CheckPortForward() error {
+	return nil
 }
