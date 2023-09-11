@@ -124,8 +124,16 @@ func newConnectCommand(config *Config) *cli.Command {
 			}
 			defer client.logger.Sync()
 
+			// check kubectl is installed
+			err = client.CheckKubectl()
+			if err != nil {
+				client.logger.Error(err.Error())
+				return cli.Exit(err, 1)
+			}
+
 			err = client.RunPortForward(c.Context)
 			if err != nil {
+				client.logger.Error(err.Error())
 				return cli.Exit(err, 1)
 			}
 

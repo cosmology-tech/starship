@@ -93,8 +93,7 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 func (c *Client) RunPortForward(cliCtx context.Context) error {
 	// check status of pods
 	if err := c.CheckPortForward(); err != nil {
-		c.logger.Error("pods are not found in running state, check manually with `kubectl get pods` to make sure all pods are `Running` before trying to connect", zap.Error(err))
-		return err
+		return fmt.Errorf("pods are not found in running state, check manually with `kubectl get pods` to make sure all pods are `Running` before trying to connect. err: %w", err)
 	}
 
 	cmds, msgs, err := c.PortForwardCmds()
@@ -155,6 +154,13 @@ func strInList(strs []string, str string) bool {
 		}
 	}
 	return false
+}
+
+func (c *Client) CheckKubectl() error {
+	if _, err := exec.LookPath("kubectl"); err != nil {
+		return fmt.Errorf("kubectl not found in $PATH. Make sure you have installed kubectl. Follow: https://kubernetes.io/docs/tasks/tools/#kubectl. err: %w", err)
+	}
+	return nil
 }
 
 // CheckPortForward verfify if all pods are in running state, and ready to be port-forwarded
