@@ -104,7 +104,7 @@ func newConnectCommand(config *Config) *cli.Command {
 		Name:      "connect",
 		Usage:     "connect will perform port-forward based on the configfile to localhost ports",
 		UsageText: "connect [path to config-file] [options]",
-		Flags:     GetCommandLineOptions("config-file", "namespace", "verbose"),
+		Flags:     GetCommandLineOptions("config", "namespace", "verbose"),
 		Action: func(c *cli.Context) error {
 			if err := ParseCLIOptions(c, config); err != nil {
 				return cli.Exit(err, 1)
