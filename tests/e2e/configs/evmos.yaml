@@ -1,7 +1,7 @@
 chains:
   - name: evmos_9000-1
     type: evmos
-    image: ghcr.io/cosmology-tech/starship/evmos:v12.1.5
+    image: ghcr.io/cosmology-tech/starship/evmos:v13.0.2
     numValidators: 1
     faucet:
       enabled: false
@@ -9,7 +9,6 @@ chains:
       rest: 1313
       rpc: 26653
       exposer: 38083
-      faucet: 8001
   - name: cosmoshub-4
     type: cosmos
     image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1

@@ -1,7 +1,6 @@
 chains:
   - name: injective-1
     type: injective
-    image: anmol1696/injective:v1.11.5
     numValidators: 1
     faucet:
       enabled: false
@@ -12,7 +11,6 @@ chains:
       faucet: 8001
   - name: cosmoshub-4
     type: cosmos
-    image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 1
     ports:
       rest: 1317
@@ -23,7 +21,6 @@ chains:
 relayers:
   - name: injective-cosmos
     type: hermes
-    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0
     replicas: 1
     chains:
       - injective-1

@@ -54,7 +54,10 @@ if [[ $num_chains -lt 0 ]]; then
   exit 1
 fi
 for i in $(seq 0 $num_chains); do
+  # derive chain pod name from chain id
+  # https://github.com/cosmology-tech/starship/blob/main/charts/devnet/templates/_helpers.tpl#L56
   chain=$(yq -r ".chains[$i].name" ${CONFIGFILE} )
+  chain=${chain/_/"-"}
   localrpc=$(yq -r ".chains[$i].ports.rpc" ${CONFIGFILE} )
   localgrpc=$(yq -r ".chains[$i].ports.grpc" ${CONFIGFILE} )
   locallcd=$(yq -r ".chains[$i].ports.rest" ${CONFIGFILE} )
