@@ -171,6 +171,9 @@ func (c *Client) CheckPortForward() error {
 	config := c.helmConfig
 
 	cmdArgs := "get pods --field-selector=status.phase=Running --no-headers -o=name"
+	if c.config.Namespace != "" {
+		cmdArgs += fmt.Sprintf("-n %s", c.config.Namespace)
+	}
 
 	cmd := exec.Command("kubectl", strings.Split(cmdArgs, " ")...)
 	cmd.Env = os.Environ()
