@@ -114,7 +114,7 @@ func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, ErrNotFound
 	} else if err != nil {
-		return nil, fmt.Errorf("unable to read file %s, err: %d", filename, err)
+		return nil, fmt.Errorf("unable to read file %s, err: %s", filename, err)
 	}
 
 	client, err := a.chainClients.GetChainClient(requestChain.Chain)

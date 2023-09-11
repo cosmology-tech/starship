@@ -1,7 +1,7 @@
 chains:
   - name: evmos_9000-1
     type: evmos
-    image: ghcr.io/cosmology-tech/starship/evmos:v12.1.5
+    image: ghcr.io/cosmology-tech/starship/evmos:v13.0
     numValidators: 1
     faucet:
       enabled: false
