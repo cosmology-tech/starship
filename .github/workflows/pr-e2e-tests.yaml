@@ -25,6 +25,8 @@ jobs:
           - "multi-validator.yaml"
           - "two-chain-gorelayer.yaml"
           - "simapp.yaml"
+          - "injective.yaml"
+          - "evmos.yaml"
       fail-fast: true
       max-parallel: 1
 

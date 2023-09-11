@@ -40,6 +40,9 @@
     "faucet": {
       "type": "object",
       "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
         "image": {
           "type": "string"
         },
@@ -122,7 +125,8 @@
               "wasmd",
               "simapp",
               "cheqd",
-              "neutron"
+              "neutron",
+              "injective"
             ]
           },
           "numValidators": {
@@ -200,6 +204,9 @@
           "faucet": {
             "type": "object",
             "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
               "image": {
                 "type": "string"
               },

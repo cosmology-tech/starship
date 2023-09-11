@@ -82,7 +82,7 @@ data:
   {{ $chain = merge $chain $defaultChain }}
   {{ $host := "localhost" }}
   {{- if not $.Values.explorer.localhost }}
-  {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+  {{ $host := printf "%s-genesis.%s.svc.cluster.local" (include "devnet.chain.name" $chain.name) $.Release.Namespace }}
   {{- end }}
   {{ $chain.name }}.json: |-
     {

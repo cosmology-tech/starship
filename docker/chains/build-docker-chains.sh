@@ -6,6 +6,8 @@ PUSH=0
 PUSH_LATEST=0
 FORCE=0
 
+VERSION_FILE=versions.yaml
+
 set -euo pipefail
 
 function color() {
@@ -48,6 +50,7 @@ build_chain_tag() {
   local push_image=$3
 
   local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" versions.yaml)
+  local dockerfile=$(yq -r ".chains[] | select(.name==\"$chain\") | .file // \"Dockerfile\"" versions.yaml)
 
   if [[ "$FORCE" -ne 1 ]]; then
     if image_tag_exists $DOCKER_REPO/$chain $tag; then
@@ -69,7 +72,7 @@ build_chain_tag() {
     docker buildx build \
       --platform linux/amd64,linux/arm64 \
       -t "$DOCKER_REPO/$chain:$tag" \
-      . -f Dockerfile \
+      . -f $dockerfile \
       --build-arg BASE_IMAGE=$base \
       --build-arg VERSION=$tag \
       $buildx_args && break
@@ -87,7 +90,7 @@ build_all_tags() {
   local push_image=$2
 
   # Get all tags for the chain
-  local tags=$(yq -r ".chains[] | select(.name==\"$chain\") | .tags[]" versions.yaml)
+  local tags=$(yq -r ".chains[] | select(.name==\"$chain\") | .tags[]" $VERSION_FILE)
 
   # Build and push all tags
   for tag in $tags; do
@@ -99,7 +102,7 @@ build_all_chains() {
   local push_image=$1
 
   # Get all chains
-  local chains=$(yq -r ".chains[].name" versions.yaml)
+  local chains=$(yq -r ".chains[].name" $VERSION_FILE)
 
   # Build and push all chains
   for chain in $chains; do

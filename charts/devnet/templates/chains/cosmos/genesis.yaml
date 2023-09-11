@@ -13,7 +13,7 @@
 
 # read faucet from chain values and merge with default faucet values
 {{ $faucet := get $chain "faucet" | default dict }}
-{{ $faucet = merge $faucet $.Values.faucet }}
+{{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy) $faucet }}
 
 {{ $image := $chain.image }}
 {{- if $toBuild }}
@@ -23,9 +23,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-genesis
+  name: {{ include "devnet.chain.name" $chain.name }}-genesis
 spec:
-  serviceName: {{ $chain.name }}-genesis
+  serviceName: {{ include "devnet.chain.name" $chain.name }}-genesis
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -176,6 +176,7 @@ spec:
               name: node
             - mountPath: /configs
               name: addresses
+        {{- if $faucet.enabled }}
         - name: faucet
           image: {{ $faucet.image }}
           imagePullPolicy: Always
@@ -233,6 +234,7 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+        {{- end }}
       volumes:
         - name: node
           emptyDir: { }
@@ -241,11 +243,11 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{ $chain.name }}
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
         {{- if hasKey $chain "genesis" }}
         - name: patch
           configMap:
-            name: patch-{{ $chain.name }}
+            name: patch-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
 {{- end }}

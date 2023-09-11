@@ -4,7 +4,7 @@ ADDRESS="$1"
 DENOM="$2"
 FAUCET_URL="$3"
 
-set -eu
+set -eux
 
 function transfer_token() {
   status_code=$(curl --header "Content-Type: application/json" \

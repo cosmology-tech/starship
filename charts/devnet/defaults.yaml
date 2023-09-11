@@ -1,6 +1,7 @@
 # API for interacting with the charts for devnet
 # TODO: need a way to create state reaching jobs, those will run user bash scripts
 # after the chain has been initialized, get the chain to a state and then complete
+# Note: Order of `coins` matters, since we take the first one as part of gentx
 defaultChains:
   osmosis:
     image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
@@ -28,7 +29,7 @@ defaultChains:
     binary: wasmd
     prefix: wasm
     denom: stake
-    coins: 100000000000000ucosm,100000000000000stake
+    coins: 100000000000000stake,100000000000000ucosm
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
@@ -38,7 +39,7 @@ defaultChains:
     binary: gaiad
     prefix: cosmos
     denom: uatom
-    coins: 100000000000000stake,100000000000000uatom
+    coins: 100000000000000uatom,100000000000000stake
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
@@ -73,12 +74,12 @@ defaultChains:
     coinType: 118
     repo: https://github.com/Stride-Labs/stride
   injective:
-    image: ghcr.io/cosmology-tech/starship/injective:v1.11-1685225746
+    image: ghcr.io/cosmology-tech/starship/injective:v1.11.6
     home: /root/.injectived
     binary: injectived
     prefix: inj
     denom: inj
-    coins: 100000000000000inj
+    coins: 100000000000000000000000000inj
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/InjectiveLabs/injective-chain-releases
@@ -88,7 +89,7 @@ defaultChains:
     binary: interchain-security-pd
     prefix: cosmos
     denom: uatom
-    coins: 100000000000000stake,100000000000000uatom
+    coins: 100000000000000uatom,100000000000000stake
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/interchain-security
@@ -113,12 +114,12 @@ defaultChains:
     coinType: 118
     repo: https://github.com/crypto-org-chain/chain-main
   evmos:
-    image: ghcr.io/cosmology-tech/starship/evmos:v12.1.5
+    image: ghcr.io/cosmology-tech/starship/evmos:v13.0.1
     home: /root/.evmosd
     binary: evmosd
     prefix: evmos
     denom: aevmos
-    coins: 100000000000000aevmos
+    coins: 100000000000000000000000000aevmos
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/evmos/evmos
