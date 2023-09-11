@@ -91,31 +91,39 @@ data:
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
-    rpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
-    grpc_addr = "http://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
+    rpc_addr = "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
+    grpc_addr = "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
     {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}
     {{- if eq $relayer.config.event_source.mode "pull" }}
     event_source = { mode = 'pull', interval = '500ms' }
     {{- else }}
-    event_source = { mode = 'push', url = "ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '500ms' }
+    event_source = { mode = 'push', url = "ws://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '500ms' }
     {{- end }}
     {{- else }}
-    websocket_addr = "ws://{{ $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
+    websocket_addr = "ws://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
     {{- end }}
     account_prefix = "{{ $fullchain.prefix }}"
-    gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
     default_gas = 500000000
     max_gas = 1000000000
     rpc_timeout = "10s"
     store_prefix = "ibc"
-    gas_multiplier = 1.5
+    gas_multiplier = 2
     max_msg_num = 30
     max_tx_size = 2097152
     clock_drift = "5s"
     max_block_time = "30s"
     trusting_period = "75s"
     trust_threshold = { numerator = '1', denominator = '3' }
+    {{- if eq $fullchain.type "evmos" }}
+    address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
+    gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
+    {{- else if eq $fullchain.type "injective" }}
+    address_type = { derivation = 'ethermint', proto_type = { pk_type = '/injective.crypto.v1beta1.ethsecp256k1.PubKey' } }
+    gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
+    {{- else }}
     address_type = { derivation = 'cosmos' }
+    gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    {{- end }}
     {{- end }}
     {{- end }}
     {{- end }}
