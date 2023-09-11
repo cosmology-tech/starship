@@ -176,6 +176,8 @@ func (c *Client) CheckPortForward() error {
 	}
 
 	cmd := exec.Command("kubectl", strings.Split(cmdArgs, " ")...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Env = os.Environ()
 	out, err := cmd.Output()
 	if err != nil {
