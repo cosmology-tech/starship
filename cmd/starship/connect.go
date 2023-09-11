@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 	"time"
@@ -31,7 +32,16 @@ var defaultPorts = map[string]map[string]int{
 // kubectl port-forward <resource> <localPort>:<removePort>
 func execPortForward(resource string, localPort, remotePort int) error {
 	cmd := exec.Command("kubectl", "port-forward", resource, fmt.Sprintf("%v:%v", localPort, remotePort))
-	return cmd.Run()
+	//cmd := exec.Command("kubectl", "get", resource)
+	var outb, errb bytes.Buffer
+	cmd.Stdout = &outb
+	cmd.Stderr = &errb
+	err := cmd.Run()
+	fmt.Println("out:", outb.String(), "err:", errb.String())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // PortForward function performs the exec commands to run the port-forwarding
@@ -44,11 +54,12 @@ func (c *Client) PortForward() error {
 			if port == 0 {
 				continue
 			}
+			c.logger.Debug(fmt.Sprintf("port-forwarding: chain %s, %s to http://localhost:%v", chain.Name, portType, port))
 			err := execPortForward(fmt.Sprintf("pods/%s-genesis-0", chain.Name), port, remotePort)
 			if err != nil {
 				return err
 			}
-			c.logger.Info(fmt.Sprintf("port-forwarding: chain %s, %s to http://localhost:%v", chain.Name, portType, port))
+			c.logger.Info(fmt.Sprintf("port-forwarded: chain %s, %s to http://localhost:%v", chain.Name, portType, port))
 		}
 	}
 	// port-forward explorer
