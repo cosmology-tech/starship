@@ -15,7 +15,7 @@ message AddressBalance {
   repeated Coin balance = 2 [json_name = "balance"];
 }
 
-message Status {
+message State {
   string status = 1 [json_name = "status"];
   string node_url = 2 [json_name = "nodeUrl"];
   string chain_id = 3 [json_name = "chainId"];
