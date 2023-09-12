@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"net/http"
 	urlpkg "net/url"
+	"strconv"
 )
 
 func (s *TestSuite) MakeFaucetRequest(chain *Chain, req *http.Request, unmarshal map[string]interface{}) {
@@ -88,7 +89,7 @@ func (s *TestSuite) getChainDenoms(chain *Chain) string {
 	return respChain.Fees.FeeTokens[0].Denom
 }
 
-func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string) *big.Int {
+func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string) float64 {
 	data := map[string]interface{}{}
 	s.MakeChainGetRequest(chain, fmt.Sprintf("/cosmos/bank/v1beta1/balances/%s", address), &data)
 	s.Require().Contains(data, "balances")
@@ -96,12 +97,12 @@ func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string
 	for _, bal := range data["balances"].([]interface{}) {
 		balMap := bal.(map[string]interface{})
 		if balMap["denom"].(string) == denom {
-			b, ok := new(big.Int).SetString(balMap["amount"].(string), 0)
-			s.Require().True(ok)
+			b, err := strconv.ParseFloat(balMap["amount"].(string), 64)
+			s.Require().NoError(err)
 			return b
 		}
 	}
-	return big.NewInt(int64(0))
+	return float64(0)
 }
 
 func (s *TestSuite) TestFaucet_Credit() {
@@ -139,7 +140,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
 			// hence checking for difference is atleast expected value
-			s.Require().GreaterOrEqual(afterBalance.Sub(afterBalance, beforeBalance), expCreditedAmt)
+			s.Require().GreaterOrEqual(afterBalance-beforeBalance, expCreditedAmt)
 		})
 	}
 }
