@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	pb "github.com/cosmology-tech/starship/registry/registry"
-	"math/big"
 	"net/http"
 	urlpkg "net/url"
 	"strconv"
@@ -109,7 +108,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 	s.T().Log("running test for /credit endpoint for faucet")
 
 	// expected amount to be credited via faucet
-	expCreditedAmt := big.NewInt(10000000000)
+	expCreditedAmt := float64(10000000000)
 
 	for _, chain := range s.config.Chains {
 		s.Run(fmt.Sprintf("facuet test for: %s", chain.Name), func() {
