@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
+	"os/exec"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -29,9 +29,6 @@ type AppServer struct {
 	config *Config
 	logger *zap.Logger
 
-	// clients for various chains
-	chainClients ChainClients
-
 	grpcServer *grpc.Server
 	httpServer *http.Server
 }
@@ -48,21 +45,9 @@ func NewAppServer(config *Config) (*AppServer, error) {
 		zap.Any("config", config),
 	)
 
-	chainClients, err := NewChainClients(
-		log,
-		strings.Split(config.ChainClientIDs, ","),
-		strings.Split(config.ChainClientRPCs, ","),
-		strings.Split(config.ChainClientExposers, ","),
-		os.Getenv("HOME"),
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	app := &AppServer{
-		config:       config,
-		logger:       log,
-		chainClients: chainClients,
+		config: config,
+		logger: log,
 	}
 
 	// Validate config
@@ -101,10 +86,13 @@ func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AppServer) ValidateConfig() error {
-	// Verify chain ids and chain faucet information
-	err := verifyChainIDs(a.config)
+	// Verify config provided
+	_, err := exec.LookPath(a.config.ChainBinary)
 	if err != nil {
-		return err
+		return fmt.Errorf("chain binary '%s' error: %w", a.config.ChainBinary, err)
+	}
+	if _, err := os.Stat(a.config.ChainHome); os.IsNotExist(err) {
+		return fmt.Errorf("chain home directory '%s' does not exist: %w", a.config.ChainHome, err)
 	}
 
 	return nil

@@ -10,11 +10,9 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:            "0.0.0.0",
-		HTTPPort:        "8080",
-		GRPCPort:        "9090",
-		ChainFaucet:     "chains/",
-		ChainClientHome: "~/.lens",
+		Host:     "0.0.0.0",
+		HTTPPort: "8080",
+		GRPCPort: "9090",
 	}
 }
 
@@ -25,24 +23,10 @@ type Config struct {
 	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
 	// GRPCPort is the port for the grpc server
 	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
-	// ChainFaucet is full path to the directory containing various chain faucet information
-	ChainFaucet string `name:"chain-faucet" json:"chain_registry" env:"CHAIN_FAUCET" usage:"Path of chain faucet files"`
-	// ChainClientHome is the path the home directory for lens client
-	ChainClientHome string `name:"chain-client-home" json:"chain_client_home" env:"CHAIN_CLIENT_HOME" usage:"Path to the home of lens client directory"`
-	// ChainClientIDs is a comma seperated list of chain ids for various chains
-	ChainClientIDs string `name:"chain-client-ids" json:"chain_client_ids" env:"CHAIN_CLIENT_IDS" usage:"Comma seperated list of chain ids for various chains"`
-	// ChainClientRPCs is a comma seperated list of chain rpc address for various chains, used to create connections
-	// Note: ChainClientRPCs is different from ChainAPIRPCs, as ChainClientRPCs is used for internal routing
-	// whereas ChainAPIRPCs is used for /chains endpoint result
-	ChainClientRPCs string `name:"chain-client-rpcs" json:"chain_client_rpcs" env:"CHAIN_CLIENT_RPCS" usage:"Comma seperated list of chain rpc address for various chains"`
-	// ChainAPIRPCs is a comma seperated list of chain rpc address for various chains, used at output of chain.apis.rpc
-	ChainAPIRPCs string `name:"chain-api-rpcs" json:"chain_api_rpcs" env:"CHAIN_API_RPCS" usage:"Comma seperated list of chain rpc address, used at output of chain.apis.rpc"`
-	// ChainAPIGRPCs is a comma seperated list of chain rpc address for various chains, used at output of chain.apis.grpc
-	ChainAPIGRPCs string `name:"chain-api-grpcs" json:"chain_api_grpcs" env:"CHAIN_API_GRPCS" usage:"Comma seperated list of chain grpc address for various chains, used at output of chain.apis.grpc"`
-	// ChainAPIRESTs is a comma seperated list of chain rpc address for various chains, used at output of chain.apis.rest
-	ChainAPIRESTs string `name:"chain-api-rests" json:"chain_api_rests" env:"CHAIN_API_RESTS" usage:"Comma seperated list of chain rest address for various chains, used at output of chain.apis.rest"`
-	// ChainClientExposers is a comma seperated list of chain exposer endpoints for various chains
-	ChainClientExposers string `name:"chain-client-exposer" json:"chain_client_exposers" env:"CHAIN_CLIENT_EXPOSERS" usage:"Comma seperated list of chain exposer address"`
+	// ChainHome is the path the home directory for chain on node
+	ChainHome string `name:"chain-home" json:"chain_home" env:"CHAIN_HOME" usage:"Path to the home of chain node"`
+	// ChainBinary is the binary for running the chain nodes
+	ChainBinary string `name:"chain-binary" json:"chain_binary" env:"CHAIN_BINARY" usage:"Chain binary name of the same node"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
