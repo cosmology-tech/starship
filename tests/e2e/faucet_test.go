@@ -108,18 +108,11 @@ func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string
 func (s *TestSuite) TestFaucet_Credit() {
 	s.T().Log("running test for /credit endpoint for faucet")
 
-	if s.config.Faucet != nil && !s.config.Faucet.Enabled {
-		s.T().Skip("faucet disabled")
-	}
-
 	// expected amount to be credited via faucet
 	expCreditedAmt := float64(10000000000)
 
 	for _, chain := range s.config.Chains {
 		s.Run(fmt.Sprintf("facuet test for: %s", chain.Name), func() {
-			if chain.Faucet != nil && !chain.Faucet.Enabled {
-				s.T().Skip("faucet disabled for chain")
-			}
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
