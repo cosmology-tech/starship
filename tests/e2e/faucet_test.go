@@ -27,15 +27,8 @@ func (s *TestSuite) MakeFaucetRequest(chain *Chain, req *http.Request, unmarshal
 func (s *TestSuite) TestFaucet_Status() {
 	s.T().Log("running test for /status endpoint for faucet")
 
-	if s.config.Faucet != nil && !s.config.Faucet.Enabled {
-		s.T().Skip("faucet disabled")
-	}
-
 	for _, chain := range s.config.Chains {
 		s.Run(fmt.Sprintf("facuet test for: %s", chain.Name), func() {
-			if chain.Faucet != nil && !chain.Faucet.Enabled {
-				s.T().Skip("faucet disabled for chain")
-			}
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
