@@ -137,7 +137,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 
 			afterBalance := s.getAccountBalance(chain, addr, denom)
 
-			// note sometimes expected difference is 9x expected value (bug)
+			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
 			// hence checking for difference is atleast expected value
 			s.Require().GreaterOrEqual(afterBalance.Sub(afterBalance, beforeBalance), expCreditedAmt)
 		})
