@@ -32,7 +32,7 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 		coins = append(coins, Coin{Denom: matches[1], Amount: matches[0]})
 	}
 
-	holder, err := NewAccount(config, logger, "genesis", config.Mnemonic, 0)
+	holder, err := NewAccount(config, logger, "holder", config.Mnemonic, 0)
 	if err != nil {
 		return nil, err
 	}
