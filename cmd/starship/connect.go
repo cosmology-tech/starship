@@ -59,8 +59,8 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 			if port == 0 {
 				continue
 			}
-			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", chain.Name, portType, port))
-			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-genesis-0", chain.Name), port, remotePort))
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", chain.GetName(), portType, port))
+			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-genesis-0", chain.GetName()), port, remotePort))
 		}
 	}
 	// port-forward explorer
@@ -190,8 +190,8 @@ func (c *Client) CheckPortForward() error {
 
 	// check chain pods are running
 	for _, chain := range config.Chains {
-		if !strInList(pods, fmt.Sprintf("%s-genesis-0", chain.Name)) {
-			return fmt.Errorf("chain %s pod not found in running pods: %s", chain.Name, strings.Join(pods, ","))
+		if !strInList(pods, fmt.Sprintf("%s-genesis-0", chain.GetName())) {
+			return fmt.Errorf("chain %s pod not found in running pods: %s", chain.GetName(), strings.Join(pods, ","))
 		}
 	}
 	// check registry pods are running
