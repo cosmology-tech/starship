@@ -4,6 +4,7 @@ type Chain struct {
 	Name          string                 `name:"name" json:"name" yaml:"name"`
 	Type          string                 `name:"type" json:"type" yaml:"type"`
 	NumValidators int                    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
+	Faucet        *Feature               `name:"faucet" json:"faucet" yaml:"faucet"`
 	Ports         Port                   `name:"ports" json:"ports" yaml:"ports"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis" yaml:"genesis"`
 }
@@ -13,6 +14,7 @@ type Port struct {
 	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
 	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
 	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
+	Faucet  int `name:"faucet" json:"faucet" yaml:"faucet"`
 }
 
 type Relayer struct {
@@ -36,6 +38,7 @@ type Config struct {
 	Relayers []*Relayer `name:"relayers" json:"relayers" yaml:"relayers"`
 	Explorer *Feature   `name:"explorer" json:"explorer" yaml:"explorer"`
 	Registry *Feature   `name:"registry" json:"registry" yaml:"registry"`
+	Faucet   *Feature   `name:"faucet" json:"faucet" yaml:"faucet"`
 }
 
 // HasChainId returns true if chain id found in list of chains
