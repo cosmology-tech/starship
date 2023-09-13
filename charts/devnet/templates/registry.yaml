@@ -146,6 +146,7 @@ data:
       "status": "live",
       "network_type": "mainnet",
       "chain_id": "{{ $chain.name }}",
+      "pretty_name": "{{ $chain.prettyName }}",
       "bech32_prefix": "{{ $chain.prefix }}",
       "daemon_name": "{{ $chain.binary }}",
       "node_home": "{{ $chain.home }}",

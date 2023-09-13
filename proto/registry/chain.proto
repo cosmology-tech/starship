@@ -124,7 +124,7 @@ message ChainRegistry {
 
 message DenomUnit {
   string denom = 1 [json_name = "denom"];
-  int64 exponent = 2 [json_name = "exponent"];
+  int32 exponent = 2 [json_name = "exponent"];
   repeated string aliases = 3 [json_name = "aliases"];
 }
 

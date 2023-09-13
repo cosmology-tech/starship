@@ -9,16 +9,29 @@ defaultChains:
     binary: osmosisd
     prefix: osmo
     denom: uosmo
+    prettyName: osmosis
     coins: 100000000000000uosmo,100000000000000uion
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/osmosis-labs/osmosis
+    assets:
+      - base: uosmo
+        name: osmo
+        display: Osmo
+        symbol: osmo
+        denom_units:
+          - denom: uosmo
+            exponent: 0
+          - denom: osmo
+            exponent: 6
+        coingecko_id: osmosis
   juno:
     image: ghcr.io/cosmology-tech/starship/juno:v15.0.0
     home: /root/.juno
     binary: junod
     prefix: juno
     denom: ujuno
+    prettyName: Juno
     coins: 100000000000000ujuno
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -29,6 +42,7 @@ defaultChains:
     binary: wasmd
     prefix: wasm
     denom: stake
+    prettyName: Wasm
     coins: 100000000000000stake,100000000000000ucosm
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -39,6 +53,7 @@ defaultChains:
     binary: gaiad
     prefix: cosmos
     denom: uatom
+    prettyName: Cosmos Hub
     coins: 100000000000000uatom,100000000000000stake
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -49,6 +64,7 @@ defaultChains:
     binary: simd
     prefix: cosmos
     denom: stake
+    prettyName: Sim App
     coins: 100000000000000stake
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -59,6 +75,7 @@ defaultChains:
     binary: persistenceCore
     prefix: persistence
     denom: uxprt
+    prettyName: Persistence
     coins: 100000000000000uxprt
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -69,6 +86,7 @@ defaultChains:
     binary: strided
     prefix: stride
     denom: ustrd
+    prettyName: Stride
     coins: 100000000000000ustrd
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -79,6 +97,7 @@ defaultChains:
     binary: injectived
     prefix: inj
     denom: inj
+    prettyName: Injective
     coins: 100000000000000000000000000inj
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
@@ -89,6 +108,7 @@ defaultChains:
     binary: interchain-security-pd
     prefix: cosmos
     denom: uatom
+    prettyName: ICS
     coins: 100000000000000uatom,100000000000000stake
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -99,6 +119,7 @@ defaultChains:
     binary: cronosd
     prefix: crc
     denom: basecro
+    prettyName: Cronos
     coins: 100000000000000basecro
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
@@ -109,6 +130,7 @@ defaultChains:
     binary: chain-maind
     prefix: cro
     denom: basecro
+    prettyName: Crypto.org Chain
     coins: 100000000000000basecro
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -119,6 +141,7 @@ defaultChains:
     binary: evmosd
     prefix: evmos
     denom: aevmos
+    prettyName: Evmos
     coins: 100000000000000000000000000aevmos
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
@@ -129,6 +152,7 @@ defaultChains:
     binary: regen
     prefix: regen
     denom: uregen
+    prettyName: Regen
     coins: 100000000000000uregen
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -139,6 +163,7 @@ defaultChains:
     binary: quasarnoded
     prefix: quasar
     denom: uqsr
+    prettyName: Quasar
     coins: 100000000000000uqsr
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -149,6 +174,7 @@ defaultChains:
     binary: quicksilverd
     prefix: quick
     denom: uqck
+    prettyName: Quicksilver
     coins: 100000000000000uqck
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -159,6 +185,7 @@ defaultChains:
     binary: seid
     prefix: sei
     denom: usei
+    prettyName: Sei
     coins: 100000000000000usei
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -169,6 +196,7 @@ defaultChains:
     binary: sommelier
     prefix: somm
     denom: usomm
+    prettyName: Sommelier
     coins: 100000000000000usomm
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -179,6 +207,7 @@ defaultChains:
     binary: starsd
     prefix: stars
     denom: ustars
+    prettyName: Stargaze
     coins: 100000000000000ustars
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -189,6 +218,7 @@ defaultChains:
     binary: umeed
     prefix: umee
     denom: uumee
+    prettyName: Umee
     coins: 100000000000000uumee
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -199,6 +229,7 @@ defaultChains:
     binary: cheqd-noded
     prefix: cheqd
     denom: ncheq
+    prettyName: Cheqd
     coins: 100000000000000ncheq
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
@@ -209,6 +240,7 @@ defaultChains:
     binary: neutrond
     prefix: neutron
     denom: untrn
+    prettyName: Neutron
     coins: 100000000000000untrn
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
