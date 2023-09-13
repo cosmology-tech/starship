@@ -29,6 +29,8 @@ type AppServer struct {
 	config *Config
 	logger *zap.Logger
 
+	distributor *Distributor
+
 	grpcServer *grpc.Server
 	httpServer *http.Server
 }
@@ -55,6 +57,13 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Create distributor for manage keys and accounts
+	distributor, err := NewDistributor(config, log)
+	if err != nil {
+		return nil, err
+	}
+	app.distributor = distributor
 
 	// Create grpc server
 	grpcServer := grpc.NewServer(app.grpcMiddleware()...)
