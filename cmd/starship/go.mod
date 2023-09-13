@@ -1,4 +1,4 @@
-module starship
+module github.com/cosmology-tech/starship/cmd/starship
 
 go 1.19
 
