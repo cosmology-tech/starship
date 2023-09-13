@@ -22,6 +22,7 @@ var (
 	ErrNotImplemented   = errors.New("not Implemented")
 	ErrMethodNotAllowed = errors.New("method not allowed")
 	ErrInternalServer   = errors.New("internal server error")
+	ErrResourceInUse    = errors.New("resource in use")
 )
 
 // copied and modified from net/http/http.go
