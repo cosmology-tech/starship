@@ -26,10 +26,8 @@ build-arm:
 run-local:
 	go run ./... \
 	--http-port "8001" --grpc-port "9001" \
-	--chain-faucet $(CURDIR)/testdata/ \
-	--chain-client-ids "osmosis-1,cosmoshub-4" \
-	--chain-client-rpcs "http://localhost:26653,http://localhost:26657" \
-	--chain-client-exposer "http://localhost:38083,http://localhost:38087"
+	--mnemonic="" \
+	--chain-binary="/Users/anmol/.local/bin/osmosisd" \
 
 ## Docker commands
 docker-setup:
