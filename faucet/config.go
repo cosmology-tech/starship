@@ -18,15 +18,27 @@ func NewDefaultConfig() *Config {
 
 type Config struct {
 	// Host is the interface to bind the HTTP service on
-	Host string `name:"host" json:"host" env:"HOST" usage:"Host address to listen on"`
+	Host string `name:"host" json:"host" env:"HOST" usage:"host address to listen on"`
 	// HTTPPort is the port for the http server
-	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
+	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"port for http server"`
 	// GRPCPort is the port for the grpc server
-	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
+	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"port for gRPC server"`
 	// ChainHome is the path the home directory for chain on node
-	ChainHome string `name:"chain-home" json:"chain_home" env:"CHAIN_HOME" usage:"Path to the home of chain node"`
+	ChainHome string `name:"chain-home" json:"chain_home" env:"CHAIN_HOME" usage:"path to the home of chain node"`
 	// ChainBinary is the binary for running the chain nodes
-	ChainBinary string `name:"chain-binary" json:"chain_binary" env:"CHAIN_BINARY" usage:"Chain binary name of the same node"`
+	ChainBinary string `name:"chain-binary" json:"chain_binary" env:"CHAIN_BINARY" usage:"chain binary name of the same node"`
+	// Concurrency is the number of distributor address to use for handing requests
+	Concurrency int `name:"concurrency" json:"concurrency" env:"CONCURRENCY" usage:"number of distributor address to use for handling requests"`
+	// DefaultGas is the amount of gass to provide for the txns
+	DefaultGas string `name:"default-gas" json:"default_gas" env:"DEFAULT_GAS" usage:"amount of gas for all txns"`
+	// RefillFactor is the factor which times credit amount is sent to the distributors
+	RefillFactor int `name:"refill-factor" json:"refill_factor" env:"REFILL_FACTOR" usage:"send factor times credit amount on refilling"`
+	// RefillThreshold is the factor which times credit amount is the min balance after which refil will be triggered
+	RefillThreshold int `name:"refill-threshold" json:"refill_threshold" env:"REFILL_THRESHOLD" usage:"refill when balance gets below factor times credit amount"`
+	// CreditCoins is comma seperated list of amount and denom of tokens to be transfered
+	CreditCoins string `name:"credit-coins" json:"credit_coins" env:"CREDIT_COINS" usage:"comma seperated list of amount and denom of tokens to be transfered. eg: 10000000uosmo,1000000uion"`
+	// Mnemonic is the mnemonic of the address used as the faucet address
+	Mnemonic string `name:"mnemonic" json:"mnemonic" env:"MNEMONIC" usage:"mnemonic of the address used as the faucet address"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
