@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"os/exec"
 	"time"
 
@@ -99,9 +98,6 @@ func (a *AppServer) ValidateConfig() error {
 	_, err := exec.LookPath(a.config.ChainBinary)
 	if err != nil {
 		return fmt.Errorf("chain binary '%s' error: %w", a.config.ChainBinary, err)
-	}
-	if _, err := os.Stat(a.config.ChainHome); os.IsNotExist(err) {
-		return fmt.Errorf("chain home directory '%s' does not exist: %w", a.config.ChainHome, err)
 	}
 
 	return nil

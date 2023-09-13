@@ -12,12 +12,12 @@ import (
 func runCommand(cmdStr string) ([]byte, error) {
 	cmd := exec.Command("bash", "-c", cmdStr)
 	cmd.Env = os.Environ()
-	var outb, errb bytes.Buffer
+	var outb bytes.Buffer
 	cmd.Stdout = &outb
-	cmd.Stderr = &errb
+	cmd.Stderr = &outb
 	err := cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("err: %s, stderr: %s", err, errb.String())
+		return nil, fmt.Errorf("err: %s, stderr: %s", err, outb.String())
 	}
 	return outb.Bytes(), nil
 }

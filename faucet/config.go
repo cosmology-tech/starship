@@ -83,6 +83,14 @@ func GetCommandLineOptions() []cli.Flag {
 				EnvVar: envName,
 				Value:  defaultValue,
 			})
+		case reflect.Int:
+			defaultValue := reflect.ValueOf(defaults).Elem().FieldByName(field.Name).Int()
+			flags = append(flags, cli.Int64Flag{
+				Name:   optName,
+				Usage:  usage,
+				EnvVar: envName,
+				Value:  defaultValue,
+			})
 		}
 	}
 
@@ -102,6 +110,8 @@ func ParseCLIOptions(cx *cli.Context, config *Config) (err error) {
 				reflect.ValueOf(config).Elem().FieldByName(field.Name).SetBool(cx.Bool(name))
 			case reflect.String:
 				reflect.ValueOf(config).Elem().FieldByName(field.Name).SetString(cx.String(name))
+			case reflect.Int:
+				reflect.ValueOf(config).Elem().FieldByName(field.Name).SetInt(cx.Int64(name))
 			}
 		}
 	}

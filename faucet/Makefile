@@ -18,7 +18,7 @@ build-linux:
 
 .PHONY: build-arm
 build-arm:
-	GOOS=darwin GOARCH=arm64 $(MAKE) build
+	GOOS=linux GOARCH=arm64 $(MAKE) build
 
 # Assumes a local starship cluster is running
 # Uses tests/config.yaml as the base config
@@ -27,7 +27,14 @@ run-local:
 	go run ./... \
 	--http-port "8001" --grpc-port "9001" \
 	--mnemonic="" \
-	--chain-binary="/Users/anmol/.local/bin/osmosisd" \
+	--chain-binary=""
+
+run-docker: build-arm
+	docker run --rm -v $(CURDIR)/build:/build -it ghcr.io/cosmology-tech/starship/osmosis:v15.1.0 /build/faucet \
+		--mnemonic="razor dog gown public private couple ecology paper flee connect local robot diamond stay rude join sound win ribbon soup kidney glass robot vehicle" \
+		--chain-binary="osmosisd" \
+		--concurrency=10 \
+		--credit-coins="10000000uosmo,10000000uion"
 
 ## Docker commands
 docker-setup:

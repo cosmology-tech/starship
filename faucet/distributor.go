@@ -99,6 +99,7 @@ func NewAccount(config *Config, logger *zap.Logger, name string, mnemonic string
 		chainBinary: config.ChainBinary,
 		chainHome:   config.ChainHome,
 		gas:         config.DefaultGas,
+		Logger:      logger,
 		Index:       index,
 		Name:        name,
 	}
