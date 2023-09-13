@@ -10,9 +10,14 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:     "0.0.0.0",
-		HTTPPort: "8080",
-		GRPCPort: "9090",
+		Host:            "0.0.0.0",
+		HTTPPort:        "8080",
+		GRPCPort:        "9090",
+		Concurrency:     1,
+		DefaultGas:      "auto",
+		RefillFactor:    8,
+		RefillThreshold: 20,
+		Verbose:         true,
 	}
 }
 
