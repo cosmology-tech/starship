@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Chain struct {
@@ -13,6 +14,10 @@ type Chain struct {
 	Ports         Port                   `name:"ports" json:"ports,omitempty" yaml:"ports"`
 	Upgrade       Upgrade                `name:"upgrade" json:"upgrade,omitempty" yaml:"upgrade"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis,omitempty" yaml:"genesis"`
+}
+
+func (c *Chain) GetName() string {
+	return strings.Replace(c.Name, "_", "-", -1)
 }
 
 func (c *Chain) GetRPCAddr() string {
