@@ -10,14 +10,17 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:            "0.0.0.0",
-		HTTPPort:        "8000",
-		GRPCPort:        "9000",
-		Concurrency:     1,
-		DefaultGas:      "auto",
-		RefillFactor:    8,
-		RefillThreshold: 20,
-		Verbose:         true,
+		Host:              "0.0.0.0",
+		HTTPPort:          "8000",
+		GRPCPort:          "9000",
+		ChainRESTEndpoint: "http://localhost:1317",
+		ChainRPCEndpoint:  "http://localhost:26657",
+		ChainBlanacesURI:  "/cosmos/bank/v1beta1/balances",
+		Concurrency:       1,
+		DefaultGas:        "auto",
+		RefillFactor:      8,
+		RefillThreshold:   20,
+		Verbose:           true,
 	}
 }
 
@@ -32,6 +35,12 @@ type Config struct {
 	ChainHome string `name:"chain-home" json:"chain_home" env:"CHAIN_HOME" usage:"path to the home of chain node"`
 	// ChainBinary is the binary for running the chain nodes
 	ChainBinary string `name:"chain-binary" json:"chain_binary" env:"CHAIN_BINARY" usage:"chain binary name of the same node"`
+	// ChainRESTEndpoint is the chain rest endpoint
+	ChainRESTEndpoint string `name:"chain-rest-endpoint" json:"chain_rest_endpoint" env:"CHAIN_REST_ENDPOINT" usage:"lcd endpoint of the chain"`
+	// ChainRPCEndpoint is the chain rpc endpoint
+	ChainRPCEndpoint string `name:"chain-rpc-endpoint" json:"chain_rpc_endpoint" env:"CHAIN_RPC_ENDPOINT" usage:"rpc endpoint of the chain"`
+	// ChainBlanacesURI is the uri for getting the balance from the rest endpoint
+	ChainBlanacesURI string `name:"chain-balances-uri" json:"chain_blanaces_uri" env:"CHAIN_BALANCE_URI" usage:"balances endpoint {chain-balances-uri}/{address} should return balances"`
 	// Concurrency is the number of distributor address to use for handing requests
 	Concurrency int `name:"concurrency" json:"concurrency" env:"CONCURRENCY" usage:"number of distributor address to use for handling requests"`
 	// DefaultGas is the amount of gass to provide for the txns

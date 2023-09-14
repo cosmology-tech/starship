@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"os/exec"
 	"strings"
 	"sync"
@@ -61,14 +62,66 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 	return distributor, nil
 }
 
+// Initialize will transfer tokens to all the accounts, should be called once
+func (d *Distributor) Initialize() error {
+	return nil
+}
+
+// requireRefill will return true if the balance is such that it requires a refill
+func (d *Distributor) requireRefill(amount string, denom string) bool {
+	creditAmt := d.CreditCoins.GetDenomAmount(denom)
+	if amount < creditAmt*d.Config.RefillThreshold {
+		return true
+	}
+	return false
+}
+
 // Refill transfers tokens from genesis to all distributor address with balance bellow threshold
 func (d *Distributor) Refill() error {
+	for _, account := range d.Addrs {
+		balances, err := account.GetBalance()
+		if err != nil {
+			return nil
+		}
+		for _, creditCoin := range d.CreditCoins {
+			balanceAmt := balances.GetDenomAmount(creditCoin.Denom)
+			if !d.requireRefill(balanceAmt, creditCoin.Denom) {
+				continue
+			}
+			err = d.Holder.SendTokens(account.Address, creditCoin.Denom, creditCoin.Amount)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
 // Status returns a map of address and balance of the addresses in distributors
-func (d *Distributor) Status() (map[string]Coins, error) {
-	return nil, nil
+func (d *Distributor) Status() ([]AccountBalance, error) {
+	holderCoins, err := d.Holder.GetBalance()
+	if err != nil {
+		return nil, err
+	}
+	accountBalances := []AccountBalance{
+		{
+			Account:  d.Holder,
+			Balances: holderCoins,
+		},
+	}
+
+	for _, account := range d.Addrs {
+		coins, err := account.GetBalance()
+		if err != nil {
+			return nil, err
+		}
+		accountBalances = append(accountBalances, AccountBalance{Account: account, Balances: coins})
+	}
+
+	d.Logger.Debug("distributor status", zap.Any("account balances", accountBalances))
+
+	return accountBalances, nil
 }
 
 // SendTokens will transfer tokens to the given address and denom from one of distributor addresses
@@ -81,11 +134,22 @@ func (d *Distributor) SendTokens(address string, denom string) error {
 	return d.Addrs[randIndex].SendTokens(address, denom, amount)
 }
 
+type AccountBalance struct {
+	Account  *Account
+	Balances Coins
+}
+
+func (ab AccountBalance) String() string {
+	return fmt.Sprintf("address: %s, coins: %s", ab.Account.Address, ab.Balances)
+}
+
 type Account struct {
-	mu          sync.Mutex
-	chainBinary string
-	chainHome   string
-	gas         string
+	mu                sync.Mutex
+	chainBinary       string
+	chainHome         string
+	chainRestEndpoint string
+	chainBalancesURI  string
+	gas               string
 
 	Logger  *zap.Logger
 	Name    string
@@ -96,12 +160,14 @@ type Account struct {
 // NewAccount function creates the account keys based on name and mnemonic provided
 func NewAccount(config *Config, logger *zap.Logger, name string, mnemonic string, index int) (*Account, error) {
 	account := &Account{
-		chainBinary: config.ChainBinary,
-		chainHome:   config.ChainHome,
-		gas:         config.DefaultGas,
-		Logger:      logger,
-		Index:       index,
-		Name:        name,
+		chainBinary:       config.ChainBinary,
+		chainHome:         config.ChainHome,
+		chainRestEndpoint: config.ChainRESTEndpoint,
+		chainBalancesURI:  config.ChainBlanacesURI,
+		gas:               config.DefaultGas,
+		Logger:            logger,
+		Index:             index,
+		Name:              name,
 	}
 	// add key to the keyring
 	address, err := account.addKey(name, mnemonic, index)
@@ -176,10 +242,34 @@ func (a *Account) SendTokens(address string, denom string, amount string) error 
 // GetBalance queries for balance of account and populates Balances
 // since this is query, no need for blocking. Make http request to rest/lcd endpoint
 func (a *Account) GetBalance() (Coins, error) {
-	return nil, nil
+	url := fmt.Sprintf("%s%s/%s", a.chainRestEndpoint, a.chainBalancesURI, a.Address)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	data := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data["balances"].(Coins), nil
 }
 
 // GetBalanceByDenom queries for balance based on the denom
 func (a *Account) GetBalanceByDenom(denom string) (Coin, error) {
-	return Coin{}, nil
+	coins, err := a.GetBalance()
+	if err != nil {
+		return Coin{}, err
+	}
+	coinAmt := coins.GetDenomAmount(denom)
+	if coinAmt == "" {
+		return Coin{}, fmt.Errorf("denom %s not found in balacne with denoms: %s", denom, coins.GetDenoms())
+	}
+	return Coin{
+		Denom:  denom,
+		Amount: coinAmt,
+	}, nil
 }
