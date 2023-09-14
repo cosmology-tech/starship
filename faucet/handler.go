@@ -38,5 +38,10 @@ func (a *AppServer) Status(ctx context.Context, _ *emptypb.Empty) (*pb.State, er
 }
 
 func (a *AppServer) Credit(ctx context.Context, requestCredit *pb.RequestCredit) (*pb.ResponseCredit, error) {
-	return nil, ErrNotImplemented
+	err := a.distributor.SendTokens(requestCredit.GetAddress(), requestCredit.GetDenom())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ResponseCredit{Status: "ok"}, nil
 }

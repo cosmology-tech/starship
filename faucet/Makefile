@@ -41,6 +41,10 @@ run-docker: build-arm
 		--chain-rpc-endpoint="http://host.docker.internal:26653" \
 		--chain-fees="10000uosmo"
 
+test-credit:
+	curl --header "Content-Type: application/json" \
+        --request POST --data '{"denom":"uosmo","address":"osmo1tkrwspedcqwm6ve8vtk0vuzgr4c0m5203era0x"}' http://localhost:8800/credit
+
 ## Docker commands
 docker-setup:
 	-docker buildx rm starship

@@ -260,8 +260,8 @@ func (a *Account) String() string {
 	return fmt.Sprintf("name: %s, addr: %s", a.Name, a.Address)
 }
 
-// SendTokens performs chain binary send txn from account
-func (a *Account) SendTokens(address string, denom string, amount string) error {
+// sendTokens performs chain binary send txn from account
+func (a *Account) sendTokens(address string, denom string, amount string) error {
 	ok := a.mu.TryLock()
 	if !ok {
 		return fmt.Errorf("account %s busy: %w", a, ErrResourceInUse)
@@ -278,6 +278,20 @@ func (a *Account) SendTokens(address string, denom string, amount string) error 
 	a.logger.Info("ran cmd to send tokens", zap.String("cmd", cmdStr), zap.String("stdout", string(output)))
 
 	return nil
+}
+
+// SendTokens will perform send tokens with retries based on errors
+func (a *Account) SendTokens(address string, denom string, amount string) error {
+	err := a.sendTokens(address, denom, amount)
+	if err == nil {
+		return nil
+	}
+	if strings.Contains(err.Error(), "account sequence mismatch") {
+		// retry sendTokens
+		a.logger.Debug("got account sequence missmatch error, retrying send tokens recursively")
+		return a.SendTokens(address, denom, amount)
+	}
+	return err
 }
 
 // GetBalance queries for balance of account and populates Balances

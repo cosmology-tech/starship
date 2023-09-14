@@ -17,7 +17,7 @@ service Faucet {
   }
   // Credit endpoint
   rpc Credit(RequestCredit) returns (ResponseCredit) {
-    option (google.api.http) = { post: "/credit" };
+    option (google.api.http) = { post: "/credit", body: "*" };
   }
 }
 
