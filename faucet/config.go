@@ -15,9 +15,8 @@ func NewDefaultConfig() *Config {
 		GRPCPort:          "9000",
 		ChainRESTEndpoint: "http://localhost:1317",
 		ChainRPCEndpoint:  "http://localhost:26657",
-		ChainBlanacesURI:  "/cosmos/bank/v1beta1/balances",
+		ChainBalancesURI:  "/cosmos/bank/v1beta1/balances",
 		Concurrency:       1,
-		DefaultGas:        "auto",
 		RefillFactor:      8,
 		RefillThreshold:   20,
 		Verbose:           true,
@@ -35,16 +34,18 @@ type Config struct {
 	ChainHome string `name:"chain-home" json:"chain_home" env:"CHAIN_HOME" usage:"path to the home of chain node"`
 	// ChainBinary is the binary for running the chain nodes
 	ChainBinary string `name:"chain-binary" json:"chain_binary" env:"CHAIN_BINARY" usage:"chain binary name of the same node"`
+	// ChainId is the chain id for the given chain
+	ChainId string `name:"chain-id" json:"chain_id" env:"CHAIN_ID" usage:"chain id of the given chain"`
 	// ChainRESTEndpoint is the chain rest endpoint
 	ChainRESTEndpoint string `name:"chain-rest-endpoint" json:"chain_rest_endpoint" env:"CHAIN_REST_ENDPOINT" usage:"lcd endpoint of the chain"`
 	// ChainRPCEndpoint is the chain rpc endpoint
 	ChainRPCEndpoint string `name:"chain-rpc-endpoint" json:"chain_rpc_endpoint" env:"CHAIN_RPC_ENDPOINT" usage:"rpc endpoint of the chain"`
-	// ChainBlanacesURI is the uri for getting the balance from the rest endpoint
-	ChainBlanacesURI string `name:"chain-balances-uri" json:"chain_blanaces_uri" env:"CHAIN_BALANCE_URI" usage:"balances endpoint {chain-balances-uri}/{address} should return balances"`
+	// ChainBalancesURI is the uri for getting the balance from the rest endpoint
+	ChainBalancesURI string `name:"chain-balances-uri" json:"chain_blanaces_uri" env:"CHAIN_BALANCE_URI" usage:"balances endpoint {chain-balances-uri}/{address} should return balances"`
 	// Concurrency is the number of distributor address to use for handing requests
 	Concurrency int `name:"concurrency" json:"concurrency" env:"CONCURRENCY" usage:"number of distributor address to use for handling requests"`
-	// DefaultGas is the amount of gass to provide for the txns
-	DefaultGas string `name:"default-gas" json:"default_gas" env:"DEFAULT_GAS" usage:"amount of gas for all txns"`
+	// ChainFees is the amount of fees to provide for the txns
+	ChainFees string `name:"chain-fees" json:"chain_fees" env:"CHAIN_FEES" usage:"amount of fees for all txns"`
 	// RefillFactor is the factor which times credit amount is sent to the distributors
 	RefillFactor int `name:"refill-factor" json:"refill_factor" env:"REFILL_FACTOR" usage:"send factor times credit amount on refilling"`
 	// RefillThreshold is the factor which times credit amount is the min balance after which refil will be triggered
@@ -107,7 +108,7 @@ func GetCommandLineOptions() []cli.Flag {
 }
 
 func ParseCLIOptions(cx *cli.Context, config *Config) (err error) {
-	// iterate the Config and grab command line options via reflection
+	// iterate the config and grab command line options via reflection
 	count := reflect.TypeOf(config).Elem().NumField()
 	for i := 0; i < count; i++ {
 		field := reflect.TypeOf(config).Elem().Field(i)

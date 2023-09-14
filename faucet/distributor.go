@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"math/rand"
 	"net/http"
-	"os/exec"
 	"strings"
 	"sync"
 
@@ -14,9 +14,9 @@ import (
 
 // Distributor holds all functions for performing various actions
 type Distributor struct {
-	Config      *Config
-	Logger      *zap.Logger
-	CreditCoins Coins
+	config      *Config
+	logger      *zap.Logger
+	creditCoins Coins
 
 	Holder *Account
 	Addrs  []*Account
@@ -30,7 +30,7 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 		if len(matches) < 2 {
 			return nil, fmt.Errorf("validation error: coin expected to be <amount><denom>, found: %s", coinStr)
 		}
-		coins = append(coins, Coin{Denom: matches[1], Amount: matches[0]})
+		coins = append(coins, Coin{Denom: matches[2], Amount: matches[1]})
 	}
 
 	holder, err := NewAccount(config, logger, "holder", config.Mnemonic, 0)
@@ -39,9 +39,9 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 	}
 
 	distributor := &Distributor{
-		Config:      config,
-		Logger:      logger,
-		CreditCoins: coins,
+		config:      config,
+		logger:      logger,
+		creditCoins: coins,
 		Holder:      holder,
 	}
 
@@ -59,21 +59,52 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 	}
 	distributor.Addrs = addrs
 
-	return distributor, nil
-}
+	// log initial status
+	status, err := distributor.Status()
+	if err != nil {
+		return nil, err
+	}
+	distributor.logger.Info("status of distributors", zap.Any("status", status))
 
-// Initialize will transfer tokens to all the accounts, should be called once
-func (d *Distributor) Initialize() error {
-	return nil
+	// initialze the distributor addresses
+	err = distributor.Refill()
+	if err != nil {
+		return nil, err
+	}
+
+	return distributor, nil
 }
 
 // requireRefill will return true if the balance is such that it requires a refill
 func (d *Distributor) requireRefill(amount string, denom string) bool {
-	creditAmt := d.CreditCoins.GetDenomAmount(denom)
-	if amount < creditAmt*d.Config.RefillThreshold {
+	if amount == "" {
+		return true
+	}
+
+	bigAmt, _ := new(big.Int).SetString(amount, 0)
+	creditAmt := d.creditCoins.GetDenomAmount(denom)
+	bigCreditAmt, _ := new(big.Int).SetString(creditAmt, 0)
+	bigFactor := new(big.Int).SetInt64(int64(d.config.RefillThreshold))
+
+	if bigAmt.Cmp(new(big.Int).Mul(bigCreditAmt, bigFactor)) <= 0 {
 		return true
 	}
 	return false
+}
+
+// refillAmount will return the ammount that needs to be credited for the denom
+func (d *Distributor) refillAmount(denom string) string {
+	creditAmt := d.creditCoins.GetDenomAmount(denom)
+	if creditAmt == "" {
+		d.logger.Error("credit amount for denom seems to be empty", zap.Any("credit tokens", d.creditCoins))
+		return ""
+	}
+	bigCreditAmt, _ := new(big.Int).SetString(creditAmt, 0)
+	d.logger.Debug("credit amount", zap.String("big credit amt", bigCreditAmt.String()), zap.String("credit amt", creditAmt), zap.Any("credit tokens", d.creditCoins))
+	bigFactor := new(big.Int).SetInt64(int64(d.config.RefillFactor))
+
+	refillAmt := new(big.Int).Mul(bigCreditAmt, bigFactor)
+	return fmt.Sprintf("%v", refillAmt)
 }
 
 // Refill transfers tokens from genesis to all distributor address with balance bellow threshold
@@ -83,12 +114,14 @@ func (d *Distributor) Refill() error {
 		if err != nil {
 			return nil
 		}
-		for _, creditCoin := range d.CreditCoins {
+		for _, creditCoin := range d.creditCoins {
 			balanceAmt := balances.GetDenomAmount(creditCoin.Denom)
 			if !d.requireRefill(balanceAmt, creditCoin.Denom) {
+				d.logger.Debug("skipping refill for address", zap.String("distributor_address", account.Address))
 				continue
 			}
-			err = d.Holder.SendTokens(account.Address, creditCoin.Denom, creditCoin.Amount)
+			d.logger.Info("refilling address from main holder", zap.String("distributor_address", account.Address))
+			err = d.Holder.SendTokens(account.Address, creditCoin.Denom, d.refillAmount(creditCoin.Denom))
 			if err != nil {
 				return err
 			}
@@ -119,7 +152,7 @@ func (d *Distributor) Status() ([]AccountBalance, error) {
 		accountBalances = append(accountBalances, AccountBalance{Account: account, Balances: coins})
 	}
 
-	d.Logger.Debug("distributor status", zap.Any("account balances", accountBalances))
+	d.logger.Debug("distributor status", zap.Any("account balances", accountBalances))
 
 	return accountBalances, nil
 }
@@ -127,9 +160,9 @@ func (d *Distributor) Status() ([]AccountBalance, error) {
 // SendTokens will transfer tokens to the given address and denom from one of distributor addresses
 func (d *Distributor) SendTokens(address string, denom string) error {
 	randIndex := rand.Intn(len(d.Addrs))
-	amount := d.CreditCoins.GetDenomAmount(denom)
+	amount := d.creditCoins.GetDenomAmount(denom)
 	if amount == "" {
-		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.CreditCoins.GetDenoms())
+		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.creditCoins.GetDenoms())
 	}
 	return d.Addrs[randIndex].SendTokens(address, denom, amount)
 }
@@ -144,14 +177,11 @@ func (ab AccountBalance) String() string {
 }
 
 type Account struct {
-	mu                sync.Mutex
-	chainBinary       string
-	chainHome         string
-	chainRestEndpoint string
-	chainBalancesURI  string
-	gas               string
+	mu sync.Mutex
 
-	Logger  *zap.Logger
+	logger *zap.Logger
+	config *Config
+
 	Name    string
 	Index   int
 	Address string
@@ -160,14 +190,10 @@ type Account struct {
 // NewAccount function creates the account keys based on name and mnemonic provided
 func NewAccount(config *Config, logger *zap.Logger, name string, mnemonic string, index int) (*Account, error) {
 	account := &Account{
-		chainBinary:       config.ChainBinary,
-		chainHome:         config.ChainHome,
-		chainRestEndpoint: config.ChainRESTEndpoint,
-		chainBalancesURI:  config.ChainBlanacesURI,
-		gas:               config.DefaultGas,
-		Logger:            logger,
-		Index:             index,
-		Name:              name,
+		logger: logger,
+		config: config,
+		Index:  index,
+		Name:   name,
 	}
 	// add key to the keyring
 	address, err := account.addKey(name, mnemonic, index)
@@ -175,7 +201,7 @@ func NewAccount(config *Config, logger *zap.Logger, name string, mnemonic string
 		return nil, err
 	}
 	account.Address = address
-	return nil, nil
+	return account, nil
 }
 
 // addKey adds key to the keyring, returns address
@@ -186,13 +212,13 @@ func (a *Account) addKey(name, mnemonic string, index int) (string, error) {
 	}
 	defer a.mu.Unlock()
 
-	cmdStr := fmt.Sprintf("echo \"%s\" | %s keys add %s --output json --index %d --recover --keyring-backend=\"test\"", mnemonic, a.chainBinary, name, index)
-	a.Logger.Debug(fmt.Sprintf("running command to add key: %s", cmdStr))
+	cmdStr := fmt.Sprintf("echo \"%s\" | %s keys add %s --output json --index %d --recover --keyring-backend=\"test\"", mnemonic, a.config.ChainBinary, name, index)
+	a.logger.Debug(fmt.Sprintf("running command to add key: %s", cmdStr))
 	out, err := runCommand(cmdStr)
 	if err != nil {
 		return "", err
 	}
-	a.Logger.Debug(fmt.Sprintf("key added with output: %s", string(out)))
+	a.logger.Debug(fmt.Sprintf("key added with output: %s", string(out)))
 
 	keyMap := map[string]interface{}{}
 	err = json.Unmarshal(out, &keyMap)
@@ -210,8 +236,8 @@ func (a *Account) deleteKey(name string) error {
 	}
 	defer a.mu.Unlock()
 
-	cmdStr := fmt.Sprintf("%s keys delete %s --force --yes --keyring-backend=\"test\"", a.chainBinary, name)
-	a.Logger.Debug(fmt.Sprintf("running command to delete key: %s", cmdStr))
+	cmdStr := fmt.Sprintf("%s keys delete %s --force --yes --keyring-backend=\"test\"", a.config.ChainBinary, name)
+	a.logger.Debug(fmt.Sprintf("running command to delete key: %s", cmdStr))
 	_, err := runCommand(cmdStr)
 	return err
 }
@@ -228,13 +254,14 @@ func (a *Account) SendTokens(address string, denom string, amount string) error 
 	}
 	defer a.mu.Unlock()
 
-	cmdStr := fmt.Sprintf("%s tx bank send %s %s %s%s --keyring-backend=test --gas=auto --gas-adjustment=1.5 --yes", a.chainBinary, a.Address, address, amount, denom)
-	cmd := exec.Command("bash", "-c", cmdStr)
-	a.Logger.Debug(fmt.Sprintf("running cmd to send tokens: %s", cmd))
-	err := cmd.Run()
+	args := fmt.Sprintf("--chain-id=%s --fees=%s --keyring-backend=test --gas=auto --gas-adjustment=1.5 --yes --node=%s", a.config.ChainId, a.config.ChainFees, a.config.ChainRPCEndpoint)
+	cmdStr := fmt.Sprintf("%s tx bank send %s %s %s%s %s", a.config.ChainBinary, a.Address, address, amount, denom, args)
+	output, err := runCommand(cmdStr)
 	if err != nil {
+		a.logger.Error("send token failed", zap.String("cmd", cmdStr), zap.Error(err))
 		return err
 	}
+	a.logger.Info("ran cmd to send tokens", zap.String("cmd", cmdStr), zap.String("stdout", string(output)))
 
 	return nil
 }
@@ -242,7 +269,7 @@ func (a *Account) SendTokens(address string, denom string, amount string) error 
 // GetBalance queries for balance of account and populates Balances
 // since this is query, no need for blocking. Make http request to rest/lcd endpoint
 func (a *Account) GetBalance() (Coins, error) {
-	url := fmt.Sprintf("%s%s/%s", a.chainRestEndpoint, a.chainBalancesURI, a.Address)
+	url := fmt.Sprintf("%s%s/%s", a.config.ChainRESTEndpoint, a.config.ChainBalancesURI, a.Address)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -255,7 +282,19 @@ func (a *Account) GetBalance() (Coins, error) {
 		return nil, err
 	}
 
-	return data["balances"].(Coins), nil
+	coins := Coins{}
+	// return empty coins incase balance is empty
+	if len(data["balances"].([]interface{})) == 0 {
+		return coins, nil
+	}
+	for _, balance := range data["balances"].([]interface{}) {
+		coins = append(coins, Coin{
+			balance.(map[string]interface{})["denom"].(string),
+			balance.(map[string]interface{})["amount"].(string),
+		})
+	}
+
+	return coins, nil
 }
 
 // GetBalanceByDenom queries for balance based on the denom

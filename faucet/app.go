@@ -169,7 +169,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 }
 
 func (a *AppServer) Run() error {
-	a.logger.Info("App starting", zap.Any("Config", a.config))
+	a.logger.Info("App starting", zap.Any("config", a.config))
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", a.config.Host, a.config.GRPCPort))
 	if err != nil {

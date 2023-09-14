@@ -21,5 +21,3 @@ func runCommand(cmdStr string) ([]byte, error) {
 	}
 	return outb.Bytes(), nil
 }
-
-func strToFloat64()

@@ -29,12 +29,17 @@ run-local:
 	--mnemonic="" \
 	--chain-binary=""
 
+## Need to be running osmosis node at localhost:1313 and 26653
 run-docker: build-arm
 	docker run --rm -v $(CURDIR)/build:/build -it ghcr.io/cosmology-tech/starship/osmosis:v15.1.0 /build/faucet \
 		--mnemonic="razor dog gown public private couple ecology paper flee connect local robot diamond stay rude join sound win ribbon soup kidney glass robot vehicle" \
 		--chain-binary="osmosisd" \
-		--concurrency=10 \
-		--credit-coins="10000000uosmo,10000000uion"
+		--concurrency=11 \
+		--credit-coins="10000000uosmo,10000000uion" \
+		--chain-id="osmosis-1" \
+		--chain-rest-endpoint="http://host.docker.internal:1313" \
+		--chain-rpc-endpoint="http://host.docker.internal:26653" \
+		--chain-fees="10000uosmo"
 
 ## Docker commands
 docker-setup:
