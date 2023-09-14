@@ -22,7 +22,7 @@ func NewDefaultConfig() *Config {
 
 type Config struct {
 	Namespace     string `name:"namespace" json:"namespace" usage:"kubernetes namespace for deployment"`
-	ConfigFile    string `name:"config-file" json:"config_file" usage:"path to the config file"`
+	ConfigFile    string `name:"config" json:"config_file" usage:"path to the config file"`
 	Name          string `name:"name" json:"name" usage:"name of the deployment"`
 	Version       string `name:"version" json:"version" usage:"version of the helm chart"`
 	HelmRepoURL   string `name:"helm-repo-url" json:"helm_repo_url" usage:"helm repo url"`

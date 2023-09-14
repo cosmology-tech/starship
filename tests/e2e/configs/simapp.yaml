@@ -7,7 +7,6 @@ chains:
       rest: 1317
       rpc: 26657
       grpc: 9091
-      faucet: 8001
       exposer: 8002
     resources:
       cpu: "0.2"
