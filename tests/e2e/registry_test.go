@@ -159,3 +159,8 @@ func (s *TestSuite) TestRegistry_GetChainKeys() {
 		s.Assert().Len(respKeys.Relayers, 2)
 	}
 }
+
+func (s *TestSuite) TestRegistry_Correctness_AssetList() {
+	s.T().Log("test for correctness of assetslist")
+	s.T().Skip("todo: add tests")
+}
