@@ -190,5 +190,21 @@ func (a *AppServer) Run() error {
 		}
 	}()
 
+	// start distributor
+	go func() {
+		for {
+			disStatus, err := a.distributor.Status()
+			if err != nil {
+				a.logger.Error("distributor error status", zap.Error(err))
+			}
+			a.logger.Info("status of distributor", zap.Any("disStatus", disStatus))
+			err = a.distributor.Refill()
+			if err != nil {
+				a.logger.Error("distributor error refilling", zap.Error(err))
+			}
+			time.Sleep(time.Duration(a.config.RefillEpoch) * time.Second)
+		}
+	}()
+
 	return nil
 }

@@ -152,8 +152,6 @@ func (d *Distributor) Status() ([]AccountBalance, error) {
 		accountBalances = append(accountBalances, AccountBalance{Account: account, Balances: coins})
 	}
 
-	d.logger.Debug("distributor status", zap.Any("account balances", accountBalances))
-
 	return accountBalances, nil
 }
 

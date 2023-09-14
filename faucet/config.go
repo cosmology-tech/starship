@@ -19,6 +19,7 @@ func NewDefaultConfig() *Config {
 		Concurrency:       1,
 		RefillFactor:      8,
 		RefillThreshold:   20,
+		RefillEpoch:       10,
 		Verbose:           true,
 	}
 }
@@ -50,6 +51,8 @@ type Config struct {
 	RefillFactor int `name:"refill-factor" json:"refill_factor" env:"REFILL_FACTOR" usage:"send factor times credit amount on refilling"`
 	// RefillThreshold is the factor which times credit amount is the min balance after which refil will be triggered
 	RefillThreshold int `name:"refill-threshold" json:"refill_threshold" env:"REFILL_THRESHOLD" usage:"refill when balance gets below factor times credit amount"`
+	// RefillEpoch is the time (in secs) to sleep, after which holder will refill distributor address if needed
+	RefillEpoch int `name:"refill-epoch" json:"refill_epoch" env:"REFILL_EPOCH" usage:"after every epoch, holder will distrubute tokens to distributor addresses if required"`
 	// CreditCoins is comma seperated list of amount and denom of tokens to be transfered
 	CreditCoins string `name:"credit-coins" json:"credit_coins" env:"CREDIT_COINS" usage:"comma seperated list of amount and denom of tokens to be transfered. eg: 10000000uosmo,1000000uion"`
 	// Mnemonic is the mnemonic of the address used as the faucet address
