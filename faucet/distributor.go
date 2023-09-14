@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	pb "github.com/cosmology-tech/starship/faucet/faucet"
 	"math/big"
 	"math/rand"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 type Distributor struct {
 	config      *Config
 	logger      *zap.Logger
-	creditCoins Coins
+	CreditCoins Coins
 
 	Holder *Account
 	Addrs  []*Account
@@ -41,7 +42,7 @@ func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
 	distributor := &Distributor{
 		config:      config,
 		logger:      logger,
-		creditCoins: coins,
+		CreditCoins: coins,
 		Holder:      holder,
 	}
 
@@ -82,7 +83,7 @@ func (d *Distributor) requireRefill(amount string, denom string) bool {
 	}
 
 	bigAmt, _ := new(big.Int).SetString(amount, 0)
-	creditAmt := d.creditCoins.GetDenomAmount(denom)
+	creditAmt := d.CreditCoins.GetDenomAmount(denom)
 	bigCreditAmt, _ := new(big.Int).SetString(creditAmt, 0)
 	bigFactor := new(big.Int).SetInt64(int64(d.config.RefillThreshold))
 
@@ -94,13 +95,13 @@ func (d *Distributor) requireRefill(amount string, denom string) bool {
 
 // refillAmount will return the ammount that needs to be credited for the denom
 func (d *Distributor) refillAmount(denom string) string {
-	creditAmt := d.creditCoins.GetDenomAmount(denom)
+	creditAmt := d.CreditCoins.GetDenomAmount(denom)
 	if creditAmt == "" {
-		d.logger.Error("credit amount for denom seems to be empty", zap.Any("credit tokens", d.creditCoins))
+		d.logger.Error("credit amount for denom seems to be empty", zap.Any("credit tokens", d.CreditCoins))
 		return ""
 	}
 	bigCreditAmt, _ := new(big.Int).SetString(creditAmt, 0)
-	d.logger.Debug("credit amount", zap.String("big credit amt", bigCreditAmt.String()), zap.String("credit amt", creditAmt), zap.Any("credit tokens", d.creditCoins))
+	d.logger.Debug("credit amount", zap.String("big credit amt", bigCreditAmt.String()), zap.String("credit amt", creditAmt), zap.Any("credit tokens", d.CreditCoins))
 	bigFactor := new(big.Int).SetInt64(int64(d.config.RefillFactor))
 
 	refillAmt := new(big.Int).Mul(bigCreditAmt, bigFactor)
@@ -114,7 +115,7 @@ func (d *Distributor) Refill() error {
 		if err != nil {
 			return nil
 		}
-		for _, creditCoin := range d.creditCoins {
+		for _, creditCoin := range d.CreditCoins {
 			balanceAmt := balances.GetDenomAmount(creditCoin.Denom)
 			if !d.requireRefill(balanceAmt, creditCoin.Denom) {
 				d.logger.Debug("skipping refill for address", zap.String("distributor_address", account.Address))
@@ -158,9 +159,9 @@ func (d *Distributor) Status() ([]AccountBalance, error) {
 // SendTokens will transfer tokens to the given address and denom from one of distributor addresses
 func (d *Distributor) SendTokens(address string, denom string) error {
 	randIndex := rand.Intn(len(d.Addrs))
-	amount := d.creditCoins.GetDenomAmount(denom)
+	amount := d.CreditCoins.GetDenomAmount(denom)
 	if amount == "" {
-		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.creditCoins.GetDenoms())
+		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.CreditCoins.GetDenoms())
 	}
 	return d.Addrs[randIndex].SendTokens(address, denom, amount)
 }
@@ -172,6 +173,21 @@ type AccountBalance struct {
 
 func (ab AccountBalance) String() string {
 	return fmt.Sprintf("address: %s, coins: %s", ab.Account.Address, ab.Balances)
+}
+
+func (ab AccountBalance) ToProto() *pb.AddressBalance {
+	var balances []*pb.Coin
+	for _, coin := range ab.Balances {
+		balances = append(balances, &pb.Coin{
+			Denom:  coin.Denom,
+			Amount: coin.Amount,
+		})
+	}
+	proto := &pb.AddressBalance{
+		Address: ab.Account.Address,
+		Balance: balances,
+	}
+	return proto
 }
 
 type Account struct {

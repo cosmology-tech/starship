@@ -19,7 +19,7 @@ func NewDefaultConfig() *Config {
 		Concurrency:       1,
 		RefillFactor:      8,
 		RefillThreshold:   20,
-		RefillEpoch:       10,
+		RefillEpoch:       100,
 		Verbose:           true,
 	}
 }
