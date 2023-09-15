@@ -4,7 +4,7 @@ chains:
     image: ghcr.io/cosmology-tech/starship/evmos:v13.0.2
     numValidators: 1
     faucet:
-      enabled: false
+      type: starship
     ports:
       rest: 1313
       rpc: 26653

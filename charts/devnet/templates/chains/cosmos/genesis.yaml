@@ -133,6 +133,23 @@ spec:
             - mountPath: /patch
               name: patch
             {{- end }}
+        {{/*if faucet is of type starship, then initialize faucet binary*/}}
+        {{- if and ($faucet.enabled) (eq $faucet.type "starship") }}
+        - name: init-faucet
+          image: {{ $faucet.image }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - "-c"
+            - |
+              # Install faucet binary from the image
+              cp /bin/faucet /faucet/faucet
+              chmod +x /faucet/faucet
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: /faucet
+              name: faucet
+        {{- end }}
       containers:
         - name: validator
           image: {{ $image }}
@@ -235,7 +252,59 @@ spec:
           readinessProbe:
             httpGet:
               path: /status
-              port: 8000
+              port: {{ $faucet.ports.rest }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+        {{- else if eq $faucet.type "starship" }}
+        - name: faucet
+          image: {{ $image }}
+          imagePullPolicy: Always
+          env:
+            - name: FAUCET_CONCURRENCY
+              value: "{{ $faucet.concurrency }}"
+            - name: FAUCET_HTTP_PORT
+              value: "{{ $faucet.ports.rest }}"
+            - name: FAUCET_CHAIN_BINARY
+              value: "{{ $chain.binary }}"
+            - name: FAUCET_CHAIN_ID
+              value: "{{ $chain.name }}"
+            - name: COINS
+              value: "{{ $chain.coins }}"
+          command:
+            - bash
+            - "-c"
+            - |
+              CREDIT_COINS=""
+              FEES=""
+              for coin in ${COINS//,/ }
+              do
+                  amt="${coin//[!0-9]/}"
+                  denom="${coin//[0-9]/}"
+                  creditAmt=$(echo ${coin//[!0-9]/} | sed -e "s/0000$//")
+                  if [[ $CREDIT_COINS == "" ]]
+                  then
+                    CREDIT_COINS="$creditAmt$denom"
+                    feesAmt=$(echo ${coin//[!0-9]/} | sed -e "s/0000000$//")
+                    FEES="$feesAmt$denom"
+                  else
+                    CREDIT_COINS="${CREDIT_COINS},$creditAmt$denom"
+                  fi
+              done
+
+              export FAUCET_MNEMONIC=$(jq -r ".genesis[0].mnemonic" /configs/keys.json)
+
+              export | grep "FAUCET"
+              /faucet/faucet --credit-coins="$CREDIT_COINS" --chain-fees="$FEES"
+          volumeMounts:
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /faucet
+              name: faucet
+          resources: {{- include "getResourceObject" $faucet.resources | trim | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: {{ $faucet.ports.rest }}
             initialDelaySeconds: 10
             periodSeconds: 10
         {{- end }}
@@ -253,6 +322,10 @@ spec:
         - name: patch
           configMap:
             name: patch-{{- include "devnet.chain.name" $chain.name }}
+        {{- end }}
+        {{- if and ($faucet.enabled) (eq $faucet.type "starship") }}
+        - name: faucet
+          emptyDir: { }
         {{- end }}
 ---
 {{- end }}
