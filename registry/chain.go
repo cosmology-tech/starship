@@ -178,6 +178,14 @@ func (c *ChainClient) getChannelsPorts() ([]ChannelsInfo, error) {
 			return nil, fmt.Errorf("number of connections not 1")
 		}
 
+		ordering := "none"
+		switch channel.Ordering {
+		case 1:
+			ordering = "unordered"
+		case 2:
+			ordering = "ordered"
+		}
+
 		ci := ChannelsInfo{
 			ChannelPort: ChannelPort{
 				ChannelId: channel.ChannelId,
@@ -188,7 +196,7 @@ func (c *ChainClient) getChannelsPorts() ([]ChannelsInfo, error) {
 				PortId:    channel.Counterparty.PortId,
 			},
 			ConnectionId: channel.ConnectionHops[0],
-			Ordering:     channel.Ordering.String(),
+			Ordering:     ordering,
 			Version:      channel.Version,
 		}
 
