@@ -10,6 +10,19 @@ var reCoins = regexp.MustCompile("([0-9]+)([a-zA-Z]+)")
 
 type Coins []Coin
 
+// NewCoinFromStr given a comma seperated string of coins, returns Coins
+func NewCoinFromStr(coinsStr string) (Coins, error) {
+	coins := Coins{}
+	for _, cs := range strings.Split(coinsStr, ",") {
+		matches := reCoins.FindStringSubmatch(cs)
+		if len(matches) < 2 {
+			return nil, fmt.Errorf("validation error: coin expected to be <amount><denom>, found: %s", cs)
+		}
+		coins = append(coins, Coin{Denom: matches[2], Amount: matches[1]})
+	}
+	return coins, nil
+}
+
 func (c Coins) String() string {
 	coinsStrs := []string{}
 	for _, coin := range c {

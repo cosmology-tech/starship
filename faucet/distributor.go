@@ -26,13 +26,9 @@ type Distributor struct {
 
 // NewDistributor returns a new Distributor struct pointer, initilazies all the addresses
 func NewDistributor(config *Config, logger *zap.Logger) (*Distributor, error) {
-	coins := Coins{}
-	for _, coinStr := range strings.Split(config.CreditCoins, ",") {
-		matches := reCoins.FindStringSubmatch(coinStr)
-		if len(matches) < 2 {
-			return nil, fmt.Errorf("validation error: coin expected to be <amount><denom>, found: %s", coinStr)
-		}
-		coins = append(coins, Coin{Denom: matches[2], Amount: matches[1]})
+	coins, err := NewCoinFromStr(config.CreditCoins)
+	if err != nil {
+		return nil, err
 	}
 
 	holder, err := NewAccount(config, logger, "holder", config.Mnemonic, 0)
