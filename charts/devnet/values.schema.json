@@ -148,6 +148,9 @@
           "denom": {
             "type": "string"
           },
+          "prettyName": {
+            "type": "string"
+          },
           "coins": {
             "type": "string"
           },

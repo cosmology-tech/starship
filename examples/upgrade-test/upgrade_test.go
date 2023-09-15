@@ -121,9 +121,9 @@ func (s *TestSuite) TestChainUpgrade() {
 	balance, err := chain.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
 	s.Require().NoError(err)
 	// Assert correct transfers
-	s.Assert().Len(balance, 1)
-	s.Assert().Equal(balance.Denoms(), []string{denom})
-	s.Assert().Equal(balance[0].Amount, sdk.NewInt(12312300))
+	s.Require().Len(balance, 1)
+	s.Require().Equal(balance.Denoms(), []string{denom})
+	s.Require().Equal(balance[0].Amount, sdk.NewInt(12312300))
 	s.T().Logf("post-upgrade: verifed balance of address after upgrade")
 
 	// transfer some more tokens to address
@@ -136,9 +136,9 @@ func (s *TestSuite) TestChainUpgrade() {
 	balance, err = chain.Client.QueryBalanceWithDenomTraces(context.Background(), sdk.MustAccAddressFromBech32(address), nil)
 	s.Require().NoError(err)
 	// Assert correct transfers
-	s.Assert().Len(balance, 1)
-	s.Assert().Equal(balance.Denoms(), []string{denom})
-	s.Assert().Equal(balance[0].Amount, sdk.NewInt(24624600))
+	s.Require().Len(balance, 1)
+	s.Require().Equal(balance.Denoms(), []string{denom})
+	s.Require().Equal(balance[0].Amount, sdk.NewInt(24624600))
 	s.T().Logf("post-upgrade: verify that the address has double tokens")
 
 	s.T().Log("Successful Chain Upgrade")

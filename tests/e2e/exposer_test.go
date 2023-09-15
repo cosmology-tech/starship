@@ -37,7 +37,7 @@ func (s *TestSuite) TestExposer_GetNodeID() {
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
-	s.Assert().NotEmpty(resp.NodeId)
+	s.Require().NotEmpty(resp.NodeId)
 }
 
 func (s *TestSuite) TestExposer_GetGenesisFile() {
@@ -53,8 +53,8 @@ func (s *TestSuite) TestExposer_GetGenesisFile() {
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
-	s.Assert().NotNil(resp)
-	s.Assert().Equal(chain.Name, resp.AsMap()["chain_id"])
+	s.Require().NotNil(resp)
+	s.Require().Equal(chain.Name, resp.AsMap()["chain_id"])
 }
 
 func (s *TestSuite) TestExposer_GetPubKey() {
@@ -69,9 +69,9 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
-	s.Assert().NotNil(resp)
-	s.Assert().NotEmpty(resp.Key)
-	s.Assert().Equal("/cosmos.crypto.ed25519.PubKey", resp.Type)
+	s.Require().NotNil(resp)
+	s.Require().NotEmpty(resp.Key)
+	s.Require().Equal("/cosmos.crypto.ed25519.PubKey", resp.Type)
 }
 
 func (s *TestSuite) TestExposer_GetPrivKey() {
@@ -87,9 +87,9 @@ func (s *TestSuite) TestExposer_GetPrivKey() {
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
-	s.Assert().NotNil(resp)
-	s.Assert().NotEmpty(resp.PrivKey)
-	s.Assert().NotEmpty(resp.PubKey)
+	s.Require().NotNil(resp)
+	s.Require().NotEmpty(resp.PrivKey)
+	s.Require().NotEmpty(resp.PubKey)
 }
 
 func (s *TestSuite) TestExposer_GetKeys() {
@@ -104,9 +104,9 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
-	s.Assert().NotNil(resp)
-	s.Assert().Len(resp.Genesis, 1)
-	s.Assert().Len(resp.Validators, 4)
-	s.Assert().Len(resp.Keys, 3)
-	s.Assert().Len(resp.Relayers, 2)
+	s.Require().NotNil(resp)
+	s.Require().Len(resp.Genesis, 1)
+	s.Require().Len(resp.Validators, 4)
+	s.Require().Len(resp.Keys, 3)
+	s.Require().Len(resp.Relayers, 2)
 }
