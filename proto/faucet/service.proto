@@ -1,0 +1,31 @@
+syntax = "proto3";
+package faucet;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/descriptor.proto";
+
+import "faucet/status.proto";
+
+option go_package = "github.com/cosmology-tech/starship/faucet/faucet";
+
+// Interface for service
+service Faucet {
+  // Status endpoint
+  rpc Status(google.protobuf.Empty) returns (State) {
+    option (google.api.http) = { get: "/status" };
+  }
+  // Credit endpoint
+  rpc Credit(RequestCredit) returns (ResponseCredit) {
+    option (google.api.http) = { post: "/credit", body: "*" };
+  }
+}
+
+message RequestCredit {
+  string denom = 1 [json_name = "denom"];
+  string address = 2 [json_name = "address"];
+}
+
+message ResponseCredit {
+  string status = 1;
+}

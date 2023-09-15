@@ -1,0 +1,26 @@
+syntax = "proto3";
+package faucet;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/cosmology-tech/starship/faucet/faucet";
+
+message Coin {
+  string denom = 1 [json_name = "denom"];
+  string amount = 2 [json_name = "amount"];
+}
+
+message AddressBalance {
+  string address = 1 [json_name = "address"];
+  repeated Coin balance = 2 [json_name = "balance"];
+}
+
+message State {
+  string status = 1 [json_name = "status"];
+  string node_url = 2 [json_name = "nodeUrl"];
+  string chain_id = 3 [json_name = "chainId"];
+  repeated string chain_tokens = 4 [json_name = "chainTokens"];
+  repeated string available_tokens = 5 [json_name = "availableTokens"];
+  AddressBalance holder = 6 [json_name = "holder"];
+  repeated AddressBalance distributors = 7 [json_name = "distributors"];
+}
