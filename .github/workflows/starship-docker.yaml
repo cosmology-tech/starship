@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        type: [ "registry", "exposer" ]
+        type: [ "registry", "exposer", "faucet" ]
       fail-fast: false
 
     env:
