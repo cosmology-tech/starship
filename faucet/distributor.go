@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	pb "github.com/cosmology-tech/starship/faucet/faucet"
 	"math/big"
 	"math/rand"
 	"net/http"
@@ -11,6 +10,8 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
+
+	pb "github.com/cosmology-tech/starship/faucet/faucet"
 )
 
 // Distributor holds all functions for performing various actions
