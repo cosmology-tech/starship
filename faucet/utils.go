@@ -19,5 +19,6 @@ func runCommand(cmdStr string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("err: %s, stderr: %s", err, outb.String())
 	}
+
 	return outb.Bytes(), nil
 }

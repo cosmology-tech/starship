@@ -162,6 +162,7 @@ func (a *AppServer) loggingMiddleware(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(ww, r)
 	}
+
 	return http.HandlerFunc(fn)
 }
 
@@ -181,6 +182,7 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(w, r)
 	}
+
 	return http.HandlerFunc(fn)
 }
 

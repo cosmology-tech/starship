@@ -16,8 +16,9 @@ import (
 
 // Distributor holds all functions for performing various actions
 type Distributor struct {
-	config      *Config
-	logger      *zap.Logger
+	config *Config
+	logger *zap.Logger
+
 	CreditCoins Coins
 
 	Holder *Account
@@ -87,6 +88,7 @@ func (d *Distributor) requireRefill(amount string, denom string) bool {
 	if bigAmt.Cmp(new(big.Int).Mul(bigCreditAmt, bigFactor)) <= 0 {
 		return true
 	}
+
 	return false
 }
 
@@ -94,14 +96,20 @@ func (d *Distributor) requireRefill(amount string, denom string) bool {
 func (d *Distributor) refillAmount(denom string) string {
 	creditAmt := d.CreditCoins.GetDenomAmount(denom)
 	if creditAmt == "" {
-		d.logger.Error("credit amount for denom seems to be empty", zap.Any("credit tokens", d.CreditCoins))
+		d.logger.Error("credit amount for denom seems to be empty",
+			zap.Any("credit tokens", d.CreditCoins))
 		return ""
 	}
+
 	bigCreditAmt, _ := new(big.Int).SetString(creditAmt, 0)
-	d.logger.Debug("credit amount", zap.String("big credit amt", bigCreditAmt.String()), zap.String("credit amt", creditAmt), zap.Any("credit tokens", d.CreditCoins))
+	d.logger.Debug("credit amount",
+		zap.String("big credit amt", bigCreditAmt.String()),
+		zap.String("credit amt", creditAmt),
+		zap.Any("credit tokens", d.CreditCoins))
 	bigFactor := new(big.Int).SetInt64(int64(d.config.RefillFactor))
 
 	refillAmt := new(big.Int).Mul(bigCreditAmt, bigFactor)
+
 	return fmt.Sprintf("%v", refillAmt)
 }
 
@@ -130,12 +138,12 @@ func (d *Distributor) Refill() error {
 }
 
 // Status returns a map of address and balance of the addresses in distributors
-func (d *Distributor) Status() ([]AccountBalance, error) {
+func (d *Distributor) Status() ([]AccountBalances, error) {
 	holderCoins, err := d.Holder.GetBalance()
 	if err != nil {
 		return nil, err
 	}
-	accountBalances := []AccountBalance{
+	accountBalances := []AccountBalances{
 		{
 			Account:  d.Holder,
 			Balances: holderCoins,
@@ -147,7 +155,7 @@ func (d *Distributor) Status() ([]AccountBalance, error) {
 		if err != nil {
 			return nil, err
 		}
-		accountBalances = append(accountBalances, AccountBalance{Account: account, Balances: coins})
+		accountBalances = append(accountBalances, AccountBalances{Account: account, Balances: coins})
 	}
 
 	return accountBalances, nil
@@ -160,19 +168,20 @@ func (d *Distributor) SendTokens(address string, denom string) error {
 	if amount == "" {
 		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.CreditCoins.GetDenoms())
 	}
+
 	return d.Addrs[randIndex].SendTokens(address, denom, amount)
 }
 
-type AccountBalance struct {
+type AccountBalances struct {
 	Account  *Account
 	Balances Coins
 }
 
-func (ab AccountBalance) String() string {
+func (ab AccountBalances) String() string {
 	return fmt.Sprintf("address: %s, coins: %s", ab.Account.Address, ab.Balances)
 }
 
-func (ab AccountBalance) ToProto() *pb.AddressBalance {
+func (ab AccountBalances) ToProto() *pb.AddressBalance {
 	var balances []*pb.Coin
 	for _, coin := range ab.Balances {
 		balances = append(balances, &pb.Coin{
@@ -184,6 +193,7 @@ func (ab AccountBalance) ToProto() *pb.AddressBalance {
 		Address: ab.Account.Address,
 		Balance: balances,
 	}
+
 	return proto
 }
 
@@ -212,6 +222,7 @@ func NewAccount(config *Config, logger *zap.Logger, name string, mnemonic string
 		return nil, err
 	}
 	account.Address = address
+
 	return account, nil
 }
 
@@ -223,8 +234,10 @@ func (a *Account) addKey(name, mnemonic string, index int) (string, error) {
 	}
 	defer a.mu.Unlock()
 
-	cmdStr := fmt.Sprintf("echo \"%s\" | %s keys add %s --output json --index %d --recover --keyring-backend=\"test\"", mnemonic, a.config.ChainBinary, name, index)
+	args := "--output json --recover --keyring-backend=\"test\""
+	cmdStr := fmt.Sprintf("echo \"%s\" | %s keys add %s --index %d %s", mnemonic, a.config.ChainBinary, name, index, args)
 	a.logger.Debug(fmt.Sprintf("running command to add key: %s", cmdStr))
+
 	out, err := runCommand(cmdStr)
 	if err != nil {
 		return "", err
@@ -250,6 +263,7 @@ func (a *Account) deleteKey(name string) error {
 	cmdStr := fmt.Sprintf("%s keys delete %s --force --yes --keyring-backend=\"test\"", a.config.ChainBinary, name)
 	a.logger.Debug(fmt.Sprintf("running command to delete key: %s", cmdStr))
 	_, err := runCommand(cmdStr)
+
 	return err
 }
 
@@ -288,6 +302,7 @@ func (a *Account) SendTokens(address string, denom string, amount string) error 
 		a.logger.Debug("got account sequence missmatch error, retrying send tokens recursively")
 		return a.SendTokens(address, denom, amount)
 	}
+
 	return err
 }
 
@@ -308,10 +323,6 @@ func (a *Account) GetBalance() (Coins, error) {
 	}
 
 	coins := Coins{}
-	// return empty coins incase balance is empty
-	if len(data["balances"].([]interface{})) == 0 {
-		return coins, nil
-	}
 	for _, balance := range data["balances"].([]interface{}) {
 		coins = append(coins, Coin{
 			balance.(map[string]interface{})["denom"].(string),
@@ -332,8 +343,6 @@ func (a *Account) GetBalanceByDenom(denom string) (Coin, error) {
 	if coinAmt == "" {
 		return Coin{}, fmt.Errorf("denom %s not found in balacne with denoms: %s", denom, coins.GetDenoms())
 	}
-	return Coin{
-		Denom:  denom,
-		Amount: coinAmt,
-	}, nil
+
+	return Coin{Denom: denom, Amount: coinAmt}, nil
 }

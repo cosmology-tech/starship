@@ -29,6 +29,7 @@ func NewCoinFromStr(coinsStr string) (Coins, error) {
 		}
 		coins = append(coins, Coin{Denom: matches[2], Amount: matches[1]})
 	}
+
 	return coins, nil
 }
 
@@ -37,6 +38,7 @@ func (c Coins) String() string {
 	for _, coin := range c {
 		coinsStrs = append(coinsStrs, coin.String())
 	}
+
 	return strings.Join(coinsStrs, ",")
 }
 
@@ -46,6 +48,7 @@ func (c Coins) GetCoinByDenom(denom string) (Coin, error) {
 			return coin, nil
 		}
 	}
+
 	return Coin{}, fmt.Errorf("denom %s not found in coins with denoms %s", denom, c.GetDenoms())
 }
 
@@ -54,6 +57,7 @@ func (c Coins) MustGetCoinByDenom(denom string) Coin {
 	if err != nil {
 		panic(err)
 	}
+
 	return coin
 }
 
@@ -63,6 +67,7 @@ func (c Coins) GetDenomAmount(denom string) string {
 			return coin.Amount
 		}
 	}
+
 	return ""
 }
 
@@ -71,6 +76,7 @@ func (c Coins) GetDenoms() []string {
 	for _, coin := range c {
 		denoms = append(denoms, coin.Denom)
 	}
+
 	return denoms
 }
 
@@ -81,5 +87,6 @@ func (c Coins) HasDenom(denom string) bool {
 			return true
 		}
 	}
+
 	return false
 }

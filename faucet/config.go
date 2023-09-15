@@ -128,6 +128,7 @@ func ParseCLIOptions(cx *cli.Context, config *Config) (err error) {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -152,5 +153,6 @@ func NewLogger(config *Config) (*zap.Logger, error) {
 		return nil, err
 	}
 	zap.ReplaceGlobals(log) // Set zap global logger
+
 	return log, err
 }
