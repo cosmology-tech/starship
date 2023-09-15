@@ -20,15 +20,6 @@ build-linux:
 build-arm:
 	GOOS=linux GOARCH=arm64 $(MAKE) build
 
-# Assumes a local starship cluster is running
-# Uses tests/config.yaml as the base config
-.PHONY: run-local
-run-local:
-	go run ./... \
-	--http-port "8001" --grpc-port "9001" \
-	--mnemonic="" \
-	--chain-binary=""
-
 ## Need to be running osmosis node at localhost:1313 and 26653
 run-docker: build-arm
 	docker run --rm -v $(CURDIR)/build:/build -p 8800:8000 -it ghcr.io/cosmology-tech/starship/osmosis:v15.1.0 /build/faucet \
