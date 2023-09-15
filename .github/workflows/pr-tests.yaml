@@ -22,6 +22,8 @@ jobs:
           - "one-custom-chain.yaml"
           - "multi-validator.yaml"
           - "simapp.yaml"
+          - "one-chain-starship-faucet.yaml"
+          - "multi-validator-starship-faucet.yaml"
       fail-fast: true
       max-parallel: 3
 

@@ -3,7 +3,7 @@ chains:
     type: injective
     numValidators: 1
     faucet:
-      enabled: false
+      type: starship
     ports:
       rest: 1313
       rpc: 26653
