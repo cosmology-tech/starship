@@ -8,6 +8,15 @@ import (
 
 var reCoins = regexp.MustCompile("([0-9]+)([a-zA-Z]+)")
 
+type Coin struct {
+	Denom  string `name:"denom" json:"denom,omitempty" yaml:"denom"`
+	Amount string `name:"amount" json:"amount,omitempty" yaml:"amount"`
+}
+
+func (c Coin) String() string {
+	return fmt.Sprintf("denom: %s, amount: %s", c.Denom, c.Amount)
+}
+
 type Coins []Coin
 
 // NewCoinFromStr given a comma seperated string of coins, returns Coins
@@ -73,13 +82,4 @@ func (c Coins) HasDenom(denom string) bool {
 		}
 	}
 	return false
-}
-
-type Coin struct {
-	Denom  string `name:"denom" json:"denom,omitempty" yaml:"denom"`
-	Amount string `name:"amount" json:"amount,omitempty" yaml:"amount"`
-}
-
-func (c Coin) String() string {
-	return fmt.Sprintf("denom: %s, amount: %s", c.Denom, c.Amount)
 }
