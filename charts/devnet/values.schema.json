@@ -43,6 +43,12 @@
         "enabled": {
           "type": "boolean"
         },
+        "type": {
+          "type": "string",
+          "enum": [
+            "cosmjs"
+          ]
+        },
         "image": {
           "type": "string"
         },
@@ -209,6 +215,12 @@
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "cosmjs"
+                ]
               },
               "image": {
                 "type": "string"

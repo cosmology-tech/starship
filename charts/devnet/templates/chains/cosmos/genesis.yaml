@@ -15,6 +15,9 @@
 {{ $faucet := get $chain "faucet" | default dict }}
 {{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy) $faucet }}
 
+{{ $defaultFaucet := get $defaultFile.defaultFaucet $faucet.type | default dict }}
+{{ $faucet = merge $faucet $defaultFaucet }}
+
 {{ $image := $chain.image }}
 {{- if $toBuild }}
 {{ $image = "ghcr.io/cosmology-tech/starship/runner:latest" }}
@@ -177,6 +180,7 @@ spec:
             - mountPath: /configs
               name: addresses
         {{- if $faucet.enabled }}
+        {{- if eq $faucet.type "cosmjs" }}
         - name: faucet
           image: {{ $faucet.image }}
           imagePullPolicy: Always
@@ -234,6 +238,7 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+        {{- end }}
         {{- end }}
       volumes:
         - name: node
