@@ -21,9 +21,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-validator
+  name: {{ include "devnet.chain.name" $chain.name }}-validator
 spec:
-  serviceName: {{ $chain.name }}-validator
+  serviceName: {{ include "devnet.chain.name" $chain.name }}-validator
   podManagementPolicy: Parallel
   replicas: {{ sub $chain.numValidators 1 }}
   revisionHistoryLimit: 3
