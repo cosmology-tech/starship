@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -98,6 +99,21 @@ func (a *AppServer) ValidateConfig() error {
 	_, err := exec.LookPath(a.config.ChainBinary)
 	if err != nil {
 		return fmt.Errorf("chain binary '%s' error: %w", a.config.ChainBinary, err)
+	}
+	if a.config.ChainId == "" {
+		return errors.New("chain id can not be empty")
+	}
+	if a.config.CreditCoins == "" {
+		return errors.New("credit tokens can not be empty")
+	}
+	if a.config.ChainRPCEndpoint == "" {
+		return errors.New("chain rpc endpoint can not be empty")
+	}
+	if a.config.ChainRESTEndpoint == "" {
+		return errors.New("chain rest endpoint can not be empty")
+	}
+	if a.config.ChainFees == "" {
+		return errors.New("chain fees can not be empty")
 	}
 
 	return nil
