@@ -29,16 +29,6 @@ exposer:
     cpu: "0.2"
     memory: "200M"
 
-faucet:
-  enabled: true
-  image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
-  concurrency: 10
-  ports:
-    rest: 8000
-  resources:
-    cpu: "0.2"
-    memory: "200M"
-
 # Chain timeouts
 timeouts:
   time_iota_ms: 10
@@ -225,6 +215,15 @@ registry:
   ports:
     rest: 6060
     grpc: 7070
+  resources:
+    cpu: "0.2"
+    memory: "200M"
+
+faucet:
+  enabled: true
+  type: cosmjs
+  ports:
+    rest: 8000
   resources:
     cpu: "0.2"
     memory: "200M"
