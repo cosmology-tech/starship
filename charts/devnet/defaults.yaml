@@ -707,3 +707,8 @@ defaultScripts:
   buildChain:
     name: build-chain.sh
     file: scripts/build-chain.sh
+
+defaultFaucet:
+  cosmjs:
+    image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
+    concurrency: 5
