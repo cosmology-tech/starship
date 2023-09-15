@@ -144,8 +144,11 @@ For more details on the resource directive have a look at [kubernetes resources]
 > We recommend to specify resources as per your requirements
 
 ## `faucet` (optional)
-Every genesis node runs a [cosmjs faucet](https://github.com/cosmos/cosmjs/tree/main/packages/faucet), by default
-setting for faucet [here](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml#L32...#L38) but can be
+Every genesis node runs a faucet. We support 2 types of faucet:
+* [cosmjs faucet](https://github.com/cosmos/cosmjs/tree/main/packages/faucet), by default
+* [starship faucet](https://github.com/cosmology-tech/starship/tree/main/faucet)
+
+Setting for cosmjs-faucet [here](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml#L32...#L38) but can be
 overridden with this directive, specially for compatible cosmjs version with the chain version.
 
 ```yaml
@@ -154,16 +157,19 @@ chains:
   type: osmosis
   numValidators: 1
   faucet:
-    image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1
-    concurrency: 2          # default is 10
+    type: cosmjs            # default is cosmjs, allowed [cosmjs, starship]
+    image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1  # optional, default image set if not specified
+    concurrency: 2          # optional, default is 5
     resources:
       cpu: "0.3"
       memory: "600M"
 ```
 
-Note `concurrency` in `faucet` is the number of concurrent requests the faucet can handle.
+> Note `concurrency` in `faucet` is the number of concurrent requests the faucet can handle.
 If you are running a chain with less resources, or want faster startup time,
 then you can reduce the `concurrency` to a lower number.
+
+> Note: use `faucet.type: starship` for chains not supported by `cosmjs`. Mainly `injective`, `evmos`, `cheqd` etc.
 
 ## `build` (optional)
 With the `build` directive in the chain, one can basically build chain binaries on the fly before starting the chain.
