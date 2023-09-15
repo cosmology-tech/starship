@@ -8,6 +8,7 @@ import (
 	"net/http"
 	urlpkg "net/url"
 	"strconv"
+	"time"
 )
 
 func (s *TestSuite) MakeFaucetRequest(chain *Chain, req *http.Request, unmarshal map[string]interface{}) {
@@ -135,6 +136,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 			s.Require().NoError(err)
 			s.Require().Equal(200, resp.StatusCode)
 
+			time.Sleep(2 * time.Second)
 			afterBalance := s.getAccountBalance(chain, addr, denom)
 
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
