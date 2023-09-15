@@ -157,6 +157,7 @@ chains:
   type: osmosis
   numValidators: 1
   faucet:
+    enabled: true           # optional, default is true, need to specify if want to disable faucet, set to false
     type: cosmjs            # default is cosmjs, allowed [cosmjs, starship]
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1  # optional, default image set if not specified
     concurrency: 2          # optional, default is 5
