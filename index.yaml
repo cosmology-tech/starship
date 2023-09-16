@@ -3,9 +3,9 @@ entries:
   devnet:
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2023-09-15T14:47:50.265366383Z"
+    created: "2023-09-16T11:29:23.305549028Z"
     description: A Helm chart for Kubernetes
-    digest: b9485e3b926c8393ba3657121e2a34c51b5ea6eaf4cf8438ec7dde7ca295c36c
+    digest: 3d8b8eaa05b80ffd3ecafcc02f2e343928ef861a15bb84015413473039f61066
     maintainers:
     - name: Starship
       url: https://github.com/cosmology-tech/starship
@@ -107,9 +107,22 @@ entries:
     version: 0.1.46-rc3
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2023-09-09T16:55:55.842994507Z"
+    created: "2023-09-15T14:47:50.265366383Z"
     description: A Helm chart for Kubernetes
-    digest: 3c9fa5dcd0f8656d71fdc9d8f82a7f1f6557b81070f48600da77fc3e1a82164e
+    digest: b9485e3b926c8393ba3657121e2a34c51b5ea6eaf4cf8438ec7dde7ca295c36c
+    maintainers:
+    - name: Starship
+      url: https://github.com/cosmology-tech/starship
+    name: devnet
+    type: application
+    urls:
+    - https://github.com/cosmology-tech/starship/releases/download/devnet-0.1.46-rc3/devnet-0.1.46-rc3.tgz
+    version: 0.1.46-rc3
+  - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2023-09-05T13:10:34.904633653Z"
+    description: A Helm chart for Kubernetes
+    digest: 4d0669c98bffa6f466bccfd0a7c5feeb2aafa6776ed1633f7b25ef0948deb081
     maintainers:
     - name: Starship
       url: https://github.com/cosmology-tech/starship
@@ -133,9 +146,9 @@ entries:
     version: 0.1.46-rc2
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2023-09-05T13:10:34.904633653Z"
+    created: "2023-09-09T16:55:55.842994507Z"
     description: A Helm chart for Kubernetes
-    digest: 4d0669c98bffa6f466bccfd0a7c5feeb2aafa6776ed1633f7b25ef0948deb081
+    digest: 3c9fa5dcd0f8656d71fdc9d8f82a7f1f6557b81070f48600da77fc3e1a82164e
     maintainers:
     - name: Starship
       url: https://github.com/cosmology-tech/starship
@@ -521,4 +534,4 @@ entries:
     urls:
     - https://github.com/cosmology-tech/starship/releases/download/devnet-0.1.30/devnet-0.1.30.tgz
     version: 0.1.30
-generated: "2023-09-16T11:29:00.881618097Z"
+generated: "2023-09-16T11:29:23.306002037Z"
