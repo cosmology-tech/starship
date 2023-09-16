@@ -7,13 +7,13 @@ Simple self-contained example to get started with Starship.
 ```bash
 cd getting-started/
 
-# Install dependencies, install startship helm chart, create kind cluster
-make setup
-
 # Install the starship instance and run port-forward
-make start
+make install
 # OR, if you are low on resources on local machine
-make start-tiny
+make install-tiny
+
+# Once the pods are running, run
+make port-forward
 
 # Stop the cluster with
 make stop
@@ -43,8 +43,6 @@ make setup-kind
 ## Deploy Starship
 Run the following commands to deploy starship on the cluster.
 ```bash
-make setup-helm
-
 make install
 # OR, if low on resources on local machine
 make install-tiny
