@@ -5,7 +5,7 @@ CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 VAL_NAME="${VAL_NAME:=osmosis}"
 
-set -eu
+set -eux
 
 # Wait for the node to be synced
 max_tries=10
@@ -54,6 +54,7 @@ function cosmos-sdk-version-v50() {
     --chain-id $CHAIN_ID \
     --from $VAL_NAME \
     --fees 100000$DENOM \
+    --keyring-backend="test" \
     --gas="auto" \
     --gas-adjustment 1.5 --yes > /validator.log
 
@@ -73,6 +74,7 @@ function cosmos-sdk-version-default() {
     --commission-max-rate="0.20" \
     --commission-max-change-rate="0.01" \
     --min-self-delegation="1000000" \
+    --keyring-backend="test" \
     --fees 100000$DENOM \
     --gas="auto" \
     --gas-adjustment 1.5 --yes > /validator.log
@@ -80,9 +82,11 @@ function cosmos-sdk-version-default() {
   cat /validator.log | jq
 }
 
+set +e
 # Fetch the cosmos-sdk version to be able to perform the create-validator tx
 cosmos_sdk_version=$($CHAIN_BIN version --long | sed -n 's/cosmos_sdk_version: \(.*\)/\1/p')
 echo "cosmos_sdk_version: $cosmos_sdk_version"
+set -e
 
 if is_greater "$cosmos_sdk_version" "v0.50.0"; then
   echo "cosmos_sdk_version is greater than v0.50.0, running create-validator tx with new format"

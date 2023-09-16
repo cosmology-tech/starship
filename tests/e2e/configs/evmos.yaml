@@ -2,9 +2,9 @@ chains:
   - name: evmos_9000-1
     type: evmos
     image: ghcr.io/cosmology-tech/starship/evmos:v13.0.2
-    numValidators: 1
+    numValidators: 2
     faucet:
-      enabled: false
+      type: starship
     ports:
       rest: 1313
       rpc: 26653
@@ -17,7 +17,7 @@ chains:
       rest: 1317
       rpc: 26657
       exposer: 38087
-      faucet: 8000
+      faucet: 8007
 
 relayers:
   - name: evmos-cosmos

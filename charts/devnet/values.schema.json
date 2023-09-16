@@ -46,7 +46,8 @@
         "type": {
           "type": "string",
           "enum": [
-            "cosmjs"
+            "cosmjs",
+            "starship"
           ]
         },
         "image": {
@@ -219,7 +220,8 @@
               "type": {
                 "type": "string",
                 "enum": [
-                  "cosmjs"
+                  "cosmjs",
+                  "starship"
                 ]
               },
               "image": {
