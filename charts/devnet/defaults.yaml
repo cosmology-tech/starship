@@ -712,3 +712,6 @@ defaultFaucet:
   cosmjs:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
+  starship:
+    image: ghcr.io/cosmology-tech/starship/faucet:20230915-d75e5fd
+    concurrency: 5

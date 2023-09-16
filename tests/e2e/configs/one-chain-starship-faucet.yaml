@@ -1,0 +1,30 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+      faucet: 8003
+    resources:
+      cpu: "0.5"
+      memory: 500M
+    faucet:
+      type: starship
+      concurrency: 2
+
+registry:
+  enabled: true
+  image: anmol1696/registry:20230914-a6ee678
+  ports:
+    rest: 8081
+    grpc: 9091
+  resources:
+    cpu: "0.1"
+    memory: 100M
+
+resources:
+  wait:
+    cpu: "0.1"
+    memory: 100M
