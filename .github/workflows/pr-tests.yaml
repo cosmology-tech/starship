@@ -22,6 +22,8 @@ jobs:
           - "one-custom-chain.yaml"
           - "multi-validator.yaml"
           - "simapp.yaml"
+          - "one-chain-starship-faucet.yaml"
+          - "multi-validator-starship-faucet.yaml"
       fail-fast: true
       max-parallel: 3
 
@@ -39,7 +41,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.2.16
+        uses: cosmology-tech/starship-action@b46819af977a0cb979991c9cb3633bbb7e50f1c9
         with:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true

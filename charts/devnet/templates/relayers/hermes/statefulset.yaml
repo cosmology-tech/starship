@@ -52,11 +52,14 @@ spec:
             - bash
             - "-c"
             - |
+              set -ux
+
               RLY_INDEX=${HOSTNAME##*-}
               echo "Relayer Index: $RLY_INDEX"
 
               mkdir -p $RELAYER_DIR
               cp /configs/config.toml $RELAYER_DIR/config.toml
+              cat $RELAYER_DIR/config.toml
 
               MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
               echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
@@ -76,7 +79,7 @@ spec:
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
               echo "Transfer tokens to address $RLY_ADDR"
-              bash -e /scripts/transfer-tokens.sh $RLY_ADDR $DENOM http://{{ $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
+              bash -e /scripts/transfer-tokens.sh $RLY_ADDR $DENOM http://{{- include "devnet.chain.name" $fullchain.name }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit
               {{- end }}
               {{- end }}
               {{- end }}

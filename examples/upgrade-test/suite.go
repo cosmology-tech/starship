@@ -74,7 +74,7 @@ func (s *TestSuite) WaitForTx(chain *starship.ChainClient, txHex string) {
 		time.Second,
 		"waited for too long, still txn not successfull",
 	)
-	s.Assert().NotNil(tx)
+	s.Require().NotNil(tx)
 }
 
 // WaitForHeight will wait till the chain reaches the block height
@@ -82,7 +82,7 @@ func (s *TestSuite) WaitForHeight(chain *starship.ChainClient, height int64) {
 	s.Require().Eventuallyf(
 		func() bool {
 			curHeight, err := chain.GetHeight()
-			s.Assert().NoError(err)
+			s.Require().NoError(err)
 			if curHeight >= height {
 				return true
 			}

@@ -65,7 +65,13 @@ spec:
             - name: REGISTRY_CHAIN_CLIENT_IDS
               value: "{{ include "devnet.chains.ids" . }}"
             - name: REGISTRY_CHAIN_CLIENT_RPCS
+              value: "{{ include "devnet.chains.internal.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_RPCS
               value: "{{ include "devnet.chains.rpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_GRPCS
+              value: "{{ include "devnet.chains.grpc.addrs" . }}"
+            - name: REGISTRY_CHAIN_API_RESTS
+              value: "{{ include "devnet.chains.rest.addrs" . }}"
             - name: REGISTRY_CHAIN_REGISTRY
               value: "/configs"
             - name: REGISTRY_CHAIN_CLIENT_EXPOSERS
@@ -76,7 +82,7 @@ spec:
           volumeMounts:
             {{- range $chain := .Values.chains }}
             - mountPath: /configs/{{ $chain.name }}
-              name: registry-configs-{{ $chain.name }}
+              name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
             {{- end }}
           readinessProbe:
             tcpSocket:
@@ -90,9 +96,9 @@ spec:
             periodSeconds: 10
       volumes:
         {{- range $chain := .Values.chains }}
-        - name: registry-configs-{{ $chain.name }}
+        - name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
           configMap:
-            name: registry-{{ $chain.name }}
+            name: registry-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
 {{- range $chain := .Values.chains }}
@@ -101,17 +107,20 @@ spec:
 {{ $chain = merge $chain $defaultChain }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
-{{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.name $.Release.Namespace }}
+{{ $host := printf "%s-genesis.%s.svc.cluster.local" (include "devnet.chain.name" $chain.name) $.Release.Namespace }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: registry-{{ $chain.name }}
+  name: registry-{{- include "devnet.chain.name" $chain.name }}
 data:
   assetlist.json: |-
     {
       "$schema": "../assetlist.schema.json",
       "chain_name": "{{ $chain.type }}",
+      {{- if hasKey $chain "assets" }}
+      "assets": {{ toJson $chain.assets }}
+      {{- else }}
       "assets": [
         {
           "description": "The denom for token {{ $chain.denom }}",
@@ -132,6 +141,7 @@ data:
           "coingecko_id": "{{ $chain.type }}"
         }
       ]
+      {{- end }}
     }
   chain.json: |-
     {
@@ -140,6 +150,7 @@ data:
       "status": "live",
       "network_type": "mainnet",
       "chain_id": "{{ $chain.name }}",
+      "pretty_name": "{{ $chain.prettyName }}",
       "bech32_prefix": "{{ $chain.prefix }}",
       "daemon_name": "{{ $chain.binary }}",
       "node_home": "{{ $chain.home }}",

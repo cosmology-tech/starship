@@ -114,7 +114,7 @@ func (a *AppServer) GetChain(ctx context.Context, requestChain *pb.RequestChain)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, ErrNotFound
 	} else if err != nil {
-		return nil, fmt.Errorf("unable to read file %s, err: %d", filename, err)
+		return nil, fmt.Errorf("unable to read file %s, err: %s", filename, err)
 	}
 
 	client, err := a.chainClients.GetChainClient(requestChain.Chain)
@@ -203,9 +203,9 @@ func (a *AppServer) getChainAPIs(ctx context.Context, client *ChainClient) (*pb.
 	}
 
 	apis := &pb.APIs{
-		Rpc:  apiFactory(a.config.ChainClientRPCs),
-		Grpc: apiFactory(a.config.ChainClientGRPCs),
-		Rest: apiFactory(a.config.ChainClientRESTs),
+		Rpc:  apiFactory(a.config.ChainAPIRPCs),
+		Grpc: apiFactory(a.config.ChainAPIGRPCs),
+		Rest: apiFactory(a.config.ChainAPIRESTs),
 	}
 
 	return apis, nil

@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $chain.name }}-genesis
+  name: {{ include "devnet.chain.name" $chain.name }}-genesis
   labels:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 spec:
@@ -18,7 +18,7 @@ spec:
       protocol: TCP
       targetPort: {{ $port }}
     {{- end }}
-    - name: http
+    - name: exposer
       port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
       targetPort: {{ $.Values.exposer.ports.rest | default 8081 }}

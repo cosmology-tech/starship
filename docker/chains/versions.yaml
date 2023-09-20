@@ -2,6 +2,12 @@ chains:
   - name: osmosis
     base: ghcr.io/strangelove-ventures/heighliner/osmosis
     tags:
+      - v19.0.0
+      - v18.0.0
+      - v17.0.0
+      - v16.1.2
+      - v16.0.0
+      - v15.2.0
       - v15.1.2-wasmvm1.2.3
       - v15.1.2
       - v15.1.2-wasmvm1.1.2
@@ -67,16 +73,11 @@ chains:
       - v5.0.0
       - v4.0.3
   - name: injective
-    base: ghcr.io/strangelove-ventures/heighliner/injective
+    base: public.ecr.aws/l9h3g6c6/injective-core
+    file: Dockerfile.injective
     tags:
-      - v1.11-1685225746
-      - v1.10-1678709842
-      - v1.9.0-1673970775
-      - v1.8.0-1668679102
-      - v1.7.0-1666607351
-      - v1.7.0-1665417543
-      - v1.7.0-1661881062
-      - v1.6.0-1657048292
+      - v1.11.6
+      - v1.11.5
   - name: ics
     base: ghcr.io/strangelove-ventures/heighliner/ics
     tags:
@@ -113,6 +114,11 @@ chains:
   - name: evmos
     base: ghcr.io/strangelove-ventures/heighliner/evmos
     tags:
+      - v14.0.0-rc4
+      - v13.0.2
+      - v13.0.1
+      - v12.1.6
+      - v13.0.0
       - v12.1.5
       - v12.1.4
       - v12.1.3

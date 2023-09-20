@@ -21,9 +21,9 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-validator
+  name: {{ include "devnet.chain.name" $chain.name }}-validator
 spec:
-  serviceName: {{ $chain.name }}-validator
+  serviceName: {{ include "devnet.chain.name" $chain.name }}-validator
   podManagementPolicy: Parallel
   replicas: {{ sub $chain.numValidators 1 }}
   revisionHistoryLimit: 3
@@ -189,7 +189,7 @@ spec:
                     echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
                     bash -e /scripts/transfer-tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
 
-                    $CHAIN_BIN keys list | jq
+                    $CHAIN_BIN keys list --keyring-backend test | jq
 
                     VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
@@ -232,7 +232,7 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{ $chain.name }}
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
 ---
 {{- end }}
 {{- end }}

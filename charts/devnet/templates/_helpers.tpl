@@ -51,6 +51,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Convert $chain.name to name usable by templates
+*/}}
+{{- define "devnet.chain.name" -}}
+{{- printf "%s" . | replace "_" "-" | trunc 63 }}
+{{- end }}
+
+{{/*
 Environment variables for chain from configmaps
 */}}
 {{- define "devnet.defaultEvnVars" }}
@@ -93,7 +100,7 @@ Environment variables for genesis chain
 */}}
 {{- define "devnet.genesisVars" }}
 - name: GENESIS_HOST
-  value: {{ .chain }}-genesis
+  value: {{ include "devnet.chain.name" .chain }}-genesis
 - name: GENESIS_PORT
   value: {{ .port | toString }}
 - name: NAMESPACE
@@ -123,7 +130,7 @@ Usage:
     - "-c"
     - |
       {{- range $chain := .chains }}
-      while [ $(curl -sw '%{http_code}' http://{{ $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
+      while [ $(curl -sw '%{http_code}' http://{{ include "devnet.chain.name" $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
         echo "Genesis validator does not seem to be ready. Waiting for it to start..."
         sleep 10;
       done
@@ -157,12 +164,66 @@ Returns a comma seperated list of chain id
 {{- end -}}
 
 {{/*
+Returns a comma seperated list of urls for the RPC address based on internal DNS
+*/}}
+{{- define "devnet.chains.internal.rpc.addrs" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $host | append $values -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
 Returns a comma seperated list of urls for the RPC address
 */}}
 {{- define "devnet.chains.rpc.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $chain.name | append $values -}}
+  {{- if and ($localhost) (($chain.ports).rpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rpc | append $values -}}
+  {{- else -}}
+  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $host | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the GRPC address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.grpc.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if and ($localhost) (($chain.ports).grpc) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.grpc | append $values -}}
+  {{- else -}}
+  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:9091" $host | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
+Returns a comma seperated list of urls for the Rest address.
+If registry.localhost is set to true, then use $chain ports
+*/}}
+{{- define "devnet.chains.rest.addrs" -}}
+{{- $localhost := .Values.registry.localhost -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if and ($localhost) (($chain.ports).rest) -}}
+  {{- $values = printf "http://localhost:%v" $chain.ports.rest | append $values -}}
+  {{- else -}}
+  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:1317" $host | append $values -}}
+  {{- end -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
@@ -174,7 +235,8 @@ Returns a comma seperated list of urls for the Exposer address
 {{- $port := ($.Values.exposer.ports.rest | toString | default "8081") }}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:%s" $chain.name $port | append $values -}}
+  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:%s" $host $port | append $values -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}

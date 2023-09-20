@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-docker-registry:
+  deploy-docker:
     runs-on: ubuntu-latest
 
     permissions:
@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        type: [ "registry", "exposer" ]
+        type: [ "registry", "exposer", "faucet" ]
       fail-fast: false
 
     env:

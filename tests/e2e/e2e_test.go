@@ -70,10 +70,10 @@ func (s *TestSuite) TestChains_Status() {
 		body := s.MakeRequest(req, 200)
 		resp := &pb.Status{}
 		err = jsonpb.Unmarshal(body, resp)
-		s.Assert().NoError(err)
+		s.Require().NoError(err)
 
 		// assert chain id
-		s.Assert().Equal(chain.Name, resp.Result.NodeInfo.Network)
+		s.Require().Equal(chain.Name, resp.Result.NodeInfo.Network)
 	}
 }
 

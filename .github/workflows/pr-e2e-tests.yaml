@@ -25,6 +25,10 @@ jobs:
           - "multi-validator.yaml"
           - "two-chain-gorelayer.yaml"
           - "simapp.yaml"
+          - "injective.yaml"
+          - "evmos.yaml"
+          - "one-chain-starship-faucet.yaml"
+          - "multi-validator-starship-faucet.yaml"
       fail-fast: true
       max-parallel: 1
 

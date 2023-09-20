@@ -15,6 +15,7 @@ chains:
       rest: 1313
       rpc: 26653
       exposer: 38083
+      faucet: 8003
     resources:
       cpu: "0.5"
       memory: 500M

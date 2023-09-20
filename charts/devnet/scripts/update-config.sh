@@ -4,7 +4,7 @@ CHAIN_ID="${CHAIN_ID:=osmosis}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 
-set -eu
+set -eux
 
 ls $CHAIN_DIR
 
@@ -35,7 +35,7 @@ sed -i -e 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' $CHAIN_DI
 function get_next_line_number() {
   local txt=$1
   local file=$2
-  local line_number=$(grep -n "$txt" $file | cut -d: -f1)
+  local line_number=$(grep -n "$txt" $file | cut -d: -f1 | head -1)
   echo $((line_number + 1))
 }
 
