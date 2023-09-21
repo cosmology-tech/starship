@@ -1,0 +1,46 @@
+chains:
+  - name: injective-1
+    type: injective
+    numValidators: 2
+    faucet:
+      type: starship
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+      faucet: 8003
+    scripts:
+      createGenesis:
+        file: scripts/create-genesis.sh
+      updateGenesis:
+        file: scripts/update-genesis.sh
+      createValidator:
+        file: scripts/create-validator.sh
+  - name: cosmoshub-4
+    type: cosmos
+    numValidators: 1
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+      faucet: 8007
+
+relayers:
+  - name: injective-cosmos
+    type: hermes
+    replicas: 1
+    chains:
+      - injective-1
+      - cosmoshub-4
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
+
