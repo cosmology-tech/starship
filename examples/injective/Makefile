@@ -1,31 +1,19 @@
-NAME = starship-getting-started
-FILE = configs/starship.yaml
-TINY_FILE = configs/tiny-starship.yaml
+NAME = injective
+FILE = configs/local.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
 HELM_VERSION = v0.1.46
 
 ###############################################################################
-###                              All commands                               ###
+###                              Helm Charts                                ###
 ###############################################################################
 
-.PHONY: setup
-setup: setup-deps setup-helm setup-kind
+.PHONY: start
+start: install port-forward
 
 .PHONY: stop
 stop: stop-forward delete
-
-.PHONY: clean
-clean: stop clean-kind
-
-###############################################################################
-###                          Dependency check                               ###
-###############################################################################
-
-.PHONY: check
-setup-deps:
-	bash $(CURDIR)/scripts/dev-setup.sh
 
 ###############################################################################
 ###                              Helm Charts                                ###
@@ -34,8 +22,8 @@ setup-deps:
 install:
 	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION)
 
-install-tiny:
-	$(MAKE) install FILE=$(TINY_FILE)
+debug:
+	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --dry-run --version $(HELM_VERSION)
 
 delete:
 	-helm delete $(NAME)
