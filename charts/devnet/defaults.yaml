@@ -185,6 +185,8 @@ defaultChains:
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/InjectiveLabs/injective-chain-releases
+    faucet:
+      type: starship
     assets:
       - base: inj
         description: The INJ token is the native governance token for the Injective chain.
@@ -274,6 +276,8 @@ defaultChains:
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/evmos/evmos
+    faucet:
+      type: starship
     assets:
       - base: aevmos
         description: The native EVM, governance and staking token of the Evmos Hub
