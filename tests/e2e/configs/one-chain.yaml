@@ -2,6 +2,8 @@ chains:
   - name: osmosis-1
     type: osmosis
     numValidators: 1
+    storageClassName: standard-rwo
+    storage: 1Gi
     ports:
       rest: 1313
       rpc: 26653

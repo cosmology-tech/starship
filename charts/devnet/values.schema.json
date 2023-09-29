@@ -170,6 +170,12 @@
           "repo": {
             "type": "string"
           },
+          "storage": {
+            "type": "string"
+          },
+          "storageClassName": {
+            "type": "string"
+          },
           "upgrade": {
             "type": "object",
             "properties": {
