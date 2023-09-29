@@ -51,6 +51,14 @@ spec:
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
+        {{- if hasKey $chain "storage" }}
+        - name: init-chmod-data
+          image: busybox
+          command: ['sh', '-c', 'chmod -R 0777 {{ $chain.home }}']
+          volumeMounts:
+            - name: node
+              mountPath: {{ $chain.home }}
+        {{- end }}
         {{- if $toBuild }}
         - name: init-build-images
           image: ghcr.io/cosmology-tech/starship/builder:latest
@@ -310,8 +318,10 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
+        {{- if not (hasKey $chain "storage") }}
         - name: node
           emptyDir: { }
+        {{- end }}
         - name: addresses
           configMap:
             name: keys
@@ -327,6 +337,18 @@ spec:
         - name: faucet
           emptyDir: { }
         {{- end }}
+  {{- if hasKey $chain "storage" }}
+  volumeClaimTemplates:
+    - metadata:
+        name: node
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: {{ $chain.storageClassName }}
+        resources:
+          requests:
+            storage: {{ $chain.storage }}
+  {{- end }}
+
 ---
 {{- end }}
 {{- end }}
