@@ -167,6 +167,9 @@
           "coinType": {
             "type": "number"
           },
+          "metrics": {
+            "type": "boolean"
+          },
           "repo": {
             "type": "string"
           },

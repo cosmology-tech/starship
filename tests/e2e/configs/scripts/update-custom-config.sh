@@ -48,6 +48,13 @@ sed -i -e "${line_number}s/enable = false/enable = true/g" $CHAIN_DIR/config/app
 line_number=$(get_next_line_number "Address defines the gRPC server address to bind to." $CHAIN_DIR/config/app.toml)
 sed -i -e "${line_number}s#address = \".*\"#address = \"0.0.0.0:9090\"#g" $CHAIN_DIR/config/app.toml
 
+if [ $METRICS ]; then
+  line_number=$(get_next_line_number "other sinks such as Prometheus." $CHAIN_DIR/config/app.toml)
+  sed -i -e "${line_number}s/enabled = false/enabled = true/g" $CHAIN_DIR/config/app.toml
+
+  line_number=$(get_next_line_number "PrometheusRetentionTime, when positive, enables a Prometheus metrics sink." $CHAIN_DIR/config/app.toml)
+  sed -i -e "${line_number}s/prometheus-retention-time = 0/prometheus-retention-time = 3600/g" $CHAIN_DIR/config/app.toml
+fi
 
 echo "Update consensus params in config.toml"
 sed -i -e "s#timeout_propose = \".*\"#timeout_propose = \"$TIMEOUT_PROPOSE\"#g" $CHAIN_DIR/config/config.toml
@@ -57,5 +64,9 @@ sed -i -e "s#timeout_prevote_delta = \".*\"#timeout_prevote_delta = \"$TIMEOUT_P
 sed -i -e "s#timeout_precommit = \".*\"#timeout_precommit = \"$TIMEOUT_PRECOMMIT\"#g" $CHAIN_DIR/config/config.toml
 sed -i -e "s#timeout_precommit_delta = \".*\"#timeout_precommit_delta = \"$TIMEOUT_PRECOMMIT_DELTA\"#g" $CHAIN_DIR/config/config.toml
 sed -i -e "s#timeout_commit = \".*\"#timeout_commit = \"$TIMEOUT_COMMIT\"#g" $CHAIN_DIR/config/config.toml
+
+if [ $METRICS ]; then
+  sed -i -e "s/prometheus = false/prometheus = true/g" $CHAIN_DIR/config/config.toml
+fi
 
 $CHAIN_BIN tendermint show-node-id

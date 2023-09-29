@@ -114,9 +114,35 @@ spec:
                 exit 0
               fi
 
-              echo "Running setup and config files..."
+              echo "Running setup genesis script..."
               bash -e /scripts/create-genesis.sh
               bash -e /scripts/update-genesis.sh
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        - name: init-config
+          image: {{ $image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.timeoutVars" $.Values | indent 12 }}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
+
+              echo "Running setup config script..."
+              export METRICS={{ $chain.metrics }}
               {{- if hasKey $chain "genesis" }}
               jq -s '.[0] * .[1]' $CHAIN_DIR/config/genesis.json /patch/genesis.json > $CHAIN_DIR/config/genesis.json.tmp && mv $CHAIN_DIR/config/genesis.json.tmp $CHAIN_DIR/config/genesis.json
               {{- end }}
