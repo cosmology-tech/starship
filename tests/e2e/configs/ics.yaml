@@ -1,0 +1,62 @@
+chains:
+  - name: provider-1
+    type: ics
+    image: anmol1696/interchain-security
+    binary: interchain-security-pd
+    numValidators: 2
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+      faucet: 8003
+  - name: consumer-1
+    type: ics
+    image: anmol1696/interchain-security
+    binary: interchain-security-cd
+    numValidators: 2
+    ics:
+      enabled: true
+      provider: provider-1
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+      faucet: 8007
+  - name: consumer-2
+    type: ics
+    image: anmol1696/interchain-security
+    binary: interchain-security-cd
+    numValidators: 2
+    ics:
+      enabled: true
+      provider: provider-1
+    ports:
+      rest: 1318
+      rpc: 26658
+      exposer: 38088
+      faucet: 8008
+
+relayers:
+  - name: prov-con-1
+    type: hermes
+    replicas: 1
+    chains:
+      - provider-1
+      - consumer-1
+  - name: prov-con-2
+    type: hermes
+    replicas: 1
+    chains:
+      - provider-1
+      - consumer-2
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091

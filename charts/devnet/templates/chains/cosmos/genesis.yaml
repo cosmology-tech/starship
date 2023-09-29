@@ -150,6 +150,30 @@ spec:
             - mountPath: /faucet
               name: faucet
         {{- end }}
+        {{/*if chain is a consumer chain, then initialize ics-consumer*/}}
+        {{- if $chain.ics.enabled }}
+        {{/*create provider chain from full chain similar to relayer.
+          create a helper function instead to be used everywhere, which is able to
+          return the full chain from a chain name, use it in relayer
+        */}}
+        {{- $providerChain := $chain.ics.provider }}
+        - name: init-ics-consumer
+          image: {{ $providerChain.image }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - "-c"
+            - |
+              # run ics consumer initialization
+              bash -e /scripts/create-ics-consumer.sh
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        {{- end }}
       containers:
         - name: validator
           image: {{ $image }}
