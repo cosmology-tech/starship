@@ -9,7 +9,11 @@ metadata:
   labels:
     app: prysm
 spec:
+  {{- if $chain.external }}
+  type: LoadBalancer
+  {{- else }}
   type: NodePort
+  {{- end }}
   selector:
     app: prysm
   ports:
@@ -17,17 +21,18 @@ spec:
       protocol: TCP
       port: 3500
       targetPort: 3500
-      nodePort: 30500
+    - name: beacon-grpc
+      protocol: TCP
+      port: 4000
+      targetPort: 4000
     - name: geth-http
       protocol: TCP
       port: 8545
       targetPort: 8545
-      nodePort: 30545
     - name: geth-authrpc
       protocol: TCP
       port: 8551
       targetPort: 8551
-      nodePort: 30551
 
 {{- end }}
 {{- end }}
