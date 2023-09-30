@@ -1,4 +1,5 @@
 {{- $keys := .Files.Get "configs/keys.json" | fromJson }}
+{{- $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "ts-relayer" }}
 ---
@@ -17,12 +18,8 @@ data:
     chains:
       {{- range $i, $chain := $relayer.chains }}
       {{ $chain }}:
-        {{- range $fullchain := $.Values.chains }}
-        {{- if eq $fullchain.name $chain }}
-        {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-        {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
-        {{ $fullchain = merge $fullchain $defaultChain }}
-        chain_id: {{ $chain }}
+      {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "defaultFile" $defaultFile "context" $) | mustFromJson }}
+      chain_id: {{ $chain }}
         # You can include multiple RPC endpoints and it will rotate through them if
         # one is down (TODO)
         rpc:
@@ -39,8 +36,6 @@ data:
         ics20_port: 'transfer'
         estimated_block_time: {{ $.Values.timeouts.timeout_commit | toString | replace "ms" "" | float64 }}
         estimated_indexer_time: {{ $.Values.timeouts.time_iota_ms | toString | replace "ms" "" | float64 }}
-        {{- end }}
-        {{- end }}
       {{- end }}
 ---
 {{- end }}
