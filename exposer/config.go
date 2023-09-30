@@ -10,13 +10,10 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:         "0.0.0.0",
-		HTTPPort:     "8080",
-		GRPCPort:     "9090",
-		GenesisFile:  "",
-		MnemonicFile: "",
-		PrivValFile:  "",
-		StatusURL:    "http://0.0.0.0:26657/status",
+		Host:      "0.0.0.0",
+		HTTPPort:  "8080",
+		GRPCPort:  "9090",
+		StatusURL: "http://0.0.0.0:26657/status",
 	}
 }
 
@@ -33,6 +30,8 @@ type Config struct {
 	MnemonicFile string `name:"mnemonic-file" json:"mnemonic_file" env:"MNEMONIC_FILE" usage:"Path of mnemonic file"`
 	// PrivValFile is full path of the node validator private key file
 	PrivValFile string `name:"priv-val-file" json:"priv_val_file" env:"PRIV_VAL_FILE" usage:"Path of priv_validator_key.json file for node"`
+	// NodeKeyFile is full path of the node validator node key file
+	NodeKeyFile string `name:"node-key-file" json:"node_key_file" env:"NODE_KEY_FILE" usage:"Path of node_key.json file for node"`
 	// StatusURL is used to fetch status info from blockchain node
 	StatusURL string `name:"status-url" json:"status_url" env:"STATUS_URL" usage:"URL to fetch chain status"`
 	// Verbose switches on debug logging

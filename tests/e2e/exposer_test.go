@@ -76,7 +76,6 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 
 func (s *TestSuite) TestExposer_GetPrivKey() {
 	s.T().Log("running test for /priv_key endpoint for exposer")
-	s.T().Skip("not implemented yet")
 
 	chain := s.config.Chains[0]
 
@@ -90,6 +89,22 @@ func (s *TestSuite) TestExposer_GetPrivKey() {
 	s.Require().NotNil(resp)
 	s.Require().NotEmpty(resp.PrivKey)
 	s.Require().NotEmpty(resp.PubKey)
+}
+
+func (s *TestSuite) TestExposer_GetNodeKey() {
+	s.T().Log("running test for /node_key endpoint for exposer")
+
+	chain := s.config.Chains[0]
+
+	req, err := http.NewRequest(http.MethodGet, "/node_key", nil)
+	s.Require().NoError(err)
+
+	resp := &pb.NodeKey{}
+	s.MakeExposerRequest(chain, req, resp)
+
+	// assert results to expected values
+	s.Require().NotNil(resp)
+	s.Require().NotEmpty(resp.PrivKey)
 }
 
 func (s *TestSuite) TestExposer_GetKeys() {

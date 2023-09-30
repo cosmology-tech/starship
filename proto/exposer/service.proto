@@ -29,9 +29,13 @@ service Exposer {
   rpc GetKeys(google.protobuf.Empty) returns (Keys) {
     option (google.api.http) = { get: "/keys" };
   }
-  // GetPrivKeysFile returns the keys of the node
-  rpc GetPrivKeysFile(google.protobuf.Empty) returns (PrivValidatorKey) {
+  // GetPrivKeys returns the keys of the node
+  rpc GetPrivKey(google.protobuf.Empty) returns (PrivValidatorKey) {
     option (google.api.http) = { get: "/priv_keys" };
+  }
+  // GetNodeKey returns the keys of the node
+  rpc GetNodeKey(google.protobuf.Empty) returns (NodeKey) {
+    option (google.api.http) = { get: "/node_key" };
   }
 }
 
