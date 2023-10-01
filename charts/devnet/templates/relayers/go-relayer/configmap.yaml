@@ -1,4 +1,5 @@
 {{- $keys := .Files.Get "configs/keys.json" | fromJson }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "go-relayer" }}
 ---
@@ -22,11 +23,7 @@ data:
     }
 
   {{- range $i, $chain := $relayer.chains }}
-  {{- range $fullchain := $.Values.chains }}
-  {{- if eq $fullchain.name $chain }}
-  {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-  {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
-  {{ $fullchain = merge $fullchain $defaultChain }}
+  {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "defaultFile" $defaultFile "context" $) | mustFromJson }}
   {{ $fullchain.name }}.json: |-
     {
       "type": "cosmos",
@@ -45,8 +42,6 @@ data:
         "sign-mode": "direct"
       }
     }
-  {{- end }}
-  {{- end }}
   {{- end }}
 ---
 {{- end }}
