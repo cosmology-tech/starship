@@ -83,7 +83,11 @@ data:
     # by the telemetry service. Default: 3001
     port = {{ $relayer.config.telemetry.port }}
     {{- range $i, $chain := $relayer.chains }}
-    {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "defaultFile" $defaultFile "context" $) | mustFromJson }}
+    {{- range $fullchain := $.Values.chains }}
+    {{- if eq $fullchain.name $chain }}
+    {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+    {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
+    {{ $fullchain = merge $fullchain $defaultChain }}
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
@@ -119,6 +123,8 @@ data:
     {{- else }}
     address_type = { derivation = 'cosmos' }
     gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    {{- end }}
+    {{- end }}
     {{- end }}
     {{- end }}
 ---
