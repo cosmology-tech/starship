@@ -24,24 +24,6 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
-Given the name of the name, return full chain, merged with the default chain
-Usage:
-{{ include "devnet.fullchain" (dict "name" "osmosis-1" "defaultFile" $defaultFile "context" $) }}
-*/}}
-{{- define "devnet.fullchain" -}}
-{{ $defaultFile := .defaultFile }}
-{{ $fullchain := dict }}
-{{- range $chain := .context.Values.chains }}
-{{- if eq $chain.name .name }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-{{ $chain = merge $chain $defaultChain }}
-{{ $fullchain = $chain }}
-{{- end }}
-{{- end }}
-{{ mustToJson $fullchain }}
-{{- end }}
-
-{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "devnet.chart" -}}
