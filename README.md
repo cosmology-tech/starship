@@ -29,7 +29,7 @@ In order to get started with starship, one needs to install the following
 Follow the steps here: https://starship.cosmology.tech
 
 ## Using helm chart
-Inorder to use the helm chart externally without this repo.
+In order to use the helm chart externally without this repo.
 ```bash
 helm repo add starship https://cosmology-tech.github.io/starship
 helm repo update
@@ -38,7 +38,7 @@ helm search repo starship/devnet
 ```
 Fetch the values.yaml file and update them before installing the chart
 ```bash
-helm show values starship/devnet > custom-vaules.yaml
+helm show values starship/devnet > custom-values.yaml
 # change custom-values.yaml file
 
 helm install -f custom-values.yaml starship/devnet --generate-name
