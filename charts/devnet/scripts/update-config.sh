@@ -51,7 +51,7 @@ sed -i -e "${line_number}s/enable = false/enable = true/g" $CHAIN_DIR/config/app
 line_number=$(get_next_line_number "Address defines the gRPC server address to bind to." $CHAIN_DIR/config/app.toml)
 sed -i -e "${line_number}s#address = \".*\"#address = \"0.0.0.0:9090\"#g" $CHAIN_DIR/config/app.toml
 
-if [ $METRICS ]; then
+if [ "$METRICS" == "true" ]; then
   line_number=$(get_next_line_number "other sinks such as Prometheus." $CHAIN_DIR/config/app.toml)
   sed -i -e "${line_number}s/enabled = false/enabled = true/g" $CHAIN_DIR/config/app.toml
 
@@ -68,7 +68,7 @@ sed -i -e "s#timeout_precommit = \".*\"#timeout_precommit = \"$TIMEOUT_PRECOMMIT
 sed -i -e "s#timeout_precommit_delta = \".*\"#timeout_precommit_delta = \"$TIMEOUT_PRECOMMIT_DELTA\"#g" $CHAIN_DIR/config/config.toml
 sed -i -e "s#timeout_commit = \".*\"#timeout_commit = \"$TIMEOUT_COMMIT\"#g" $CHAIN_DIR/config/config.toml
 
-if [ $METRICS ]; then
+if [ "$METRICS" == "true" ]; then
   sed -i -e "s/prometheus = false/prometheus = true/g" $CHAIN_DIR/config/config.toml
 fi
 

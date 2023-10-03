@@ -135,7 +135,7 @@ spec:
             - name: KEYS_CONFIG
               value: /configs/keys.json
             - name: METRICS
-              value: {{ $chain.metrics }}
+              value: "{{ $chain.metrics }}"
           command:
             - bash
             - "-c"

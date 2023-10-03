@@ -96,6 +96,8 @@ spec:
             {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: METRICS
+              value: "{{ $chain.metrics }}"
           command:
             - bash
             - "-c"
