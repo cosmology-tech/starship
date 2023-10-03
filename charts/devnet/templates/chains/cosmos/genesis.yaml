@@ -134,6 +134,8 @@ spec:
             {{- include "devnet.timeoutVars" $.Values | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: METRICS
+              value: {{ $chain.metrics }}
           command:
             - bash
             - "-c"
@@ -142,7 +144,6 @@ spec:
               echo "Validator Index: $VAL_INDEX"
 
               echo "Running setup config script..."
-              export METRICS={{ $chain.metrics }}
               {{- if hasKey $chain "genesis" }}
               jq -s '.[0] * .[1]' $CHAIN_DIR/config/genesis.json /patch/genesis.json > $CHAIN_DIR/config/genesis.json.tmp && mv $CHAIN_DIR/config/genesis.json.tmp $CHAIN_DIR/config/genesis.json
               {{- end }}
