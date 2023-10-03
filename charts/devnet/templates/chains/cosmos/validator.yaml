@@ -225,14 +225,28 @@ spec:
             - mountPath: /configs
               name: addresses
       volumes:
+        {{- if not (hasKey $chain "storage") }}
         - name: node
           emptyDir: { }
+        {{- end }}
         - name: addresses
           configMap:
             name: keys
         - name: scripts
           configMap:
             name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+  {{- if hasKey $chain "storage" }}
+  volumeClaimTemplates:
+    - metadata:
+        name: node
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: {{ $chain.storageClassName }}
+        resources:
+          requests:
+            storage: {{ $chain.storage }}
+  {{- end }}
+
 ---
 {{- end }}
 {{- end }}
