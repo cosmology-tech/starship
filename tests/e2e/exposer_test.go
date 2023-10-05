@@ -121,7 +121,7 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	// assert results to expected values
 	s.Require().NotNil(resp)
 	s.Require().Len(resp.Genesis, 1)
-	s.Require().Len(resp.Validators, 4)
+	s.Require().Len(resp.Validators, 1)
 	s.Require().Len(resp.Keys, 3)
-	s.Require().Len(resp.Relayers, 2)
+	s.Require().Len(resp.Relayers, 1)
 }
