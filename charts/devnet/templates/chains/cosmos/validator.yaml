@@ -11,6 +11,13 @@
 {{- $build := .build | default (dict "enabled" false) -}}
 {{- $toBuild := or $build.enabled $upgrade.enabled }}
 
+# read faucet from chain values and merge with default faucet values
+{{ $faucet := get $chain "faucet" | default dict }}
+{{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy) $faucet }}
+
+{{ $defaultFaucet := get $defaultFile.defaultFaucet $faucet.type | default dict }}
+{{ $faucet = merge $faucet $defaultFaucet }}
+
 {{ $image := $chain.image }}
 {{- if $toBuild }}
 {{ $image = "ghcr.io/cosmology-tech/starship/runner:latest" }}
@@ -96,6 +103,8 @@ spec:
             {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: FAUCET_ENABLED
+              value: "{{ $faucet.enabled }}"
           command:
             - bash
             - "-c"
@@ -111,20 +120,12 @@ spec:
                 exit 0
               fi
 
-              RECOVER=true
-              VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" $KEYS_CONFIG)
-              [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX" && RECOVER=false
+              VAL_NAME=$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX
               echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-              if [[ $RECOVER == "true" ]]; then
-                echo "Recover validator $VAL_NAME"
-                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
-                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
-              else
-                echo "Create validator $VAL_NAME"
-                $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
-                $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
-              fi
+              echo "Recover validator $VAL_NAME"
+              $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
+              jq -r ".validators[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --index $VAL_INDEX --recover --keyring-backend="test"
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
@@ -161,6 +162,8 @@ spec:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
           command:
             - bash
             - "-c"
@@ -181,13 +184,16 @@ spec:
                   - "-e"
                   - |
                     VAL_INDEX=${HOSTNAME##*-}
-                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
-                    [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
+                    VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
 
                     VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
                     echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
-                    bash -e /scripts/transfer-tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
+                    bash -e /scripts/transfer-tokens.sh \
+                      $VAL_ADDR \
+                      $DENOM \
+                      http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit \
+                      "{{ $faucet.enabled }}" || true
 
                     $CHAIN_BIN keys list --keyring-backend test | jq
 

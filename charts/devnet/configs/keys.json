@@ -1,31 +1,16 @@
 {
   "genesis": [
     {
-      "name": "val0",
+      "name": "genesis",
       "type": "local",
       "mnemonic": "razor dog gown public private couple ecology paper flee connect local robot diamond stay rude join sound win ribbon soup kidney glass robot vehicle"
     }
   ],
   "validators": [
     {
-      "name": "val1",
+      "name": "validator",
       "type": "local",
       "mnemonic": "issue have volume expire shoe year finish poem alien urban license undo rural endless food host opera fix forum crack wide example firm learn"
-    },
-    {
-      "name": "val2",
-      "type": "local",
-      "mnemonic": "broccoli robot upon blush rabbit squeeze fruit still lady antique detect can spice clay magic monster zebra solution dry salute stay wet arena matrix"
-    },
-    {
-      "name": "val3",
-      "type": "local",
-      "mnemonic": "tornado modify spring arm title double bulk other recall decide table fun caught buyer bring once knife sphere arctic text zoo swim visual patient"
-    },
-    {
-      "name": "val4",
-      "type": "local",
-      "mnemonic": "warm marine rent lift siege tool artwork home curious film blade trophy flush angry exact athlete edge combine weasel hour marriage grocery lake famous"
     }
   ],
   "keys": [
@@ -47,14 +32,9 @@
   ],
   "relayers": [
     {
-      "name": "rly1",
+      "name": "relayer",
       "type": "local",
       "mnemonic": "pen quit web pill hunt hobby tonight base wine black era cereal veteran trouble december method diet orbit copper nephew into badge olympic repair"
-    },
-    {
-      "name": "rly2",
-      "type": "local",
-      "mnemonic": "rally area annual range egg solid paper kick cabbage relax grow ginger axis tone penalty swing marine endless vendor dinner guilt echo stable system"
     }
   ]
 }

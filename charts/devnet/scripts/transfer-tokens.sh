@@ -3,6 +3,7 @@
 ADDRESS="$1"
 DENOM="$2"
 FAUCET_URL="$3"
+FAUCET_ENABLED="$4"
 
 set -eux
 
@@ -13,6 +14,12 @@ function transfer_token() {
     $FAUCET_URL)
   echo $status_code
 }
+
+if [[ $FAUCET_ENABLED == "false" ]];
+then
+  echo "Faucet not enabled... skipping transfer token from faucet"
+  exit 0
+fi
 
 echo "Try to send tokens, if failed, wait for 5 seconds and try again"
 max_tries=5
