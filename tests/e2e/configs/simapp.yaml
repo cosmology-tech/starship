@@ -27,7 +27,6 @@ registry:
     memory: "100M"
 
 exposer:
-  image: anmol1696/exposer:20230930-232bc90
   resources:
     cpu: "0.1"
     memory: "100M"
