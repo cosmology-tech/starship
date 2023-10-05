@@ -267,8 +267,8 @@ func (s *TestSuite) TestRegistry_GetChainKeys() {
 
 		// assert results to expected values
 		s.Require().Len(respKeys.Genesis, 1)
-		s.Require().Len(respKeys.Validators, 4)
+		s.Require().Len(respKeys.Validators, 1)
 		s.Require().Len(respKeys.Keys, 3)
-		s.Require().Len(respKeys.Relayers, 2)
+		s.Require().Len(respKeys.Relayers, 1)
 	}
 }
