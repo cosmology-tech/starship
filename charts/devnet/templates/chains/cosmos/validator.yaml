@@ -44,6 +44,7 @@ spec:
         app.kubernetes.io/name: {{ $chain.name }}-validator
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
+      restartPolicy: Always
       {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
         {{- if $toBuild }}
@@ -106,9 +107,21 @@ spec:
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
+              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o /tmp/genesis.json
+              echo "Genesis file that we got....."
+              echo "check tmp genesis"
+              ls -lhG /tmp/genesis.json
+              echo "check chain dir"
+              ls -lhG $CHAIN_DIR
+
               if [ -f $CHAIN_DIR/config/genesis.json ]; then
-                echo "Genesis file exists, exiting early"
-                exit 0
+                if cmp -s $CHAIN_DIR/config/genesis.json /tmp/genesis.json; then
+                  echo "Genesis file exists, exiting early"
+                  exit 0
+                else
+                  echo "Genesis found does not match..., performing cleanup"
+                  rm -rf $CHAIN_DIR/*
+                fi
               fi
 
               RECOVER=true
@@ -126,8 +139,8 @@ spec:
                 $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
               fi
 
-              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
-              echo "Genesis file that we got....."
+              echo "Copy genesis.json to correct place"
+              cp /tmp/genesis.json $CHAIN_DIR/config/genesis.json
               cat $CHAIN_DIR/config/genesis.json
 
               echo "Setup config files"
@@ -142,9 +155,6 @@ spec:
               GENESIS_NODE_P2P=$NODE_ID@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
-
-              echo "Printing the whole config.toml file"
-              cat $CHAIN_DIR/config/config.toml
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
