@@ -26,3 +26,7 @@ message PrivValidatorKey {
   TypeKey pub_key = 2 [ json_name = "pub_key" ];
   TypeKey priv_key = 3 [ json_name = "priv_key" ] ;
 }
+
+message NodeKey {
+  TypeKey priv_key = 1 [ json_name = "priv_key" ];
+}
