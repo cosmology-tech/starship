@@ -725,3 +725,6 @@ defaultFaucet:
   starship:
     image: ghcr.io/cosmology-tech/starship/faucet:20230915-d75e5fd
     concurrency: 5
+
+defaultCommetMock:
+  image: ghcr.io/informalsystems/cometmock:v0.37.x

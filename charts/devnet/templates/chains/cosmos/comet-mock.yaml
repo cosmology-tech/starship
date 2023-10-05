@@ -1,0 +1,102 @@
+{{- range $chain := .Values.chains }}
+{{- if ne $chain.type "virtual" }}
+{{- if and ($chain.cometMock) ($chain.cometMock.enabled) }}
+{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
+
+# merge defaultChain values into the $chain dict
+{{ $chain = merge $chain $defaultChain }}
+
+{{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
+{{- $build := .build | default (dict "enabled" false) -}}
+{{- $toBuild := or $build.enabled $upgrade.enabled }}
+
+# read faucet from chain values and merge with default faucet values
+{{ $faucet := get $chain "faucet" | default dict }}
+{{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy) $faucet }}
+
+{{ $defaultFaucet := get $defaultFile.defaultFaucet $faucet.type | default dict }}
+{{ $faucet = merge $faucet $defaultFaucet }}
+
+{{ $image := $chain.comet.image | default $defaultFile.defaultCometMock.image }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+spec:
+  serviceName: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $chain.type }}
+      app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: {{ $chain.type }}
+        app.kubernetes.io/type: comet-mock
+        app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+        app.kubernetes.io/rawname: {{ $chain.name }}
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      {{- include "imagePullSecrets" $chain | indent 6 }}
+      initContainers:
+        - name: init-node
+          image: {{ $image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
+            {{- include "devnet.timeoutVars" $.Values | indent 12 }}
+          command:
+            - bash
+            - "-c"
+            - |
+              curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
+              echo "Genesis file that we got....."
+              cat $CHAIN_DIR/config/genesis.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /scripts
+              name: scripts
+      containers:
+        - name: comet
+          image: {{ $image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+          command:
+            - bash
+            - "-c"
+            - |
+              cometMock start
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+      volumes:
+        - name: node
+          emptyDir: { }
+        - name: scripts
+          configMap:
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
