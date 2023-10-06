@@ -22,7 +22,7 @@ resources:
     memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230913-d2627da
+  image: ghcr.io/cosmology-tech/starship/exposer:20231005-1543a32
   ports:
     rest: 8081
   resources:
