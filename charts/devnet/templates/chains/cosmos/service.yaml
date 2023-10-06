@@ -1,4 +1,4 @@
-{{ $portMap := dict "p2p" 26656 "rpc" 26657 "grpc" 9090 "rest" 1317 }}
+{{ $portMap := dict "p2p" 26656 "rpc" 26657 "address" 26658 "grpc" 9090 "rest" 1317 }}
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
 

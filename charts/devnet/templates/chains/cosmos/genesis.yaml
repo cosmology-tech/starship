@@ -164,8 +164,8 @@ spec:
               {{- if $toBuild }}
               /usr/bin/cosmovisor start
               {{- else }}
-              {{- if and ($chain.cometMock) ($chain.cometMock.enabled) }}
-              $CHAIN_BIN start --transport=grpc --with-tendermint=false
+              {{- if ($chain.cometMock.enabled) }}
+              $CHAIN_BIN start --transport=grpc --with-tendermint=false --address tcp://0.0.0.0:26658
               {{- else }}
               $CHAIN_BIN start
               {{- end }}
