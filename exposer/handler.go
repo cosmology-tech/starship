@@ -119,7 +119,7 @@ func (a *AppServer) GetPrivKey(ctx context.Context, _ *emptypb.Empty) (*pb.PrivV
 	return keys, nil
 }
 
-func (a *AppServer) GetPrivState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
+func (a *AppServer) GetPrivValidatorState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
 	jsonFile, err := os.Open(a.config.PrivValStateFile)
 	if err != nil {
 		return nil, err
