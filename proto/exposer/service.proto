@@ -8,6 +8,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
 import "exposer/mnemonic.proto";
+import "exposer/node.proto";
 
 option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
 
@@ -32,6 +33,10 @@ service Exposer {
   // GetPrivKeys returns the keys of the node
   rpc GetPrivKey(google.protobuf.Empty) returns (PrivValidatorKey) {
     option (google.api.http) = { get: "/priv_keys" };
+  }
+  // GetPrivState returns the keys of the node
+  rpc GetPrivValidatorState(google.protobuf.Empty) returns (PrivValidatorState) {
+    option (google.api.http) = { get: "/priv_validator_state" };
   }
   // GetNodeKey returns the keys of the node
   rpc GetNodeKey(google.protobuf.Empty) returns (NodeKey) {

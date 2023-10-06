@@ -30,6 +30,8 @@ type Config struct {
 	MnemonicFile string `name:"mnemonic-file" json:"mnemonic_file" env:"MNEMONIC_FILE" usage:"Path of mnemonic file"`
 	// PrivValFile is full path of the node validator private key file
 	PrivValFile string `name:"priv-val-file" json:"priv_val_file" env:"PRIV_VAL_FILE" usage:"Path of priv_validator_key.json file for node"`
+	// PrivValStateFile is full path of the node validator private state file
+	PrivValStateFile string `name:"priv-val-state-file" json:"priv_val_state_file" env:"PRIV_VAL_STATE_FILE" usage:"Path of priv_validator_state.json file on node"`
 	// NodeKeyFile is full path of the node validator node key file
 	NodeKeyFile string `name:"node-key-file" json:"node_key_file" env:"NODE_KEY_FILE" usage:"Path of node_key.json file for node"`
 	// StatusURL is used to fetch status info from blockchain node

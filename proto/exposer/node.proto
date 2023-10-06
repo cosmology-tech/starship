@@ -58,3 +58,11 @@ message ValidatorInfo {
   string voting_power = 2 [json_name = "voting_power"];
   Key pub_key = 3 [json_name = "pub_key"];
 }
+
+message PrivValidatorState {
+  string height = 1 [json_name = "height"];
+  optional int32 round = 2 [json_name = "round"];
+  optional int32 step = 3 [json_name = "step"];
+  optional string signature = 4 [json_name = "signature"];
+  optional string signbytes = 5 [json_name = "signbytes"];
+}
