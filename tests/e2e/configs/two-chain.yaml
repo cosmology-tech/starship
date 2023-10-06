@@ -50,4 +50,4 @@ registry:
     grpc: 9091
 
 exposer:
-  image: anmol1696/exposer:20231006-fc0e60a
+  image: anmol1696/exposer:20231006-76a1b8a
