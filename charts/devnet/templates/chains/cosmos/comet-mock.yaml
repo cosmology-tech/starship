@@ -21,6 +21,22 @@
 
 {{ $image := $chain.comet.image | default $defaultFile.defaultCometMock.image }}
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+  labels:
+    app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+spec:
+  clusterIP: None
+  ports:
+    - name: rpc
+      port: 22331
+      protocol: TCP
+      targetPort: 22331
+  selector:
+    app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -44,7 +60,7 @@ spec:
         app.kubernetes.io/instance: {{ $chain.type }}
         app.kubernetes.io/type: comet-mock
         app.kubernetes.io/name: {{ $chain.name }}-comet-mock
-        app.kubernetes.io/rawname: {{ $chain.name }}
+        app.kubernetes.io/rawname: {{ $chain.name }}-comet-mock
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
@@ -64,6 +80,9 @@ spec:
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
+
+
+
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
@@ -81,7 +100,7 @@ spec:
             - bash
             - "-c"
             - |
-              cometMock start
+              cometMock start --block-time {{ $.Values.timeouts.timeout_commit | replace "ms" "" }} $CHAIN_DIR/config/genesis.json tcp://0.0.0.0:22331  grpc
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
