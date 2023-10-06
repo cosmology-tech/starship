@@ -131,7 +131,8 @@ Usage:
     - |
       {{- range $chain := .chains }}
       while [ $(curl -sw '%{http_code}' http://{{ include "devnet.chain.name" $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
-        echo "Genesis validator does not seem to be ready. Waiting for it to start..."
+        echo "Genesis validator does not seem to be ready for: {{ $chain }}. Waiting for it to start..."
+        echo "Checking: http://{{ include "devnet.chain.name" $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id"
         sleep 10;
       done
       {{- end }}

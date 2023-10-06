@@ -1,4 +1,4 @@
-{{ $portMap := dict "p2p" 26656 "rpc" 26657 "address" 26658 "grpc" 9090 "rest" 1317 }}
+{{ $portMap := dict "p2p" 26656 "address" 26658 "grpc" 9090 "rest" 1317 }}
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
 
@@ -18,6 +18,10 @@ spec:
       protocol: TCP
       targetPort: {{ $port }}
     {{- end }}
+    - name: rpc
+      port: 26657
+      protocol: TCP
+      targetPort: 26657
     - name: exposer
       port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
