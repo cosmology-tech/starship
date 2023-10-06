@@ -119,6 +119,21 @@ func (a *AppServer) GetPrivKey(ctx context.Context, _ *emptypb.Empty) (*pb.PrivV
 	return keys, nil
 }
 
+func (a *AppServer) GetPrivState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
+	jsonFile, err := os.Open(a.config.PrivValStateFile)
+	if err != nil {
+		return nil, err
+	}
+
+	keys := &pb.PrivValidatorKey{}
+	err = jsonpb.Unmarshal(jsonFile, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
+}
+
 func (a *AppServer) GetNodeKey(ctx context.Context, _ *emptypb.Empty) (*pb.NodeKey, error) {
 	jsonFile, err := os.Open(a.config.NodeKeyFile)
 	if err != nil {

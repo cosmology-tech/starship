@@ -21,12 +21,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Exposer_GetNodeID_FullMethodName      = "/exposer.Exposer/GetNodeID"
-	Exposer_GetPubKey_FullMethodName      = "/exposer.Exposer/GetPubKey"
-	Exposer_GetGenesisFile_FullMethodName = "/exposer.Exposer/GetGenesisFile"
-	Exposer_GetKeys_FullMethodName        = "/exposer.Exposer/GetKeys"
-	Exposer_GetPrivKey_FullMethodName     = "/exposer.Exposer/GetPrivKey"
-	Exposer_GetNodeKey_FullMethodName     = "/exposer.Exposer/GetNodeKey"
+	Exposer_GetNodeID_FullMethodName             = "/exposer.Exposer/GetNodeID"
+	Exposer_GetPubKey_FullMethodName             = "/exposer.Exposer/GetPubKey"
+	Exposer_GetGenesisFile_FullMethodName        = "/exposer.Exposer/GetGenesisFile"
+	Exposer_GetKeys_FullMethodName               = "/exposer.Exposer/GetKeys"
+	Exposer_GetPrivKey_FullMethodName            = "/exposer.Exposer/GetPrivKey"
+	Exposer_GetPrivValidatorState_FullMethodName = "/exposer.Exposer/GetPrivValidatorState"
+	Exposer_GetNodeKey_FullMethodName            = "/exposer.Exposer/GetNodeKey"
 )
 
 // ExposerClient is the client API for Exposer service.
@@ -43,6 +44,8 @@ type ExposerClient interface {
 	GetKeys(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Keys, error)
 	// GetPrivKeys returns the keys of the node
 	GetPrivKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorKey, error)
+	// GetPrivState returns the keys of the node
+	GetPrivValidatorState(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorState, error)
 	// GetNodeKey returns the keys of the node
 	GetNodeKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NodeKey, error)
 }
@@ -100,6 +103,15 @@ func (c *exposerClient) GetPrivKey(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
+func (c *exposerClient) GetPrivValidatorState(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorState, error) {
+	out := new(PrivValidatorState)
+	err := c.cc.Invoke(ctx, Exposer_GetPrivValidatorState_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *exposerClient) GetNodeKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NodeKey, error) {
 	out := new(NodeKey)
 	err := c.cc.Invoke(ctx, Exposer_GetNodeKey_FullMethodName, in, out, opts...)
@@ -123,6 +135,8 @@ type ExposerServer interface {
 	GetKeys(context.Context, *emptypb.Empty) (*Keys, error)
 	// GetPrivKeys returns the keys of the node
 	GetPrivKey(context.Context, *emptypb.Empty) (*PrivValidatorKey, error)
+	// GetPrivState returns the keys of the node
+	GetPrivValidatorState(context.Context, *emptypb.Empty) (*PrivValidatorState, error)
 	// GetNodeKey returns the keys of the node
 	GetNodeKey(context.Context, *emptypb.Empty) (*NodeKey, error)
 	mustEmbedUnimplementedExposerServer()
@@ -146,6 +160,9 @@ func (UnimplementedExposerServer) GetKeys(context.Context, *emptypb.Empty) (*Key
 }
 func (UnimplementedExposerServer) GetPrivKey(context.Context, *emptypb.Empty) (*PrivValidatorKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivKey not implemented")
+}
+func (UnimplementedExposerServer) GetPrivValidatorState(context.Context, *emptypb.Empty) (*PrivValidatorState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPrivValidatorState not implemented")
 }
 func (UnimplementedExposerServer) GetNodeKey(context.Context, *emptypb.Empty) (*NodeKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNodeKey not implemented")
@@ -253,6 +270,24 @@ func _Exposer_GetPrivKey_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Exposer_GetPrivValidatorState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExposerServer).GetPrivValidatorState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Exposer_GetPrivValidatorState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExposerServer).GetPrivValidatorState(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Exposer_GetNodeKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -297,6 +332,10 @@ var Exposer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPrivKey",
 			Handler:    _Exposer_GetPrivKey_Handler,
+		},
+		{
+			MethodName: "GetPrivValidatorState",
+			Handler:    _Exposer_GetPrivValidatorState_Handler,
 		},
 		{
 			MethodName: "GetNodeKey",

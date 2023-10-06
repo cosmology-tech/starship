@@ -75,20 +75,20 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 }
 
 func (s *TestSuite) TestExposer_GetPrivKey() {
-	s.T().Log("running test for /priv_keys endpoint for exposer")
+	s.T().Log("running test for /priv_validator_state endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
-	req, err := http.NewRequest(http.MethodGet, "/priv_keys", nil)
+	req, err := http.NewRequest(http.MethodGet, "/priv_validator_state", nil)
 	s.Require().NoError(err)
 
-	resp := &pb.PrivValidatorKey{}
+	resp := &pb.PrivValidatorState{}
 	s.MakeExposerRequest(chain, req, resp)
 
 	// assert results to expected values
 	s.Require().NotNil(resp)
-	s.Require().NotEmpty(resp.PrivKey)
-	s.Require().NotEmpty(resp.PubKey)
+	s.Require().NotEmpty(resp.Height)
+	s.Require().NotEmpty(resp.Round)
 }
 
 func (s *TestSuite) TestExposer_GetNodeKey() {
