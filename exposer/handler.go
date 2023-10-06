@@ -119,19 +119,19 @@ func (a *AppServer) GetPrivKey(ctx context.Context, _ *emptypb.Empty) (*pb.PrivV
 	return keys, nil
 }
 
-func (a *AppServer) GetPrivValidatorState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
+func (a *AppServer) GetPrivValidatorState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorState, error) {
 	jsonFile, err := os.Open(a.config.PrivValStateFile)
 	if err != nil {
 		return nil, err
 	}
 
-	keys := &pb.PrivValidatorKey{}
-	err = jsonpb.Unmarshal(jsonFile, keys)
+	data := &pb.PrivValidatorState{}
+	err = jsonpb.Unmarshal(jsonFile, data)
 	if err != nil {
 		return nil, err
 	}
 
-	return keys, nil
+	return data, nil
 }
 
 func (a *AppServer) GetNodeKey(ctx context.Context, _ *emptypb.Empty) (*pb.NodeKey, error) {
