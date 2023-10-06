@@ -118,9 +118,8 @@ func (s *TestSuite) TestFaucet_Credit() {
 			}
 
 			// fetch denom and address from an account on chain
-			accounts := s.getChainAccounts(chain)
 			denom := s.getChainDenoms(chain)
-			addr := accounts[len(accounts)-1]
+			addr := getAddressFromType(chain.Type)
 			beforeBalance := s.getAccountBalance(chain, addr, denom)
 
 			body := map[string]string{
