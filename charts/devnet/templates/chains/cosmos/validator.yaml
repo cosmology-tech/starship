@@ -219,6 +219,8 @@ spec:
               value: {{ $chain.home }}/config/priv_validator_key.json
             - name: EXPOSER_NODE_KEY_FILE
               value: {{ $chain.home }}/config/node_key.json
+            - name: EXPOSER_PRIV_VAL_STATE_FILE
+              value: {{ $chain.home }}/data/priv_validator_state.json
           command: [ "exposer" ]
           resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
           volumeMounts:

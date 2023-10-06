@@ -28,3 +28,6 @@ registry:
   ports:
     rest: 8081
     grpc: 9091
+
+exposer:
+  image: anmol1696/exposer:20231006-76a1b8a
