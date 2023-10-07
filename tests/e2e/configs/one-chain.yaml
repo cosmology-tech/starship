@@ -2,6 +2,7 @@ chains:
   - name: osmosis-1
     type: osmosis
     numValidators: 1
+    metrics: true
     ports:
       rest: 1313
       rpc: 26653
@@ -36,3 +37,6 @@ resources:
   wait:
     cpu: "0.1"
     memory: 100M
+
+exposer:
+  image: anmol1696/exposer:20231006-76a1b8a
