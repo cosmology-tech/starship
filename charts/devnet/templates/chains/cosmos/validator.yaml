@@ -86,6 +86,8 @@ spec:
             {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: METRICS
+              value: "{{ $chain.metrics }}"
           command:
             - bash
             - "-c"
@@ -119,16 +121,43 @@ spec:
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        - name: init-config
+          image: {{ $image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.timeoutVars" $.Values | indent 12 }}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+            - name: METRICS
+              value: "{{ $chain.metrics }}"
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
 
-              echo "Setup config files"
+              echo "Running setup config script..."
               bash -e /scripts/update-config.sh
-
+              
               curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id
               NODE_ID=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")
               if [[ $NODE_ID == "" ]]; then
                 echo "Node ID is null, exiting early"
                 exit 1
               fi
+              
               GENESIS_NODE_P2P=$NODE_ID@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
