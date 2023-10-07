@@ -44,7 +44,7 @@ Usage:
 {{- $defaultScripts := $defaultFile.defaultScripts }}
 {{- $scripts := get $chain "scripts" | default dict }}
 {{- $scripts = merge $scripts $defaultScripts }}
-{{- $_ = set $chain "scripts" scripts }}
+{{- $_ = set $chain "scripts" $scripts }}
 
 {{ println "@return" }}
 {{ mustToJson $chain }}
