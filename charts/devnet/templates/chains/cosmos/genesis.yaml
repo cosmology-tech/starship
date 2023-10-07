@@ -108,7 +108,7 @@ spec:
             - mountPath: /scripts
               name: scripts
         - name: init-config
-          image: {{ $image }}
+          image: {{ $chain.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
