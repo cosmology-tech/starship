@@ -124,7 +124,7 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
-              {{- if $toBuild }}
+              {{- if $chain.toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
