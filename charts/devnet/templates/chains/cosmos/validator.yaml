@@ -3,27 +3,17 @@
 {{- if gt $chain.numValidators 1.0 }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-# merge defaultChain values into the $chain dict
-{{ $chain = merge $chain $defaultChain }}
 
-{{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
-{{- $build := .build | default (dict "enabled" false) -}}
-{{- $toBuild := or $build.enabled $upgrade.enabled }}
-
-{{ $image := $chain.image }}
-{{- if $toBuild }}
-{{ $image = "ghcr.io/cosmology-tech/starship/runner:latest" }}
-{{- end }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
 {{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-validator
+  name: {{ $chain.hostname }}-validator
 spec:
-  serviceName: {{ include "devnet.chain.name" $chain.name }}-validator
+  serviceName: {{ $chain.hostname }}-validator
   podManagementPolicy: Parallel
   replicas: {{ sub $chain.numValidators 1 }}
   revisionHistoryLimit: 3
@@ -46,7 +36,7 @@ spec:
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
-        {{- if $toBuild }}
+        {{- if $chain.toBuild }}
         - name: init-build-images
           image: ghcr.io/cosmology-tech/starship/builder:latest
           imagePullPolicy: IfNotPresent
@@ -58,12 +48,12 @@ spec:
               go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
 
               # Build genesis
-              {{- if $upgrade.enabled  }}
+              {{- if $chain.upgrade.enabled  }}
               UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build-chain.sh
               {{- range $upgrade := $chain.upgrade.upgrades }}
               UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build-chain.sh
               {{- end }}
-              {{- else if $build.enabled }}
+              {{- else if $chain.build.enabled }}
               UPGRADE_NAME=genesis CODE_TAG={{ $chain.build.source }} bash -e /scripts/build-chain.sh
               {{- end }}
           env:
@@ -87,7 +77,7 @@ spec:
         {{- end }}
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-validator
-          image: {{ $image }}
+          image: {{ $chain.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
@@ -102,7 +92,7 @@ spec:
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
-              {{- if $toBuild }}
+              {{- if $chain.toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
@@ -155,7 +145,7 @@ spec:
               name: scripts
       containers:
         - name: validator
-          image: {{ $image }}
+          image: {{ $chain.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
@@ -166,7 +156,7 @@ spec:
             - "-c"
             - |
               # Starting the chain
-              {{- if $toBuild }}
+              {{- if $chain.toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               /usr/bin/cosmovisor start
               {{- else }}
@@ -236,7 +226,7 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+            name: setup-scripts-{{ $chain.hostname }}
 ---
 {{- end }}
 {{- end }}

@@ -41,6 +41,11 @@ Usage:
 {{- $_ = set $chain "image" "ghcr.io/cosmology-tech/starship/runner:latest" -}}
 {{- end }}
 
+{{- $defaultScripts := $defaultFile.defaultScripts }}
+{{- $scripts := get $chain "scripts" | default dict }}
+{{- $scripts = merge $scripts $defaultScripts }}
+{{- $_ = set $chain "scripts" scripts }}
+
 {{ println "@return" }}
 {{ mustToJson $chain }}
 {{- end -}}
