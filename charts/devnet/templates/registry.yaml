@@ -101,18 +101,17 @@ spec:
             name: registry-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
-{{- range $chain := .Values.chains }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-{{ $chain = merge $chain $defaultChain }}
+{{- range $chain := .Values.chains }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
-{{ $host := printf "%s-genesis.%s.svc.cluster.local" (include "devnet.chain.name" $chain.name) $.Release.Namespace }}
+{{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.hostname $.Release.Namespace }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: registry-{{- include "devnet.chain.name" $chain.name }}
+  name: registry-{{ $chain.hostname }}
 data:
   assetlist.json: |-
     {

@@ -71,5 +71,3 @@ sed -i -e "s#timeout_commit = \".*\"#timeout_commit = \"$TIMEOUT_COMMIT\"#g" $CH
 if [ "$METRICS" == "true" ]; then
   sed -i -e "s/prometheus = false/prometheus = true/g" $CHAIN_DIR/config/config.toml
 fi
-
-$CHAIN_BIN tendermint show-node-id
