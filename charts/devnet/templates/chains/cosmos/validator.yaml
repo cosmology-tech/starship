@@ -3,27 +3,17 @@
 {{- if gt $chain.numValidators 1.0 }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-# merge defaultChain values into the $chain dict
-{{ $chain = merge $chain $defaultChain }}
 
-{{- $upgrade := $chain.upgrade | default (dict "enabled" false) }}
-{{- $build := .build | default (dict "enabled" false) -}}
-{{- $toBuild := or $build.enabled $upgrade.enabled }}
-
-{{ $image := $chain.image }}
-{{- if $toBuild }}
-{{ $image = "ghcr.io/cosmology-tech/starship/runner:latest" }}
-{{- end }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
 {{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-validator
+  name: {{ $chain.hostname }}-validator
 spec:
-  serviceName: {{ include "devnet.chain.name" $chain.name }}-validator
+  serviceName: {{ $chain.hostname }}-validator
   podManagementPolicy: Parallel
   replicas: {{ sub $chain.numValidators 1 }}
   revisionHistoryLimit: 3
@@ -46,7 +36,7 @@ spec:
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
       initContainers:
-        {{- if $toBuild }}
+        {{- if $chain.toBuild }}
         - name: init-build-images
           image: ghcr.io/cosmology-tech/starship/builder:latest
           imagePullPolicy: IfNotPresent
@@ -58,12 +48,12 @@ spec:
               go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
 
               # Build genesis
-              {{- if $upgrade.enabled  }}
+              {{- if $chain.upgrade.enabled  }}
               UPGRADE_NAME=genesis CODE_TAG={{ $chain.upgrade.genesis }} bash -e /scripts/build-chain.sh
               {{- range $upgrade := $chain.upgrade.upgrades }}
               UPGRADE_NAME={{ $upgrade.name }} CODE_TAG={{ $upgrade.version }} bash -e /scripts/build-chain.sh
               {{- end }}
-              {{- else if $build.enabled }}
+              {{- else if $chain.build.enabled }}
               UPGRADE_NAME=genesis CODE_TAG={{ $chain.build.source }} bash -e /scripts/build-chain.sh
               {{- end }}
           env:
@@ -87,7 +77,7 @@ spec:
         {{- end }}
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-validator
-          image: {{ $image }}
+          image: {{ $chain.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
@@ -96,13 +86,17 @@ spec:
             {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: FAUCET_ENABLED
+              value: "{{ $chain.faucet.enabled }}"
+            - name: METRICS
+              value: "{{ $chain.metrics }}"
           command:
             - bash
             - "-c"
             - |
               VAL_INDEX=${HOSTNAME##*-}
               echo "Validator Index: $VAL_INDEX"
-              {{- if $toBuild }}
+              {{- if $chain.toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               {{- end }}
 
@@ -111,34 +105,56 @@ spec:
                 exit 0
               fi
 
-              RECOVER=true
-              VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" $KEYS_CONFIG)
-              [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX" && RECOVER=false
+              VAL_NAME=$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX
               echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-              if [[ $RECOVER == "true" ]]; then
-                echo "Recover validator $VAL_NAME"
-                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID --recover
-                jq -r ".validators[$VAL_INDEX].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --recover --keyring-backend="test"
-              else
-                echo "Create validator $VAL_NAME"
-                $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
-                $CHAIN_BIN keys add $VAL_NAME --keyring-backend="test"
-              fi
+              echo "Recover validator $VAL_NAME"
+              $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
+              jq -r ".validators[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --index $VAL_INDEX --recover --keyring-backend="test"
 
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        - name: init-config
+          image: {{ $chain.image }}
+          imagePullPolicy: Always
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            {{- include "devnet.timeoutVars" $.Values | indent 12 }}
+            {{- include "devnet.genesisVars" $dataExposer | indent 12 }}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+            - name: METRICS
+              value: "{{ $chain.metrics }}"
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
+              {{- if $chain.toBuild }}
+              cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+              {{- end }}
 
-              echo "Setup config files"
+              echo "Running setup config script..."
               bash -e /scripts/update-config.sh
-
+              
               curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id
               NODE_ID=$(curl -s http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id | jq -r ".node_id")
               if [[ $NODE_ID == "" ]]; then
                 echo "Node ID is null, exiting early"
                 exit 1
               fi
+              
               GENESIS_NODE_P2P=$NODE_ID@$GENESIS_HOST.$NAMESPACE.svc.cluster.local:26656
               echo "Node P2P: $GENESIS_NODE_P2P"
               sed -i "s/persistent_peers = \"\"/persistent_peers = \"$GENESIS_NODE_P2P\"/g" $CHAIN_DIR/config/config.toml
@@ -155,18 +171,20 @@ spec:
               name: scripts
       containers:
         - name: validator
-          image: {{ $image }}
+          image: {{ $chain.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
           command:
             - bash
             - "-c"
             - |
               # Starting the chain
-              {{- if $toBuild }}
+              {{- if $chain.toBuild }}
               cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
               /usr/bin/cosmovisor start
               {{- else }}
@@ -181,13 +199,16 @@ spec:
                   - "-e"
                   - |
                     VAL_INDEX=${HOSTNAME##*-}
-                    VAL_NAME=$(jq -r ".validators[$VAL_INDEX].name" /configs/keys.json)
-                    [[ $VAL_NAME == "null" ]] && VAL_NAME="validator-$VAL_INDEX"
+                    VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
 
                     VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
                     echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
-                    bash -e /scripts/transfer-tokens.sh $VAL_ADDR $DENOM http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit || true
+                    bash -e /scripts/transfer-tokens.sh \
+                      $VAL_ADDR \
+                      $DENOM \
+                      http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:8000/credit \
+                      "{{ $chain.faucet.enabled }}" || true
 
                     $CHAIN_BIN keys list --keyring-backend test | jq
 
@@ -236,7 +257,7 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+            name: setup-scripts-{{ $chain.hostname }}
 ---
 {{- end }}
 {{- end }}

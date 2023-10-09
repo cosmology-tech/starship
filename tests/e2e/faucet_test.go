@@ -118,9 +118,8 @@ func (s *TestSuite) TestFaucet_Credit() {
 			}
 
 			// fetch denom and address from an account on chain
-			accounts := s.getChainAccounts(chain)
 			denom := s.getChainDenoms(chain)
-			addr := accounts[len(accounts)-1]
+			addr := getAddressFromType(chain.Type)
 			beforeBalance := s.getAccountBalance(chain, addr, denom)
 
 			body := map[string]string{
@@ -136,9 +135,9 @@ func (s *TestSuite) TestFaucet_Credit() {
 			s.Require().NoError(err)
 			s.Require().Equal(200, resp.StatusCode)
 
-			time.Sleep(2 * time.Second)
+			time.Sleep(4 * time.Second)
 			afterBalance := s.getAccountBalance(chain, addr, denom)
-
+			s.T().Log("address:", addr, "after balance: ", afterBalance, "before balance:", beforeBalance)
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
 			// hence checking for difference is atleast expected value
 			s.Require().GreaterOrEqual(afterBalance-beforeBalance, expCreditedAmt)
