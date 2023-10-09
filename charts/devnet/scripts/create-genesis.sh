@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eux
+
 DENOM="${DENOM:=uosmo}"
 COINS="${COINS:=100000000000000000uosmo}"
 CHAIN_ID="${CHAIN_ID:=osmosis}"
@@ -7,7 +9,8 @@ CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 
-set -eux
+FAUCET_ENABLED="${FAUCET_ENABLED:=true}"
+NUM_VALIDATORS="${NUM_VALIDATORS:=1}"
 
 # Args and vars specific to chains
 ARGS_ADD_GENESIS_ACCOUNT=""
@@ -26,11 +29,22 @@ echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test" $ARGS_ADD_GENESIS_ACCOUNT
 
-# todo: adding relayer key is a temporary fix for not having faucet
-# Add relayer key to the keyring and self delegate initial coins
-echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
-jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test" $ARGS_ADD_GENESIS_ACCOUNT
+## if facuet not enabled then add validator and relayer with index as keys and into gentx
+if [[ $FAUCET_ENABLED == "false" && $NUM_VALIDATORS -gt "1" ]];
+then
+  ## Add validators key and delegate tokens
+  for i in $(seq 0 $NUM_VALIDATORS);
+  do
+    VAL_KEY_NAME="$(jq -r '.validators[0].name' $KEYS_CONFIG)-$i"
+    echo "Adding validator key.... $VAL_KEY_NAME"
+    jq -r ".validators[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_KEY_NAME --index $i --recover --keyring-backend="test"
+    $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $VAL_KEY_NAME --keyring-backend="test") $COINS --keyring-backend="test" $ARGS_ADD_GENESIS_ACCOUNT
+  done
+  ## Add relayer key and delegate tokens
+  echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
+  jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+  $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test" $ARGS_ADD_GENESIS_ACCOUNT
+fi
 
 echo "Creating gentx..."
 COIN=$(echo $COINS | cut -d ',' -f1)

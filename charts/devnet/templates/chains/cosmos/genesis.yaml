@@ -81,6 +81,10 @@ spec:
             {{- include "devnet.timeoutVars" $.Values | indent 12 }}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: FAUCET_ENABLED
+              value: "{{ $chain.faucet.enabled }}"
+            - name: NUM_VALIDATORS
+              value: "{{ $chain.numValidators }}"
           command:
             - bash
             - "-c"
@@ -169,6 +173,8 @@ spec:
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
+            - name: FAUCET_ENABLED
+              value: "{{ $chain.faucet.enabled }}"
           command:
             - bash
             - "-c"
