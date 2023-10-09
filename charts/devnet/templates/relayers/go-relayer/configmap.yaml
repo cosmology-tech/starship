@@ -20,13 +20,9 @@ data:
         "channel-list": []
       }
     }
-
-  {{- range $i, $chain := $relayer.chains }}
-  {{- range $fullchain := $.Values.chains }}
-  {{- if eq $fullchain.name $chain }}
   {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-  {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
-  {{ $fullchain = merge $fullchain $defaultChain }}
+  {{- range $i, $chain := $relayer.chains }}
+  {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
   {{ $fullchain.name }}.json: |-
     {
       "type": "cosmos",
@@ -45,8 +41,6 @@ data:
         "sign-mode": "direct"
       }
     }
-  {{- end }}
-  {{- end }}
   {{- end }}
 ---
 {{- end }}

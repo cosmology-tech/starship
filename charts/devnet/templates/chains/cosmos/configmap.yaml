@@ -1,21 +1,14 @@
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultScripts := $defaultFile.defaultScripts }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-
-# merge defaultChain values into the $chain dict
-{{ $chain = merge $chain $defaultChain }}
-
-{{ $scripts := get $chain "scripts" | default dict }}
-{{ $scripts = merge $scripts $defaultScripts }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
 data:
-  {{- range $k, $v := $scripts }}
+  {{- range $k, $v := $chain.scripts }}
   {{- if hasKey $v "data" }}
   {{ $v.name }}: |-
     {{- $v.data | nindent 4 }}
@@ -25,23 +18,12 @@ data:
   {{- end }}
   {{- end }}
 ---
-{{- end }}
-{{- end }}
----
-{{- range $chain := .Values.chains }}
-{{- if ne $chain.type "virtual" }}
-{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultScripts := $defaultFile.defaultScripts }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
-
-# merge defaultChain values into the $chain dict
-{{ $chain = merge $chain $defaultChain }}
 {{- if hasKey $chain "genesis" }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: patch-{{- include "devnet.chain.name" $chain.name }}
+  name: patch-{{ $chain.hostname }}
 data:
   genesis.json: |-
     {{ toJson $chain.genesis | nindent 4 }}
