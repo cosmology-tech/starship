@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  # debug branch
-  pull_request:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
