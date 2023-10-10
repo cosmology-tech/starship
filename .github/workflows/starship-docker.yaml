@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - anmol/bug-starship-docker
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
