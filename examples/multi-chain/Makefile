@@ -1,19 +1,16 @@
-NAME = starship-multichain
-FILE = config.yaml
+NAME = multi-chain
+FILE = configs/starship.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.36
+HELM_VERSION = v0.1.46
 
 ###############################################################################
 ###                              All commands                               ###
 ###############################################################################
 
 .PHONY: setup
-setup: check setup-helm
-
-.PHONY: start
-start: install port-forward
+setup: setup-deps setup-helm setup-kind
 
 .PHONY: stop
 stop: stop-forward delete
@@ -22,22 +19,22 @@ stop: stop-forward delete
 clean: stop clean-kind
 
 ###############################################################################
+###                          Dependency check                               ###
+###############################################################################
+
+.PHONY: check
+setup-deps:
+	bash $(CURDIR)/scripts/dev-setup.sh
+
+###############################################################################
 ###                              Helm Charts                                ###
 ###############################################################################
 
-setup-helm:
-	helm repo add $(HELM_REPO) https://cosmology-tech.github.io/starship/
-	helm repo update
-	helm search repo $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
-
 install:
-	helm install -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION) --wait --timeout 20m
+	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION)
 
-upgrade:
-	helm upgrade --debug $(NAME) $(HELM_REPO)/$(HELM_CHART) -f $(FILE) --version $(HELM_VERSION)
-
-debug:
-	helm install --dry-run --debug -f $(FILE) $(NAME) $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
+install-base:
+	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION) --chart $(CURDIR)/../../charts/devnet
 
 delete:
 	-helm delete $(NAME)
@@ -48,19 +45,11 @@ delete:
 
 .PHONY: port-forward
 port-forward:
-	bash $(CURDIR)/../../scripts/port-forward.sh --config=$(FILE)
+	bash $(CURDIR)/scripts/port-forward.sh --config=$(FILE)
 
 .PHONY: stop-forward
 stop-forward:
 	-pkill -f "port-forward"
-
-###############################################################################
-###                          Dependency check                               ###
-###############################################################################
-
-.PHONY: check
-check:
-	bash $(CURDIR)/../../scripts/dev-setup.sh
 
 ###############################################################################
 ###                          Local Kind Setup                               ###
