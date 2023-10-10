@@ -3,7 +3,7 @@ chains:
     type: neutron
     numValidators: 1
     faucet:
-      type: starship
+      type: cosmjs
     ports:
       rest: 1313
       rpc: 26653
@@ -11,11 +11,11 @@ chains:
       faucet: 8003
     scripts:
       createGenesis:
-        file: scripts/create-genesis.sh
-      updateGenesis:
-        file: scripts/update-genesis.sh
-      createValidator:
-        file: scripts/create-validator.sh
+        file: scripts/create-neutron-genesis.sh
+#      updateGenesis:
+#        file: scripts/update-genesis.sh
+#      createValidator:
+#        file: scripts/create-validator.sh
   - name: cosmoshub-4
     type: cosmos
     numValidators: 1
