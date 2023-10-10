@@ -13,11 +13,6 @@ chains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/terra-money/core
-    # scripts:
-    #   createGenesis:
-    #     file: scripts/terra-custom-genesis.sh
-      # updateConfig:
-      #   file: scripts/update-custom-config.sh
     ports:
       rest: 1317
       rpc: 26657
