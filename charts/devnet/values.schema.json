@@ -455,6 +455,15 @@
             },
             "additionalProperties": false
           },
+          "ics": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
           "resources": { "$ref":  "#/$def/resources" }
         },
         "additionalProperties": false,

@@ -3,7 +3,9 @@ chains:
     type: neutron
     numValidators: 1
     faucet:
-      type: cosmjs
+      enabled: false
+    ics:
+      enabled: true
     ports:
       rest: 1313
       rpc: 26653
