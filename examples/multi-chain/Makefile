@@ -3,7 +3,7 @@ FILE = configs/starship.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.46
+HELM_VERSION = v0.1.47-rc0
 
 ###############################################################################
 ###                              All commands                               ###
@@ -30,9 +30,12 @@ setup-deps:
 ###                              Helm Charts                                ###
 ###############################################################################
 
+# run command with `$ make install FILE=configs/osmo-juno-cosmos.yaml`
+.PHONY: install
 install:
 	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION)
 
+.PHONY: install-base
 install-base:
 	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION) --chart $(CURDIR)/../../charts/devnet
 
@@ -43,6 +46,7 @@ delete:
 ###                                 Port forward                            ###
 ###############################################################################
 
+# run command with `$ make port-forward FILE=configs/osmo-juno-cosmos.yaml`
 .PHONY: port-forward
 port-forward:
 	bash $(CURDIR)/scripts/port-forward.sh --config=$(FILE)
