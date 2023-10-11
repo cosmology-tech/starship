@@ -1,5 +1,7 @@
 base: informalsystems/hermes
 versions:
+  - bef2f53
+  - master
   - 1.6.0
   - 1.5.1
   - 1.5.0

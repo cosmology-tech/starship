@@ -166,6 +166,9 @@ chains:
       memory: "600M"
 ```
 
+By default, we enable cosmjs faucet. Incase `faucet.enabled` is set to `false`, then we manually add
+validator and relayer keys at gentx on genesis. This will take longer during initialization.
+
 > Note `concurrency` in `faucet` is the number of concurrent requests the faucet can handle.
 If you are running a chain with less resources, or want faster startup time,
 then you can reduce the `concurrency` to a lower number.
