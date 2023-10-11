@@ -1,9 +1,9 @@
 name: Smoke tests
 
 on:
-  # Run every 6 hours
+  # Run every day at 20:00 UTC
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 20 * * *'
   workflow_dispatch: {}
 
 concurrency:
