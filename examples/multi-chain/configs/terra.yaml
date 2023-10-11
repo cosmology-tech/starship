@@ -1,0 +1,26 @@
+chains:
+  - name: terra-1
+    type: custom
+    numValidators: 2
+    image: ghcr.io/cfkelly18/starship-terra:latest
+    home: /root/.terra
+    binary: terrad
+    prefix: terra
+    denom: uluna
+    faucet:
+      enabled: false
+    coins: 100000000000000uluna,100000000000000uusd
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/terra-money/core
+    ports:
+      rest: 1317
+      rpc: 26657
+      grpc: 9093
+
+
+explorer:
+  enabled: true
+
+registry:
+  enabled: true
