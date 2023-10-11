@@ -1,12 +1,13 @@
 name: Lint and Test Charts
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types: [ opened, reopened, synchronize, ready_for_review ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-lint
@@ -14,6 +15,7 @@ concurrency:
 
 jobs:
   lint-test:
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
