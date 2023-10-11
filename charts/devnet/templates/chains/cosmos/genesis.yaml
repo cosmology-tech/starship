@@ -103,6 +103,10 @@ spec:
               echo "Running setup genesis script..."
               bash -e /scripts/create-genesis.sh
               bash -e /scripts/update-genesis.sh
+
+              echo "Create node id json file"
+              NODE_ID=$($CHAIN_BIN tendermint show-node-id)
+              echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
@@ -209,6 +213,8 @@ spec:
               value: {{ $chain.home }}/config/priv_validator_key.json
             - name: EXPOSER_NODE_KEY_FILE
               value: {{ $chain.home }}/config/node_key.json
+            - name: EXPOSER_NODE_ID_FILE
+              value: {{ $chain.home }}/config/node_id.json
             - name: EXPOSER_PRIV_VAL_STATE_FILE
               value: {{ $chain.home }}/data/priv_validator_state.json
           command: [ "exposer" ]
