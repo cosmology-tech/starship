@@ -1,5 +1,4 @@
 BINARY_NAME = exposer
-BINARY_DIR = $(CURDIR)/../bin
 
 DOCKER := $(shell which docker)
 # DOCKER_REPO_NAME is the local docker repo used, can be set to individual dockerhub username

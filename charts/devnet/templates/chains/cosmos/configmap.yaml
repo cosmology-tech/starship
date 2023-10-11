@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+  name: setup-scripts-{{ $chain.hostname }}
 data:
   {{- range $k, $v := $chain.scripts }}
   {{- if hasKey $v "data" }}
@@ -49,5 +49,5 @@ metadata:
   name: setup-scripts
 data:
   transfer-tokens.sh: |-
-    {{- $.Files.Get "scripts/transfer-tokens.sh" | nindent 4 }}
+    {{- $.Files.Get "scripts/default/transfer-tokens.sh" | nindent 4 }}
 ---

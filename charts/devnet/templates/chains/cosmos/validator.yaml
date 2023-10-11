@@ -115,6 +115,10 @@ spec:
               curl http://$GENESIS_HOST.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/genesis -o $CHAIN_DIR/config/genesis.json
               echo "Genesis file that we got....."
               cat $CHAIN_DIR/config/genesis.json
+
+              echo "Create node id json file"
+              NODE_ID=$($CHAIN_BIN tendermint show-node-id)
+              echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}

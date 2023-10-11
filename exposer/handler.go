@@ -46,12 +46,18 @@ func (a *AppServer) readJSONFile(filePath string) ([]byte, error) {
 }
 
 func (a *AppServer) GetNodeID(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseNodeID, error) {
-	status, err := fetchNodeStatus(a.config.StatusURL)
+	jsonFile, err := os.Open(a.config.NodeIDFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.Id}, nil
+	data := &pb.ResponseNodeID{}
+	err = jsonpb.Unmarshal(jsonFile, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.ResponsePubKey, error) {
