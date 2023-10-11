@@ -187,6 +187,13 @@ defaultChains:
     repo: https://github.com/InjectiveLabs/injective-chain-releases
     faucet:
       type: starship
+    scripts:
+      createGenesis:
+        file: scripts/injective/create-genesis.sh
+      updateGenesis:
+        file: scripts/injective/update-genesis.sh
+      createValidator:
+        file: scripts/injective/create-validator.sh
     assets:
       - base: inj
         description: The INJ token is the native governance token for the Injective chain.
@@ -701,22 +708,22 @@ defaultRelayers:
 defaultScripts:
   createGenesis:
     name: create-genesis.sh
-    file: scripts/create-genesis.sh
+    file: scripts/default/create-genesis.sh
   updateGenesis:
     name: update-genesis.sh
-    file: scripts/update-genesis.sh
+    file: scripts/default/update-genesis.sh
   updateConfig:
     name: update-config.sh
-    file: scripts/update-config.sh
+    file: scripts/default/update-config.sh
   createValidator:
     name: create-validator.sh
-    file: scripts/create-validator.sh
+    file: scripts/default/create-validator.sh
   transferTokens:
     name: transfer-tokens.sh
-    file: scripts/transfer-tokens.sh
+    file: scripts/default/transfer-tokens.sh
   buildChain:
     name: build-chain.sh
-    file: scripts/build-chain.sh
+    file: scripts/default/build-chain.sh
 
 defaultFaucet:
   cosmjs:

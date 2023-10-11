@@ -24,6 +24,8 @@ type Config struct {
 	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
 	// GRPCPort is the port for the grpc server
 	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
+	// NodeIDFile is full path to the nod-id file
+	NodeIDFile string `name:"node-id-file" json:"node_id_file" env:"NODE_ID_FILE" usage:"Path of node-id json file"`
 	// GenesisFile is full path to the genesis file
 	GenesisFile string `name:"genesis-file" json:"genesis_file" env:"GENESIS_FILE" usage:"Path of genesis file"`
 	// MnemonicFile is full path to the keys file
