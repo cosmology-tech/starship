@@ -7,7 +7,7 @@ DOCKER_REPO_NAME := starship
 DOCKER_IMAGE := exposer
 DOCKER_TAG_NAME := $(shell date '+%Y%m%d')-$(shell git rev-parse --short HEAD)
 
-all: build run
+all: build run-local
 
 .PHONY: build
 build:
