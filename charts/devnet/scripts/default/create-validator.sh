@@ -4,12 +4,13 @@ DENOM="${DENOM:=uosmo}"
 CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 VAL_NAME="${VAL_NAME:=osmosis}"
+NODE_URL="${NODE_URL:=http://0.0.0.0:26657}"
 
 set -eux
 
 # Wait for the node to be synced
 max_tries=10
-while [[ $($CHAIN_BIN status 2>&1 | jq ".SyncInfo.catching_up") == true ]]
+while [[ $($CHAIN_BIN status --node $NODE_URL 2>&1 | jq ".SyncInfo.catching_up") == true ]]
 do
   if [[ max_tries -lt 0 ]]; then echo "Not able to sync with genesis node"; exit 1; fi
   echo "Still syncing... Sleeping for 15 secs. Tries left $max_tries"
@@ -51,6 +52,7 @@ function cosmos-sdk-version-v50() {
   # Run create validator tx command
   echo "Running txn for create-validator"
   $CHAIN_BIN tx staking create-validator /validator.json \
+    --node $NODE_URL \
     --chain-id $CHAIN_ID \
     --from $VAL_NAME \
     --fees 100000$DENOM \
@@ -65,6 +67,7 @@ function cosmos-sdk-version-default() {
   # Run create validator tx command
   echo "Running txn for create-validator"
   $CHAIN_BIN tx staking create-validator \
+    --node $NODE_URL \
     --pubkey=$($CHAIN_BIN tendermint show-validator) \
     --moniker $VAL_NAME \
     --amount 5000000000$DENOM \

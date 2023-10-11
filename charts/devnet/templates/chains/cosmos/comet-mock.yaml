@@ -3,24 +3,15 @@
 {{- if ($chain.cometMock.enabled) }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultChain := get $defaultFile.defaultChains $chain.type | default dict }}
 
-# merge defaultChain values into the $chain dict
-{{ $chain = merge $chain $defaultChain }}
-
-# read faucet from chain values and merge with default faucet values
-{{ $faucet := get $chain "faucet" | default dict }}
-{{ $faucet = mergeOverwrite ($.Values.faucet | deepCopy) $faucet }}
-
-{{ $defaultFaucet := get $defaultFile.defaultFaucet $faucet.type | default dict }}
-{{ $faucet = merge $faucet $defaultFaucet }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
 {{ $image := $chain.cometMock.image | default $defaultFile.defaultCometMock.image }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+  name: {{ $chain.hostname }}-comet-mock
   labels:
     app.kubernetes.io/name: {{ $chain.name }}-comet-mock
 spec:
@@ -36,9 +27,9 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+  name: {{ $chain.hostname }}-comet-mock
 spec:
-  serviceName: {{ include "devnet.chain.name" $chain.name }}-comet-mock
+  serviceName: {{ $chain.hostname }}-comet-mock
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -87,8 +78,8 @@ spec:
               for i in $(seq 0 {{ sub $chain.numValidators 2 }});
               do
                 mkdir -p /chain/validator-$i/config /chain/validator-$i/data
-                curl http://{{ include "devnet.chain.name" .chain }}-validator-$i.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys -o /chain/validator-$i/config/priv_validator_key.json
-                curl http://{{ include "devnet.chain.name" .chain }}-validator-$i.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_validator_state -o /chain/validator-$i/data/priv_validator_state.json
+                curl http://{{ $chain.hostname }}-validator-$i.{{ $chain.hostname }}-validator.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys -o /chain/validator-$i/config/priv_validator_key.json
+                curl http://{{ $chain.hostname }}-validator-$i.{{ $chain.hostname }}-validator.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_validator_state -o /chain/validator-$i/data/priv_validator_state.json
               done
               {{- end }}
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
@@ -109,13 +100,13 @@ spec:
             - bash
             - "-c"
             - |
-              NODE_LISTEN_ADDR_STR="tcp://{{ include "devnet.chain.name" $chain.name }}-genesis.$NAMESPACE.svc.cluster.local:26658"
+              NODE_LISTEN_ADDR_STR="tcp://{{ $chain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:26658"
               NODE_HOME_STR="/chain/genesis"
 
               {{- if gt $chain.numValidators 1.0}}
               for i in $(seq 0 {{ sub $chain.numValidators 2 }});
               do
-                NODE_LISTEN_ADDR_STR="http://{{ include "devnet.chain.name" $chain.name }}-validator-$i.$NAMESPACE.svc.cluster.local:26658,$NODE_LISTEN_ADDR_STR"
+                NODE_LISTEN_ADDR_STR="tcp://{{ $chain.hostname }}-validator-$i.{{ $chain.hostname }}-validator.$NAMESPACE.svc.cluster.local:26658,$NODE_LISTEN_ADDR_STR"
                 NODE_HOME_STR="/chain/validator-$i,$NODE_HOME_STR"
               done
               {{- end }}
@@ -131,7 +122,7 @@ spec:
           emptyDir: { }
         - name: scripts
           configMap:
-            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+            name: setup-scripts-{{ $chain.hostname }}
 ---
 {{- end }}
 {{- end }}

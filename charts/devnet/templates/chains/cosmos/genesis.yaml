@@ -183,14 +183,15 @@ spec:
             - bash
             - "-c"
             - |
-              {{- if $chain.toBuild }}
-              /usr/bin/cosmovisor start
-              {{- else }}
+              START_ARGS=""
               {{- if ($chain.cometMock.enabled) }}
-              $CHAIN_BIN start --grpc-web.enable=false --transport=grpc --with-tendermint=false --address tcp://0.0.0.0:26658
-              {{- else }}
-              $CHAIN_BIN start
+              START_ARGS="--grpc-web.enable=false --transport=grpc --with-tendermint=false --address tcp://0.0.0.0:26658"
               {{- end }}
+
+              {{- if $chain.toBuild }}
+              /usr/bin/cosmovisor start $START_ARGS
+              {{- else }}
+              $CHAIN_BIN start $START_ARGS
               {{- end }}
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
