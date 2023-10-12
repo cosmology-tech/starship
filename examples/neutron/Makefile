@@ -3,7 +3,7 @@ FILE = configs/local.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.46
+HELM_VERSION = v0.1.47-rc0
 
 ###############################################################################
 ###                              Helm Charts                                ###

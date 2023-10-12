@@ -2,6 +2,10 @@ chains:
   - name: neutron-1
     type: neutron
     numValidators: 1
+    faucet:
+      enabled: false
+    ics:
+      enabled: true
     ports:
       rest: 1313
       rpc: 26653
@@ -31,4 +35,4 @@ registry:
     grpc: 9091
 
 exposer:
-  image: anmol1696/exposer:20231006-76a1b8a
+  image: anmol1696/exposer:20231011-1f81895
