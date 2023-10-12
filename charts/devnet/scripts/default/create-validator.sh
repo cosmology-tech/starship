@@ -5,12 +5,14 @@ CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 VAL_NAME="${VAL_NAME:=osmosis}"
 NODE_URL="${NODE_URL:=http://0.0.0.0:26657}"
+NODE_ARGS="${NODE_ARGS}"
+GAS="${GAS:=auto}"
 
 set -eux
 
 # Wait for the node to be synced
 max_tries=10
-while [[ $($CHAIN_BIN status --node $NODE_URL 2>&1 | jq ".SyncInfo.catching_up") == true ]]
+while [[ $($CHAIN_BIN status --output json --node $NODE_URL 2>&1 | jq ".SyncInfo.catching_up") == true ]]
 do
   if [[ max_tries -lt 0 ]]; then echo "Not able to sync with genesis node"; exit 1; fi
   echo "Still syncing... Sleeping for 15 secs. Tries left $max_tries"
@@ -38,7 +40,7 @@ is_greater() {
 function cosmos-sdk-version-v50() {
   # Content for the validator.json file
   json_content='{
-    "pubkey": '$($CHAIN_BIN tendermint show-validator)',
+    "pubkey": '$($CHAIN_BIN tendermint show-validator $NODE_ARGS)',
     "amount": "5000000000'$DENOM'",
     "moniker": "'$VAL_NAME'",
     "commission-rate": "0.1",
@@ -57,8 +59,9 @@ function cosmos-sdk-version-v50() {
     --from $VAL_NAME \
     --fees 100000$DENOM \
     --keyring-backend="test" \
-    --gas="auto" \
-    --gas-adjustment 1.5 --yes > /validator.log
+    --output json \
+    --gas $GAS \
+    --gas-adjustment 1.5 $NODE_ARGS --yes > /validator.log
 
   cat /validator.log | jq
 }
@@ -68,7 +71,7 @@ function cosmos-sdk-version-default() {
   echo "Running txn for create-validator"
   $CHAIN_BIN tx staking create-validator \
     --node $NODE_URL \
-    --pubkey=$($CHAIN_BIN tendermint show-validator) \
+    --pubkey=$($CHAIN_BIN tendermint show-validator $NODE_ARGS) \
     --moniker $VAL_NAME \
     --amount 5000000000$DENOM \
     --chain-id $CHAIN_ID \
@@ -79,8 +82,9 @@ function cosmos-sdk-version-default() {
     --min-self-delegation="1000000" \
     --keyring-backend="test" \
     --fees 100000$DENOM \
-    --gas="auto" \
-    --gas-adjustment 1.5 --yes > /validator.log
+    --gas $GAS \
+    --output json \
+    --gas-adjustment 1.5 $NODE_ARGS --yes > /validator.log
 
   cat /validator.log | jq
 }

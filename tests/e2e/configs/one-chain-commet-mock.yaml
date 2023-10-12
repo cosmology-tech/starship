@@ -14,6 +14,7 @@ chains:
       enabled: false
     cometMock:
       enabled: true
+      image: ghcr.io/informalsystems/cometmock:v0.34.x
     genesis:
       app_state:
         staking:
@@ -24,6 +25,11 @@ chains:
             pool_creation_fee:
               - amount: "500000"
                 denom: uosmo
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
 
 registry:
   enabled: true

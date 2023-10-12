@@ -200,6 +200,7 @@ spec:
               {{- else }}
               $CHAIN_BIN start $START_ARGS
               {{- end }}
+          {{- if not ($chain.cometMock.enabled) }}
           lifecycle:
             postStart:
               exec:
@@ -213,11 +214,6 @@ spec:
                     VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
 
-                    {{/*if cometmock enabled, then wait for cometmock node to comeup */}}
-                    {{- if ($chain.cometMock.enabled) }}
-                    export NODE_URL="http://{{ $chain.hostname }}-comet-mock.$NAMESPACE.svc.cluster.local:22331/status"
-                    {{- end }}
-
                     VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
                     echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
                     bash -e /scripts/transfer-tokens.sh \
@@ -227,12 +223,8 @@ spec:
                       "{{ $chain.faucet.enabled }}" || true
 
                     $CHAIN_BIN keys list --keyring-backend test | jq
-
-                    {{- if ($chain.cometMock.enabled) }}
-                    echo "not running create-validator script"
-                    {{- else }}
                     VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
-                    {{- end }}
+          {{- end }}
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}

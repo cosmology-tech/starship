@@ -85,6 +85,10 @@ spec:
               value: "{{ $chain.faucet.enabled }}"
             - name: NUM_VALIDATORS
               value: "{{ $chain.numValidators }}"
+            {{- if ($chain.cometMock.enabled) }}
+            - name: VALIDATOR_GENTX_ENABLED
+              value: "true"
+            {{- end }}
           command:
             - bash
             - "-c"
