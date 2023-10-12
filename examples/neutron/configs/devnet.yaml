@@ -1,0 +1,39 @@
+chains:
+  - name: neutron-1
+    type: neutron
+    numValidators: 1
+    faucet:
+      type: starship
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+      faucet: 8003
+  - name: cosmoshub-4
+    type: cosmos
+    numValidators: 4
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+      faucet: 8007
+
+relayers:
+  - name: neutron-cosmos
+    type: hermes
+    replicas: 1
+    chains:
+      - neutron-1
+      - cosmoshub-4
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
+
