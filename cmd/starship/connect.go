@@ -13,7 +13,7 @@ import (
 // File responsible for having functions that will perform kubectl port-froward.
 // for the first pass, we will just run a exec commond that runns the kubectl cmd in the
 // background. We will also need to provide a function to kill this process as well
-
+var defaultCometmockPort = 22331
 var defaultPorts = map[string]map[string]int{
 	"chain": {
 		"rest":    1317,
@@ -59,8 +59,14 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 			if port == 0 {
 				continue
 			}
+			podName := "genesis"
+			if portType == "rpc" && (chain.Cometmock != nil && chain.Cometmock.Enabled) {
+				remotePort = defaultCometmockPort
+				portType = "cometmock-rpc"
+				podName = "cometmock"
+			}
 			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", chain.GetName(), portType, port))
-			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-genesis-0", chain.GetName()), port, remotePort))
+			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-%s-0", chain.GetName(), podName), port, remotePort))
 		}
 	}
 	// port-forward explorer
