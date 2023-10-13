@@ -12,7 +12,7 @@ chains:
       memory: 500M
     faucet:
       enabled: false
-    cometMock:
+    cometmock:
       enabled: true
       image: ghcr.io/informalsystems/cometmock:v0.34.x
     genesis:
@@ -25,11 +25,6 @@ chains:
             pool_creation_fee:
               - amount: "500000"
                 denom: uosmo
-
-explorer:
-  enabled: true
-  ports:
-    rest: 8080
 
 registry:
   enabled: true
@@ -47,4 +42,3 @@ resources:
 
 exposer:
   image: anmol1696/exposer:20231011-1f81895
-

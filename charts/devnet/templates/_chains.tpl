@@ -31,6 +31,13 @@ Usage:
 {{ $_ = set $chain "upgrade" (dict "enabled" false) }}
 {{- end }}
 
+{{- $cometmock := get $chain "cometmock" | default (dict "enabled" false) -}}
+{{- if $cometmock.enabled }}
+{{- $defaultCometmock := get $defaultFile "defaultCometmock" | default dict -}}
+{{- $cometmock = merge $cometmock $defaultCometmock -}}
+{{- end }}
+{{ $_ = set $chain "cometmock" $cometmock }}
+
 {{- if not (hasKey $chain "build")}}
 {{ $_ = set $chain "build" (dict "enabled" false) }}
 {{- end }}

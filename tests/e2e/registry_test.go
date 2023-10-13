@@ -27,6 +27,9 @@ func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal proto.Messa
 }
 
 func (s *TestSuite) TestRegistry_ListChainIds() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chain_ids endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chain_ids", nil)
@@ -40,6 +43,9 @@ func (s *TestSuite) TestRegistry_ListChainIds() {
 }
 
 func (s *TestSuite) TestRegistry_ListChains() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains endpoint for registry")
 
 	req, err := http.NewRequest(http.MethodGet, "/chains", nil)
@@ -60,6 +66,9 @@ func (s *TestSuite) TestRegistry_ListChains() {
 }
 
 func (s *TestSuite) TestRegistry_GetChain() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain} endpoint for registry")
 
 	for _, chain := range s.config.Chains {
@@ -89,6 +98,9 @@ func (s *TestSuite) TestRegistry_GetChain() {
 }
 
 func (s *TestSuite) TestRegistry_ListChainPeers() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain}/peers endpoint for registry")
 
 	for _, chain := range s.config.Chains {
@@ -104,6 +116,9 @@ func (s *TestSuite) TestRegistry_ListChainPeers() {
 }
 
 func (s *TestSuite) TestRegistry_ListChainApis() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain}/apis endpoint for registry")
 
 	for _, chain := range s.config.Chains {
@@ -129,6 +144,9 @@ func (s *TestSuite) TestRegistry_ListChainApis() {
 }
 
 func (s *TestSuite) TestRegistry_GetChainAssets() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain}/assets endpoint for registry")
 
 	expectedAssets := map[string]int{
@@ -155,6 +173,9 @@ func (s *TestSuite) TestRegistry_GetChainAssets() {
 }
 
 func (s *TestSuite) TestRegistry_GetChainAssets_Osmosis() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain}/assets endpoint for osmosis chain registry")
 
 	chain := s.config.GetChain("osmosis-1")
@@ -240,6 +261,9 @@ func (s *TestSuite) TestRegistry_GetChainAssets_Osmosis() {
 }
 
 func (s *TestSuite) TestRegistry_ListIBC() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /ibc endpoint for registry")
 	if len(s.config.Relayers) == 0 {
 		s.T().Skip("skip running ibc test for chains without relayers")
@@ -256,6 +280,9 @@ func (s *TestSuite) TestRegistry_ListIBC() {
 }
 
 func (s *TestSuite) TestRegistry_GetChainKeys() {
+	if s.config.Registry == nil || !s.config.Registry.Enabled {
+		s.T().Skip("registry not enabled")
+	}
 	s.T().Log("running test for /chains/{chain}/keys endpoint for registry")
 
 	for _, chain := range s.config.Chains {

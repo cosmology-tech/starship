@@ -6,7 +6,7 @@
 
 {{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
-{{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
+{{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "waitForCometmock" true "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -189,7 +189,7 @@ spec:
             - |
               set -eux
               START_ARGS=""
-              {{- if ($chain.cometMock.enabled) }}
+              {{- if ($chain.cometmock.enabled) }}
               START_ARGS="--grpc-web.enable=false --transport=grpc --with-tendermint=false --address tcp://0.0.0.0:26658"
               {{- end }}
 
@@ -200,7 +200,8 @@ spec:
               {{- else }}
               $CHAIN_BIN start $START_ARGS
               {{- end }}
-          {{- if not ($chain.cometMock.enabled) }}
+          {{/*If cometmock is enabled, then validator is initialized in hook of cometmock statefulset*/}}
+          {{- if not ($chain.cometmock.enabled) }}
           lifecycle:
             postStart:
               exec:

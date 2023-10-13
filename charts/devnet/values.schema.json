@@ -456,7 +456,7 @@
             "additionalProperties": false
           },
           "resources": { "$ref":  "#/$def/resources" },
-          "cometMock": {
+          "cometmock": {
             "type": "object",
             "properties": {
               "enabled": {

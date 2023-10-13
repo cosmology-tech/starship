@@ -65,9 +65,9 @@ for i in $(seq 0 $num_chains); do
   localexp=$(yq -r ".chains[$i].ports.exposer" ${CONFIGFILE})
   localfaucet=$(yq -r ".chains[$i].ports.faucet" ${CONFIGFILE})
   color yellow "chains: forwarded $chain"
-  if [[ $(yq -r ".chains[$i].cometMock.enabled" $CONFIGFILE) == "true" ]];
+  if [[ $(yq -r ".chains[$i].cometmock.enabled" $CONFIGFILE) == "true" ]];
   then
-    [[ "$localrpc" != "null" ]] && color yellow "    cometmock rpc to http://localhost:$localrpc" && kubectl port-forward pods/$chain-comet-mock-0 $localrpc:$CHAIN_COMETMOCK_PORT > /dev/null 2>&1 &
+    [[ "$localrpc" != "null" ]] && color yellow "    cometmock rpc to http://localhost:$localrpc" && kubectl port-forward pods/$chain-cometmock-0 $localrpc:$CHAIN_COMETMOCK_PORT > /dev/null 2>&1 &
   else
     [[ "$localrpc" != "null" ]] && color yellow "    rpc to http://localhost:$localrpc" && kubectl port-forward pods/$chain-genesis-0 $localrpc:$CHAIN_RPC_PORT > /dev/null 2>&1 &
   fi

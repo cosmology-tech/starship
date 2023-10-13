@@ -1,19 +1,18 @@
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
-{{- if ($chain.cometMock.enabled) }}
 {{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 
 {{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
-{{ $image := $chain.cometMock.image | default $defaultFile.defaultCometMock.image }}
+{{- if ($chain.cometmock.enabled) }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $chain.hostname }}-comet-mock
+  name: {{ $chain.hostname }}-cometmock
   labels:
-    app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+    app.kubernetes.io/name: {{ $chain.name }}-cometmock
 spec:
   clusterIP: None
   ports:
@@ -22,20 +21,20 @@ spec:
       protocol: TCP
       targetPort: 22331
   selector:
-    app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+    app.kubernetes.io/name: {{ $chain.name }}-cometmock
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.hostname }}-comet-mock
+  name: {{ $chain.hostname }}-cometmock
 spec:
-  serviceName: {{ $chain.hostname }}-comet-mock
+  serviceName: {{ $chain.hostname }}-cometmock
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
       app.kubernetes.io/instance: {{ $chain.type }}
-      app.kubernetes.io/name: {{ $chain.name }}-comet-mock
+      app.kubernetes.io/name: {{ $chain.name }}-cometmock
   template:
     metadata:
       annotations:
@@ -45,9 +44,9 @@ spec:
         tier: gateway
       labels:
         app.kubernetes.io/instance: {{ $chain.type }}
-        app.kubernetes.io/type: comet-mock
-        app.kubernetes.io/name: {{ $chain.name }}-comet-mock
-        app.kubernetes.io/rawname: {{ $chain.name }}-comet-mock
+        app.kubernetes.io/type: cometmock
+        app.kubernetes.io/name: {{ $chain.name }}-cometmock
+        app.kubernetes.io/rawname: {{ $chain.name }}-cometmock
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
@@ -118,7 +117,7 @@ spec:
           resources:
           {{- include "getResourceObject" $.Values.resources.wait | indent 12 }}
         - name: init-comet
-          image: {{ $image }}
+          image: {{ $chain.cometmock.image }}
           imagePullPolicy: Always
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}

@@ -85,10 +85,6 @@ spec:
               value: "{{ $chain.faucet.enabled }}"
             - name: NUM_VALIDATORS
               value: "{{ $chain.numValidators }}"
-            {{- if ($chain.cometMock.enabled) }}
-            - name: VALIDATOR_GENTX_ENABLED
-              value: "true"
-            {{- end }}
           command:
             - bash
             - "-c"
@@ -188,7 +184,7 @@ spec:
             - "-c"
             - |
               START_ARGS=""
-              {{- if ($chain.cometMock.enabled) }}
+              {{- if ($chain.cometmock.enabled) }}
               START_ARGS="--grpc-web.enable=false --transport=grpc --with-tendermint=false --address tcp://0.0.0.0:26658"
               {{- end }}
 
@@ -346,22 +342,6 @@ spec:
             periodSeconds: 10
         {{- end }}
         {{- end }}
-{{/*        {{- if and (hasKey $chain "cometMock") ($chain.cometMock.enabled) }}*/}}
-{{/*        - name: comet*/}}
-{{/*          image: {{ $chain.cometMock.image | default $defaultFile.defaultCometMock.image }}*/}}
-{{/*          imagePullPolicy: Always*/}}
-{{/*          command:*/}}
-{{/*            - bash*/}}
-{{/*            - "-c"*/}}
-{{/*            - |*/}}
-{{/*              NODE_LISTEN_ADDR_STR="tcp://0.0.0.0:26658"*/}}
-{{/*              NODE_HOME_STR="{{ $chain.home }}"*/}}
-{{/*              cometmock $NODE_LISTEN_ADDR_STR {{ $chain.home }}/config/genesis.json tcp://0.0.0.0:22331 $NODE_HOME_STR grpc --block-time={{ $.Values.timeouts.timeout_commit | replace "ms" "" }}*/}}
-{{/*          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}*/}}
-{{/*          volumeMounts:*/}}
-{{/*            - mountPath: {{ $chain.home }}*/}}
-{{/*              name: node*/}}
-{{/*        {{- end }}*/}}
       volumes:
         - name: node
           emptyDir: { }
