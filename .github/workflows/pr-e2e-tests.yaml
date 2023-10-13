@@ -31,6 +31,7 @@ jobs:
           - "multi-validator-starship-faucet.yaml"
           - "one-chain-cometmock.yaml"
           - "two-chain-cometmock.yaml"
+          - "neutron.yaml"
       fail-fast: true
       max-parallel: 1
 

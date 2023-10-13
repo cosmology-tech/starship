@@ -470,6 +470,21 @@
             "required": [
               "enabled"
             ]
+          },
+          "ics": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "image": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "enabled"
+            ]
           }
         },
         "additionalProperties": false,

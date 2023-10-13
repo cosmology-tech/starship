@@ -87,6 +87,9 @@ data:
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
+    {{- if $fullchain.ics.enabled }}
+    ccv_consumer_chain = true
+    {{- end }}
     rpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
     grpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
     {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}

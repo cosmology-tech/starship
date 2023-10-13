@@ -42,6 +42,10 @@ Usage:
 {{ $_ = set $chain "build" (dict "enabled" false) }}
 {{- end }}
 
+{{- if not (hasKey $chain "ics")}}
+{{ $_ = set $chain "ics" (dict "enabled" false) }}
+{{- end }}
+
 {{- $toBuild := or $chain.build.enabled $chain.upgrade.enabled -}}
 {{- $_ = set $chain "toBuild" $toBuild -}}
 {{- if $toBuild -}}
