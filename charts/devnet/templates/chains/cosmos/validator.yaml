@@ -6,7 +6,7 @@
 
 {{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 
-{{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "waitForCometmock" true "context" $ }}
+{{ $initParams := dict "chains" (list $chain.name) "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

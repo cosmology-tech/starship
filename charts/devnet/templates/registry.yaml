@@ -3,8 +3,7 @@
 {{- range $.Values.chains -}}
 {{ $listIDs = .name | append $listIDs }}
 {{- end }}
-{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest "context" . }}
-{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: v1
 kind: Service
@@ -102,6 +101,7 @@ spec:
             name: registry-{{- include "devnet.chain.name" $chain.name }}
         {{- end }}
 ---
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{- range $chain := .Values.chains }}
 {{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 {{ $host := "localhost" }}

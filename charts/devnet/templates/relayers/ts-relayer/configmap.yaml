@@ -23,11 +23,7 @@ data:
         # You can include multiple RPC endpoints and it will rotate through them if
         # one is down (TODO)
         rpc:
-          {{- if $fullchain.cometmock.enabled }}
-          - http://{{ $fullchain.hostname }}-cometmock.{{ $.Release.Namespace }}.svc.cluster.local:22331
-          {{- else }}
-          - http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
-          {{- end }}
+          - http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657
         # Bech32 prefix for addresses
         prefix: {{ $fullchain.prefix }}
         # This determines the gas payments we make (and defines the fee token)

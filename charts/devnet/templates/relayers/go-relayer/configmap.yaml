@@ -29,16 +29,12 @@ data:
       "value": {
         "key": "default",
         "chain-id": "{{ $fullchain.name }}",
-        {{- if $fullchain.cometmock.enabled }}
-        "rpc-addr": "http://{{ $fullchain.hostname }}-cometmock.{{ $.Release.Namespace }}.svc.cluster.local:22331",
-        {{- else}}
-        "rpc-addr": "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657",
-        {{- end }}
+        "rpc-addr": "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657",
         "account-prefix": "{{ $fullchain.prefix }}",
         "keyring-backend": "test",
-        "gas-adjustment": 20,
-        "gas-prices": "0.25{{ $fullchain.denom }}",
-        "min-gas-amount": 100000000000,
+        "gas-adjustment": 1.5,
+        "gas-prices": "0.025{{ $fullchain.denom }}",
+        "min-gas-amount": 1,
         "debug": true,
         "timeout": "20s",
         "output-format": "json",
