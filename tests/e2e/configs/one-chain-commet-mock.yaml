@@ -26,15 +26,6 @@ chains:
               - amount: "500000"
                 denom: uosmo
 
-registry:
-  enabled: true
-  ports:
-    rest: 8081
-    grpc: 9091
-  resources:
-    cpu: "0.1"
-    memory: 100M
-
 resources:
   wait:
     cpu: "0.1"
