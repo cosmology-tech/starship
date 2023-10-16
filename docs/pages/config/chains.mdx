@@ -275,3 +275,31 @@ scripts/
   create-custom-validator.sh
   transfer-custom-tokens.sh
 ```
+
+## `cometmock` (optional)
+A dedicated feature flag, that will run the chain with InformalSystem's [CometMock](https://github.com/informalsystems/CometMock)
+binary. With `cometmock` enabled we will run all validators of the chain with out of process cometbft,
+that connect with the cometmock pod.
+
+Enabling cometmock is really simple with following
+```yaml
+chains:
+- name: cosmoshub-4
+  type: cosmos
+  numValidators: 4
+  cometmock:
+    enabled: true
+    image: ghcr.io/informalsystems/cometmock:v0.37.x  ## optional, default is 0.37.x
+```
+
+By default we use the cometbft `v0.37.x` version, but this can be set to other versions from
+cometmock [releases](https://github.com/informalsystems/CometMock/pkgs/container/cometmock).
+Noteable other versions are: `v0.34.x` as well as `v0.38.x`.
+
+If `cometmock` is enabled, during port-forwarding, we forward the `ports.rpc` to the cometmock endpoint.
+For in-cluster communication, make sure to connect to the cometmock service instead of validator service for rpc connections.
+
+### Learn more
+To more about CometMock, have a look at the [blog](https://informal.systems/blog/cometmock) that explains its working
+
+> Note: Current support of cometmock has been tested with multiple chains with verion `0.34.x` and `0.37.x`.
