@@ -29,6 +29,8 @@ CHAIN_FAUCET_PORT=8000
 EXPLORER_LCD_PORT=8080
 REGISTRY_LCD_PORT=8080
 REGISTRY_GRPC_PORT=9090
+MONITORING_PROMETHEUS_PORT=8080
+MONITORING_GRAFANA_PORT=8080
 
 for i in "$@"; do
   case $i in
@@ -94,3 +96,14 @@ then
   sleep 1
   color green "Open the explorer to get started.... http://localhost:8080"
 fi
+
+if [[ $(yq -r ".monitoring.enabled" $CONFIGFILE) == "true" ]];
+then
+  color yellow "monitoring port forward:"
+  localgrafana=$(yq -r ".monitoring.ports.grafana" ${CONFIGFILE})
+  localprometheus=$(yq -r ".monitoring.ports.prometheus" ${CONFIGFILE})
+  [[ "$localgrafana" != "null" ]] && color yellow "    grafana to http://localhost:$localgrafana" && kubectl port-forward service/grafana $localgrafana:$MONITORING_GRAFANA_PORT > /dev/null 2>&1 &
+  [[ "$localprometheus" != "null" ]] && color yellow "    prometheus to http://localhost:$localprometheus" && kubectl port-forward service/prometheus-service $localprometheus:$MONITORING_PROMETHEUS_PORT > /dev/null 2>&1 &
+  sleep 1
+fi
+
