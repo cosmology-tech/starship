@@ -32,7 +32,7 @@ function port-forward() {
 
 function install() {
     color green "Install cyclops ui in namespace: $NAMESPACE"
-    kubectl apply -f https://raw.githubusercontent.com/cyclops-ui/cyclops/v0.0.1-alpha.3/install/cyclops-install.yaml --namespace $NAMESPACE
+    kubectl apply -f https://raw.githubusercontent.com/cyclops-ui/cyclops/v0.0.1-alpha.5/install/cyclops-install.yaml --namespace $NAMESPACE
     color yellow "Fetching the pods"
     kubectl get pods -n $NAMESPACE
 
