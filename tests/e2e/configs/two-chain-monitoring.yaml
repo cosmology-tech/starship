@@ -40,9 +40,6 @@ registry:
     rest: 8081
     grpc: 9091
 
-exposer:
-  image: anmol1696/exposer:20231011-1f81895
-
 monitoring:
   enabled: true
   ports:
