@@ -605,6 +605,33 @@
       "required": [
         "enabled"
       ]
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "prometheus": {
+              "type": "number"
+            },
+            "grafana": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "grafana"
+          ]
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "enabled"
+      ]
     }
   },
   "required": [

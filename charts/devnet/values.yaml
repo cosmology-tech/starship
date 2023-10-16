@@ -227,3 +227,14 @@ faucet:
   resources:
     cpu: "0.2"
     memory: "200M"
+
+# monitoring directive is used to setup prometheus and grafana dashboard,
+# connected to all chains, relayers and k8s apis itself
+monitoring:
+  enabled: false
+  ports:
+    prometheus: 8011
+    grafana: 9011
+  resources:
+    cpu: "0.2"
+    memory: "200M"
