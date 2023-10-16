@@ -81,6 +81,9 @@ func (s *TestSuite) TestChains_Status() {
 }
 
 func (s *TestSuite) TestChains_StakingParams() {
+	if s.config.Chains[0].Ports.Rest == 0 {
+		s.T().Skip("skip staking params test for non rest endpoint")
+	}
 	s.T().Log("running test for /staking/parameters endpoint for each chain")
 	if s.config.Chains[0].Type == "neutron" {
 		s.T().Skip("skip tests for neutron")

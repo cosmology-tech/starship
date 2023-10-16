@@ -455,16 +455,37 @@
             },
             "additionalProperties": false
           },
+          "resources": { "$ref":  "#/$def/resources" },
+          "cometmock": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "image": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "enabled"
+            ]
+          },
           "ics": {
             "type": "object",
             "properties": {
               "enabled": {
                 "type": "boolean"
+              },
+              "image": {
+                "type": "string"
               }
             },
-            "additionalProperties": false
-          },
-          "resources": { "$ref":  "#/$def/resources" }
+            "additionalProperties": false,
+            "required": [
+              "enabled"
+            ]
+          }
         },
         "additionalProperties": false,
         "required": [

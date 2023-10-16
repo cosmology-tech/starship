@@ -131,7 +131,8 @@ Usage:
     - |
       {{- range $chain := .chains }}
       while [ $(curl -sw '%{http_code}' http://{{ include "devnet.chain.name" $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id -o /dev/null) -ne 200 ]; do
-        echo "Genesis validator does not seem to be ready. Waiting for it to start..."
+        echo "Genesis validator does not seem to be ready for: {{ $chain }}. Waiting for it to start..."
+        echo "Checking: http://{{ include "devnet.chain.name" $chain }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/node_id"
         sleep 10;
       done
       {{- end }}
@@ -278,45 +279,3 @@ Usage:
 {{- $tag := regexFind "[^:]+$" . -}}
 {{ $tag }}
 {{- end -}}
-
-{{/*
-Given a chain name, create a fullchain dict and return
-Usage:
-{{ include "devnet.fullchain" (dict "name" cosmoshub-4 "file" $.File "context" $) }}
-*/}}
-{{- define "devnet.getchain" -}}
-{{- $defaultFile := $.file -}}
-{{- required "default file must have setup" $defaultFile.defaultChains -}}
-{{- $chain := dict -}}
-{{- range $chainIter := $.context.Values.chains -}}
-{{- if eq $chainIter.name $.name -}}
-{{- $chain = $chainIter | deepCopy -}}
-{{- end }}
-{{- end }}
-{{- required "chain need to exist" $chain.type -}}
-
-{{- $defaultChain := get $defaultFile.defaultChains $chain.type | default dict -}}
-
-{{/* merge defaultChain values into the $chain dict*/}}
-{{- $chain = merge $chain $defaultChain -}}
-
-{{- $faucet := get $chain "faucet" | default dict -}}
-{{- $faucet = mergeOverwrite ($.context.Values.faucet | deepCopy) $faucet -}}
-{{- $defaultFaucet := get $defaultFile.defaultFaucet $faucet.type | default dict -}}
-{{- $faucet = merge $faucet $defaultFaucet -}}
-{{ $_ := set $chain "faucet" $faucet -}}
-
-{{- $upgrade := $chain.upgrade | default (dict "enabled" false) -}}
-{{- $build := .build | default (dict "enabled" false) -}}
-{{- $toBuild := or $build.enabled $upgrade.enabled -}}
-{{- $_ = set $chain "toBuild" $toBuild -}}
-{{- if $toBuild -}}
-{{- $_ = set $chain "image" "ghcr.io/cosmology-tech/starship/runner:latest" -}}
-{{- end }}
-{{ println "@return" }}
-{{ mustToJson $chain }}
-{{- end -}}
-
-{{- define "devnet.fullchain"}}
-{{ index (splitList "@return\n" (include "devnet.getchain" .)) 1 }}
-{{- end }}

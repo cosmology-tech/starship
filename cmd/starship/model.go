@@ -11,6 +11,8 @@ type Chain struct {
 	Image         string                 `name:"image" json:"image,omitempty" yaml:"image"`
 	NumValidators int                    `name:"num-validators" json:"num_validators,omitempty" yaml:"numValidators"`
 	Scripts       map[string]ScriptData  `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
+	Cometmock     *Feature               `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock"`
+	Faucet        *Feature               `name:"facuet" json:"faucet,omitempty" yaml:"faucet"`
 	Ports         Port                   `name:"ports" json:"ports,omitempty" yaml:"ports"`
 	Upgrade       Upgrade                `name:"upgrade" json:"upgrade,omitempty" yaml:"upgrade"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis,omitempty" yaml:"genesis"`
