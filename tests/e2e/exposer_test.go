@@ -61,6 +61,9 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 	s.T().Log("running test for /pub_key endpoint for exposer")
 
 	chain := s.config.Chains[0]
+	if chain.Cometmock != nil && chain.Cometmock.Enabled {
+		s.T().Skip("skipping tests for cometmock enabled chain")
+	}
 
 	req, err := http.NewRequest(http.MethodGet, "/pub_key", nil)
 	s.Require().NoError(err)
