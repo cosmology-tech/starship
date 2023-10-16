@@ -26,7 +26,7 @@ chains:
   ...
 ```
 
-One can overide the default values supported by `defaultChain` by simpliy mentioning it in the chain directive.
+One can override the default values supported by `defaultChain` by simply mentioning it in the chain directive.
 Here is how one can set the docker image of the default values
 ```yaml
 chains:
@@ -76,7 +76,7 @@ We create docker images with this [Dockerfile](https://github.com/cosmology-tech
 images. All supported docker images can be found [here](https://github.com/orgs/cosmology-tech/packages?repo_name=starship)
 
 ## `numValidators`
-Number of validators to run for the chain. It must be greater than 1, can go upto as many resources available.
+Number of validators to run for the chain. It must be greater than 1, can go up to as many resources available.
 
 ```yaml
 chains:
@@ -106,7 +106,7 @@ chains:
     exposer: 9090  # Exposer sidecar port (less used)
 ```
 
-Avialble endpoints for extra services:
+Available endpoints for extra services:
 * `exposer`: https://github.com/cosmology-tech/starship/blob/main/proto/exposer/service.proto#L15
 * `faucet`: https://github.com/cosmos/cosmjs/blob/main/packages/faucet/README.md#using-the-faucet
 
@@ -124,10 +124,10 @@ chains:
     memory: 1Gi  # 1 GB
 ```
 
-Main benifit of this directive is to closely control the resources provided for each of the validator node.
+Main benefit of this directive is to closely control the resources provided for each of the validator node.
 One can provide fractional cpus and memory as per the resource constraints of the system
 
-Usually when running in the CI or loaclly you can provide partial resources like following:
+Usually when running in the CI or locally you can provide partial resources like following:
 ```yaml
 chains:
 - name: osmosis-1
@@ -165,6 +165,9 @@ chains:
       cpu: "0.3"
       memory: "600M"
 ```
+
+By default, we enable cosmjs faucet. Incase `faucet.enabled` is set to `false`, then we manually add
+validator and relayer keys at gentx on genesis. This will take longer during initialization.
 
 > Note `concurrency` in `faucet` is the number of concurrent requests the faucet can handle.
 If you are running a chain with less resources, or want faster startup time,
@@ -227,7 +230,7 @@ chains:
 ```
 
 ## `scripts` (optional)
-Scripts directive will replace the default scripts with the given scripts. Inorder to use this directive,
+Scripts directive will replace the default scripts with the given scripts. In order to use this directive,
 one must use [`scripts/install.sh`](https://github.com/cosmology-tech/starship/blob/main/scripts/install.sh) script for running the helm chart.
 
 > Since the local scripts are converted into configmaps that are then created in the kubernetes cluster, there is a limit of 1MBi
@@ -240,7 +243,7 @@ Types of scripts that are allowed inside the `scripts` dir are:
 * `transferTokens`: Script run as part of the Starship glue code. This script is related to the faucet that we run. Default: [`transfer-tokens.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/transfer-tokens.sh)
 * `buildChain`: Script that builds chain binaries, based on the `build` directive. Default: [`build-chain.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/scripts/build-chain.sh)
 
-One can choose the sub-scripts that needs to be overwritten, default scripts will be used instead.
+One can choose the sub-scripts that need to be overwritten, default scripts will be used instead.
 
 ```yaml
 chains:
@@ -272,3 +275,31 @@ scripts/
   create-custom-validator.sh
   transfer-custom-tokens.sh
 ```
+
+## `cometmock` (optional)
+A dedicated feature flag, that will run the chain with InformalSystem's [CometMock](https://github.com/informalsystems/CometMock)
+binary. With `cometmock` enabled we will run all validators of the chain with out of process cometbft,
+that connect with the cometmock pod.
+
+Enabling cometmock is really simple with following
+```yaml
+chains:
+- name: cosmoshub-4
+  type: cosmos
+  numValidators: 4
+  cometmock:
+    enabled: true
+    image: ghcr.io/informalsystems/cometmock:v0.37.x  ## optional, default is 0.37.x
+```
+
+By default we use the cometbft `v0.37.x` version, but this can be set to other versions from
+cometmock [releases](https://github.com/informalsystems/CometMock/pkgs/container/cometmock).
+Noteable other versions are: `v0.34.x` as well as `v0.38.x`.
+
+If `cometmock` is enabled, during port-forwarding, we forward the `ports.rpc` to the cometmock endpoint.
+For in-cluster communication, make sure to connect to the cometmock service instead of validator service for rpc connections.
+
+### Learn more
+To more about CometMock, have a look at the [blog](https://informal.systems/blog/cometmock) that explains its working
+
+> Note: Current support of cometmock has been tested with multiple chains with verion `0.34.x` and `0.37.x`.

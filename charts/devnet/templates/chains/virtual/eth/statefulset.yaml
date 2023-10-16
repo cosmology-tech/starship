@@ -56,7 +56,7 @@ spec:
               readOnly: true
         - name: geth-genesis-init
           image: {{ $chain.geth.image }}
-          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /etc/config/genesis.json"]
+          command: ['sh', '-c', "if [ -e /ethereum/.init ]; then exit 0; fi; geth init --datadir=/ethereum/execution /ethereum/consensus/genesis.json"]
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum
@@ -139,7 +139,7 @@ spec:
             - name: config
               mountPath: /etc/config
               readOnly: true
-          resources: {{- include "getResourceObject" $chain.beaconChain.resources | trim | nindent 12 }}
+          resources: {{- include "getResourceObject" $chain.validator.resources | trim | nindent 12 }}
       {{- end }}
       {{- include "imagePullSecrets" $chain | indent 6 }}
       volumes:

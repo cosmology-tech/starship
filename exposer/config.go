@@ -10,13 +10,10 @@ import (
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host:         "0.0.0.0",
-		HTTPPort:     "8080",
-		GRPCPort:     "9090",
-		GenesisFile:  "",
-		MnemonicFile: "",
-		PrivValFile:  "",
-		StatusURL:    "http://0.0.0.0:26657/status",
+		Host:      "0.0.0.0",
+		HTTPPort:  "8080",
+		GRPCPort:  "9090",
+		StatusURL: "http://0.0.0.0:26657/status",
 	}
 }
 
@@ -27,12 +24,18 @@ type Config struct {
 	HTTPPort string `name:"http-port" json:"http_port" env:"HTTP_PORT" usage:"Port for http server"`
 	// GRPCPort is the port for the grpc server
 	GRPCPort string `name:"grpc-port" json:"grpc_port" env:"GRPC_PORT" usage:"Port for gRPC server"`
+	// NodeIDFile is full path to the nod-id file
+	NodeIDFile string `name:"node-id-file" json:"node_id_file" env:"NODE_ID_FILE" usage:"Path of node-id json file"`
 	// GenesisFile is full path to the genesis file
 	GenesisFile string `name:"genesis-file" json:"genesis_file" env:"GENESIS_FILE" usage:"Path of genesis file"`
 	// MnemonicFile is full path to the keys file
 	MnemonicFile string `name:"mnemonic-file" json:"mnemonic_file" env:"MNEMONIC_FILE" usage:"Path of mnemonic file"`
 	// PrivValFile is full path of the node validator private key file
 	PrivValFile string `name:"priv-val-file" json:"priv_val_file" env:"PRIV_VAL_FILE" usage:"Path of priv_validator_key.json file for node"`
+	// PrivValStateFile is full path of the node validator private state file
+	PrivValStateFile string `name:"priv-val-state-file" json:"priv_val_state_file" env:"PRIV_VAL_STATE_FILE" usage:"Path of priv_validator_state.json file on node"`
+	// NodeKeyFile is full path of the node validator node key file
+	NodeKeyFile string `name:"node-key-file" json:"node_key_file" env:"NODE_KEY_FILE" usage:"Path of node_key.json file for node"`
 	// StatusURL is used to fetch status info from blockchain node
 	StatusURL string `name:"status-url" json:"status_url" env:"STATUS_URL" usage:"URL to fetch chain status"`
 	// Verbose switches on debug logging

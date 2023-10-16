@@ -83,24 +83,23 @@ data:
     # by the telemetry service. Default: 3001
     port = {{ $relayer.config.telemetry.port }}
     {{- range $i, $chain := $relayer.chains }}
-    {{- range $fullchain := $.Values.chains }}
-    {{- if eq $fullchain.name $chain }}
-    {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-    {{ $defaultChain := get $defaultFile.defaultChains $fullchain.type | default dict }}
-    {{ $fullchain = merge $fullchain $defaultChain }}
+    {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
-    rpc_addr = "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
-    grpc_addr = "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
+    {{- if $fullchain.ics.enabled }}
+    ccv_consumer_chain = true
+    {{- end }}
+    rpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
+    grpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
     {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}
     {{- if eq $relayer.config.event_source.mode "pull" }}
     event_source = { mode = 'pull', interval = '500ms' }
     {{- else }}
-    event_source = { mode = 'push', url = "ws://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '500ms' }
+    event_source = { mode = 'push', url = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '500ms' }
     {{- end }}
     {{- else }}
-    websocket_addr = "ws://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
+    websocket_addr = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
     {{- end }}
     account_prefix = "{{ $fullchain.prefix }}"
     default_gas = 500000000
@@ -123,8 +122,6 @@ data:
     {{- else }}
     address_type = { derivation = 'cosmos' }
     gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
-    {{- end }}
-    {{- end }}
     {{- end }}
     {{- end }}
 ---

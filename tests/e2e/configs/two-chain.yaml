@@ -11,11 +11,12 @@ chains:
     type: cosmos
     image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 2
+    faucet:
+      enabled: false
     ports:
       rest: 1317
       rpc: 26657
       exposer: 38087
-      faucet: 8000
 
 relayers:
   - name: osmos-cosmos

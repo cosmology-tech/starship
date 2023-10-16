@@ -63,6 +63,9 @@ func (s *TestSuite) TestChains_Status() {
 	s.T().Log("running test for /status endpoint for each chain")
 
 	for _, chain := range s.config.Chains {
+		if chain.Type == "neutron" {
+			s.T().Skip("skip tests for neutron")
+		}
 		url := fmt.Sprintf("http://0.0.0.0:%d/status", chain.Ports.Rpc)
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		s.Require().NoError(err)
@@ -78,7 +81,13 @@ func (s *TestSuite) TestChains_Status() {
 }
 
 func (s *TestSuite) TestChains_StakingParams() {
+	if s.config.Chains[0].Ports.Rest == 0 {
+		s.T().Skip("skip staking params test for non rest endpoint")
+	}
 	s.T().Log("running test for /staking/parameters endpoint for each chain")
+	if s.config.Chains[0].Type == "neutron" {
+		s.T().Skip("skip tests for neutron")
+	}
 
 	expUnbondingTime := "90s" // default value
 	switch s.configFile {

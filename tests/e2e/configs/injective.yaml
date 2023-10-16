@@ -2,8 +2,6 @@ chains:
   - name: injective-1
     type: injective
     numValidators: 2
-    faucet:
-      type: starship
     ports:
       rest: 1313
       rpc: 26653

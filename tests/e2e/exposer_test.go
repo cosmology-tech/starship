@@ -61,6 +61,9 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 	s.T().Log("running test for /pub_key endpoint for exposer")
 
 	chain := s.config.Chains[0]
+	if chain.Cometmock != nil && chain.Cometmock.Enabled {
+		s.T().Skip("skipping tests for cometmock enabled chain")
+	}
 
 	req, err := http.NewRequest(http.MethodGet, "/pub_key", nil)
 	s.Require().NoError(err)
@@ -75,12 +78,11 @@ func (s *TestSuite) TestExposer_GetPubKey() {
 }
 
 func (s *TestSuite) TestExposer_GetPrivKey() {
-	s.T().Log("running test for /priv_key endpoint for exposer")
-	s.T().Skip("not implemented yet")
+	s.T().Log("running test for /priv_keys endpoint for exposer")
 
 	chain := s.config.Chains[0]
 
-	req, err := http.NewRequest(http.MethodGet, "/priv_key", nil)
+	req, err := http.NewRequest(http.MethodGet, "/priv_keys", nil)
 	s.Require().NoError(err)
 
 	resp := &pb.PrivValidatorKey{}
@@ -88,8 +90,40 @@ func (s *TestSuite) TestExposer_GetPrivKey() {
 
 	// assert results to expected values
 	s.Require().NotNil(resp)
-	s.Require().NotEmpty(resp.PrivKey)
 	s.Require().NotEmpty(resp.PubKey)
+	s.Require().NotEmpty(resp.Address)
+}
+
+func (s *TestSuite) TestExposer_GetPrivValState() {
+	s.T().Log("running test for /priv_validator_state endpoint for exposer")
+
+	chain := s.config.Chains[0]
+
+	req, err := http.NewRequest(http.MethodGet, "/priv_validator_state", nil)
+	s.Require().NoError(err)
+
+	resp := &pb.PrivValidatorState{}
+	s.MakeExposerRequest(chain, req, resp)
+
+	// assert results to expected values
+	s.Require().NotNil(resp)
+	s.Require().NotEmpty(resp.Height)
+}
+
+func (s *TestSuite) TestExposer_GetNodeKey() {
+	s.T().Log("running test for /node_key endpoint for exposer")
+
+	chain := s.config.Chains[0]
+
+	req, err := http.NewRequest(http.MethodGet, "/node_key", nil)
+	s.Require().NoError(err)
+
+	resp := &pb.NodeKey{}
+	s.MakeExposerRequest(chain, req, resp)
+
+	// assert results to expected values
+	s.Require().NotNil(resp)
+	s.Require().NotEmpty(resp.PrivKey)
 }
 
 func (s *TestSuite) TestExposer_GetKeys() {
@@ -106,7 +140,7 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	// assert results to expected values
 	s.Require().NotNil(resp)
 	s.Require().Len(resp.Genesis, 1)
-	s.Require().Len(resp.Validators, 4)
+	s.Require().Len(resp.Validators, 1)
 	s.Require().Len(resp.Keys, 3)
-	s.Require().Len(resp.Relayers, 2)
+	s.Require().Len(resp.Relayers, 1)
 }

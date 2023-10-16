@@ -4,7 +4,6 @@ Simple self-contained example to get started with Starship.
 
 ## TLDR
 ```bash
-```bash
 cd getting-started/
 
 # Install the starship instance and run port-forward

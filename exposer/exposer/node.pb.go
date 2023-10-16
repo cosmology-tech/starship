@@ -360,6 +360,85 @@ func (x *ValidatorInfo) GetPubKey() *ValidatorInfo_Key {
 	return nil
 }
 
+type PrivValidatorState struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Height    string  `protobuf:"bytes,1,opt,name=height,proto3" json:"height,omitempty"`
+	Round     *int32  `protobuf:"varint,2,opt,name=round,proto3,oneof" json:"round,omitempty"`
+	Step      *int32  `protobuf:"varint,3,opt,name=step,proto3,oneof" json:"step,omitempty"`
+	Signature *string `protobuf:"bytes,4,opt,name=signature,proto3,oneof" json:"signature,omitempty"`
+	Signbytes *string `protobuf:"bytes,5,opt,name=signbytes,proto3,oneof" json:"signbytes,omitempty"`
+}
+
+func (x *PrivValidatorState) Reset() {
+	*x = PrivValidatorState{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_exposer_node_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PrivValidatorState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PrivValidatorState) ProtoMessage() {}
+
+func (x *PrivValidatorState) ProtoReflect() protoreflect.Message {
+	mi := &file_exposer_node_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PrivValidatorState.ProtoReflect.Descriptor instead.
+func (*PrivValidatorState) Descriptor() ([]byte, []int) {
+	return file_exposer_node_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PrivValidatorState) GetHeight() string {
+	if x != nil {
+		return x.Height
+	}
+	return ""
+}
+
+func (x *PrivValidatorState) GetRound() int32 {
+	if x != nil && x.Round != nil {
+		return *x.Round
+	}
+	return 0
+}
+
+func (x *PrivValidatorState) GetStep() int32 {
+	if x != nil && x.Step != nil {
+		return *x.Step
+	}
+	return 0
+}
+
+func (x *PrivValidatorState) GetSignature() string {
+	if x != nil && x.Signature != nil {
+		return *x.Signature
+	}
+	return ""
+}
+
+func (x *PrivValidatorState) GetSignbytes() string {
+	if x != nil && x.Signbytes != nil {
+		return *x.Signbytes
+	}
+	return ""
+}
+
 type Status_Result struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -373,7 +452,7 @@ type Status_Result struct {
 func (x *Status_Result) Reset() {
 	*x = Status_Result{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_exposer_node_proto_msgTypes[4]
+		mi := &file_exposer_node_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -386,7 +465,7 @@ func (x *Status_Result) String() string {
 func (*Status_Result) ProtoMessage() {}
 
 func (x *Status_Result) ProtoReflect() protoreflect.Message {
-	mi := &file_exposer_node_proto_msgTypes[4]
+	mi := &file_exposer_node_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -436,7 +515,7 @@ type NodeInfo_ProtocolVersion struct {
 func (x *NodeInfo_ProtocolVersion) Reset() {
 	*x = NodeInfo_ProtocolVersion{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_exposer_node_proto_msgTypes[5]
+		mi := &file_exposer_node_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -449,7 +528,7 @@ func (x *NodeInfo_ProtocolVersion) String() string {
 func (*NodeInfo_ProtocolVersion) ProtoMessage() {}
 
 func (x *NodeInfo_ProtocolVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_exposer_node_proto_msgTypes[5]
+	mi := &file_exposer_node_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +577,7 @@ type NodeInfo_Other struct {
 func (x *NodeInfo_Other) Reset() {
 	*x = NodeInfo_Other{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_exposer_node_proto_msgTypes[6]
+		mi := &file_exposer_node_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -511,7 +590,7 @@ func (x *NodeInfo_Other) String() string {
 func (*NodeInfo_Other) ProtoMessage() {}
 
 func (x *NodeInfo_Other) ProtoReflect() protoreflect.Message {
-	mi := &file_exposer_node_proto_msgTypes[6]
+	mi := &file_exposer_node_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -553,7 +632,7 @@ type ValidatorInfo_Key struct {
 func (x *ValidatorInfo_Key) Reset() {
 	*x = ValidatorInfo_Key{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_exposer_node_proto_msgTypes[7]
+		mi := &file_exposer_node_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -566,7 +645,7 @@ func (x *ValidatorInfo_Key) String() string {
 func (*ValidatorInfo_Key) ProtoMessage() {}
 
 func (x *ValidatorInfo_Key) ProtoReflect() protoreflect.Message {
-	mi := &file_exposer_node_proto_msgTypes[7]
+	mi := &file_exposer_node_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -684,15 +763,29 @@ var file_exposer_node_proto_rawDesc = []byte{
 	0x2f, 0x0a, 0x03, 0x4b, 0x65, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61,
 	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x42, 0x80, 0x01, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x2e, 0x65, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72,
-	0x42, 0x09, 0x4e, 0x6f, 0x64, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2a, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x6c,
-	0x6f, 0x67, 0x79, 0x2d, 0x74, 0x65, 0x63, 0x68, 0x2f, 0x73, 0x74, 0x61, 0x72, 0x73, 0x68, 0x69,
-	0x70, 0x2f, 0x65, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0xa2, 0x02, 0x03, 0x45, 0x58, 0x58, 0xaa,
-	0x02, 0x07, 0x45, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0xca, 0x02, 0x07, 0x45, 0x78, 0x70, 0x6f,
-	0x73, 0x65, 0x72, 0xe2, 0x02, 0x13, 0x45, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x07, 0x45, 0x78, 0x70, 0x6f,
-	0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0xd5, 0x01, 0x0a, 0x12, 0x50, 0x72, 0x69, 0x76, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
+	0x6f, 0x72, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
+	0x19, 0x0a, 0x05, 0x72, 0x6f, 0x75, 0x6e, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x48, 0x00,
+	0x52, 0x05, 0x72, 0x6f, 0x75, 0x6e, 0x64, 0x88, 0x01, 0x01, 0x12, 0x17, 0x0a, 0x04, 0x73, 0x74,
+	0x65, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x48, 0x01, 0x52, 0x04, 0x73, 0x74, 0x65, 0x70,
+	0x88, 0x01, 0x01, 0x12, 0x21, 0x0a, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x48, 0x02, 0x52, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74,
+	0x75, 0x72, 0x65, 0x88, 0x01, 0x01, 0x12, 0x21, 0x0a, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x62, 0x79,
+	0x74, 0x65, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x48, 0x03, 0x52, 0x09, 0x73, 0x69, 0x67,
+	0x6e, 0x62, 0x79, 0x74, 0x65, 0x73, 0x88, 0x01, 0x01, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x72, 0x6f,
+	0x75, 0x6e, 0x64, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x73, 0x74, 0x65, 0x70, 0x42, 0x0c, 0x0a, 0x0a,
+	0x5f, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x42, 0x0c, 0x0a, 0x0a, 0x5f, 0x73,
+	0x69, 0x67, 0x6e, 0x62, 0x79, 0x74, 0x65, 0x73, 0x42, 0x80, 0x01, 0x0a, 0x0b, 0x63, 0x6f, 0x6d,
+	0x2e, 0x65, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0x42, 0x09, 0x4e, 0x6f, 0x64, 0x65, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2a, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x6c, 0x6f, 0x67, 0x79, 0x2d, 0x74, 0x65, 0x63, 0x68,
+	0x2f, 0x73, 0x74, 0x61, 0x72, 0x73, 0x68, 0x69, 0x70, 0x2f, 0x65, 0x78, 0x70, 0x6f, 0x73, 0x65,
+	0x72, 0xa2, 0x02, 0x03, 0x45, 0x58, 0x58, 0xaa, 0x02, 0x07, 0x45, 0x78, 0x70, 0x6f, 0x73, 0x65,
+	0x72, 0xca, 0x02, 0x07, 0x45, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0xe2, 0x02, 0x13, 0x45, 0x78,
+	0x70, 0x6f, 0x73, 0x65, 0x72, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0xea, 0x02, 0x07, 0x45, 0x78, 0x70, 0x6f, 0x73, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -707,22 +800,23 @@ func file_exposer_node_proto_rawDescGZIP() []byte {
 	return file_exposer_node_proto_rawDescData
 }
 
-var file_exposer_node_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_exposer_node_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_exposer_node_proto_goTypes = []interface{}{
 	(*Status)(nil),                   // 0: exposer.Status
 	(*NodeInfo)(nil),                 // 1: exposer.NodeInfo
 	(*SyncInfo)(nil),                 // 2: exposer.SyncInfo
 	(*ValidatorInfo)(nil),            // 3: exposer.ValidatorInfo
-	(*Status_Result)(nil),            // 4: exposer.Status.Result
-	(*NodeInfo_ProtocolVersion)(nil), // 5: exposer.NodeInfo.ProtocolVersion
-	(*NodeInfo_Other)(nil),           // 6: exposer.NodeInfo.Other
-	(*ValidatorInfo_Key)(nil),        // 7: exposer.ValidatorInfo.Key
+	(*PrivValidatorState)(nil),       // 4: exposer.PrivValidatorState
+	(*Status_Result)(nil),            // 5: exposer.Status.Result
+	(*NodeInfo_ProtocolVersion)(nil), // 6: exposer.NodeInfo.ProtocolVersion
+	(*NodeInfo_Other)(nil),           // 7: exposer.NodeInfo.Other
+	(*ValidatorInfo_Key)(nil),        // 8: exposer.ValidatorInfo.Key
 }
 var file_exposer_node_proto_depIdxs = []int32{
-	4, // 0: exposer.Status.result:type_name -> exposer.Status.Result
-	5, // 1: exposer.NodeInfo.protocol_version:type_name -> exposer.NodeInfo.ProtocolVersion
-	6, // 2: exposer.NodeInfo.other:type_name -> exposer.NodeInfo.Other
-	7, // 3: exposer.ValidatorInfo.pub_key:type_name -> exposer.ValidatorInfo.Key
+	5, // 0: exposer.Status.result:type_name -> exposer.Status.Result
+	6, // 1: exposer.NodeInfo.protocol_version:type_name -> exposer.NodeInfo.ProtocolVersion
+	7, // 2: exposer.NodeInfo.other:type_name -> exposer.NodeInfo.Other
+	8, // 3: exposer.ValidatorInfo.pub_key:type_name -> exposer.ValidatorInfo.Key
 	1, // 4: exposer.Status.Result.node_info:type_name -> exposer.NodeInfo
 	2, // 5: exposer.Status.Result.sync_info:type_name -> exposer.SyncInfo
 	3, // 6: exposer.Status.Result.validator_info:type_name -> exposer.ValidatorInfo
@@ -788,7 +882,7 @@ func file_exposer_node_proto_init() {
 			}
 		}
 		file_exposer_node_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Status_Result); i {
+			switch v := v.(*PrivValidatorState); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -800,7 +894,7 @@ func file_exposer_node_proto_init() {
 			}
 		}
 		file_exposer_node_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeInfo_ProtocolVersion); i {
+			switch v := v.(*Status_Result); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -812,7 +906,7 @@ func file_exposer_node_proto_init() {
 			}
 		}
 		file_exposer_node_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeInfo_Other); i {
+			switch v := v.(*NodeInfo_ProtocolVersion); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -824,6 +918,18 @@ func file_exposer_node_proto_init() {
 			}
 		}
 		file_exposer_node_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NodeInfo_Other); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_exposer_node_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ValidatorInfo_Key); i {
 			case 0:
 				return &v.state
@@ -836,13 +942,14 @@ func file_exposer_node_proto_init() {
 			}
 		}
 	}
+	file_exposer_node_proto_msgTypes[4].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_exposer_node_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

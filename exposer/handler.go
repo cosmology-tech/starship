@@ -46,12 +46,18 @@ func (a *AppServer) readJSONFile(filePath string) ([]byte, error) {
 }
 
 func (a *AppServer) GetNodeID(ctx context.Context, _ *emptypb.Empty) (*pb.ResponseNodeID, error) {
-	status, err := fetchNodeStatus(a.config.StatusURL)
+	jsonFile, err := os.Open(a.config.NodeIDFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.ResponseNodeID{NodeId: status.Result.NodeInfo.Id}, nil
+	data := &pb.ResponseNodeID{}
+	err = jsonpb.Unmarshal(jsonFile, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (a *AppServer) GetPubKey(ctx context.Context, _ *emptypb.Empty) (*pb.ResponsePubKey, error) {
@@ -104,13 +110,43 @@ func (a *AppServer) GetKeys(ctx context.Context, _ *emptypb.Empty) (*pb.Keys, er
 	return keys, nil
 }
 
-func (a *AppServer) GetPrivKeysFile(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
+func (a *AppServer) GetPrivKey(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorKey, error) {
 	jsonFile, err := os.Open(a.config.PrivValFile)
 	if err != nil {
 		return nil, err
 	}
 
 	keys := &pb.PrivValidatorKey{}
+	err = jsonpb.Unmarshal(jsonFile, keys)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
+}
+
+func (a *AppServer) GetPrivValidatorState(ctx context.Context, _ *emptypb.Empty) (*pb.PrivValidatorState, error) {
+	jsonFile, err := os.Open(a.config.PrivValStateFile)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &pb.PrivValidatorState{}
+	err = jsonpb.Unmarshal(jsonFile, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (a *AppServer) GetNodeKey(ctx context.Context, _ *emptypb.Empty) (*pb.NodeKey, error) {
+	jsonFile, err := os.Open(a.config.NodeKeyFile)
+	if err != nil {
+		return nil, err
+	}
+
+	keys := &pb.NodeKey{}
 	err = jsonpb.Unmarshal(jsonFile, keys)
 	if err != nil {
 		return nil, err

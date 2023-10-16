@@ -3,8 +3,6 @@ chains:
     type: evmos
     image: ghcr.io/cosmology-tech/starship/evmos:v13.0.2
     numValidators: 2
-    faucet:
-      type: starship
     ports:
       rest: 1313
       rpc: 26653

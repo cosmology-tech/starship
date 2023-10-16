@@ -185,6 +185,15 @@ defaultChains:
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/InjectiveLabs/injective-chain-releases
+    faucet:
+      type: starship
+    scripts:
+      createGenesis:
+        file: scripts/injective/create-genesis.sh
+      updateGenesis:
+        file: scripts/injective/update-genesis.sh
+      createValidator:
+        file: scripts/injective/create-validator.sh
     assets:
       - base: inj
         description: The INJ token is the native governance token for the Injective chain.
@@ -274,6 +283,8 @@ defaultChains:
     hdPath: m/44'/60'/0'/0/0
     coinType: 60
     repo: https://github.com/evmos/evmos
+    faucet:
+      type: starship
     assets:
       - base: aevmos
         description: The native EVM, governance and staking token of the Evmos Hub
@@ -571,6 +582,9 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/neutron-org/neutron
+    scripts:
+      createGenesis:
+        file: scripts/neutron/create-neutron-genesis.sh
     assets:
       - description: The native token of Neutron chain.
         denom_units:
@@ -591,22 +605,31 @@ defaultChains:
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
     joinNetwork: false
     prysmCtl:
-      image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
+      image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl:local-devnet
       command: ["/app/cmd/prysmctl/prysmctl"]
       args:
         - testnet
         - generate-genesis
-        - --num-validators=36
+        - --fork=capella
+        - --num-validators=64
         - --output-ssz=/ethereum/consensus/genesis.ssz
         - --chain-config-file=/etc/config/config.yml
+        - --geth-genesis-json-in=/etc/config/genesis.json
+        - --geth-genesis-json-out=/ethereum/consensus/genesis.json
     geth:
-      image: ethereum/client-go:v1.12.0
+      image: ethereum/client-go:latest
       args:
         - --nodiscover
         - --http
         - --http.api=eth,net,web3,debug
         - --http.addr=0.0.0.0
+        - --http.corsdomain=*
+        - --ws
+        - --ws.api=eth,net,web3
+        - --ws.addr=0.0.0.0
+        - --ws.origins=*
         - --http.vhosts=*
+        - --authrpc.vhosts=*
         - --authrpc.addr=0.0.0.0
         - --authrpc.jwtsecret=/etc/secrets/jwt.hex
         - --datadir=/ethereum/execution
@@ -614,19 +637,17 @@ defaultChains:
         - --unlock=0x123463a4B065722E99115D6c222f267d9cABb524
         - --password=/dev/null
         - --syncmode=full
-        - --mine
-        - --miner.etherbase=0x123463a4b065722e99115d6c222f267d9cabb524
         - --networkid=32382
     beaconChain:
-      image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.7
+      image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.8
       command: ["/app/cmd/beacon-chain/beacon-chain"]
       args:
         - --datadir=/ethereum/consensus/beacon
         - --min-sync-peers=0
         - --genesis-state=/ethereum/consensus/genesis.ssz
         - --bootstrap-node=
+        - --interop-eth1data-votes
         - --chain-config-file=/etc/config/config.yml
-        - --config-file=/etc/config/config.yml
         - --chain-id=32382
         - --rpc-host=0.0.0.0
         - --contract-deployment-block=0
@@ -634,23 +655,22 @@ defaultChains:
         - --execution-endpoint=http://localhost:8551
         - --accept-terms-of-use
         - --jwt-secret=/etc/secrets/jwt.hex
-        - --contract-deployment-block=0
         - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
+        - --minimum-peers-per-subnet=0
+        - --enable-debug-rpc-endpoints
     validator:
       enabled: false
-      image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
+      image: gcr.io/prysmaticlabs/prysm/validator:v4.0.8
       command: ["/app/cmd/validator/validator"]
       args:
         - --accept-terms-of-use
         - --beacon-rpc-provider=localhost:4000
         - --datadir=/ethereum/consensus/validator
-        - --interop-num-validators=36
+        - --interop-num-validators=64
         - --interop-start-index=0
         - --force-clear-db
         - --chain-config-file=/etc/config/config.yml
-        - --config-file=/etc/config/config.yml
         - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
-    contracts: []
 
 defaultRelayers:
   ts-relayer:
@@ -691,22 +711,22 @@ defaultRelayers:
 defaultScripts:
   createGenesis:
     name: create-genesis.sh
-    file: scripts/create-genesis.sh
+    file: scripts/default/create-genesis.sh
   updateGenesis:
     name: update-genesis.sh
-    file: scripts/update-genesis.sh
+    file: scripts/default/update-genesis.sh
   updateConfig:
     name: update-config.sh
-    file: scripts/update-config.sh
+    file: scripts/default/update-config.sh
   createValidator:
     name: create-validator.sh
-    file: scripts/create-validator.sh
+    file: scripts/default/create-validator.sh
   transferTokens:
     name: transfer-tokens.sh
-    file: scripts/transfer-tokens.sh
+    file: scripts/default/transfer-tokens.sh
   buildChain:
     name: build-chain.sh
-    file: scripts/build-chain.sh
+    file: scripts/default/build-chain.sh
 
 defaultFaucet:
   cosmjs:
@@ -715,3 +735,6 @@ defaultFaucet:
   starship:
     image: ghcr.io/cosmology-tech/starship/faucet:20230915-d75e5fd
     concurrency: 5
+
+defaultCometmock:
+  image: ghcr.io/informalsystems/cometmock:v0.37.x

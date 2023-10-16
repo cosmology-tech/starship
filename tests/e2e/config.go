@@ -4,6 +4,7 @@ type Chain struct {
 	Name          string                 `name:"name" json:"name" yaml:"name"`
 	Type          string                 `name:"type" json:"type" yaml:"type"`
 	NumValidators int                    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
+	Cometmock     *Feature               `name:"cometmock" json:"cometmock" yaml:"cometmock"`
 	Faucet        *Feature               `name:"faucet" json:"faucet" yaml:"faucet"`
 	Ports         Port                   `name:"ports" json:"ports" yaml:"ports"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis" yaml:"genesis"`
