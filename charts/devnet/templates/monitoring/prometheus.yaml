@@ -1,4 +1,5 @@
 {{- if .Values.monitoring.enabled }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -11,18 +12,6 @@ data:
       scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
       evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
       # scrape_timeout is set to the global default (10s).
-    # Alertmanager configuration
-    alerting:
-      alertmanagers:
-        - static_configs:
-            - targets:
-              # - alertmanager:9093
-    # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-    rule_files:
-    # - "first_rules.yml"
-    # - "second_rules.yml"
-    # A scrape configuration containing exactly one endpoint to scrape:
-    # Here it's Prometheus itself.
     scrape_configs:
       # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
       - job_name: 'prometheus'
@@ -30,6 +19,29 @@ data:
         # scheme defaults to 'http'.
         static_configs:
           - targets: ['localhost:9090']
+      {{- range $i, $chain := .Values.chains }}
+      {{ $fullchain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+      {{- if $fullchain.metrics }}
+      - job_name: '{{ $fullchain.name }}-genesis'
+        static_configs:
+          - targets: ['{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26660']
+            labels:
+              node: genesis
+              type: genesis
+              chain: "{{ $fullchain.name }}"
+      {{- if gt $chain.numValidators 1.0}}
+      {{- range $n, $e := until ($chain.numValidators | int) }}
+      - job_name: '{{ $fullchain.name }}-validator-{{ $n }}'
+        static_configs:
+          - targets: ['{{ $fullchain.hostname }}-validator-{{ $n }}.{{ $fullchain.hostname }}-validator.{{ $.Release.Namespace }}.svc.cluster.local:26660']
+            labels:
+              node: "validator-{{ $n }}"
+              type: validator
+              chain: "{{ $fullchain.name }}"
+      {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
