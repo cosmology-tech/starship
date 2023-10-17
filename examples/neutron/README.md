@@ -74,19 +74,25 @@ Present in `configs/`, are multiple versions of the similar infra, tweaked to be
 * `configs/devnet.yaml`: Supposed to be run on a larger k8s cluster, with more resources and number of validators
 * `configs/ci.yaml`: Limited resources on the GH-Action runner, can be adapted for with reducing cpu,memory allocated
 
+> Note: For running this in the CI, have a look at [starship-action](https://github.com/cosmology-tech/starship-action)
+
+Examples of running Starship in the CI can be found here:
+* [cosmos-sdk](https://github.com/cosmos/cosmos-sdk/blob/main/.github/workflows/starship-tests.yml)
+* [Mesh-Security](https://github.com/osmosis-labs/mesh-security-sdk/blob/main/.github/workflows/starship-e2e-tests.yml)
+* [Osmojs](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml#L33...L39)
+
 All the config files are similar topology, but different resources allocated.
 Topology:
 * 2 chains: `neutron-1` (custom setup scripts) and `cosmoshub-4`
 * 1 hermes relayer: running between the chains
 * Registry service: analogous to cosmos chain-registry, but for only our infra
-* Optionally explorer: ping-pub explorer for the mini cosmos
 
 Details of each of arguments in the config file can be found [here](https://starship.cosmology.tech/config/chains)
 
 ## Dir Structure
 * `configs/`: Holds all the various config files and custom scripts for infra intitialization
-  * `configs/scripts/`: Custom scripts used by the config file for setup. More details [here](https://starship.cosmology.tech/config/chains#scripts-optional)
   * `configs/*.yaml`: Various config files as described above
+  * `configs/scripts/`: Optionally, Custom scripts used by the config file for setup. More details [here](https://starship.cosmology.tech/config/chains#scripts-optional)
 * `scripts/`: Handy scripts for dealing with starship setup and running
   * `scripts/dev-setup.sh`: Checks for dependencies
   * `scripts/port-forward.sh`: Performs local port-forwarding based on config file definations

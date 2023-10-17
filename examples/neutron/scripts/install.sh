@@ -22,7 +22,7 @@ NAMESPACE=""
 HELM_REPO="starship"
 HELM_CHART="starship/devnet"
 HELM_REPO_URL="https://cosmology-tech.github.io/starship/"
-HELM_CHART_VERSION="0.1.43"
+HELM_CHART_VERSION="0.1.47"
 
 # check_helm function verifies the helm binary is installed
 function check_helm() {

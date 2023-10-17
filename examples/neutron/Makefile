@@ -3,7 +3,7 @@ FILE = configs/local.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.47-rc0
+HELM_VERSION = v0.1.47
 
 ###############################################################################
 ###                              Helm Charts                                ###
@@ -21,9 +21,6 @@ stop: stop-forward delete
 
 install:
 	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION)
-
-install-base:
-	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --version $(HELM_VERSION) --chart ../../charts/$(HELM_CHART)
 
 debug:
 	bash $(CURDIR)/scripts/install.sh --config $(FILE) --name $(NAME) --dry-run --version $(HELM_VERSION)
