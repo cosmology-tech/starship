@@ -237,4 +237,4 @@ monitoring:
     grafana: 9011
   resources:
     cpu: "0.2"
-    memory: "200M"
+    memory: "400M"
