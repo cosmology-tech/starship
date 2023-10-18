@@ -103,6 +103,8 @@ spec:
           ports:
             - name: grafana
               containerPort: 3000
+          resources:
+{{- include "getResourceObject" $.Values.monitoring.resources | indent 12 }}
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-storage

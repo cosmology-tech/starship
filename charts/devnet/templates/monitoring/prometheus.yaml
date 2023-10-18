@@ -274,6 +274,8 @@ spec:
           ports:
             - name: web
               containerPort: 9090
+          resources:
+{{- include "getResourceObject" $.Values.monitoring.resources | indent 12 }}
           volumeMounts:
             - name: prometheus-config-volume
               mountPath: /etc/prometheus
