@@ -22,6 +22,37 @@ data:
     }
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+data:
+  default.yaml: |-
+    {
+      "apiVersion": 1,
+      "providers": [
+        {
+          "name": "chain-dashboard",
+          "orgId": 1,
+          "type": "file",
+          "allowUiUpdates": true,
+          "options": {
+            "path": "/var/lib/grafana/dashboards",
+          }
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+data:
+  {{- range $path, $_ := .Files.Glob "configs/grafana-dashboards/*.json" }}
+  {{ base $path }}: |-
+    {{- $.Files.Get $path | nindent 4}}
+  {{- end }}
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: grafana
@@ -78,11 +109,24 @@ spec:
             - mountPath: /etc/grafana/provisioning/datasources
               name: grafana-datasources
               readOnly: false
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboard-providers
+              readOnly: false
+            - mountPath: /var/lib/grafana/dashboards
+              name: grafana-dashboards
+              readOnly: false
       volumes:
         - name: grafana-datasources
           configMap:
             defaultMode: 420
             name: grafana-datasources
+        - name: grafana-dashboard-providers
+          configMap:
+            defaultMode: 420
+            name: grafana-dashboard-providers
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards
         - name: grafana-storage
           emptyDir: { }
 ---

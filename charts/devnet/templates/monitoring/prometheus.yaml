@@ -210,18 +210,18 @@ data:
         static_configs:
           - targets: ['{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26660']
             labels:
-              node: genesis
+              instance: genesis
               type: genesis
-              chain: "{{ $fullchain.name }}"
+              network: "{{ $fullchain.name }}"
       {{- if gt $chain.numValidators 1.0}}
-      {{- range $n, $e := until ($chain.numValidators | int) }}
+      {{- range $n, $e := until ( sub $chain.numValidators 1 | int) }}
       - job_name: '{{ $fullchain.name }}-validator-{{ $n }}'
         static_configs:
           - targets: ['{{ $fullchain.hostname }}-validator-{{ $n }}.{{ $fullchain.hostname }}-validator.{{ $.Release.Namespace }}.svc.cluster.local:26660']
             labels:
-              node: "validator-{{ $n }}"
+              instance: "validator-{{ $n }}"
               type: validator
-              chain: "{{ $fullchain.name }}"
+              network: "{{ $fullchain.name }}"
       {{- end }}
       {{- end }}
       {{- end }}
