@@ -106,4 +106,3 @@ then
   [[ "$localprometheus" != "null" ]] && color yellow "    prometheus to http://localhost:$localprometheus" && kubectl port-forward service/prometheus-service $localprometheus:$MONITORING_PROMETHEUS_PORT > /dev/null 2>&1 &
   sleep 1
 fi
-
