@@ -38,7 +38,7 @@ spec:
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: SRC_CHAIN
               value: {{ index $relayer.chains 0 }}
@@ -97,7 +97,7 @@ spec:
       containers:
         - name: relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: RELAYER_DIR
               value: /root/.ibc-setup

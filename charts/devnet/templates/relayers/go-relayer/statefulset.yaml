@@ -40,7 +40,7 @@ spec:
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: KEYS_CONFIG
               value: /keys/keys.json
@@ -108,7 +108,7 @@ spec:
       containers:
         - name: relayer
           image: {{ $relayer.image | default $defaultRelayer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: RELAYER_DIR
               value: /root

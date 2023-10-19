@@ -45,7 +45,7 @@ spec:
       containers:
         - name: explorer
           image: {{ .Values.explorer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           command:
             - bash
             - "-c"

@@ -54,7 +54,7 @@ spec:
         {{- if gt $chain.numValidators 1.0}}
         - name: init-validator
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -85,7 +85,7 @@ spec:
         {{- end }}
         - name: init-wait
           image: "curlimages/curl"
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: GENESIS_PORT
               value: "8081"
@@ -118,7 +118,7 @@ spec:
           {{- include "getResourceObject" $.Values.resources.wait | indent 12 }}
         - name: init-comet
           image: {{ $chain.cometmock.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -160,7 +160,7 @@ spec:
       containers:
         - name: comet
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}

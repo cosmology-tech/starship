@@ -11,6 +11,9 @@ tolerations: []
 
 affinity: {}
 
+images:
+  imagePullPolicy: IfNotPresent
+
 resources:
   node:
     # Default values for resources for chain and validator nodes
