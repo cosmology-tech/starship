@@ -267,3 +267,10 @@ chains:
     base: ghcr.io/strangelove-ventures/heighliner/neutron
     tags:
       - v1.0.4
+  - name: union
+    base: ghcr.io/unionlabs/uniond
+    file: Dockerfile.union
+    tags:
+      - v0.13.1
+      - v0.13.0
+      - v0.12.0
