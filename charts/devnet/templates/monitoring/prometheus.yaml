@@ -184,6 +184,7 @@ data:
         # scheme defaults to 'http'.
         static_configs:
           - targets: ['localhost:9090']
+      
       {{- range $i, $chain := .Values.chains }}
       {{ $fullchain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
       {{- if $fullchain.metrics }}
