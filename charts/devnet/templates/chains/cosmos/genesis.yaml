@@ -74,7 +74,7 @@ spec:
         {{- end }}
         - name: init-genesis
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -117,7 +117,7 @@ spec:
               name: scripts
         - name: init-config
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -173,7 +173,7 @@ spec:
       containers:
         - name: validator
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -203,7 +203,7 @@ spec:
               name: scripts
         - name: exposer
           image: {{ $.Values.exposer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: EXPOSER_HTTP_PORT
@@ -233,7 +233,7 @@ spec:
         {{- if eq $chain.faucet.type "cosmjs" }}
         - name: faucet
           image: {{ $chain.faucet.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: FAUCET_CONCURRENCY
               value: "{{ $chain.faucet.concurrency }}"
@@ -291,7 +291,7 @@ spec:
         {{- else if eq $chain.faucet.type "starship" }}
         - name: faucet
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: FAUCET_CONCURRENCY
               value: "{{ $chain.faucet.concurrency }}"

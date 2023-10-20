@@ -605,6 +605,19 @@
       "required": [
         "enabled"
       ]
+    },
+    "images": {
+      "type": "object",
+      "properties": {
+        "imagePullPolicy": {
+          "type": "string",
+          "enum": [
+            "Always",
+            "IfNotPresent",
+            "Never"
+          ]
+        }
+      }
     }
   },
   "required": [

@@ -56,7 +56,7 @@ spec:
       containers:
         - name: registry
           image: {{ .Values.registry.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: NAMESPACE
               valueFrom:

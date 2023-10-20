@@ -117,7 +117,7 @@ Usage:
 {{- define "devnet.init.wait" }}
 - name: "wait-for-chains"
   image: "curlimages/curl"
-  imagePullPolicy: Always
+  imagePullPolicy: {{ .context.Values.images.imagePullPolicy }}
   env:
     - name: GENESIS_PORT
       value: "{{ .port }}"
