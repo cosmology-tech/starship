@@ -1,11 +1,14 @@
 {{ $portMap := dict "p2p" 26656 "address" 26658 "grpc" 9090 "rest" 1317 }}
 {{- range $chain := .Values.chains }}
 {{- if ne $chain.type "virtual" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-genesis
+  name: {{ $chain.hostname }}-genesis
   labels:
     app.kubernetes.io/name: {{ $chain.name }}-genesis
 spec:
@@ -21,6 +24,12 @@ spec:
       port: 26657
       protocol: TCP
       targetPort: 26657
+    {{- if $chain.metrics }}
+    - name: metrics
+      port: 26660
+      protocol: TCP
+      targetPort: 26660
+    {{- end }}
     - name: exposer
       port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
@@ -53,6 +62,12 @@ spec:
       port: 26657
       protocol: TCP
       targetPort: 26657
+    {{- if $chain.metrics }}
+    - name: metrics
+      port: 26660
+      protocol: TCP
+      targetPort: 26660
+    {{- end }}
     - name: exposer
       port: {{ $.Values.exposer.ports.rest | default 8081 }}
       protocol: TCP
