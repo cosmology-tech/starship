@@ -61,6 +61,8 @@ func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
 		WorkingDir:  "",
 		ScriptFiles: nil,
 	}
+
+	return []types.Init{genesisInit}, nil
 }
 
 // convertChainToServiceConfig creates a list of serviceConfig objects based on chain defination in config
