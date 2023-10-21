@@ -78,7 +78,7 @@ spec:
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-validator
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -129,7 +129,7 @@ spec:
               name: scripts
         - name: init-config
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -176,7 +176,7 @@ spec:
       containers:
         - name: validator
           image: {{ $chain.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
@@ -236,7 +236,7 @@ spec:
               name: scripts
         - name: exposer
           image: {{ $.Values.exposer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
             {{- include "devnet.evnVars" $chain | indent 12 }}
