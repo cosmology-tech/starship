@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -79,20 +80,19 @@ type HostPort struct {
 }
 
 func (p HostPort) GetPort(port string) int {
-	switch port {
-	case "rpc":
-		return p.Rpc
-	case "rest":
-		return p.Rest
-	case "grpc":
-		return p.Grpc
-	case "exposer":
-		return p.Exposer
-	case "faucet":
-		return p.Faucet
-	default:
-		return 0
+	t := reflect.TypeOf(p)
+	v := reflect.ValueOf(p)
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		value := v.Field(i).Int()
+		fieldName := field.Tag.Get("name")
+
+		if fieldName == port {
+			return int(value)
+		}
 	}
+	return 0
 }
 
 type Relayer struct {
