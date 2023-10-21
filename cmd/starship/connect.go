@@ -29,6 +29,10 @@ var defaultPorts = map[string]map[string]int{
 		"rest": 8080,
 		"grpc": 9090,
 	},
+	"monitoring": {
+		"prometheus": 8080,
+		"grafana":    8080,
+	},
 }
 
 // portForward function with perform port-forwarding based on
@@ -70,7 +74,7 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 		}
 	}
 	// port-forward explorer
-	if config.Explorer != nil {
+	if config.Explorer != nil && config.Explorer.Enabled {
 		for portType, remotePort := range defaultPorts["explorer"] {
 			port := config.Explorer.Ports.GetPort(portType)
 			if port == 0 {
@@ -81,7 +85,7 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 		}
 	}
 	// port-forward registry
-	if config.Registry != nil {
+	if config.Registry != nil && config.Registry.Enabled {
 		for portType, remotePort := range defaultPorts["registry"] {
 			port := config.Registry.Ports.GetPort(portType)
 			if port == 0 {
@@ -89,6 +93,19 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 			}
 			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", "registry", portType, port))
 			cmds = append(cmds, c.execPortForwardCmd("svc/registry", port, remotePort))
+		}
+	}
+	// port-forward monitoring
+	if config.Monitoring != nil && config.Monitoring.Enabled {
+		for portType, remotePort := range defaultPorts["monitoring"] {
+			port := config.Registry.Ports.GetPort(portType)
+			if port == 0 {
+				continue
+			}
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", "monitoring", portType, port))
+			// monitoring service have 2 underlying services, prometheus and grafana
+			// we can select service based on portType itself
+			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("svc/%s", portType), port, remotePort))
 		}
 	}
 

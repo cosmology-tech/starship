@@ -46,11 +46,13 @@ type Upgrade struct {
 }
 
 type Port struct {
-	Rest    int `name:"rest" json:"rest" yaml:"rest"`
-	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
-	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
-	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
-	Faucet  int `name:"faucet" json:"faucet" yaml:"faucet"`
+	Rest       int `name:"rest" json:"rest" yaml:"rest"`
+	Rpc        int `name:"rpc" json:"rpc" yaml:"rpc"`
+	Grpc       int `name:"grpc" json:"grpc" yaml:"grpc"`
+	Exposer    int `name:"exposer" json:"exposer" yaml:"exposer"`
+	Faucet     int `name:"faucet" json:"faucet" yaml:"faucet"`
+	Prometheus int `name:"prometheus" json:"prometheus" yaml:"prometheus"`
+	Grafana    int `name:"grafana" json:"grafana" yaml:"grafana"`
 }
 
 func (p Port) GetPort(port string) int {
@@ -65,6 +67,10 @@ func (p Port) GetPort(port string) int {
 		return p.Exposer
 	case "faucet":
 		return p.Faucet
+	case "prometheus":
+		return p.Prometheus
+	case "grafana":
+		return p.Grafana
 	default:
 		return 0
 	}
@@ -98,10 +104,11 @@ func (f *Feature) GetRESTAddr() string {
 // todo: move this to a more common place, outside just tests
 // todo: can be moved to proto defination
 type HelmConfig struct {
-	Chains   []*Chain   `name:"chains" json:"chains" yaml:"chains"`
-	Relayers []*Relayer `name:"relayers" json:"relayers" yaml:"relayers"`
-	Explorer *Feature   `name:"explorer" json:"explorer" yaml:"explorer"`
-	Registry *Feature   `name:"registry" json:"registry" yaml:"registry"`
+	Chains     []*Chain   `name:"chains" json:"chains" yaml:"chains"`
+	Relayers   []*Relayer `name:"relayers" json:"relayers" yaml:"relayers"`
+	Explorer   *Feature   `name:"explorer" json:"explorer" yaml:"explorer"`
+	Registry   *Feature   `name:"registry" json:"registry" yaml:"registry"`
+	Monitoring *Feature   `name:"monitoring" json:"monitoring" yaml:"monitoring"`
 }
 
 // HasChainId returns true if chain id found in list of chains
