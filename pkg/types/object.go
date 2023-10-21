@@ -22,6 +22,8 @@ type Ports struct {
 type Init struct {
 	Name        string
 	Image       string // optional
+	Environment []EnvVar
+	EnvFile     []string
 	Command     []string
 	WorkingDir  string
 	ScriptFiles []string
