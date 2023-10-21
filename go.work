@@ -1,13 +1,15 @@
-go 1.19
+go 1.21.0
 
 use (
+
+	.
 	./clients/go/client
 	./cmd/starship
 
 	./examples/upgrade-test
 	./exposer
-	./registry
 	./faucet
+	./registry
 	./tests/e2e
 	./tools
 )
