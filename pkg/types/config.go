@@ -22,9 +22,10 @@ type Chain struct {
 	CoinType   string `name:"coin-type" json:"coin_type,omitempty" yaml:"coinType,omitempty"`
 	Repo       string `name:"repo" json:"repo,omitempty" yaml:"repo,omitempty"`
 	// Custom modifications
-	Scripts map[string]ScriptData  `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
-	Upgrade Upgrade                `name:"upgrade" json:"upgrade,omitempty" yaml:"upgrade"`
-	Genesis map[string]interface{} `name:"genesis" json:"genesis,omitempty" yaml:"genesis"`
+	Scripts  map[string]ScriptData  `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
+	Upgrade  Upgrade                `name:"upgrade" json:"upgrade,omitempty" yaml:"upgrade"`
+	Genesis  map[string]interface{} `name:"genesis" json:"genesis,omitempty" yaml:"genesis"`
+	Timeouts map[string]string      `name:"timeouts" json:"timeouts,omitempty" yaml:"timeouts"`
 	// Feature toggles
 	Build     Build    `name:"build" json:"build,omitempty" yaml:"build,omitempty"`
 	Cometmock *Feature `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock,omitempty"`

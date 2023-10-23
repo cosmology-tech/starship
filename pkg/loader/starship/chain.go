@@ -46,12 +46,18 @@ func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
 		{"CHAIN_ID", chainConfig.GetChainID()},
 	}
 
+	// add faucet environment vars
 	faucetEnv := types.EnvVar{"FUACET_ENABLED", "false"}
 	if chainConfig.Faucet.Enabled {
 		faucetEnv.Value = "true"
 	}
-
 	envs = append(envs, faucetEnv)
+
+	// add timeout envrionment vars
+	for key, value := range chainConfig.Timeouts {
+		envs = append(envs, types.EnvVar{strings.ToUpper(key), value})
+	}
+	// todo: here
 
 	genesisInit := types.Init{
 		Name:        "init-genesis",
