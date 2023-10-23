@@ -2,6 +2,9 @@ chains:
   - name: osmosis
     base: ghcr.io/strangelove-ventures/heighliner/osmosis
     tags:
+      - v20.0.0-rc0
+      - v19.2.0
+      - v19.1.0
       - v19.0.0
       - v18.0.0
       - v17.0.0
@@ -41,6 +44,10 @@ chains:
   - name: gaia
     base: ghcr.io/strangelove-ventures/heighliner/gaia
     tags:
+      - v13.0.0
+      - v12.0.0
+      - v11.0.0
+      - v10.0.2
       - v10.0.1
       - v9.1.1
       - v10.0.0
