@@ -1,6 +1,6 @@
 module tools
 
-go 1.19
+go 1.21
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2

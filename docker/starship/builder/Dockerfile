@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine3.16
+FROM golang:1.21-alpine3.17
 
 LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 

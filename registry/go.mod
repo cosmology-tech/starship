@@ -1,6 +1,6 @@
 module github.com/cosmology-tech/starship/registry
 
-go 1.19
+go 1.21
 
 require (
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
