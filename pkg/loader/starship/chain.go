@@ -26,14 +26,12 @@ func getChainPorts(hostPorts types.HostPort) []types.Ports {
 	return ports
 }
 
-// getGenesisInits returns object Init that indicates scripts files for
+// genesisInits returns object Init that indicates scripts files for
 // init containers for genesis chain node
 // genesisInit: [init-genesis, init-config]
-func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
-	genesisCommand := `
-	VAL_INDEX=0
-	echo "Validator Index: $VAL_INDEX"
-`
+func genesisInits(chainConfig types.Chain) ([]types.Init, error) {
+	inits := []types.Init{}
+
 	envs := []types.EnvVar{
 		{"KEYS_CONFIG", "/configs/keys.json"},
 		{"NUM_VALIDATORS", strconv.Itoa(chainConfig.NumValidators)},
@@ -46,6 +44,12 @@ func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
 		{"CHAIN_ID", chainConfig.GetChainID()},
 	}
 
+	buildEnv := types.EnvVar{"TO_BUILD", "false"}
+	if chainConfig.Build.Enabled {
+		buildEnv.Value = "true"
+	}
+	envs = append(envs, buildEnv)
+
 	// add faucet environment vars
 	faucetEnv := types.EnvVar{"FUACET_ENABLED", "false"}
 	if chainConfig.Faucet.Enabled {
@@ -57,18 +61,111 @@ func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
 	for key, value := range chainConfig.Timeouts {
 		envs = append(envs, types.EnvVar{strings.ToUpper(key), value})
 	}
-	// todo: here
+
+	command := `
+		VAL_INDEX=0
+		echo "Validator Index: $VAL_INDEX"
+		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+		fi
+	
+		if [ -f $CHAIN_DIR/config/genesis.json ]; then
+		  echo "Genesis file exists, exiting init container"
+		  exit 0
+		fi
+	
+		echo "Running setup genesis script..."
+		bash -e /scripts/create-genesis.sh
+		bash -e /scripts/update-genesis.sh
+	
+		echo "Create node id json file"
+		NODE_ID=$($CHAIN_BIN tendermint show-node-id)
+		echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
+`
+	mounts := []types.Mount{
+		{
+			Name:      "addresses",
+			MountPath: "/configs",
+			Path:      "./configs",
+		},
+		{
+			Name:      "scripts",
+			MountPath: "/scripts",
+			Path:      "./scripts",
+		},
+	}
+
+	// deal with overwriting genesis config map
+	// todo: need to implement this this
+	if chainConfig.Genesis != nil {
+	}
 
 	genesisInit := types.Init{
 		Name:        "init-genesis",
 		Image:       chainConfig.Image,
-		Command:     []string{"bash", "-c", genesisCommand},
+		Command:     []string{"bash", "-c", command},
 		Environment: envs,
-		WorkingDir:  "",
-		ScriptFiles: nil,
+		Mounts:      mounts,
+	}
+	inits = append(inits, genesisInit)
+
+	// init-config container
+	initCommand := `
+		VAL_INDEX=${HOSTNAME##*-}
+		echo "Validator Index: $VAL_INDEX"
+		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+		fi
+
+		echo "Running setup config script..."
+		bash -e /scripts/update-config.sh
+`
+	configInit := types.Init{
+		Name:        "init-config",
+		Image:       chainConfig.Image,
+		Environment: envs,
+		Command:     []string{"bash", "-c", initCommand},
+		Mounts: []types.Mount{
+			{
+				Name:      "configs",
+				MountPath: "/configs",
+				Path:      "./configs",
+			},
+			{
+				Name:      "scripts",
+				MountPath: "/scripts",
+				Path:      "./scripts",
+			},
+			{
+				Name:      "node",
+				MountPath: chainConfig.Home,
+			},
+		},
+	}
+	inits = append(inits, configInit)
+
+	// faucet init
+	if chainConfig.Faucet.Enabled {
+		faucetCmd := `
+			cp /bin/faucet /faucet/faucet
+			chmod +x /faucet/faucet
+`
+		faucetInit := types.Init{
+			Name:       "init-faucet",
+			Image:      chainConfig.Faucet.Image,
+			Command:    []string{"bash", "-c", faucetCmd},
+			WorkingDir: "",
+			Mounts: []types.Mount{
+				{
+					Name:      "faucet",
+					MountPath: "/faucet",
+				},
+			},
+		}
+		inits = append(inits, faucetInit)
 	}
 
-	return []types.Init{genesisInit}, nil
+	return inits, nil
 }
 
 // convertChainToServiceConfig creates a list of serviceConfig objects based on chain defination in config
@@ -86,6 +183,10 @@ func getGenesisInits(chainConfig types.Chain) ([]types.Init, error) {
 func convertChainToServiceConfig(chainConfig types.Chain) ([]types.NodeConfig, error) {
 	allNodes := []types.NodeConfig{}
 
+	inits, err := genesisInits(chainConfig)
+	if err != nil {
+		return nil, err
+	}
 	// initialize genesis node
 	genesis := types.NodeConfig{
 		Name:            chainConfig.Name,
@@ -96,7 +197,7 @@ func convertChainToServiceConfig(chainConfig types.Chain) ([]types.NodeConfig, e
 		Command:         nil,
 		ScriptFiles:     nil,
 		WorkingDir:      "",
-		Init:            nil,
+		Init:            inits,
 		DependsOn:       nil,
 		Replicas:        0,
 		Labels:          nil,

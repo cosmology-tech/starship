@@ -17,6 +17,12 @@ type Ports struct {
 	Protocol      string
 }
 
+type Mount struct {
+	Name      string
+	MountPath string // mount path on container
+	Path      string // path on localhost to read file from
+}
+
 // Init describes precontainer creation steps. These can be either as docker containers
 // or just scripts. These are supposed to run to completion
 type Init struct {
@@ -26,7 +32,7 @@ type Init struct {
 	EnvFile     []string
 	Command     []string
 	WorkingDir  string
-	ScriptFiles []string
+	Mounts      []Mount
 }
 
 type Resource struct {
