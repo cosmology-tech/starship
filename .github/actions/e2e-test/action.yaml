@@ -65,7 +65,7 @@ runs:
 
     - name: Setup Test infra
       id: starship-action
-      uses: cosmology-tech/starship-action@40850df7d3346bdeafc4bb95c0778bbef191e030
+      uses: cosmology-tech/starship-action@dda9039c44960084db5955b3ad4720b2255da430
       with:
         values: ${{ env.CONFIG_FILE }}
         port-forward: true
