@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/cosmology-tech/starship/pkg/loader/starship"
+	"github.com/cosmology-tech/starship/pkg/transformer/kubernetes"
+	"github.com/cosmology-tech/starship/pkg/types"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
 func newStartCommand(config *Config) *cli.Command {
@@ -99,6 +103,55 @@ func newStopCommand(config *Config) *cli.Command {
 	}
 }
 
+func newGenerateCommand(config *Config) *cli.Command {
+	return &cli.Command{
+		Name:      "generate",
+		Usage:     "generate will generate yaml files from given starship config file",
+		UsageText: "generate [path to config-file] [options]",
+		Flags:     GetCommandLineOptions("config", "verbose"),
+		Action: func(c *cli.Context) error {
+			if err := ParseCLIOptions(c, config); err != nil {
+				return cli.Exit(err, 1)
+			}
+			// set configfile to the Config struct from args if not set
+			if config.ConfigFile == "" {
+				if c.NArg() > 0 {
+					config.ConfigFile = c.Args().Get(0)
+				} else {
+					return cli.Exit("config file need to be specified", 1)
+				}
+			}
+			log, err := NewLogger(config)
+			if err != nil {
+				return cli.Exit(err, 1)
+			}
+
+			// convert config file to nodeConfig from loader
+			s := starship.NewStarship(log)
+			nodeConfigs, err := s.LoadFile([]string{config.ConfigFile}, "")
+			if err != nil {
+				return cli.Exit(fmt.Sprintf("unable to load config to nodeconfigs, err: %s", err), 1)
+			}
+			log.Debug("node config", zap.Any("node-configs", nodeConfigs))
+
+			// convert nodeconfig to k8s objects
+			k := kubernetes.NewKubernetes(log)
+			objects, err := k.Transform(nodeConfigs, types.ConvertOptions{})
+			if err != nil {
+				return cli.Exit(fmt.Sprintf("error transforming nodeconfig to k8s objects, err: %s", err), 1)
+			}
+			log.Debug("kubernetes runtime objects", zap.Any("k8s", objects))
+
+			err = objects.WriteToFile("build/generator/")
+			if err != nil {
+				return cli.Exit(err, 1)
+			}
+
+			return nil
+		},
+	}
+}
+
 func newConnectCommand(config *Config) *cli.Command {
 	return &cli.Command{
 		Name:      "connect",
@@ -158,6 +211,7 @@ func NewApp() *cli.App {
 		newListCommand(config),
 		newStopCommand(config),
 		newConnectCommand(config),
+		newGenerateCommand(config),
 	}
 
 	return app

@@ -3,21 +3,27 @@ package starship
 import (
 	"errors"
 	"github.com/cosmology-tech/starship/pkg/types"
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 	"os"
 )
 
 // Starship is starship config file loader, implements Loader interface
 type Starship struct {
+	logger *zap.Logger
 }
 
-func (s *Starship) LoadFile(files []string, defaultFile string) (types.StarshipObject, error) {
-	if len(files) > 0 {
-		return types.StarshipObject{}, errors.New("loading from multiple files not supported, yet")
+func NewStarship(logger *zap.Logger) Starship {
+	return Starship{logger: logger}
+}
+
+func (s *Starship) LoadFile(files []string, defaultFile string) ([]types.NodeConfig, error) {
+	if len(files) > 1 {
+		return nil, errors.New("loading from multiple files not supported, yet")
 	}
 	config, err := s.loadConfig(files[0])
 	if err != nil {
-		return types.StarshipObject{}, nil
+		return nil, nil
 	}
 	// todo: override defaults into config
 
@@ -26,7 +32,7 @@ func (s *Starship) LoadFile(files []string, defaultFile string) (types.StarshipO
 
 // loadConfig reads the file into config object
 func (s *Starship) loadConfig(file string) (types.Config, error) {
-	config := types.Config{}
+	config := &types.Config{}
 	yamlFile, err := os.ReadFile(file)
 	if err != nil {
 		return types.Config{}, err
@@ -36,11 +42,20 @@ func (s *Starship) loadConfig(file string) (types.Config, error) {
 		return types.Config{}, err
 	}
 
-	return config, nil
+	return *config, nil
 }
 
 // convertConfigToObject converts basic Config object into Starship object, this would prefill informations
 // based on chains, relayers and explorers
-func convertConfigToObject(config types.Config) (types.StarshipObject, error) {
-	return types.StarshipObject{}, nil
+func convertConfigToObject(config types.Config) ([]types.NodeConfig, error) {
+	nodes := []types.NodeConfig{}
+	for _, cc := range config.Chains {
+		chainNodes, err := convertChainToNodeConfig(*cc)
+		if err != nil {
+			return nil, err
+		}
+		nodes = append(nodes, chainNodes...)
+	}
+
+	return nodes, nil
 }

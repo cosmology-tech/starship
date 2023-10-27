@@ -68,4 +68,6 @@ type NodeConfig struct {
 	Resources       Resource
 	ImagePullPolicy string
 	Files           []File
+	Mounts          []Mount  // Mount are added to all the sidecars and init-containers
+	PostStart       []string // PostStart commands
 }

@@ -29,7 +29,7 @@ type Chain struct {
 	// Feature toggles
 	Build     Build    `name:"build" json:"build,omitempty" yaml:"build,omitempty"`
 	Cometmock *Feature `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock,omitempty"`
-	Faucet    *Feature `name:"facuet" json:"faucet,omitempty" yaml:"faucet,omitempty"`
+	Faucet    *Faucet  `name:"facuet" json:"faucet,omitempty" yaml:"faucet,omitempty"`
 	ICS       *Feature `name:"ics" json:"ics,omitempty" yaml:"ics,omitempty"`
 	// Additional information
 	Ports     HostPort `name:"ports" json:"ports,omitempty" yaml:"ports,omitempty"`
@@ -107,6 +107,7 @@ type Relayer struct {
 
 type Faucet struct {
 	Enabled     bool     `name:"enabled" json:"enabled" yaml:"enabled"`
+	Type        string   `name:"type" json:"type" yaml:"type"`
 	Image       string   `name:"image" json:"image" yaml:"image"`
 	Ports       HostPort `name:"ports" json:"ports" yaml:"ports"`
 	Concurrency int      `name:"concurrency" json:"concurrency,omitempty" yaml:"concurrency,omitempty"`

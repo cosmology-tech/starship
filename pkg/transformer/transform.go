@@ -10,5 +10,5 @@ type Object interface {
 }
 
 type Transformer interface {
-	Transform(types.StarshipObject, types.ConvertOptions) (Object, error)
+	Transform([]types.NodeConfig, types.ConvertOptions) (Object, error)
 }
