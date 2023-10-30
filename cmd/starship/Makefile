@@ -10,6 +10,11 @@ all: build run
 build:
 	CGO_ENABLED=0 go build -mod=readonly -o $(CURDIR)/build/ ./...
 
+RUN_ARGS = "../../tests/e2e/configs/two-chain.yaml"
+.PHONY: run
+run:
+	CGO_ENABLED=0 go run -mod=readonly ./... generate $(RUN_ARGS)
+
 .PHONY: build-linux
 build-linux:
 	GOOS=linux GOARCH=amd64 $(MAKE) build
