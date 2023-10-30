@@ -1,5 +1,4 @@
 # General files for the project
-pkg/*
 *.pyc
 bin/*
 **bin/
