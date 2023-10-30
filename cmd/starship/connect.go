@@ -18,7 +18,7 @@ var defaultPorts = map[string]map[string]int{
 	"chain": {
 		"rest":    1317,
 		"rpc":     26657,
-		"grpc":    9091,
+		"grpc":    9090,
 		"faucet":  8000,
 		"exposer": 8081,
 	},
