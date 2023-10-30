@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-const Selector = "apps.kubernetes.io"
+const Selector = "apps.kubernetes.io/name"
 
 // ConfigLabels configures label name alone
 func ConfigLabels(name string) map[string]string {
@@ -59,6 +59,7 @@ done
 		cmd = cmd + "\n" + fmt.Sprintf(cmdfmt, "%{http_code}", deps.ContainerName, "8081", "node_id", deps.ContainerName)
 	}
 
+	// set default resources to 100m and 100Mi for container
 	resources, err := ResourceRequirementsFromConfig(types.Resource{CPU: "100m", Memory: "100Mi"})
 	if err != nil {
 		return api.Container{}, err
@@ -89,14 +90,18 @@ done
 	return wait, nil
 }
 
-func InitToContainer(nodeConfig types.NodeConfig) ([]api.Container, error) {
-	initContainers := []api.Container{}
-
-	res, err := ResourceRequirementsFromConfig(nodeConfig.Resources)
-	if err != nil {
-		return nil, err
+func EnvVarFromNodeConfig(nodeConfig types.NodeConfig) []api.EnvVar {
+	envs := []api.EnvVar{}
+	for _, nenv := range nodeConfig.Environment {
+		envs = append(envs, api.EnvVar{
+			Name:  nenv.Name,
+			Value: nenv.Value,
+		})
 	}
+	return envs
+}
 
+func VolumeMountsFromNodeConfig(nodeConfig types.NodeConfig) []api.VolumeMount {
 	volumeMounts := []api.VolumeMount{}
 	for _, mount := range nodeConfig.Mounts {
 		vm := api.VolumeMount{
@@ -105,6 +110,19 @@ func InitToContainer(nodeConfig types.NodeConfig) ([]api.Container, error) {
 		}
 		volumeMounts = append(volumeMounts, vm)
 	}
+
+	return volumeMounts
+}
+
+func InitContainers(nodeConfig types.NodeConfig) ([]api.Container, error) {
+	initContainers := []api.Container{}
+
+	res, err := ResourceRequirementsFromConfig(nodeConfig.Resources)
+	if err != nil {
+		return nil, err
+	}
+
+	volumeMounts := VolumeMountsFromNodeConfig(nodeConfig)
 
 	// add init-wait containers based on nodeConfig.DependsOn
 	waitInitContainer, err := InitWaitContainer(nodeConfig)
@@ -125,7 +143,7 @@ func InitToContainer(nodeConfig types.NodeConfig) ([]api.Container, error) {
 			Name:            init.Name,
 			Image:           init.Image,
 			ImagePullPolicy: api.PullPolicy(nodeConfig.ImagePullPolicy),
-			Env:             envs,
+			Env:             EnvVarFromNodeConfig(nodeConfig),
 			Command:         init.Command,
 			Resources:       res,
 			VolumeMounts:    volumeMounts,

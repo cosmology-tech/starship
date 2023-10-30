@@ -353,7 +353,7 @@ func convertChainToNodeConfig(chainConfig types.Chain) ([]types.NodeConfig, erro
 		WorkingDir:      "",
 		Init:            inits,
 		DependsOn:       nil,
-		Replicas:        0,
+		Replicas:        1,
 		Labels:          nil,
 		Annotations:     nil,
 		Sidecars:        []*types.NodeConfig{&exposer},

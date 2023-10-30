@@ -38,7 +38,7 @@ func (k *Kubernetes) configAllLabels(name string, labels map[string]string) map[
 }
 
 func (k *Kubernetes) nodeConfigToStatefulSets(nodeConfig types.NodeConfig) (*appsv1.StatefulSet, error) {
-	podSpec, err := k.InitPodSpecWithNodeConfig(nodeConfig)
+	podSpec, err := k.PodSpecWithNodeConfig(nodeConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -66,22 +66,52 @@ func (k *Kubernetes) nodeConfigToStatefulSets(nodeConfig types.NodeConfig) (*app
 	return ds, nil
 }
 
-func (k *Kubernetes) InitPodSpecWithNodeConfig(nodeConfig types.NodeConfig) (api.PodSpec, error) {
-	initContainers, err := InitToContainer(nodeConfig)
+func (k *Kubernetes) ContainerFromNodeConfig(nodeConfig types.NodeConfig) (api.Container, error) {
+	resources, err := ResourceRequirementsFromConfig(nodeConfig.Resources)
+	if err != nil {
+		return api.Container{}, err
+	}
+
+	vms := VolumeMountsFromNodeConfig(nodeConfig)
+
+	return api.Container{
+		Name:            nodeConfig.ContainerName,
+		Image:           nodeConfig.Image,
+		Command:         nodeConfig.Command,
+		WorkingDir:      nodeConfig.WorkingDir,
+		Env:             EnvVarFromNodeConfig(nodeConfig),
+		Resources:       resources,
+		VolumeMounts:    vms,
+		ImagePullPolicy: api.PullPolicy(nodeConfig.ImagePullPolicy),
+	}, nil
+}
+
+func (k *Kubernetes) PodSpecWithNodeConfig(nodeConfig types.NodeConfig) (api.PodSpec, error) {
+	initContainers, err := InitContainers(nodeConfig)
 	if err != nil {
 		return api.PodSpec{}, err
 	}
+
+	container, err := k.ContainerFromNodeConfig(nodeConfig)
 	pod := api.PodSpec{
 		RestartPolicy:  api.RestartPolicyOnFailure,
 		InitContainers: initContainers,
-		Containers: []api.Container{
-			{
-				Name:            nodeConfig.ContainerName,
-				Image:           nodeConfig.Image,
-				ImagePullPolicy: api.PullPolicy(nodeConfig.ImagePullPolicy),
-			},
-		},
+		Containers:     []api.Container{container},
 	}
+
+	// return early incase of no sidecars
+	if nodeConfig.Sidecars == nil {
+		return pod, nil
+	}
+
+	for _, sidecar := range nodeConfig.Sidecars {
+		sidecarContainer, err := k.ContainerFromNodeConfig(*sidecar)
+		if err != nil {
+			return api.PodSpec{}, err
+		}
+		pod.Containers = append(pod.Containers, sidecarContainer)
+	}
+
 	return pod, nil
 }
 

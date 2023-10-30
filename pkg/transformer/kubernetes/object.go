@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+// RuntimeObjects holds the return type for the Transformer, which implements
+// transformer.Objects interface
 type RuntimeObjects struct {
 	Objects []runtime.Object
 }
