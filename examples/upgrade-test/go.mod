@@ -1,6 +1,6 @@
 module upgrade_test
 
-go 1.19
+go 1.21
 
 replace github.com/strangelove-ventures/lens => github.com/Anmol1696/lens v0.1.1-0.20230331154219-5027f163133a
 

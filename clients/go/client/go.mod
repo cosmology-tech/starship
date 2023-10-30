@@ -1,6 +1,6 @@
 module github.com/cosmology-tech/starship/clients/go/client
 
-go 1.19
+go 1.21
 
 replace (
 	github.com/cosmology-tech/starship/registry => ../../../registry

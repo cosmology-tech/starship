@@ -24,7 +24,7 @@ RUN (cd packages/faucet && SKIP_BUILD=1 yarn pack-node)
 
 # Use Alpine and install Node.js which is 50% smaller than the -alpine version of the node
 # image (53 MB including the faucet app).
-FROM alpine:3.16
+FROM alpine:3.17
 
 # Set up dependencies, nodejs is special case
 ENV PACKAGES curl make bash jq sed nodejs

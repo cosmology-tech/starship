@@ -1,4 +1,4 @@
-go 1.19
+go 1.21
 
 use (
 	./clients/go/client
@@ -6,8 +6,8 @@ use (
 
 	./examples/upgrade-test
 	./exposer
-	./registry
 	./faucet
+	./registry
 	./tests/e2e
 	./tools
 )

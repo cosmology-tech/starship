@@ -1,6 +1,6 @@
 module github.com/cosmology-tech/starship/tests/e2e
 
-go 1.19
+go 1.21
 
 require (
 	github.com/cosmology-tech/starship/exposer v0.0.0-20230413092908-7da9e8a24b31
