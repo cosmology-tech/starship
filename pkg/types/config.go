@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -29,8 +30,10 @@ type Chain struct {
 	// Feature toggles
 	Build     Build    `name:"build" json:"build,omitempty" yaml:"build,omitempty"`
 	Cometmock *Feature `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock,omitempty"`
-	Faucet    *Faucet  `name:"facuet" json:"faucet,omitempty" yaml:"faucet,omitempty"`
 	ICS       *Feature `name:"ics" json:"ics,omitempty" yaml:"ics,omitempty"`
+	// Chain sidecars
+	Faucet  *Faucet  `name:"facuet" json:"faucet,omitempty" yaml:"faucet,omitempty"`
+	Exposer *Feature `name:"exposer" json:"exposer,omitempty" yaml:"exposer,omitempty"`
 	// Additional information
 	Ports     HostPort `name:"ports" json:"ports,omitempty" yaml:"ports,omitempty"`
 	Resources Resource `name:"resource" json:"resources,omitempty" yaml:"resources,omitempty"`
@@ -50,6 +53,46 @@ func (c *Chain) GetRPCAddr() string {
 
 func (c *Chain) GetRESTAddr() string {
 	return fmt.Sprintf("http://localhost:%d", c.Ports.Rest)
+}
+
+func (c *Chain) ToMap() (map[string]interface{}, error) {
+	var chainMap map[string]interface{}
+	oj, err := json.Marshal(c)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(oj, &chainMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return chainMap, nil
+}
+
+// Merge performs a strategic merge with the given chain, returns a new pointer
+func (c *Chain) Merge(chain *Chain) (*Chain, error) {
+	originalMap, err := c.ToMap()
+	if err != nil {
+		return nil, err
+	}
+	overrideMap, err := chain.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
+	mergedChain := &Chain{}
+	// note the order of args is important
+	mergedMap := mergeMaps(overrideMap, originalMap)
+	bz, err := json.Marshal(mergedMap)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bz, mergedChain)
+	if err != nil {
+		return nil, err
+	}
+
+	return mergedChain, nil
 }
 
 type ScriptData struct {
@@ -73,11 +116,13 @@ type Build struct {
 }
 
 type HostPort struct {
-	Rest    int `name:"rest" json:"rest" yaml:"rest"`
-	Rpc     int `name:"rpc" json:"rpc" yaml:"rpc"`
-	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
-	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
-	Faucet  int `name:"faucet" json:"faucet" yaml:"faucet"`
+	Rest       int `name:"rest" json:"rest" yaml:"rest"`
+	Rpc        int `name:"rpc" json:"rpc" yaml:"rpc"`
+	Grpc       int `name:"grpc" json:"grpc" yaml:"grpc"`
+	Exposer    int `name:"exposer" json:"exposer" yaml:"exposer"`
+	Faucet     int `name:"faucet" json:"faucet" yaml:"faucet"`
+	Prometheus int `name:"prometheus" json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+	Grafana    int `name:"grafana" json:"grafana,omitempty" yaml:"grafana,omitempty"`
 }
 
 func (p HostPort) GetPort(port string) int {
@@ -105,18 +150,29 @@ type Relayer struct {
 	Config   interface{} `name:"config" json:"config,omitempty" yaml:"config,omitempty"`
 }
 
+// Merge performs a stratigic merge between relayer and given
+// todo: implement, how to deal with Relayer.Config??
+func (r *Relayer) Merge(relayer *Relayer) *Relayer {
+	return r
+}
+
 type Faucet struct {
 	Enabled     bool     `name:"enabled" json:"enabled" yaml:"enabled"`
-	Type        string   `name:"type" json:"type" yaml:"type"`
-	Image       string   `name:"image" json:"image" yaml:"image"`
-	Ports       HostPort `name:"ports" json:"ports" yaml:"ports"`
+	Type        string   `name:"type" json:"type,omitempty" yaml:"type,omitempty"`
+	Image       string   `name:"image" json:"image,omitempty" yaml:"image,omitempty"`
+	Localhost   bool     `name:"localhost" json:"localhost,omitempty" yaml:"localhost,omitempty"`
+	Ports       HostPort `name:"ports" json:"ports,omitempty" yaml:"ports,omitempty"`
+	Resources   Resource `name:"resources" json:"resources,omitempty" yaml:"resources,omitempty"`
 	Concurrency int      `name:"concurrency" json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 }
 
 type Feature struct {
-	Enabled bool     `name:"enabled" json:"enabled" yaml:"enabled"`
-	Image   string   `name:"image" json:"image" yaml:"image"`
-	Ports   HostPort `name:"ports" json:"ports" yaml:"ports"`
+	Enabled   bool     `name:"enabled" json:"enabled" yaml:"enabled"`
+	Type      string   `name:"type" json:"type,omitempty" yaml:"type,omitempty"`
+	Image     string   `name:"image" json:"image,omitempty" yaml:"image,omitempty"`
+	Localhost bool     `name:"localhost" json:"localhost,omitempty" yaml:"localhost,omitempty"`
+	Ports     HostPort `name:"ports" json:"ports,omitempty" yaml:"ports,omitempty"`
+	Resources Resource `name:"resources" json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 func (f *Feature) GetRPCAddr() string {
@@ -133,10 +189,12 @@ func (f *Feature) GetRESTAddr() string {
 // todo: move this to a more common place, outside just tests
 // todo: can be moved to proto defination
 type Config struct {
-	Chains   []*Chain   `name:"chains" json:"chains" yaml:"chains"`
-	Relayers []*Relayer `name:"relayers" json:"relayers" yaml:"relayers"`
-	Explorer *Feature   `name:"explorer" json:"explorer" yaml:"explorer"`
-	Registry *Feature   `name:"registry" json:"registry" yaml:"registry"`
+	Timeouts   map[string]string `name:"timeouts" json:"timeouts,omitempty" yaml:"timeouts,omitempty"`
+	Chains     []*Chain          `name:"chains" json:"chains,omitempty" yaml:"chains,omitempty"`
+	Relayers   []*Relayer        `name:"relayers" json:"relayers,omitempty" yaml:"relayers,omitempty"`
+	Explorer   *Feature          `name:"explorer" json:"explorer,omitempty" yaml:"explorer,omitempty"`
+	Registry   *Feature          `name:"registry" json:"registry,omitempty" yaml:"registry,omitempty"`
+	Monitoring *Feature          `name:"monitoring" json:"monitoring,omitempty" yaml:"monitoring,omitempty"`
 }
 
 // HasChainId returns true if chain id found in list of chains
@@ -159,4 +217,21 @@ func (c *Config) GetChain(chainId string) *Chain {
 	}
 
 	return nil
+}
+
+// DefaultConfig is a struct that holds the default config for various aspects
+type DefaultConfig struct {
+	Timeouts map[string]string     `name:"timeouts" json:"timeouts" yaml:"timeouts"`
+	Chains   map[string]*Chain     `name:"chains" json:"chains" yaml:"chains"`
+	Relayers map[string]*Relayer   `name:"relayers" json:"relayers" yaml:"relayers"`
+	Faucets  map[string]*Faucet    `name:"faucets" json:"faucets" yaml:"faucets"`
+	Scripts  map[string]ScriptData `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
+	// chain sidecars
+	Exposer   *Feature `name:"exposer" json:"exposer,omitempty" yaml:"exposer,omitempty"`
+	Faucet    *Faucet  `name:"faucet" json:"faucet,omitempty" yaml:"faucet,omitempty"`
+	Cometmock *Feature `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock,omitempty"`
+	// feature toggles
+	Registry   *Feature `name:"registry" json:"registry,omitempty" yaml:"registry,omitempty"`
+	Explorer   *Feature `name:"explorer" json:"explorer,omitempty" yaml:"explorer,omitempty"`
+	Monitoring *Feature `name:"monitoring" json:"monitoring,omitempty" yaml:"monitoring,omitempty"`
 }

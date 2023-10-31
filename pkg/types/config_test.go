@@ -48,3 +48,126 @@ func TestHostPorts(t *testing.T) {
 		}
 	}
 }
+
+func TestMergeChains(t *testing.T) {
+	testCases := map[string]struct {
+		chain1   *Chain
+		chain2   *Chain
+		expected *Chain // merged chain
+	}{
+		"non-conflicting": {
+			chain1: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+			},
+			chain2: &Chain{
+				Type: "osmosis",
+				Home: "/root/.osmosisd",
+			},
+			expected: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Home: "/root/.osmosisd",
+			},
+		},
+		"override-values": {
+			chain1: &Chain{
+				Name: "osmosis-1",
+			},
+			chain2: &Chain{
+				Name: "osmosis-2",
+			},
+			expected: &Chain{
+				Name: "osmosis-1",
+			},
+		},
+		"num-override": {
+			chain1: &Chain{
+				Name:          "osmosis-1",
+				Type:          "osmosis",
+				NumValidators: 2,
+			},
+			chain2: &Chain{
+				Name:          "osmosis-1",
+				Type:          "osmosis",
+				NumValidators: 1,
+			},
+			expected: &Chain{
+				Name:          "osmosis-1",
+				Type:          "osmosis",
+				NumValidators: 2,
+			},
+		},
+		"bool-overrides": {
+			chain1: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: true,
+				},
+			},
+			chain2: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+			},
+			expected: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: true,
+				},
+			},
+		},
+		"reverse-bool-override": {
+			chain1: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+			},
+			chain2: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: true,
+				},
+			},
+			expected: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: true,
+				},
+			},
+		},
+		"explicit-overrides": {
+			chain1: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: false,
+				},
+			},
+			chain2: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: true,
+					Image:   "test-image",
+				},
+			},
+			expected: &Chain{
+				Name: "osmosis-1",
+				Type: "osmosis",
+				Exposer: &Feature{
+					Enabled: false,
+					Image:   "test-image",
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		merged, err := testCase.chain1.Merge(testCase.chain2)
+		require.NoError(t, err)
+		require.Equal(t, testCase.expected, merged)
+	}
+}

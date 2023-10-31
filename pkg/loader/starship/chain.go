@@ -70,24 +70,24 @@ func genesisInits(chainConfig types.Chain) ([]types.Init, error) {
 	envs := chainEnvVars(chainConfig)
 
 	command := `
-		VAL_INDEX=0
-		echo "Validator Index: $VAL_INDEX"
-		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
-			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-		fi
-	
-		if [ -f $CHAIN_DIR/config/genesis.json ]; then
-		  echo "Genesis file exists, exiting init container"
-		  exit 0
-		fi
-	
-		echo "Running setup genesis script..."
-		bash -e /scripts/create-genesis.sh
-		bash -e /scripts/update-genesis.sh
-	
-		echo "Create node id json file"
-		NODE_ID=$($CHAIN_BIN tendermint show-node-id)
-		echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
+VAL_INDEX=0
+echo "Validator Index: $VAL_INDEX"
+if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+	cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+fi
+
+if [ -f $CHAIN_DIR/config/genesis.json ]; then
+	echo "Genesis file exists, exiting init container"
+	exit 0
+fi
+
+echo "Running setup genesis script..."
+bash -e /scripts/create-genesis.sh
+bash -e /scripts/update-genesis.sh
+
+echo "Create node id json file"
+NODE_ID=$($CHAIN_BIN tendermint show-node-id)
+echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
 `
 	mounts := []types.Mount{
 		{
@@ -118,14 +118,14 @@ func genesisInits(chainConfig types.Chain) ([]types.Init, error) {
 
 	// init-config container
 	initCommand := `
-		VAL_INDEX=${HOSTNAME##*-}
-		echo "Validator Index: $VAL_INDEX"
-		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
-			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-		fi
+VAL_INDEX=${HOSTNAME##*-}
+echo "Validator Index: $VAL_INDEX"
+if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+	cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+fi
 
-		echo "Running setup config script..."
-		bash -e /scripts/update-config.sh
+echo "Running setup config script..."
+bash -e /scripts/update-config.sh
 `
 	configInit := types.Init{
 		Name:        "init-config",
@@ -154,8 +154,8 @@ func genesisInits(chainConfig types.Chain) ([]types.Init, error) {
 	// faucet init
 	if chainConfig.Faucet != nil && chainConfig.Faucet.Enabled {
 		faucetCmd := `
-			cp /bin/faucet /faucet/faucet
-			chmod +x /faucet/faucet
+cp /bin/faucet /faucet/faucet
+chmod +x /faucet/faucet
 `
 		faucetInit := types.Init{
 			Name:       "init-faucet",
@@ -188,32 +188,32 @@ func validatorInits(cc types.Chain) ([]types.Init, error) {
 	// depends on the underlying implmentation
 	envs = append(envs, types.EnvVar{"NODE_INDEX", "0"})
 
-	command := `
-      VAL_INDEX=${NODE_INDEX}
-	  echo "Validator Index: $VAL_INDEX"
-	  if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
-        cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-      fi
+	command := `|
+VAL_INDEX=${NODE_INDEX}
+echo "Validator Index: $VAL_INDEX"
+if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+	cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+fi
 
-	  if [ -f $CHAIN_DIR/config/genesis.json ]; then
-		echo "Genesis file exists, exiting early"
-		exit 0
-	  fi
+if [ -f $CHAIN_DIR/config/genesis.json ]; then
+	echo "Genesis file exists, exiting early"
+	exit 0
+fi
 
-	  VAL_NAME=$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX
-	  echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
+VAL_NAME=$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX
+echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME"
 
-	  echo "Recover validator $VAL_NAME"
-	  $CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
-	  jq -r ".validators[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --index $VAL_INDEX --recover --keyring-backend="test"
+echo "Recover validator $VAL_NAME"
+$CHAIN_BIN init $VAL_NAME --chain-id $CHAIN_ID
+jq -r ".validators[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $VAL_NAME --index $VAL_INDEX --recover --keyring-backend="test"
 
-	  curl http://$GENESIS_HOST:$GENESIS_PORT_EXPOSER/genesis -o $CHAIN_DIR/config/genesis.json
-	  echo "Genesis file that we got....."
-	  cat $CHAIN_DIR/config/genesis.json
+curl http://$GENESIS_HOST:$GENESIS_PORT_EXPOSER/genesis -o $CHAIN_DIR/config/genesis.json
+echo "Genesis file that we got....."
+cat $CHAIN_DIR/config/genesis.json
 
-	  echo "Create node id json file"
-	  NODE_ID=$($CHAIN_BIN tendermint show-node-id)
-	  echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
+echo "Create node id json file"
+NODE_ID=$($CHAIN_BIN tendermint show-node-id)
+echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
 `
 
 	validatorInit := types.Init{
@@ -227,15 +227,15 @@ func validatorInits(cc types.Chain) ([]types.Init, error) {
 	// init-config container
 	// Note: NODE_INDEX is an envrionment variable that is injected into
 	// the system in the transformer, but the initialization scripts can use it.
-	initCommand := `
-		VAL_INDEX=${NODE_INDEX}
-		echo "Validator Index: $VAL_INDEX"
-		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
-			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-		fi
+	initCommand := `|
+VAL_INDEX=${NODE_INDEX}
+echo "Validator Index: $VAL_INDEX"
+if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+	cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+fi
 
-		echo "Running setup config script..."
-		bash -e /scripts/update-config.sh
+echo "Running setup config script..."
+bash -e /scripts/update-config.sh
 `
 	configInit := types.Init{
 		Name:        "init-config",
@@ -379,33 +379,33 @@ func convertChainToNodeConfig(chainConfig types.Chain) ([]types.NodeConfig, erro
 	}
 
 	validatorCmd := `
-		set -eux
-		START_ARGS=""
-		
-		# Starting the chain
-		if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
-			cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
-			/usr/bin/cosmovisor start $START_ARGS
-		else
-			$CHAIN_BIN start $START_ARGS
-		fi
+set -eux
+START_ARGS=""
+
+# Starting the chain
+if [ -f $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN ]; then
+	cp $CHAIN_DIR/cosmovisor/genesis/bin/$CHAIN_BIN /usr/bin
+	/usr/bin/cosmovisor start $START_ARGS
+else
+	$CHAIN_BIN start $START_ARGS
+fi
 `
 	postStartCmd := `
-		set -eux
-		VAL_INDEX=${NODE_INDEX}
-		VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
-		echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
-		
-		VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
-		echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
-		bash -e /scripts/transfer-tokens.sh \
-		  $VAL_ADDR \
-		  $DENOM \
-		  http://$GENESIS_HOST:$GENESIS_PORT_FAUCET/credit \
-		  "$FAUCET_ENABLED" || true
-		
-		$CHAIN_BIN keys list --keyring-backend test | jq
-		VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
+set -eux
+VAL_INDEX=${NODE_INDEX}
+VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
+echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
+
+VAL_ADDR=$($CHAIN_BIN keys show $VAL_NAME -a --keyring-backend="test")
+echo "Transfer tokens to address $VAL_ADDR before trying to create validator. Best effort"
+bash -e /scripts/transfer-tokens.sh \
+	$VAL_ADDR \
+	$DENOM \
+	http://$GENESIS_HOST:$GENESIS_PORT_FAUCET/credit \
+	"$FAUCET_ENABLED" || true
+
+$CHAIN_BIN keys list --keyring-backend test | jq
+VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
 `
 
 	validatorNodes := types.NodeConfig{
@@ -414,7 +414,7 @@ func convertChainToNodeConfig(chainConfig types.Chain) ([]types.NodeConfig, erro
 		Controller:      "statefulset",
 		Image:           chainConfig.Image,
 		Port:            getChainPorts(chainConfig.Ports),
-		Command:         []string{"bash", "-c", validatorCmd},
+		Command:         []string{"bash", "\"-c\"", validatorCmd},
 		Init:            validatorInits,
 		DependsOn:       []*types.NodeConfig{&genesis},
 		Replicas:        chainConfig.NumValidators - 1,
@@ -422,7 +422,7 @@ func convertChainToNodeConfig(chainConfig types.Chain) ([]types.NodeConfig, erro
 		Resources:       chainConfig.Resources,
 		ImagePullPolicy: "IfNotPresent",
 		Mounts:          mounts,
-		PostStart:       []string{"bash", "-c", "-e", postStartCmd},
+		PostStart:       []string{"bash", "\"-c\"", "\"-e\"", postStartCmd},
 	}
 	allNodes = append(allNodes, validatorNodes)
 

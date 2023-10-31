@@ -17,7 +17,7 @@ func NewStarship(logger *zap.Logger) Starship {
 	return Starship{logger: logger}
 }
 
-func (s *Starship) LoadFile(files []string, defaultFile string) ([]types.NodeConfig, error) {
+func (s *Starship) LoadFile(files []string, defaultConfig types.DefaultConfig) ([]types.NodeConfig, error) {
 	if len(files) > 1 {
 		return nil, errors.New("loading from multiple files not supported, yet")
 	}

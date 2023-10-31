@@ -8,7 +8,7 @@ all: build run
 
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build -mod=readonly -o $(CURDIR)/build/ ./...
+	CGO_ENABLED=0 go build -o $(CURDIR)/build/ ./...
 
 RUN_ARGS = "../../tests/e2e/configs/two-chain.yaml"
 .PHONY: run

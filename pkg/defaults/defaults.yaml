@@ -1,8 +1,21 @@
+# Note: This file is embeded into the starship binary itself
+
+# Chain timeouts
+timeouts:
+  time_iota_ms: 10
+  timeout_propose: 400ms
+  timeout_propose_delta: 400ms
+  timeout_prevote: 400ms
+  timeout_prevote_delta: 400ms
+  timeout_precommit: 400ms
+  timeout_precommit_delta: 400ms
+  timeout_commit: 800ms
+
 # API for interacting with the charts for devnet
 # TODO: need a way to create state reaching jobs, those will run user bash scripts
 # after the chain has been initialized, get the chain to a state and then complete
 # Note: Order of `coins` matters, since we take the first one as part of gentx
-defaultChains:
+chains:
   osmosis:
     image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
     home: /root/.osmosisd
@@ -600,8 +613,79 @@ defaultChains:
           png: https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.png
           svg: https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.svg
         coingecko_id: neutron
+  eth:
+    storageClassName: hostpath
+    genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
+    joinNetwork: false
+    prysmCtl:
+      image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl:local-devnet
+      command: ["/app/cmd/prysmctl/prysmctl"]
+      args:
+        - testnet
+        - generate-genesis
+        - --fork=capella
+        - --num-validators=64
+        - --output-ssz=/ethereum/consensus/genesis.ssz
+        - --chain-config-file=/etc/config/config.yml
+        - --geth-genesis-json-in=/etc/config/genesis.json
+        - --geth-genesis-json-out=/ethereum/consensus/genesis.json
+    geth:
+      image: ethereum/client-go:latest
+      args:
+        - --nodiscover
+        - --http
+        - --http.api=eth,net,web3,debug
+        - --http.addr=0.0.0.0
+        - --http.corsdomain=*
+        - --ws
+        - --ws.api=eth,net,web3
+        - --ws.addr=0.0.0.0
+        - --ws.origins=*
+        - --http.vhosts=*
+        - --authrpc.vhosts=*
+        - --authrpc.addr=0.0.0.0
+        - --authrpc.jwtsecret=/etc/secrets/jwt.hex
+        - --datadir=/ethereum/execution
+        - --allow-insecure-unlock
+        - --unlock=0x123463a4B065722E99115D6c222f267d9cABb524
+        - --password=/dev/null
+        - --syncmode=full
+        - --networkid=32382
+    beaconChain:
+      image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.0.8
+      command: ["/app/cmd/beacon-chain/beacon-chain"]
+      args:
+        - --datadir=/ethereum/consensus/beacon
+        - --min-sync-peers=0
+        - --genesis-state=/ethereum/consensus/genesis.ssz
+        - --bootstrap-node=
+        - --interop-eth1data-votes
+        - --chain-config-file=/etc/config/config.yml
+        - --chain-id=32382
+        - --rpc-host=0.0.0.0
+        - --contract-deployment-block=0
+        - --grpc-gateway-host=0.0.0.0
+        - --execution-endpoint=http://localhost:8551
+        - --accept-terms-of-use
+        - --jwt-secret=/etc/secrets/jwt.hex
+        - --suggested-fee-recipient=0x123463a4B065722E99115D6c222f267d9cABb524
+        - --minimum-peers-per-subnet=0
+        - --enable-debug-rpc-endpoints
+    validator:
+      enabled: false
+      image: gcr.io/prysmaticlabs/prysm/validator:v4.0.8
+      command: ["/app/cmd/validator/validator"]
+      args:
+        - --accept-terms-of-use
+        - --beacon-rpc-provider=localhost:4000
+        - --datadir=/ethereum/consensus/validator
+        - --interop-num-validators=64
+        - --interop-start-index=0
+        - --force-clear-db
+        - --chain-config-file=/etc/config/config.yml
+        - --suggested-fee-recipient=0x0C46c2cAFE097b4f7e1BB868B89e5697eE65f934
 
-defaultRelayers:
+relayers:
   ts-relayer:
     image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
   hermes:
@@ -637,7 +721,7 @@ defaultRelayers:
   go-relayer:
     image: ghcr.io/cosmology-tech/starship/go-relayer:v2.4.1
 
-defaultScripts:
+scripts:
   createGenesis:
     name: create-genesis.sh
     file: scripts/default/create-genesis.sh
@@ -657,7 +741,7 @@ defaultScripts:
     name: build-chain.sh
     file: scripts/default/build-chain.sh
 
-defaultFaucet:
+faucets:
   cosmjs:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
@@ -665,5 +749,58 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/faucet:20230915-d75e5fd
     concurrency: 5
 
-defaultCometmock:
+cometmock:
   image: ghcr.io/informalsystems/cometmock:v0.37.x
+
+exposer:
+  enabled: true
+  image: ghcr.io/cosmology-tech/starship/exposer:20231011-cdbd60b
+  ports:
+    rest: 8081
+  resources:
+    cpu: "0.2"
+    memory: "200M"
+
+registry:
+  enabled: true
+  image: ghcr.io/cosmology-tech/starship/registry:20230915-6b2102d
+  localhost: true
+  ports:
+    rest: 6060
+    grpc: 7070
+  resources:
+    cpu: "0.2"
+    memory: "200M"
+
+explorer:
+  # Flag to enable explorer for cluster
+  enabled: false
+  type: ping-pub
+  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
+  localhost: true
+  ports:
+    rest: 8080
+  # Currently the ping-pub explorer is using alot of memory dues to building the site
+  # at runtime (with custom configs). Anything bellow 2Gi will crash the pods on startup
+  # todo: make this more efficient with faster startuptime
+  resources:
+    cpu: "1"
+    memory: "2Gi"
+
+faucet:
+  enabled: true
+  type: cosmjs
+  ports:
+    rest: 8000
+  resources:
+    cpu: "0.2"
+    memory: "200M"
+
+monitoring:
+  enabled: false
+  ports:
+    prometheus: 8011
+    grafana: 9011
+  resources:
+    cpu: "0.2"
+    memory: "400M"

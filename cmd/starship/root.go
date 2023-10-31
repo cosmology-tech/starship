@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/cosmology-tech/starship/pkg/defaults"
 	"github.com/cosmology-tech/starship/pkg/loader/starship"
 	"github.com/cosmology-tech/starship/pkg/transformer/kubernetes"
 	"github.com/cosmology-tech/starship/pkg/types"
@@ -126,9 +127,12 @@ func newGenerateCommand(config *Config) *cli.Command {
 				return cli.Exit(err, 1)
 			}
 
+			// default config
+			defaultConfig := defaults.DefaultConfig()
+
 			// convert config file to nodeConfig from loader
 			s := starship.NewStarship(log)
-			nodeConfigs, err := s.LoadFile([]string{config.ConfigFile}, "")
+			nodeConfigs, err := s.LoadFile([]string{config.ConfigFile}, defaultConfig)
 			if err != nil {
 				return cli.Exit(fmt.Sprintf("unable to load config to nodeconfigs, err: %s", err), 1)
 			}
