@@ -34,9 +34,15 @@ func MergeConfigs(config types.Config, defaultConfig types.DefaultConfig) (types
 		defaultChain.Timeouts = defaultConfig.Timeouts
 		defaultChain.Scripts = defaultConfig.Scripts
 		defaultChain.Exposer = defaultConfig.Exposer
+		// set default resources for the chain from resources.node
+		defaultChain.Resources = defaultConfig.Node.Resources
 
 		// merge defaultChain into chain
-		chains = append(chains, chain.Merge(defaultChain))
+		mc, err := chain.Merge(defaultChain)
+		if err != nil {
+			return types.Config{}, err
+		}
+		chains = append(chains, mc)
 	}
 
 	// merge relayers config
@@ -46,9 +52,39 @@ func MergeConfigs(config types.Config, defaultConfig types.DefaultConfig) (types
 		if !ok {
 			continue
 		}
+		defaultRelayer.Resources = defaultConfig.Node.Resources
 
 		relayers = append(relayers, relayer.Merge(defaultRelayer))
 	}
 
-	return types.Config{}, nil
+	mergedConfig := types.Config{
+		Chains:   chains,
+		Relayers: relayers,
+	}
+
+	if config.Registry != nil {
+		merged, err := config.Registry.Merge(defaultConfig.Registry)
+		if err != nil {
+			return types.Config{}, err
+		}
+		mergedConfig.Registry = merged
+	}
+
+	if config.Explorer != nil {
+		merged, err := config.Explorer.Merge(defaultConfig.Explorer)
+		if err != nil {
+			return types.Config{}, err
+		}
+		mergedConfig.Explorer = merged
+	}
+
+	if config.Monitoring != nil {
+		merged, err := config.Monitoring.Merge(defaultConfig.Monitoring)
+		if err != nil {
+			return types.Config{}, err
+		}
+		mergedConfig.Monitoring = merged
+	}
+
+	return mergedConfig, nil
 }

@@ -142,12 +142,13 @@ func (p HostPort) GetPort(port string) int {
 }
 
 type Relayer struct {
-	Name     string      `name:"name" json:"name" yaml:"name"`
-	Type     string      `name:"type" json:"type" yaml:"type"`
-	Image    string      `name:"image" json:"image,omitempty" yaml:"image,omitempty"`
-	Replicas int         `name:"replicas" json:"replicas" yaml:"replicas"`
-	Chains   []string    `name:"chains" json:"chains" yaml:"chains"`
-	Config   interface{} `name:"config" json:"config,omitempty" yaml:"config,omitempty"`
+	Name      string      `name:"name" json:"name" yaml:"name"`
+	Type      string      `name:"type" json:"type" yaml:"type"`
+	Image     string      `name:"image" json:"image,omitempty" yaml:"image,omitempty"`
+	Replicas  int         `name:"replicas" json:"replicas" yaml:"replicas"`
+	Chains    []string    `name:"chains" json:"chains" yaml:"chains"`
+	Config    interface{} `name:"config" json:"config,omitempty" yaml:"config,omitempty"`
+	Resources Resource    `name:"resources" json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // Merge performs a stratigic merge between relayer and given
@@ -181,6 +182,45 @@ func (f *Feature) GetRPCAddr() string {
 
 func (f *Feature) GetRESTAddr() string {
 	return fmt.Sprintf("http://localhost:%d", f.Ports.Rest)
+}
+
+func (f *Feature) ToMap() (map[string]interface{}, error) {
+	var newMap map[string]interface{}
+	oj, err := json.Marshal(f)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(oj, &newMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return newMap, nil
+}
+
+func (f *Feature) Merge(other *Feature) (*Feature, error) {
+	originalMap, err := f.ToMap()
+	if err != nil {
+		return nil, err
+	}
+	overrideMap, err := other.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
+	merged := &Feature{}
+	// note the order of args is important
+	mergedMap := mergeMaps(overrideMap, originalMap)
+	bz, err := json.Marshal(mergedMap)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bz, merged)
+	if err != nil {
+		return nil, err
+	}
+
+	return merged, nil
 }
 
 // Config is the struct for the config.yaml setup file
@@ -234,4 +274,11 @@ type DefaultConfig struct {
 	Registry   *Feature `name:"registry" json:"registry,omitempty" yaml:"registry,omitempty"`
 	Explorer   *Feature `name:"explorer" json:"explorer,omitempty" yaml:"explorer,omitempty"`
 	Monitoring *Feature `name:"monitoring" json:"monitoring,omitempty" yaml:"monitoring,omitempty"`
+	// default resources
+	Node DefaultResource `name:"node" json:"node,omitempty" yaml:"node,omitempty"`
+	Wait DefaultResource `name:"wait" json:"wait,omitempty" yaml:"wait,omitempty"`
+}
+
+type DefaultResource struct {
+	Resources Resource `name:"resources" json:"resources,omitempty" yaml:"resources,omitempty"`
 }
