@@ -3,7 +3,7 @@ module github.com/cosmology-tech/starship/exposer
 go 1.21
 
 require (
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.2
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
