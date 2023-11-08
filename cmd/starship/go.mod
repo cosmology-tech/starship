@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/gofrs/flock v0.8.1
-	github.com/urfave/cli/v2 v2.25.3
+	github.com/urfave/cli/v2 v2.25.7
 	go.uber.org/zap v1.24.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.12.0
@@ -14,7 +14,7 @@ require (
 require (
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230106234847-43070de90fa1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
-	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
