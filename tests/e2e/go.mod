@@ -6,7 +6,7 @@ require (
 	github.com/cosmology-tech/starship/exposer v0.0.0-20230413092908-7da9e8a24b31
 	github.com/cosmology-tech/starship/registry v0.0.0-20230411094226-129001b2f52a
 	github.com/golang/protobuf v1.5.3
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.24.0
 	google.golang.org/protobuf v1.29.1
 	gopkg.in/yaml.v3 v3.0.1
