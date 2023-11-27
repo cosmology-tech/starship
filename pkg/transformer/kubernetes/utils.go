@@ -125,11 +125,13 @@ func InitContainers(nodeConfig types.NodeConfig) ([]api.Container, error) {
 	volumeMounts := VolumeMountsFromNodeConfig(nodeConfig)
 
 	// add init-wait containers based on nodeConfig.DependsOn
-	waitInitContainer, err := InitWaitContainer(nodeConfig)
-	if err != nil {
-		return nil, err
+	if len(nodeConfig.DependsOn) > 0 {
+		waitInitContainer, err := InitWaitContainer(nodeConfig)
+		if err != nil {
+			return nil, err
+		}
+		initContainers = append(initContainers, waitInitContainer)
 	}
-	initContainers = append(initContainers, waitInitContainer)
 
 	for _, init := range nodeConfig.Init {
 		envs := []api.EnvVar{}
