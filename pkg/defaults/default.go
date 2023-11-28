@@ -54,7 +54,11 @@ func MergeConfigs(config types.Config, defaultConfig types.DefaultConfig) (types
 		}
 		defaultRelayer.Resources = defaultConfig.Node.Resources
 
-		relayers = append(relayers, relayer.Merge(defaultRelayer))
+		mr, err := relayer.Merge(defaultRelayer)
+		if err != nil {
+			return types.Config{}, err
+		}
+		relayers = append(relayers, mr)
 	}
 
 	mergedConfig := types.Config{

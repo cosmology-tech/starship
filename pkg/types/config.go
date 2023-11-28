@@ -153,8 +153,8 @@ type Relayer struct {
 
 // Merge performs a stratigic merge between relayer and given
 // todo: implement, how to deal with Relayer.Config??
-func (r *Relayer) Merge(relayer *Relayer) *Relayer {
-	return r
+func (r *Relayer) Merge(relayer *Relayer) (*Relayer, error) {
+	return r, nil
 }
 
 type Faucet struct {

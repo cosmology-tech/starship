@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"fmt"
 	"github.com/cosmology-tech/starship/pkg/types"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -32,7 +33,8 @@ const (
 func (k *Kubernetes) configAllLabels(name string, labels map[string]string) map[string]string {
 	base := ConfigLabels(name)
 	for key, v := range labels {
-		base[key] = v
+		newKey := fmt.Sprintf("apps.kubernetes.io/%s", key)
+		base[newKey] = v
 	}
 	return base
 }
@@ -49,16 +51,19 @@ func (k *Kubernetes) nodeConfigToStatefulSets(nodeConfig types.NodeConfig) (*app
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   nodeConfig.ContainerName,
-			Labels: k.configAllLabels(nodeConfig.ContainerName, nodeConfig.Labels),
+			Name: nodeConfig.ContainerName,
 		},
 		Spec: appsv1.StatefulSetSpec{
 			Replicas: &rp,
 			Template: api.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels:      k.configAllLabels(nodeConfig.ContainerName, nodeConfig.Labels),
+					Annotations: nodeConfig.Annotations,
+				},
 				Spec: podSpec,
 			},
 			Selector: &metav1.LabelSelector{
-				MatchLabels: ConfigLabels(nodeConfig.ContainerName),
+				MatchLabels: k.configAllLabels(nodeConfig.ContainerName, nodeConfig.Labels),
 			},
 			ServiceName: nodeConfig.ContainerName,
 		},

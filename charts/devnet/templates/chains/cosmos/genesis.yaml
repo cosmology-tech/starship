@@ -87,6 +87,7 @@ spec:
               value: "{{ $chain.numValidators }}"
           command:
             - bash
+            -
             - "-c"
             - |
               VAL_INDEX=${HOSTNAME##*-}

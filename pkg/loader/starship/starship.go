@@ -2,6 +2,7 @@ package starship
 
 import (
 	"errors"
+	"github.com/cosmology-tech/starship/pkg/defaults"
 	"github.com/cosmology-tech/starship/pkg/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
@@ -23,11 +24,11 @@ func (s *Starship) LoadFile(files []string, defaultConfig types.DefaultConfig) (
 	}
 	config, err := s.loadConfig(files[0])
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
-	// todo: override defaults into config
+	mergedConfig, err := defaults.MergeConfigs(config, defaultConfig)
 
-	return convertConfigToObject(config)
+	return convertConfigToObject(mergedConfig)
 }
 
 // loadConfig reads the file into config object

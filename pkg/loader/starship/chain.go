@@ -341,21 +341,33 @@ func convertChainToNodeConfig(chainConfig types.Chain) ([]types.NodeConfig, erro
 		return nil, err
 	}
 
+	envs := chainEnvVars(chainConfig)
+
 	// initialize genesis node
 	genesis := types.NodeConfig{
-		Name:            fmt.Sprintf("%s-genesis", chainConfig.Name),
-		ContainerName:   strings.Replace(fmt.Sprintf("%s-genesis", chainConfig.Name), "_", "-", -1),
-		Controller:      "statefulset", // this is specific to k8s, and is ignored for others
-		Image:           chainConfig.Image,
-		Port:            getChainPorts(chainConfig.Ports),
-		Command:         nil,
-		ScriptFiles:     nil,
-		WorkingDir:      "",
-		Init:            inits,
-		DependsOn:       nil,
-		Replicas:        1,
-		Labels:          nil,
-		Annotations:     nil,
+		Name:          fmt.Sprintf("%s-genesis", chainConfig.Name),
+		ContainerName: strings.Replace(fmt.Sprintf("%s-genesis", chainConfig.Name), "_", "-", -1),
+		Controller:    "statefulset", // this is specific to k8s, and is ignored for others
+		Image:         chainConfig.Image,
+		Port:          getChainPorts(chainConfig.Ports),
+		Environment:   envs,
+		Command:       nil,
+		ScriptFiles:   nil,
+		WorkingDir:    "",
+		Init:          inits,
+		DependsOn:     nil,
+		Replicas:      1,
+		Labels: map[string]string{
+			"instance": chainConfig.GetName(),
+			"type":     chainConfig.Type,
+			"rawname":  chainConfig.Name,
+		},
+		Annotations: map[string]string{
+			"quality": "release",
+			"role":    "node",
+			"sla":     "medium",
+			"tier":    "genesis",
+		},
 		Sidecars:        []*types.NodeConfig{&exposer},
 		Resources:       chainConfig.Resources,
 		ImagePullPolicy: "IfNotPresent",
@@ -413,6 +425,7 @@ VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
 		ContainerName:   strings.Replace(fmt.Sprintf("%s-validator", chainConfig.Name), "_", "-", -1),
 		Controller:      "statefulset",
 		Image:           chainConfig.Image,
+		Environment:     envs,
 		Port:            getChainPorts(chainConfig.Ports),
 		Command:         []string{"bash", "\"-c\"", validatorCmd},
 		Init:            validatorInits,
@@ -422,7 +435,18 @@ VAL_NAME=$VAL_NAME bash -e /scripts/create-validator.sh
 		Resources:       chainConfig.Resources,
 		ImagePullPolicy: "IfNotPresent",
 		Mounts:          mounts,
-		PostStart:       []string{"bash", "\"-c\"", "\"-e\"", postStartCmd},
+		Labels: map[string]string{
+			"instance": chainConfig.GetName(),
+			"type":     chainConfig.Type,
+			"rawname":  chainConfig.Name,
+		},
+		Annotations: map[string]string{
+			"quality": "release",
+			"role":    "node",
+			"sla":     "medium",
+			"tier":    "validator",
+		},
+		PostStart: []string{"bash", "\"-c\"", "\"-e\"", postStartCmd},
 	}
 	allNodes = append(allNodes, validatorNodes)
 
