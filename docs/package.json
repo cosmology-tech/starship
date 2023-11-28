@@ -17,7 +17,7 @@
     "deploy:all": "npm run export && npm run deploy && ./seo/prepare.sh"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.6",
+    "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.10.6",
     "framer-motion": "^9.0.7",
     "gh-pages": "^5.0.0",
