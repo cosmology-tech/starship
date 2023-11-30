@@ -6,7 +6,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/go-chi/render v1.0.2
 	github.com/golang/protobuf v1.5.3
-	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
 	github.com/urfave/cli v1.22.12
 	go.uber.org/zap v1.24.0
