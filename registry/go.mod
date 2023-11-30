@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
