@@ -3,7 +3,7 @@ module github.com/cosmology-tech/starship/faucet
 go 1.21
 
 require (
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/urfave/cli v1.22.14
