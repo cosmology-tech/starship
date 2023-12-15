@@ -14,6 +14,7 @@ message Keys {
   repeated Mnemonic validators = 2;
   repeated Mnemonic keys = 3;
   repeated Mnemonic relayers = 4;
+  repeated Mnemonic faucet = 5;
 }
 
 message TypeKey {
