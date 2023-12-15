@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - anmol/bug-faucet-relayer # build debug docker images
     paths:
       - "docker/**"
       - ".github/workflows/docker.yaml"
