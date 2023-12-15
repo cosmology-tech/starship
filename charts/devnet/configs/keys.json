@@ -13,6 +13,13 @@
       "mnemonic": "issue have volume expire shoe year finish poem alien urban license undo rural endless food host opera fix forum crack wide example firm learn"
     }
   ],
+  "faucet": [
+    {
+      "name": "faucet",
+      "type": "local",
+      "mnemonic": "chimney become stuff spoil resource supply picture divorce casual curve check web valid survey zebra various pet sphere timber friend faint blame mansion film"
+    }
+  ],
   "keys": [
     {
       "name": "test1",

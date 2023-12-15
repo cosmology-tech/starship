@@ -271,12 +271,13 @@ spec:
               done
 
               export FAUCET_PATH_PATTERN="${HD_PATH:0:$((${#HD_PATH}-1))}a"
-              export FAUCET_MNEMONIC=$(jq -r ".genesis[0].mnemonic" /configs/keys.json)
+              export FAUCET_MNEMONIC=$(jq -r ".faucet[0].mnemonic" /configs/keys.json)
 
               echo "FAUCET_MNEMONIC: $FAUCET_MNEMONIC"
               echo "FAUCET_PATH_PATTERN: $FAUCET_PATH_PATTERN"
 
               export | grep "FAUCET"
+              sleep 30
               /app/packages/faucet/bin/cosmos-faucet-dist start "http://localhost:26657"
           volumeMounts:
             - mountPath: /configs
@@ -324,9 +325,10 @@ spec:
                   fi
               done
 
-              export FAUCET_MNEMONIC=$(jq -r ".genesis[0].mnemonic" /configs/keys.json)
+              export FAUCET_MNEMONIC=$(jq -r ".faucet[0].mnemonic" /configs/keys.json)
 
               export | grep "FAUCET"
+              sleep 30
               /faucet/faucet --credit-coins="$CREDIT_COINS" --chain-fees="$FEES"
           volumeMounts:
             - mountPath: /configs
