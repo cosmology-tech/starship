@@ -19,6 +19,17 @@ echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
+
+# Add faucet key to the keyring and self delegate initial coins
+echo "Adding key...." $(jq -r ".faucet[0].name" $KEYS_CONFIG)
+jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
+# Add relayer key and delegate tokens
+echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
+jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
 echo "Creating gentx..."
 $CHAIN_BIN $CHAIN_GENESIS_CMD gentx $(jq -r ".genesis[0].name" $KEYS_CONFIG) 5000000000$DENOM --keyring-backend="test" --chain-id $CHAIN_ID
 
