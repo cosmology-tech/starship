@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/gofrs/flock v0.8.1
-	github.com/urfave/cli/v2 v2.25.3
+	github.com/urfave/cli/v2 v2.26.0
 	go.uber.org/zap v1.26.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.12.0
