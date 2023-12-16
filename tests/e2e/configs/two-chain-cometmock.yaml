@@ -23,4 +23,4 @@ chains:
       exposer: 38087
 
 exposer:
-  image: anmol1696/exposer:20231011-1f81895
+  image: ghcr.io/cosmology-tech/starship/exposer:20231215-7c22b86

@@ -210,6 +210,7 @@ spec:
                   - "-c"
                   - "-e"
                   - |
+                    sleep 30
                     set -eux
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
