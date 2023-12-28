@@ -69,6 +69,11 @@ function cosmos-sdk-version-v50() {
 function cosmos-sdk-version-default() {
   # Run create validator tx command
   echo "Running txn for create-validator"
+  args=""
+  if [[ $($CHAIN_BIN tx staking create-validator --help | grep "min-self-delegation" -c) -gt 0 ]];
+  then
+    args+="--min-self-delegation=\"1000000\""
+  fi
   $CHAIN_BIN tx staking create-validator \
     --node $NODE_URL \
     --pubkey=$($CHAIN_BIN tendermint show-validator $NODE_ARGS) \
@@ -79,12 +84,11 @@ function cosmos-sdk-version-default() {
     --commission-rate="0.10" \
     --commission-max-rate="0.20" \
     --commission-max-change-rate="0.01" \
-    --min-self-delegation="1000000" \
     --keyring-backend="test" \
     --fees 100000$DENOM \
     --gas $GAS \
     --output json \
-    --gas-adjustment 1.5 $NODE_ARGS --yes > /validator.log
+    --gas-adjustment 1.5 $args $NODE_ARGS --yes > /validator.log
 
   cat /validator.log | jq
 }
