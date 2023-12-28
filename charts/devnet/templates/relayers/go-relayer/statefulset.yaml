@@ -54,6 +54,8 @@ spec:
             - bash
             - "-c"
             - |
+              set -ux
+
               RLY_INDEX=${HOSTNAME##*-}
               MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
 
@@ -70,7 +72,7 @@ spec:
 
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(rly address "{{ $fullchain.name }}" | awk 'END{print}')
-              echo "Relayer address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM
+              echo "Relayer address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM"
               {{- end }}
 
               PATHEND="{{ index $relayer.chains 0 }}-{{ index $relayer.chains 1 }}"
@@ -89,6 +91,9 @@ spec:
 
               echo "Creating a connection on $PATHEND"
               rly transact connection $PATHEND
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
           volumeMounts:
             - mountPath: /root
               name: relayer
