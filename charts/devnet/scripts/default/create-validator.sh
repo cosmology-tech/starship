@@ -70,7 +70,7 @@ function cosmos-sdk-version-default() {
   # Run create validator tx command
   echo "Running txn for create-validator"
   args=""
-  if [[ $($CHAIN_BIN tx staking create-validator --help | grep "min-self-delegation" -c) -gt 0 ]];
+  if [[ $($CHAIN_BIN tx staking create-validator --help | grep -c "min-self-delegation") -gt 0 ]];
   then
     args+="--min-self-delegation=\"1000000\""
   fi
