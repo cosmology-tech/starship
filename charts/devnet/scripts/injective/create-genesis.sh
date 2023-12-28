@@ -72,6 +72,18 @@ yes "$USER10_MNEMONIC" | $CHAIN_BIN keys add $USER10_KEY --recover --keyring-bac
 echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account --chain-id $CHAIN_ID $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") 1000000000000000000000000inj,1000000000000000000000000atom,100000000000000000000000000peggy0xdAC17F958D2ee523a2206206994597C13D831ec7,100000000000000000000000000peggy0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 --keyring-backend="test"
+
+# Add relayer keys to the keyring and self delegate initial coins
+echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
+jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account --chain-id $CHAIN_ID $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") 1000000000000000000000000inj --keyring-backend="test"
+
+# Add faucet keys to the keyring and self delegate initial coins
+echo "Adding key...." $(jq -r ".faucet[0].name" $KEYS_CONFIG)
+jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account --chain-id $CHAIN_ID $($CHAIN_BIN keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") 1000000000000000000000000inj --keyring-backend="test"
+
+
 # zero address account
 $CHAIN_BIN add-genesis-account --chain-id $CHAIN_ID inj1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe2hm49 1inj
 

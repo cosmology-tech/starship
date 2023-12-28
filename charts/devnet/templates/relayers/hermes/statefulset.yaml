@@ -74,7 +74,7 @@ spec:
               hermes keys add \
                 --chain {{ $chain }} \
                 --mnemonic-file $RELAYER_DIR/mnemonic.txt \
-                --key-name {{ $chain }}
+                --key-name {{ $chain }} \
                 --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
