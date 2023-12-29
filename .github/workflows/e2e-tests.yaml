@@ -24,7 +24,7 @@ jobs:
           - "two-chain.yaml"
           - "build-chain.yaml"
           - "multi-validator.yaml"
-          #- "two-chain-gorelayer.yaml"
+          - "two-chain-gorelayer.yaml"
           - "simapp.yaml"
           - "injective.yaml"
           - "evmos.yaml"

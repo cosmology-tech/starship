@@ -4,7 +4,7 @@
 # Note: Order of `coins` matters, since we take the first one as part of gentx
 defaultChains:
   osmosis:
-    image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
+    image: ghcr.io/cosmology-tech/starship/osmosis:v21.0.0
     home: /root/.osmosisd
     binary: osmosisd
     prefix: osmo
@@ -45,7 +45,7 @@ defaultChains:
         coingecko_id: ion
         keywords: ["memecoin"]
   juno:
-    image: ghcr.io/cosmology-tech/starship/juno:v15.0.0
+    image: ghcr.io/cosmology-tech/starship/juno:v18.0.0
     home: /root/.juno
     binary: junod
     prefix: juno
@@ -82,7 +82,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmos:
-    image: ghcr.io/cosmology-tech/starship/gaia:v9.1.1
+    image: ghcr.io/cosmology-tech/starship/gaia:v14.1.0
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
@@ -733,7 +733,7 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
   starship:
-    image: ghcr.io/cosmology-tech/starship/faucet:20230915-d75e5fd
+    image: ghcr.io/cosmology-tech/starship/faucet:20231216-4ce4f5b
     concurrency: 5
 
 defaultCometmock:

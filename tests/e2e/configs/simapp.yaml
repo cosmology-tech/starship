@@ -1,3 +1,8 @@
+images:
+  ## Explicitly set image pull policy to always, since we are using the latest tag of the imgaes (which might be cached)
+  ## NOTE: by default this is set to IfNotPresent to avoid pulling image incase it is already present
+  imagePullPolicy: Always
+
 chains:
   - name: simapp
     type: simapp
