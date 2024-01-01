@@ -43,7 +43,10 @@ service Exposer {
     option (google.api.http) = { get: "/node_key" };
   }
   // Service functions for Relayer
-  // 
+  // CreateChannel creates channel between 2 given chains
+  rpc CreateChannel(RequestCreateChannel) returns (ResponseCreateChannel) {
+    option (google.api.http) = { post: "/create_channel", body: "*" };
+  }
 }
 
 message ResponseNodeID {
@@ -57,4 +60,20 @@ message ResponsePubKey {
 
 message ResponseFileData {
   bytes data = 1;
+}
+
+message RequestCreateChannel {
+  string a_chain = 1 [ json_name = "a_chain" ];
+  // if a_connection is not specified then a new connection is formed
+  optional string a_connection = 2 [ json_name = "a_connection" ];
+  // needs to be defined if a_connection is not defined
+  optional string b_chain = 3 [ json_name = "b_chain" ];
+  string a_port = 4 [ json_name = "a_port" ];
+  string b_port = 5 [ json_name = "b_port" ];
+  optional string channel_version = 6 [ json_name = "channel_version" ];
+  optional string order = 7;
+}
+
+message ResponseCreateChannel {
+  string status = 1;
 }

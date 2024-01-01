@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -24,6 +25,8 @@ import (
 
 type AppServer struct {
 	pb.UnimplementedExposerServer
+
+	mu sync.Mutex
 
 	config *Config
 	logger *zap.Logger

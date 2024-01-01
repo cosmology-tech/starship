@@ -28,6 +28,7 @@ const (
 	Exposer_GetPrivKey_FullMethodName            = "/exposer.Exposer/GetPrivKey"
 	Exposer_GetPrivValidatorState_FullMethodName = "/exposer.Exposer/GetPrivValidatorState"
 	Exposer_GetNodeKey_FullMethodName            = "/exposer.Exposer/GetNodeKey"
+	Exposer_CreateChannel_FullMethodName         = "/exposer.Exposer/CreateChannel"
 )
 
 // ExposerClient is the client API for Exposer service.
@@ -48,6 +49,9 @@ type ExposerClient interface {
 	GetPrivValidatorState(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PrivValidatorState, error)
 	// GetNodeKey returns the keys of the node
 	GetNodeKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NodeKey, error)
+	// Service functions for Relayer
+	// CreateChannel creates channel between 2 given chains
+	CreateChannel(ctx context.Context, in *RequestCreateChannel, opts ...grpc.CallOption) (*ResponseCreateChannel, error)
 }
 
 type exposerClient struct {
@@ -121,6 +125,15 @@ func (c *exposerClient) GetNodeKey(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
+func (c *exposerClient) CreateChannel(ctx context.Context, in *RequestCreateChannel, opts ...grpc.CallOption) (*ResponseCreateChannel, error) {
+	out := new(ResponseCreateChannel)
+	err := c.cc.Invoke(ctx, Exposer_CreateChannel_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ExposerServer is the server API for Exposer service.
 // All implementations must embed UnimplementedExposerServer
 // for forward compatibility
@@ -139,6 +152,9 @@ type ExposerServer interface {
 	GetPrivValidatorState(context.Context, *emptypb.Empty) (*PrivValidatorState, error)
 	// GetNodeKey returns the keys of the node
 	GetNodeKey(context.Context, *emptypb.Empty) (*NodeKey, error)
+	// Service functions for Relayer
+	// CreateChannel creates channel between 2 given chains
+	CreateChannel(context.Context, *RequestCreateChannel) (*ResponseCreateChannel, error)
 	mustEmbedUnimplementedExposerServer()
 }
 
@@ -166,6 +182,9 @@ func (UnimplementedExposerServer) GetPrivValidatorState(context.Context, *emptyp
 }
 func (UnimplementedExposerServer) GetNodeKey(context.Context, *emptypb.Empty) (*NodeKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNodeKey not implemented")
+}
+func (UnimplementedExposerServer) CreateChannel(context.Context, *RequestCreateChannel) (*ResponseCreateChannel, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateChannel not implemented")
 }
 func (UnimplementedExposerServer) mustEmbedUnimplementedExposerServer() {}
 
@@ -306,6 +325,24 @@ func _Exposer_GetNodeKey_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Exposer_CreateChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestCreateChannel)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExposerServer).CreateChannel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Exposer_CreateChannel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExposerServer).CreateChannel(ctx, req.(*RequestCreateChannel))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Exposer_ServiceDesc is the grpc.ServiceDesc for Exposer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -340,6 +377,10 @@ var Exposer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetNodeKey",
 			Handler:    _Exposer_GetNodeKey_Handler,
+		},
+		{
+			MethodName: "CreateChannel",
+			Handler:    _Exposer_CreateChannel_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
