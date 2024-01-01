@@ -42,6 +42,8 @@ service Exposer {
   rpc GetNodeKey(google.protobuf.Empty) returns (NodeKey) {
     option (google.api.http) = { get: "/node_key" };
   }
+  // Service functions for Relayer
+  // 
 }
 
 message ResponseNodeID {
