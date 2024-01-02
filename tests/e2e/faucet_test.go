@@ -89,6 +89,16 @@ func (s *TestSuite) getChainDenoms(chain *Chain) string {
 	return respChain.Fees.FeeTokens[0].Denom
 }
 
+func (s *TestSuite) getIBCData(aChain, bChain string) *pb.IBCData {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/ibc/%s/%s", aChain, bChain), nil)
+	s.Require().NoError(err)
+
+	ibcData := &pb.IBCData{}
+	s.MakeRegistryRequest(req, ibcData)
+
+	return ibcData
+}
+
 func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string) float64 {
 	data := map[string]interface{}{}
 	s.MakeChainGetRequest(chain, fmt.Sprintf("/cosmos/bank/v1beta1/balances/%s", address), &data)

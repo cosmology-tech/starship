@@ -257,9 +257,7 @@ func (a *AppServer) ListIBC(ctx context.Context, _ *emptypb.Empty) (*pb.Response
 			return nil, err
 		}
 
-		for _, info := range infos {
-			resData = append(resData, info.ToProto())
-		}
+		resData = append(resData, infos.ToProto()...)
 	}
 
 	return &pb.ResponseListIBC{Data: resData}, nil

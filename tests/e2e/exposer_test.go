@@ -160,6 +160,8 @@ func (s *TestSuite) TestExposer_CreateChannel() {
 		}
 
 		// get number of channels before creating channel
+		ibcDataBefore := s.getIBCData(relayer.Chains[0], relayer.Chains[1])
+		s.Require().GreaterOrEqual(len(ibcDataBefore.Channels), 1, ibcDataBefore)
 
 		body := map[string]string{
 			"a_chain":      relayer.Chains[0],
@@ -179,6 +181,10 @@ func (s *TestSuite) TestExposer_CreateChannel() {
 		err = json.NewDecoder(resp).Decode(&res)
 		s.Require().NoError(err)
 
-		s.Require().Contains("SUCCESS Channel", res["status"].(string), "response from exposer creaste_channel", res)
+		s.Require().Contains(res["status"].(string), "SUCCESS Channel", "response from exposer creaste_channel", res)
+
+		// get number of channels after creating channel
+		ibcDataAfter := s.getIBCData(relayer.Chains[0], relayer.Chains[1])
+		s.Require().Len(ibcDataAfter.Channels, len(ibcDataBefore.Channels)+1, "number of channels should be 1 more then before", ibcDataAfter)
 	}
 }
