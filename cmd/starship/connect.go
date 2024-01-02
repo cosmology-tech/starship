@@ -22,6 +22,10 @@ var defaultPorts = map[string]map[string]int{
 		"faucet":  8000,
 		"exposer": 8081,
 	},
+	"relayer": {
+		"rest":    3000,
+		"exposer": 8081,
+	},
 	"explorer": {
 		"rest": 8080,
 	},
@@ -71,6 +75,16 @@ func (c *Client) PortForwardCmds() ([]*exec.Cmd, []string, error) {
 			}
 			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", chain.GetName(), portType, port))
 			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-%s-0", chain.GetName(), podName), port, remotePort))
+		}
+	}
+	for _, relayer := range config.Relayers {
+		for portType, remotePort := range defaultPorts["relayer"] {
+			port := relayer.Ports.GetPort(portType)
+			if port == 0 {
+				continue
+			}
+			msgs = append(msgs, fmt.Sprintf("port-forwarding: %s: port %s: to: http://localhost:%d", relayer.GetName(), portType, port))
+			cmds = append(cmds, c.execPortForwardCmd(fmt.Sprintf("pods/%s-0", relayer.GetName()), port, remotePort))
 		}
 	}
 	// port-forward explorer

@@ -108,3 +108,26 @@ func (s *TestSuite) TestChains_StakingParams() {
 
 	s.Require().Equal(expUnbondingTime, data["params"].(map[string]interface{})["unbonding_time"])
 }
+
+func (s *TestSuite) TestRelayers_State() {
+	if s.config.Relayers == nil {
+		s.T().Skip("No relayer found")
+	}
+
+	for _, relayer := range s.config.Relayers {
+		if relayer.Type != "hermes" || relayer.Ports.Rest == 0 {
+			continue
+		}
+
+		url := fmt.Sprintf("http://0.0.0.0:%d/state", relayer.Ports.Rest)
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		s.Require().NoError(err)
+		body := s.MakeRequest(req, 200)
+		data := map[string]interface{}{}
+
+		err = json.NewDecoder(body).Decode(&data)
+		s.Require().NoError(err)
+
+		s.Require().Equal("success", data["status"].(string))
+	}
+}
