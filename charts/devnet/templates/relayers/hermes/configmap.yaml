@@ -84,6 +84,13 @@ data:
     port = {{ $relayer.config.telemetry.port }}
     {{- range $i, $chain := $relayer.chains }}
     {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
+    {{/*Read chain specific config from `relayer.config.chains` into chainConfig*/}}
+    {{ $chainConfig := dict }}
+    {{- range $config := $relayer.config.chains }}
+    {{- if eq $config.id $chain }}
+    {{- $chainConfig = $config }}
+    {{- end }}
+    {{- end }}
     [[chains]]
     id = "{{ $chain }}"
     key_name = "{{ $chain }}"
