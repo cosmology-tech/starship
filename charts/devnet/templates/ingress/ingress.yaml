@@ -113,5 +113,6 @@ spec:
                 port:
                   name: exposer
     {{- end }}
+    {{- end }}
 ---
 {{- end }}
