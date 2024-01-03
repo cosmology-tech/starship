@@ -1,6 +1,8 @@
 package e2e
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	urlpkg "net/url"
@@ -143,4 +145,46 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	s.Require().Len(resp.Validators, 1)
 	s.Require().Len(resp.Keys, 3)
 	s.Require().Len(resp.Relayers, 1)
+}
+
+func (s *TestSuite) TestExposer_CreateChannel() {
+	s.T().Log("running test for /create_channel endpoint on the relayer")
+
+	if s.config.Relayers == nil {
+		s.T().Skip("skipping /create_channel test since no relayer")
+	}
+
+	for _, relayer := range s.config.Relayers {
+		if relayer.Type != "hermes" || relayer.Ports.Exposer == 0 {
+			continue
+		}
+
+		// get number of channels before creating channel
+		ibcDataBefore := s.getIBCData(relayer.Chains[0], relayer.Chains[1])
+		s.Require().GreaterOrEqual(len(ibcDataBefore.Channels), 1, ibcDataBefore)
+
+		body := map[string]string{
+			"a_chain":      relayer.Chains[0],
+			"a_connection": "connection-0",
+			"a_port":       "transfer",
+			"b_port":       "transfer",
+		}
+		jsonBody, err := json.Marshal(body)
+		s.Require().NoError(err)
+
+		url := fmt.Sprintf("http://0.0.0.0:%d/create_channel", relayer.Ports.Exposer)
+		req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonBody))
+		s.Require().NoError(err)
+		resp := s.MakeRequest(req, 200)
+
+		var res map[string]interface{}
+		err = json.NewDecoder(resp).Decode(&res)
+		s.Require().NoError(err)
+
+		s.Require().Contains(res["status"].(string), "SUCCESS Channel", "response from exposer creaste_channel", res)
+
+		// get number of channels after creating channel
+		ibcDataAfter := s.getIBCData(relayer.Chains[0], relayer.Chains[1])
+		s.Require().Len(ibcDataAfter.Channels, len(ibcDataBefore.Channels)+1, "number of channels should be 1 more then before", ibcDataAfter)
+	}
 }

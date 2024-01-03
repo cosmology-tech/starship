@@ -527,7 +527,18 @@
           "config": {
             "type": "object"
           },
-          "resources": { "$ref":  "#/$def/resources" }
+          "resources": { "$ref":  "#/$def/resources" },
+          "ports": {
+            "type": "object",
+            "properties": {
+              "rest": {
+                "type": "number"
+              },
+              "exposer": {
+                "type": "number"
+              }
+            }
+          }
         },
         "additionalProperties": false,
         "required": [

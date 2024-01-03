@@ -143,8 +143,8 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 
 // GetCounterpartyChainInfo returns ChainIBCInfo struct for given counterparty
 // chain id.
-func (c ChainIBCInfos) GetCounterpartyChainInfo(chainId string) *ChainIBCInfo {
-	for _, cii := range c {
+func (infos ChainIBCInfos) GetCounterpartyChainInfo(chainId string) *ChainIBCInfo {
+	for _, cii := range infos {
 		if cii.Counterparty.ChainId == chainId {
 			return cii
 		}

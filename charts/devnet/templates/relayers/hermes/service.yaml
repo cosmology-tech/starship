@@ -1,0 +1,28 @@
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "hermes" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
+{{ $relayer = mergeOverwrite $defaultRelayer $relayer }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $relayer.type }}-{{ $relayer.name }}
+  labels:
+    app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+spec:
+  clusterIP: None
+  ports:
+    - name: rest
+      port: 3000
+      protocol: TCP
+      targetPort: {{ $relayer.config.rest.port }}
+    - name: exposer
+      port: {{ $.Values.exposer.ports.rest | default 8081 }}
+      protocol: TCP
+      targetPort: {{ $.Values.exposer.ports.rest | default 8081 }}
+  selector:
+    app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+---
+{{- end }}
+{{- end }}

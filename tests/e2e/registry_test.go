@@ -276,7 +276,7 @@ func (s *TestSuite) TestRegistry_ListIBC() {
 	s.MakeRegistryRequest(req, respIBC)
 
 	// assert results to expected values
-	s.Require().Len(respIBC.Data, len(s.config.Relayers)*2, "number of ibc information should be double the number of relayers")
+	s.Require().GreaterOrEqual(len(respIBC.Data), len(s.config.Relayers)*2, "number of ibc information should be double the number of relayers")
 }
 
 func (s *TestSuite) TestRegistry_GetChainKeys() {

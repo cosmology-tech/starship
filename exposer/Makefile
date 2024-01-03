@@ -29,12 +29,15 @@ run-local:
 
 ## Docker commands
 docker-setup:
-	docker buildx create --use --name starship
+	$(DOCKER) buildx create --use --name starship
 
-docker-build:
+docker-use:
+	$(DOCKER) buildx use starship
+
+docker-build: docker-use
 	$(DOCKER) buildx build . --platform linux/amd64,linux/arm64 -t $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME)
 
-docker-build-push:
+docker-build-push: docker-use
 	$(DOCKER) buildx build . --platform linux/amd64,linux/arm64 -t $(DOCKER_REPO_NAME)/$(DOCKER_IMAGE):$(DOCKER_TAG_NAME) --push
 
 docker-run:

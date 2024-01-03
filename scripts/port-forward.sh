@@ -26,6 +26,8 @@ CHAIN_GRPC_PORT=9090
 CHAIN_LCD_PORT=1317
 CHAIN_EXPOSER_PORT=8081
 CHAIN_FAUCET_PORT=8000
+RELAYER_REST_PORT=3000
+RELAYER_EXPOSER_PORT=8081
 EXPLORER_LCD_PORT=8080
 REGISTRY_LCD_PORT=8080
 REGISTRY_GRPC_PORT=9090
@@ -77,6 +79,25 @@ for i in $(seq 0 $num_chains); do
   [[ "$locallcd" != "null" ]] && color yellow "    lcd to http://localhost:$locallcd" && kubectl port-forward pods/$chain-genesis-0 $locallcd:$CHAIN_LCD_PORT > /dev/null 2>&1 &
   [[ "$localexp" != "null" ]] && color yellow "    exposer to http://localhost:$localexp" && kubectl port-forward pods/$chain-genesis-0 $localexp:$CHAIN_EXPOSER_PORT > /dev/null 2>&1 &
   [[ "$localfaucet" != "null" ]] && color yellow "    faucet to http://localhost:$localfaucet" && kubectl port-forward pods/$chain-genesis-0 $localfaucet:$CHAIN_FAUCET_PORT > /dev/null 2>&1 &
+  sleep 1
+done
+
+echo "Port forward relayers"
+num_relayers=$(yq -r ".relayers | length - 1" ${CONFIGFILE})
+if [[ $num_relayers -lt 0 ]]; then
+  echo "No relayer to port-forward: num: $num_relayers"
+  exit 1
+fi
+for i in $(seq 0 $num_relayers); do
+  # derive chain pod name from chain id
+  # https://github.com/cosmology-tech/starship/blob/main/charts/devnet/templates/_helpers.tpl#L56
+  relayer=$(yq -r ".relayers[$i].name" ${CONFIGFILE} )
+  relayer=$(yq -r ".relayers[$i].type" ${CONFIGFILE} )-${relayer/_/"-"}
+  localrest=$(yq -r ".relayers[$i].ports.rest" ${CONFIGFILE} )
+  localexposer=$(yq -r ".relayers[$i].ports.exposer" ${CONFIGFILE} )
+  color yellow "relayers: forwarded $relayer"
+  [[ "$localrest" != "null" ]] && color yellow "    rpc to http://localhost:$localrest" && kubectl port-forward pods/$relayer-0 $localrest:$RELAYER_REST_PORT > /dev/null 2>&1 &
+  [[ "$localexposer" != "null" ]] && color yellow "    rpc to http://localhost:$localexposer" && kubectl port-forward pods/$relayer-0 $localexposer:$RELAYER_EXPOSER_PORT > /dev/null 2>&1 &
   sleep 1
 done
 

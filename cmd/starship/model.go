@@ -82,6 +82,11 @@ type Relayer struct {
 	Image    string   `name:"image" json:"image" yaml:"image"`
 	Replicas int      `name:"replicas" json:"replicas" yaml:"replicas"`
 	Chains   []string `name:"chains" json:"chains" yaml:"chains"`
+	Ports    Port     `name:"ports" json:"ports" yaml:"ports"`
+}
+
+func (r *Relayer) GetName() string {
+	return fmt.Sprintf("%s-%s", r.Type, strings.Replace(r.Name, "_", "-", -1))
 }
 
 type Feature struct {

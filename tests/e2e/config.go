@@ -23,6 +23,7 @@ type Relayer struct {
 	Type     string   `name:"type" json:"type" yaml:"type"`
 	Replicas int      `name:"replicas" json:"replicas" yaml:"replicas"`
 	Chains   []string `name:"chains" json:"chains" yaml:"chains"`
+	Ports    Port     `name:"ports" json:"ports" yaml:"ports"`
 }
 
 type Feature struct {

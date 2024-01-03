@@ -30,11 +30,14 @@ relayers:
       global:
         log_level: "error"
       rest:
-        enabled: false
+        enabled: true
       telemetry:
         enabled: false
       event_source:
         mode: pull
+    ports:
+      rest: 3000
+      exposer: 3002
 
 explorer:
   enabled: true
@@ -52,4 +55,4 @@ registry:
     grpc: 9091
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20231215-7c22b86
+  image: anmol1696/exposer:20240102-cc02ac3
