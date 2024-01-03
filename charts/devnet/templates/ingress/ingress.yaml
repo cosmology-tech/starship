@@ -1,0 +1,97 @@
+{{- if .Values.ingress.enabled }}
+{{ $host := $.Values.ingress.host | replace "*." "" }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.ingress.type }}-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/issuer: "{{ .Values.ingress.certManager.issuer }}"
+spec:
+  ingressClassName: {{ .Values.ingress.type }}
+  tls:
+    ## todo: use DNS01 issuer for wildcard certs, else this list will keep growing with number of validators and chains
+    ## https://stackoverflow.com/questions/66051624/generate-wildcard-certificate-on-kubernetes-cluster-with-digitalocean-for-my-ngi
+    {{- if .Values.explorer.enabled }}
+    - hosts:
+        - "explorer.{{ $host }}"
+      secretName: explorer.{{ .Values.ingress.type }}-ingress-tls
+    {{- end }}
+    {{- if .Values.registry.enabled }}
+    - hosts:
+        - "registry.{{ $host }}"
+      secretName: registry.{{ .Values.ingress.type }}-ingress-tls
+    {{- end }}
+    {{- range $chain := .Values.chains }}
+    - hosts:
+        - "rest.{{ $chain.name }}-genesis.{{ $host }}"
+      secretName: rest.{{ $chain.name }}-genesis.{{ .Values.ingress.type }}-ingress-tls
+    - hosts:
+        - "rpc.{{ $chain.name }}-genesis.{{ $host }}"
+      secretName: rpc.{{ $chain.name }}-genesis.{{ .Values.ingress.type }}-ingress-tls
+    {{- end }}
+  rules:
+    {{- if .Values.explorer.enabled }}
+    - host: "explorer.{{ $host }}"
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/(.*)"
+            backend:
+              service:
+                name: explorer
+                port:
+                  name: http
+    {{- end }}
+    {{- if .Values.registry.enabled }}
+    - host: "registry.{{ $host }}"
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/(.*)"
+            backend:
+              service:
+                name: registry
+                port:
+                  name: http
+    {{- end }}
+    {{- range $chain := .Values.chains }}
+    - host: "rest.{{ $chain.name }}-genesis.{{ $host }}"
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/(.*)"
+            backend:
+              service:
+                name: {{ $chain.name }}-genesis
+                port:
+                  name: rest
+          - pathType: ImplementationSpecific
+            path: "/faucet/(.*)"
+            backend:
+              service:
+                name: {{ $chain.name }}-genesis
+                port:
+                  name: faucet
+          - pathType: ImplementationSpecific
+            path: "/exposer/(.*)"
+            backend:
+              service:
+                name: {{ $chain.name }}-genesis
+                port:
+                  name: exposer
+    - host: "rpc.{{ $chain.name }}-genesis.{{ $host }}"
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/(.*)"
+            backend:
+              service:
+                name: {{ $chain.name }}-genesis
+                port:
+                  name: rpc
+    {{- end }}
+---
+{{- end }}

@@ -241,3 +241,12 @@ monitoring:
   resources:
     cpu: "0.2"
     memory: "400M"
+
+ingress:
+  enabled: false
+  type: nginx
+  # host must be a wildcard entry, so that we can use the wildcard to create
+  # service specific ingress rules
+  host: "*.thestarship.io"
+  certManager:
+    issuer: "cert-issuer"

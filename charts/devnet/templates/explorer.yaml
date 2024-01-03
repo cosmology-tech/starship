@@ -87,11 +87,19 @@ data:
     {
       "chain_name": "{{ $chain.name }}",
       "coingecko": "{{ $chain.type }}",
+      {{- if $.Values.ingress.enabled }}
+      "api": "https://rest.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
+      "rpc": [
+        "https://rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
+        "https://rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443"
+      ],
+      {{- else }}
       "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
       "rpc": [
         "http://{{ $host }}:{{ $chain.ports.rpc }}",
         "http://{{ $host }}:{{ $chain.ports.rpc }}"
       ],
+      {{- end }}
       "snapshot_provider": "",
       "sdk_version": "0.45.6",
       "coin_type": "{{ $chain.coinType }}",
