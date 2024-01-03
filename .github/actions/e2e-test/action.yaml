@@ -72,7 +72,7 @@ runs:
         version: 0.0.0
         chart: ./charts/devnet
         kubeconfig: ${{ steps.kubeconfig.outputs.content }}
-        cli-version: 42031163298cc2ef648cd7d01eb16be92f91f97d
+        cli-version: d60aa2158bbcd43a3ed8ab3558f50f9618677e05
 
     - name: Run tests
       run: |
