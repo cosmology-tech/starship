@@ -93,5 +93,25 @@ spec:
                 port:
                   name: rpc
     {{- end }}
+    {{- range $relayer := .Values.relayers }}
+    {{- if eq $relayer.type "hermes" }}
+    - host: "rest.{{ $relayer.type }}-{{ $relayer.name }}.{{ $host }}"
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: "/(.*)"
+            backend:
+              service:
+                name: {{ $relayer.type }}-{{ $relayer.name }}
+                port:
+                  name: rest
+          - pathType: ImplementationSpecific
+            path: "/exposer/(.*)"
+            backend:
+              service:
+                name: {{ $relayer.type }}-{{ $relayer.name }}
+                port:
+                  name: exposer
+    {{- end }}
 ---
 {{- end }}
