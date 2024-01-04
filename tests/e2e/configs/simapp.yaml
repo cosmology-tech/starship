@@ -25,7 +25,6 @@ chains:
 
 registry:
   enabled: true
-  image: ghcr.io/cosmology-tech/starship/registry:20231215-7c22b86
   ports:
     rest: 8081
   resources:
@@ -33,7 +32,6 @@ registry:
     memory: "100M"
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20231215-7c22b86
   resources:
     cpu: "0.1"
     memory: "100M"

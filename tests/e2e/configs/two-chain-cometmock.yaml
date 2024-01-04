@@ -21,6 +21,3 @@ chains:
     ports:
       rpc: 26657
       exposer: 38087
-
-exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20231215-7c22b86
