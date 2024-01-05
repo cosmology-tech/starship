@@ -1,0 +1,20 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Values.ingress.certManager.issuer }}
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: devops@cosmoslogy.zone
+    privateKeySecretRef:
+      name: {{ .Values.ingress.certManager.issuer }}
+    solvers:
+      ## todo: move to DNS01 solver for wildcard dns
+      ## https://stackoverflow.com/questions/66051624/generate-wildcard-certificate-on-kubernetes-cluster-with-digitalocean-for-my-ngi
+      - http01:
+          ingress:
+            class: {{ .Values.ingress.type }}
+---
+{{- end }}

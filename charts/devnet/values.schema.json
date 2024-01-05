@@ -644,6 +644,36 @@
         "enabled"
       ]
     },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "nginx"
+          ]
+        },
+        "host": {
+          "type": "string"
+        },
+        "certManager": {
+          "type": "object",
+          "properties": {
+            "issuer": {
+              "type": "string"
+            }
+          }
+        },
+        "resources": { "$ref":  "#/$def/resources" }
+      },
+      "additionalProperties": false,
+      "required": [
+        "enabled"
+      ]
+    },
     "images": {
       "type": "object",
       "properties": {
