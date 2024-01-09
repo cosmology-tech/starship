@@ -1,39 +1,39 @@
-{{- if .Values.ingress.enabled }}
+{{- if $.Values.ingress.enabled }}
 {{ $host := $.Values.ingress.host | replace "*." "" }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.ingress.type }}-ingress
+  name: {{ $.Values.ingress.type }}-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/use-regex: "true"
-    cert-manager.io/issuer: "{{ .Values.ingress.certManager.issuer }}"
+    cert-manager.io/issuer: "{{ $.Values.ingress.certManager.issuer }}"
 spec:
-  ingressClassName: {{ .Values.ingress.type }}
+  ingressClassName: {{ $.Values.ingress.type }}
   tls:
     ## todo: use DNS01 issuer for wildcard certs, else this list will keep growing with number of validators and chains
     ## https://stackoverflow.com/questions/66051624/generate-wildcard-certificate-on-kubernetes-cluster-with-digitalocean-for-my-ngi
-    {{- if .Values.explorer.enabled }}
+    {{- if $.Values.explorer.enabled }}
     - hosts:
         - "explorer.{{ $host }}"
-      secretName: explorer.{{ .Values.ingress.type }}-ingress-tls
+      secretName: explorer.{{ $.Values.ingress.type }}-ingress-tls
     {{- end }}
-    {{- if .Values.registry.enabled }}
+    {{- if $.Values.registry.enabled }}
     - hosts:
         - "registry.{{ $host }}"
-      secretName: registry.{{ .Values.ingress.type }}-ingress-tls
+      secretName: registry.{{ $.Values.ingress.type }}-ingress-tls
     {{- end }}
-    {{- range $chain := .Values.chains }}
+    {{- range $chain := $.Values.chains }}
     - hosts:
         - "rest.{{ $chain.name }}-genesis.{{ $host }}"
-      secretName: rest.{{ $chain.name }}-genesis.{{ .Values.ingress.type }}-ingress-tls
+      secretName: rest.{{ $chain.name }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
     - hosts:
         - "rpc.{{ $chain.name }}-genesis.{{ $host }}"
-      secretName: rpc.{{ $chain.name }}-genesis.{{ .Values.ingress.type }}-ingress-tls
+      secretName: rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
     {{- end }}
   rules:
-    {{- if .Values.explorer.enabled }}
+    {{- if $.Values.explorer.enabled }}
     - host: "explorer.{{ $host }}"
       http:
         paths:
@@ -45,7 +45,7 @@ spec:
                 port:
                   name: http
     {{- end }}
-    {{- if .Values.registry.enabled }}
+    {{- if $.Values.registry.enabled }}
     - host: "registry.{{ $host }}"
       http:
         paths:
@@ -57,7 +57,7 @@ spec:
                 port:
                   name: http
     {{- end }}
-    {{- range $chain := .Values.chains }}
+    {{- range $chain := $.Values.chains }}
     - host: "rest.{{ $chain.name }}-genesis.{{ $host }}"
       http:
         paths:
@@ -93,7 +93,7 @@ spec:
                 port:
                   name: rpc
     {{- end }}
-    {{- range $relayer := .Values.relayers }}
+    {{- range $relayer := $.Values.relayers }}
     {{- if eq $relayer.type "hermes" }}
     - host: "rest.{{ $relayer.type }}-{{ $relayer.name }}.{{ $host }}"
       http:
