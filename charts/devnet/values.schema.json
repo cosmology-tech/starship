@@ -175,6 +175,12 @@
           "repo": {
             "type": "string"
           },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
           "storage": {
             "type": "string"
           },
