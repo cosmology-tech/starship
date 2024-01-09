@@ -108,18 +108,18 @@ data:
     {{- else }}
     websocket_addr = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
     {{- end }}
-    account_prefix = "{{ $fullchain.prefix }}"
-    default_gas = 500000000
-    max_gas = 1000000000
-    rpc_timeout = "10s"
-    store_prefix = "ibc"
-    gas_multiplier = 2
-    max_msg_num = 30
-    max_tx_size = 2097152
-    clock_drift = "5s"
-    max_block_time = "30s"
-    trusting_period = "75s"
-    trust_threshold = { numerator = '1', denominator = '3' }
+    account_prefix = "{{ $chainConfig.account_prefix | default $fullchain.prefix }}"
+    default_gas = {{ $chainConfig.default_gas | default 500000000 }}
+    max_gas = {{ $chainConfig.max_gas | default 1000000000 }}
+    rpc_timeout = "{{ $chainConfig.rpc_timeout | default "10s" }}"
+    store_prefix = "{{ $chainConfig.store_prefix | default "ibc" }}"
+    gas_multiplier = {{ $chainConfig.gas_multiplier | default 2 }}
+    max_msg_num = {{ $chainConfig.max_msg_num | default 30 }}
+    max_tx_size = {{ $chainConfig.max_tx_size | default 2097152 }}
+    clock_drift = "{{ $chainConfig.clock_drift | default "5s" }}"
+    max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
+    trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
+    trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default 1 }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default 3 }}" }
     {{- if eq $fullchain.type "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
