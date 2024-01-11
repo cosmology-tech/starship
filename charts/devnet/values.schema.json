@@ -533,6 +533,9 @@
           "config": {
             "type": "object"
           },
+          "paths": {
+            "type": "object"
+          },
           "resources": { "$ref":  "#/$def/resources" },
           "ports": {
             "type": "object",
