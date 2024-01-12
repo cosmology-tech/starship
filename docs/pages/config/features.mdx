@@ -71,3 +71,35 @@ Available versions for the explorer can be found [here](https://github.com/cosmo
 ### Usage
 
 After performing `port-forward`, open explorer at: http://localhost:8080
+
+## Ingress
+In order to get external traffic into Starship, one can use the `ingress` directive to
+create ingress rules on the domain.
+
+> NOTE: Prerequists include installing `cert-issuer` and `nginx-ingress` controller in the k8s cluster.
+Domain specified, needs to be pointing to the k8s cluster in which Starship is deployed
+
+### Syntax
+```yaml
+ingress:
+  enabled: true
+  type: nginx
+  # host must be a wildcard entry, so that we can use the wildcard to create
+  # service specific ingress rules.
+  host: "*.thestarship.io"
+  certManager:
+    issuer: "cert-issuer"
+```
+
+Above will create following endpoints with the domain, and valid certs:
+* Explorer at: `https://explorere.<host>` (if enabled)
+* Registry at: `https://registry.<host>` (if enabled)
+* Chains at:
+  * RPC endpoint: `https://rpc.<chain-id>-genesis.<host>`
+  * Rest endpoint: `https://rest.<chain-id>-genesis.<host>`
+  * Chain exposer: `https://rest.<chain-id>-genesis.<host>/exposer`
+  * Chain faucet: `https://rest.<chain-id>-genesis.<host>/faucet`
+* Relayers at:
+  * Rest endpoint: `https://rest.<relayer-type>-<relayer-name>.<host>`
+  * Exposer endpoint: `https://rest.<relayer-type>-<relayer-name>.<host>/exposer`
+
