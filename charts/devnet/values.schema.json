@@ -533,8 +533,43 @@
           "config": {
             "type": "object"
           },
-          "paths": {
-            "type": "object"
+          "channels": {
+            "type": "array",
+            "items":  {
+              "type": "object",
+              "properties": {
+                "a_chain": {
+                  "type": "string"
+                },
+                "b_chain": {
+                  "type": "string"
+                },
+                "a_port": {
+                  "type": "string"
+                },
+                "b_port": {
+                  "type": "string"
+                },
+                "a_connection": {
+                  "type": "string"
+                },
+                "new_connection": {
+                  "type": "boolean"
+                },
+                "channel_version": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "a_chain",
+                "b_chain",
+                "a_port",
+                "b_port"
+              ]
+            }
           },
           "resources": { "$ref":  "#/$def/resources" },
           "ports": {
