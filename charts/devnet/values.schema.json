@@ -538,25 +538,25 @@
             "items":  {
               "type": "object",
               "properties": {
-                "a_chain": {
+                "a-chain": {
                   "type": "string"
                 },
-                "b_chain": {
+                "b-chain": {
                   "type": "string"
                 },
-                "a_port": {
+                "a-port": {
                   "type": "string"
                 },
-                "b_port": {
+                "b-port": {
                   "type": "string"
                 },
-                "a_connection": {
+                "a-connection": {
                   "type": "string"
                 },
-                "new_connection": {
+                "new-connection": {
                   "type": "boolean"
                 },
-                "channel_version": {
+                "channel-version": {
                   "type": "string"
                 },
                 "order": {
@@ -564,10 +564,10 @@
                 }
               },
               "required": [
-                "a_chain",
-                "b_chain",
-                "a_port",
-                "b_port"
+                "a-chain",
+                "b-chain",
+                "a-port",
+                "b-port"
               ]
             }
           },
