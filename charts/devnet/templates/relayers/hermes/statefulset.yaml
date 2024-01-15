@@ -1,15 +1,15 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "hermes" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
+{{ $relayer := include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
 {{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $relayer.type }}-{{ $relayer.name }}
+  name: {{ $relayer.fullname }}
 spec:
-  serviceName: {{ $relayer.type }}-{{ $relayer.name }}
+  serviceName: {{ $relayer.fullname }}
   replicas: {{ $relayer.replicas }}
   podManagementPolicy: "Parallel"
   revisionHistoryLimit: 3
@@ -17,7 +17,7 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: relayer
       app.kubernetes.io/type: {{ $relayer.type }}
-      app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+      app.kubernetes.io/name: {{ $relayer.fullname }}
   template:
     metadata:
       annotations:
@@ -28,7 +28,7 @@ spec:
       labels:
         app.kubernetes.io/instance: relayer
         app.kubernetes.io/type: {{ $relayer.type }}
-        app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+        app.kubernetes.io/name: {{ $relayer.fullname }}
         app.kubernetes.io/rawname: {{ $relayer.name }}
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
@@ -51,7 +51,7 @@ spec:
         {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-relayer
-          image: {{ $relayer.image | default $defaultRelayer.image }}
+          image: {{ $relayer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: KEYS_CONFIG
@@ -78,13 +78,15 @@ spec:
               MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
               echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
 
+              echo "Debug output for {{ $relayer.name }}..."
+              cat << EOF
+              {{ typeOf $relayer | indent 14 }}
+              {{ $relayer | toJson | indent 14 }}
+              EOF
+
               {{- range $i, $chain := $relayer.chains }}
               {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
               echo "Creating key for {{ $chain }}..."
-              cat << EOF
-              {{ typeOf $fullchain | indent 14 }}
-              {{ $fullchain | toJson | indent 14 }}
-              EOF
               hermes keys add \
                 --chain {{ $chain }} \
                 --mnemonic-file $RELAYER_DIR/mnemonic.txt \
@@ -95,12 +97,16 @@ spec:
               echo "Transfer tokens to address $RLY_ADDR"
               {{- end }}
 
+              {{- range $i, $channel := $relayer.channels }}
               hermes create channel \
-                --a-chain {{ index $relayer.chains 0 }} \
-                --b-chain {{ index $relayer.chains 1 }} \
-                --a-port transfer \
-                --b-port transfer \
-                --new-client-connection --yes
+                {{- if (get $channel "new-connection" | default false) }}
+                --new-client-connection --yes \
+                {{- end }}
+                --a-chain {{ get $channel "a-chain" }} \
+                --b-chain {{ get $channel "b-chain" }} \
+                --a-port {{ get $channel "a-port" }} \
+                --b-port {{ get $channel "b-port" }}
+              {{- end }}
           volumeMounts:
             - mountPath: /root
               name: relayer
@@ -113,7 +119,7 @@ spec:
           resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
       containers:
         - name: relayer
-          image: {{ $relayer.image | default $defaultRelayer.image }}
+          image: {{ $relayer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: RELAYER_DIR
@@ -136,7 +142,7 @@ spec:
             - mountPath: /configs
               name: relayer-config
         - name: exposer
-          image: {{ $relayer.image | default $defaultRelayer.image }}
+          image: {{ $relayer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             - name: EXPOSER_HTTP_PORT
@@ -164,7 +170,7 @@ spec:
           emptyDir: { }
         - name: relayer-config
           configMap:
-            name: "{{ $relayer.type }}-{{ $relayer.name }}"
+            name: "{{ $relayer.fullname }}"
         - name: keys
           configMap:
             name: keys

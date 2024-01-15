@@ -2,14 +2,13 @@
 {{- range $relayer := .Values.relayers }}
 {{- if eq $relayer.type "hermes" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
-{{ $relayer = mergeOverwrite $defaultRelayer $relayer }}
+{{ $relayer = include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
 {{ $tag := include "image.tag" $relayer.image }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ $relayer.type }}-{{ $relayer.name }}"
+  name: "{{ $relayer.fullname }}"
 data:
   config.toml: |-
     # The global section has parameters that apply globally to the relayer operation.
@@ -101,9 +100,9 @@ data:
     grpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
     {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}
     {{- if eq $relayer.config.event_source.mode "pull" }}
-    event_source = { mode = 'pull', interval = '500ms' }
+    event_source = { mode = 'pull', interval = '{{get $relayer.config.event_source "interval" | default "500ms"}}' }
     {{- else }}
-    event_source = { mode = 'push', url = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '500ms' }
+    event_source = { mode = 'push', url = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '{{get $relayer.config.event_source "batch_delay" | default "500ms"}}' }
     {{- end }}
     {{- else }}
     websocket_addr = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
