@@ -32,6 +32,7 @@ jobs:
           - "one-chain-cometmock.yaml"
           - "two-chain-cometmock.yaml"
           - "neutron.yaml"
+          - "three-chain.yaml"
       fail-fast: true
       max-parallel: 1
 

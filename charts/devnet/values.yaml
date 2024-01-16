@@ -167,6 +167,8 @@ relayers: []
 #      - osmosis-1
 #      - gaia-2
 #    # hermes config.toml file which is read from the yaml file
+#    channels:
+#    - name: osmo-gaia
 #    config:
 #      global:
 #        log_level: "info"
