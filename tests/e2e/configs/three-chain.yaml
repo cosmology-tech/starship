@@ -31,7 +31,6 @@ chains:
 relayers:
   - name: relayer
     type: hermes
-    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0
     replicas: 1
     chains:
       - osmosis-1

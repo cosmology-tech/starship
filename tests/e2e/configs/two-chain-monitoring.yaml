@@ -25,7 +25,6 @@ chains:
 relayers:
   - name: osmos-cosmos
     type: hermes
-    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0  # todo: replace this with ghcr.io image after merge
     replicas: 1
     chains:
       - osmosis-1
