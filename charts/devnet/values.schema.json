@@ -135,7 +135,8 @@
               "neutron",
               "injective",
               "polymer",
-              "virtual"
+              "virtual",
+              "akash"
             ]
           },
           "numValidators": {
