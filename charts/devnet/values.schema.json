@@ -135,7 +135,8 @@
               "neutron",
               "injective",
               "polymer",
-              "virtual"
+              "virtual",
+              "akash"
             ]
           },
           "numValidators": {
@@ -532,6 +533,44 @@
           },
           "config": {
             "type": "object"
+          },
+          "channels": {
+            "type": "array",
+            "items":  {
+              "type": "object",
+              "properties": {
+                "a-chain": {
+                  "type": "string"
+                },
+                "b-chain": {
+                  "type": "string"
+                },
+                "a-port": {
+                  "type": "string"
+                },
+                "b-port": {
+                  "type": "string"
+                },
+                "a-connection": {
+                  "type": "string"
+                },
+                "new-connection": {
+                  "type": "boolean"
+                },
+                "channel-version": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "a-chain",
+                "b-chain",
+                "a-port",
+                "b-port"
+              ]
+            }
           },
           "resources": { "$ref":  "#/$def/resources" },
           "ports": {

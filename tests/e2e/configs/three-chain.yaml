@@ -1,0 +1,61 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 1
+    faucet:
+      enabled: false
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+  - name: cosmoshub-4
+    type: cosmos
+    image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
+    numValidators: 1
+    faucet:
+      enabled: false
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+  - name: juno-2
+    type: juno
+    numValidators: 1
+    faucet:
+      enabled: false
+    ports:
+      rest: 1318
+      rpc: 26658
+      exposer: 38088
+
+relayers:
+  - name: relayer
+    type: hermes
+    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmoshub-4
+      - juno-2
+    channels:
+      - a-chain: osmosis-1
+        b-chain: cosmoshub-4
+        a-port: transfer
+        b-port: transfer
+        new-connection: true
+      - a-chain: osmosis-1
+        b-chain: juno-2
+        a-port: transfer
+        b-port: transfer
+        new-connection: true
+      - a-chain: juno-2
+        b-chain: cosmoshub-4
+        a-port: transfer
+        b-port: transfer
+        new-connection: true
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
