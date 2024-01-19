@@ -116,3 +116,26 @@ relayers:
 
 All allowed config params can be found in the [default values](https://github.com/cosmology-tech/starship/pull/185/files#diff-b6d755bc9ec9f0229fa0fc7beff17964f31889df81dbd5a16764ed8cdecbfa96R286-R310)
 (Basically everything in [config.toml](https://github.com/informalsystems/hermes/blob/master/config.toml#L8...L111) file for the hermes relayer)
+
+## `ports` (optional, hermes only)
+Ports directive in the `relayers` directive is used for `kubectl port-forward` forwarding kubernetes service ports to local host.
+```yaml
+relayers:
+- name: hermes-osmo-juno
+  type: hermes
+  replicas: 1
+  chains:
+  - osmosis-1
+  - juno-1
+  ports:
+    rest: 3001
+    exposer: 3002
+```
+
+Available endpoints on
+* `rest` endpoints: https://hermes.informal.systems/documentation/rest-api.html?highlight=rest#rest-api
+* `exposer` endpoint
+  * `/create_channel` endpoint: Supports post request. Proto defination: https://github.com/cosmology-tech/starship/blob/main/proto/exposer/service.proto#L47
+
+One can use the exposer endpoint on the relayer to create channel from outside.
+Note: Still an experimental feature on exposer

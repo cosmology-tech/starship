@@ -81,11 +81,11 @@ Topology:
 * Registry service: analogous to cosmos chain-registry, but for only our infra
 * Optionally explorer: ping-pub explorer for the mini cosmos
 
-Details of each of arguments in the config file can be found [here](https://starship.cosmology.tech/config/chains)
+Details of each of arguments in the config file can be found [here](https://docs.cosmology.zone/starship/config/chains)
 
 ## Dir Structure
 * `configs/`: Holds all the various config files and custom scripts for infra intitialization
-  * `configs/scripts/`: Custom scripts used by the config file for setup. More details [here](https://starship.cosmology.tech/config/chains#scripts-optional)
+  * `configs/scripts/`: Custom scripts used by the config file for setup. More details [here](https://docs.cosmology.zone/starship/config/chains#scripts-optional)
   * `configs/*.yaml`: Various config files as described above
 * `scripts/`: Handy scripts for dealing with starship setup and running
   * `scripts/dev-setup.sh`: Checks for dependencies
