@@ -42,6 +42,11 @@
       "name": "relayer",
       "type": "local",
       "mnemonic": "pen quit web pill hunt hobby tonight base wine black era cereal veteran trouble december method diet orbit copper nephew into badge olympic repair"
+    },
+    {
+      "name": "relayer-cli",
+      "type": "local",
+      "mnemonic": "marine suspect wood vague vast pet cargo tenant oyster tuna news river follow chicken shoulder ceiling guess never help dismiss grape scheme oyster produce"
     }
   ]
 }
