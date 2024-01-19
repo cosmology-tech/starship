@@ -87,12 +87,12 @@ Topology:
 * 1 hermes relayer: running between the chains
 * Registry service: analogous to cosmos chain-registry, but for only our infra
 
-Details of each of arguments in the config file can be found [here](https://starship.cosmology.tech/config/chains)
+Details of each of arguments in the config file can be found [here](https://docs.cosmology.zone/starship/config/chains)
 
 ## Dir Structure
 * `configs/`: Holds all the various config files and custom scripts for infra intitialization
   * `configs/*.yaml`: Various config files as described above
-  * `configs/scripts/`: Optionally, Custom scripts used by the config file for setup. More details [here](https://starship.cosmology.tech/config/chains#scripts-optional)
+  * `configs/scripts/`: Custom scripts used by the config file for setup. More details [here](https://docs.cosmology.zone/starship/config/chains#scripts-optional)
 * `scripts/`: Handy scripts for dealing with starship setup and running
   * `scripts/dev-setup.sh`: Checks for dependencies
   * `scripts/port-forward.sh`: Performs local port-forwarding based on config file definations
