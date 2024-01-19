@@ -26,7 +26,7 @@ In order to get started with starship, one needs to install the following
 * `yq`: https://github.com/mikefarah/yq/#install
 
 ## Getting started
-Follow the steps here: https://starship.cosmology.tech
+Follow the steps here: https://docs.cosmology.zone/starship
 
 ## Using helm chart
 In order to use the helm chart externally without this repo.
