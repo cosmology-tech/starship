@@ -20,7 +20,6 @@ chains:
 relayers:
   - name: evmos-cosmos
     type: hermes
-    image: ghcr.io/cosmology-tech/starship/hermes:1.6.0
     replicas: 1
     chains:
       - evmos_9000-1

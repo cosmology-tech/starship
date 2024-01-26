@@ -59,6 +59,14 @@ data:
     # Experimental feature. Affects telemetry if set to false.
     # [Default: true]
     tx_confirmation = {{ $relayer.config.mode.packets.tx_confirmation }}
+    # Auto register the counterparty payee on a destination chain to
+    # the relayer's address on the source chain. This can be used
+    # for simple configuration of the relayer to receive fees for
+    # relaying RecvPacket on fee-enabled channels.
+    # For more complex configuration, turn this off and use the CLI
+    # to manually register the payee addresses.
+    # [Default: false]
+    auto_register_counterparty_payee = false
     # The REST section defines parameters for Hermes' built-in RESTful API.
     # https://hermes.informal.systems/rest.html
     [rest]
@@ -92,21 +100,20 @@ data:
     {{- end }}
     [[chains]]
     id = "{{ $chain }}"
+    type = "CosmosSdk"
     key_name = "{{ $chain }}"
     {{- if $fullchain.ics.enabled }}
     ccv_consumer_chain = true
     {{- end }}
     rpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
     grpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
-    {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}
     {{- if eq $relayer.config.event_source.mode "pull" }}
     event_source = { mode = 'pull', interval = '{{get $relayer.config.event_source "interval" | default "500ms"}}' }
     {{- else }}
     event_source = { mode = 'push', url = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '{{get $relayer.config.event_source "batch_delay" | default "500ms"}}' }
     {{- end }}
-    {{- else }}
-    websocket_addr = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
-    {{- end }}
+    # Experimental: Whether or not the full node is trusted.
+    trusted_node = false
     account_prefix = "{{ $chainConfig.account_prefix | default $fullchain.prefix }}"
     default_gas = {{ $chainConfig.default_gas | default 500000000 }}
     max_gas = {{ $chainConfig.max_gas | default 1000000000 }}
@@ -118,7 +125,8 @@ data:
     clock_drift = "{{ $chainConfig.clock_drift | default "5s" }}"
     max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
     trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
-    trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default 1 }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default 3 }}" }
+    client_refresh_rate = "{{ $chainConfig.client_refresh_rate | default "1/3" }}"
+    trust_threshold = "{{ $chainConfig.trust_threshold | default "2/3" }}"
     {{- if eq $fullchain.type "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
@@ -128,6 +136,7 @@ data:
     {{- else }}
     address_type = { derivation = 'cosmos' }
     gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    query_packets_chunk_size = {{ $chainConfig.query_packets_chunk_size | default 50 }}
     {{- end }}
     {{- end }}
   # config-cli.toml is an additional config which is used for performing
