@@ -139,6 +139,129 @@ data:
     query_packets_chunk_size = {{ $chainConfig.query_packets_chunk_size | default 50 }}
     {{- end }}
     {{- end }}
+  # config-cli.toml is an additional config which is used for performing
+  # cli based opperations, such as create-channel etc. This is supposed to be used
+  # for one time actions
+  config-cli.toml: |-
+    # The global section has parameters that apply globally to the relayer operation.
+    [global]
+    # Specify the verbosity for the relayer logging output. Default: 'info'
+    # Valid options are 'error', 'warn', 'info', 'debug', 'trace'.
+    log_level = {{ $relayer.config.global.log_level | squote }}
+    # Specify the mode to be used by the relayer. [Required]
+    [mode]
+    # Specify the client mode.
+    [mode.clients]
+    # Whether or not to enable the client workers. [Required]
+    enabled = {{ $relayer.config.mode.clients.enabled }}
+    # Whether or not to enable periodic refresh of clients. [Default: true]
+    # This feature only applies to clients that underlie an open channel.
+    # For Tendermint clients, the frequency at which Hermes refreshes them is 2/3 of their
+    # trusting period (e.g., refresh every ~9 days if the trusting period is 14 days).
+    # Note: Even if this is disabled, clients will be refreshed automatically if
+    #      there is activity on a connection or channel they are involved with.
+    refresh = {{ $relayer.config.mode.clients.refresh }}
+    # Whether or not to enable misbehaviour detection for clients. [Default: false]
+    misbehaviour = {{ $relayer.config.mode.clients.misbehaviour }}
+    # Specify the connections mode.
+    [mode.connections]
+    # Whether or not to enable the connection workers for handshake completion. [Required]
+    enabled = {{ $relayer.config.mode.connections.enabled }}
+    # Specify the channels mode.
+    [mode.channels]
+    # Whether or not to enable the channel workers for handshake completion. [Required]
+    enabled = {{ $relayer.config.mode.channels.enabled }}
+    # Specify the packets mode.
+    [mode.packets]
+    # Whether or not to enable the packet workers. [Required]
+    enabled = {{ $relayer.config.mode.packets.enabled }}
+    # Parametrize the periodic packet clearing feature.
+    # Interval (in number of blocks) at which pending packets
+    # should be periodically cleared. A value of '0' will disable
+    # periodic packet clearing. [Default: 100]
+    clear_interval = {{ $relayer.config.mode.packets.clear_interval }}
+    # Whether or not to clear packets on start. [Default: false]
+    clear_on_start = {{ $relayer.config.mode.packets.clear_on_start }}
+    # Toggle the transaction confirmation mechanism.
+    # The tx confirmation mechanism periodically queries the `/tx_search` RPC
+    # endpoint to check that previously-submitted transactions
+    # (to any chain in this config file) have been successfully delivered.
+    # If they have not been, and `clear_interval = 0`, then those packets are
+    # queued up for re-submission.
+    # Experimental feature. Affects telemetry if set to false.
+    # [Default: true]
+    tx_confirmation = {{ $relayer.config.mode.packets.tx_confirmation }}
+    # The REST section defines parameters for Hermes' built-in RESTful API.
+    # https://hermes.informal.systems/rest.html
+    [rest]
+    # Whether or not to enable the REST service. Default: false
+    enabled = {{ $relayer.config.rest.enabled }}
+    # Specify the IPv4/6 host over which the built-in HTTP server will serve the RESTful
+    # API requests. Default: 127.0.0.1
+    host =  {{ $relayer.config.rest.host | squote }}
+    # Specify the port over which the built-in HTTP server will serve the restful API
+    # requests. Default: 3000
+    port = {{ $relayer.config.rest.port }}
+    # The telemetry section defines parameters for Hermes' built-in telemetry capabilities.
+    # https://hermes.informal.systems/telemetry.html
+    [telemetry]
+    # Whether or not to enable the telemetry service. Default: false
+    enabled = {{ $relayer.config.telemetry.enabled }}
+    # Specify the IPv4/6 host over which the built-in HTTP server will serve the metrics
+    # gathered by the telemetry service. Default: 127.0.0.1
+    host = {{ $relayer.config.telemetry.host | squote }}
+    # Specify the port over which the built-in HTTP server will serve the metrics gathered
+    # by the telemetry service. Default: 3001
+    port = {{ $relayer.config.telemetry.port }}
+    {{- range $i, $chain := $relayer.chains }}
+    {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
+    {{/*Read chain specific config from `relayer.config.chains` into chainConfig*/}}
+    {{ $chainConfig := dict }}
+    {{- range $config := $relayer.config.chains }}
+    {{- if eq $config.id $chain }}
+    {{- $chainConfig = $config }}
+    {{- end }}
+    {{- end }}
+    [[chains]]
+    id = "{{ $chain }}"
+    key_name = "{{ $chain }}-cli"
+    {{- if $fullchain.ics.enabled }}
+    ccv_consumer_chain = true
+    {{- end }}
+    rpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
+    grpc_addr = "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:9090"
+    {{- if le (semver $tag | (semver "1.6.0").Compare) 0 }}
+    {{- if eq $relayer.config.event_source.mode "pull" }}
+    event_source = { mode = 'pull', interval = '{{get $relayer.config.event_source "interval" | default "500ms"}}' }
+    {{- else }}
+    event_source = { mode = 'push', url = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket", batch_delay = '{{get $relayer.config.event_source "batch_delay" | default "500ms"}}' }
+    {{- end }}
+    {{- else }}
+    websocket_addr = "ws://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657/websocket"
+    {{- end }}
+    account_prefix = "{{ $chainConfig.account_prefix | default $fullchain.prefix }}"
+    default_gas = {{ $chainConfig.default_gas | default 500000000 }}
+    max_gas = {{ $chainConfig.max_gas | default 1000000000 }}
+    rpc_timeout = "{{ $chainConfig.rpc_timeout | default "10s" }}"
+    store_prefix = "{{ $chainConfig.store_prefix | default "ibc" }}"
+    gas_multiplier = {{ $chainConfig.gas_multiplier | default 2 }}
+    max_msg_num = {{ $chainConfig.max_msg_num | default 30 }}
+    max_tx_size = {{ $chainConfig.max_tx_size | default 2097152 }}
+    clock_drift = "{{ $chainConfig.clock_drift | default "5s" }}"
+    max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
+    trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
+    trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default 1 }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default 3 }}" }
+    {{- if eq $fullchain.type "evmos" }}
+    address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
+    gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
+    {{- else if eq $fullchain.type "injective" }}
+    address_type = { derivation = 'ethermint', proto_type = { pk_type = '/injective.crypto.v1beta1.ethsecp256k1.PubKey' } }
+    gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
+    {{- else }}
+    address_type = { derivation = 'cosmos' }
+    gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    {{- end }}
+    {{- end }}
 ---
 {{- end }}
 {{- end }}

@@ -32,6 +32,11 @@ echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
 jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
+# Add relayer-cli key and delegate tokens
+echo "Adding key...." $(jq -r ".relayers[1].name" $KEYS_CONFIG)
+jq -r ".relayers[1].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[1].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[1].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
 ## if facuet not enabled then add validator and relayer with index as keys and into gentx
 if [[ $FAUCET_ENABLED == "false" && $NUM_VALIDATORS -gt "1" ]];
 then

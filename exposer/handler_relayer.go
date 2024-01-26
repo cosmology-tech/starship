@@ -16,7 +16,8 @@ func (a *AppServer) CreateChannel(ctx context.Context, req *pb.RequestCreateChan
 	}
 	defer a.mu.Unlock()
 
-	createCmd := fmt.Sprintf("hermes create channel --a-chain %s --a-port %s --b-port %s --yes", req.AChain, req.APort, req.BPort)
+	// note: for cli one time txn, use `config-cli.toml` file
+	createCmd := fmt.Sprintf("hermes --config /root/.hermes/config-cli.toml create channel --a-chain %s --a-port %s --b-port %s --yes", req.AChain, req.APort, req.BPort)
 
 	if req.AConnection != nil {
 		createCmd += fmt.Sprintf(" --a-connection %s", *req.AConnection)

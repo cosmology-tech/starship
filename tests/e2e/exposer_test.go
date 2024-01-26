@@ -144,7 +144,7 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	s.Require().Len(resp.Genesis, 1)
 	s.Require().Len(resp.Validators, 1)
 	s.Require().Len(resp.Keys, 3)
-	s.Require().Len(resp.Relayers, 1)
+	s.Require().Len(resp.Relayers, 2)
 }
 
 func (s *TestSuite) TestExposer_CreateChannel() {

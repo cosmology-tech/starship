@@ -73,10 +73,13 @@ spec:
 
               mkdir -p $RELAYER_DIR
               cp /configs/config.toml $RELAYER_DIR/config.toml
+              cp /configs/config-cli.toml $RELAYER_DIR/config-cli.toml
               cat $RELAYER_DIR/config.toml
 
-              MNEMONIC=$(jq -r ".relayers[$RLY_INDEX].mnemonic" $KEYS_CONFIG)
+              MNEMONIC=$(jq -r ".relayers[0].mnemonic" $KEYS_CONFIG)
               echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
+              MNEMONIC_CLI=$(jq -r ".relayers[1].mnemonic" $KEYS_CONFIG)
+              echo $MNEMONIC_CLI > $RELAYER_DIR/mnemonic-cli.txt
 
               echo "Debug output for {{ $relayer.name }}..."
               cat << EOF
@@ -95,6 +98,13 @@ spec:
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
               echo "Transfer tokens to address $RLY_ADDR"
+
+              echo "Creating key for {{ $chain }}-cli..."
+              hermes keys add \
+                --chain {{ $chain }} \
+                --mnemonic-file $RELAYER_DIR/mnemonic-cli.txt \
+                --key-name {{ $chain }}-cli \
+                --hd-path {{ $fullchain.hdPath | quote }}
               {{- end }}
 
               {{- range $i, $channel := $relayer.channels }}
