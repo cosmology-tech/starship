@@ -703,7 +703,7 @@ defaultRelayers:
   ts-relayer:
     image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
   hermes:
-    image: ghcr.io/cosmology-tech/starship/hermes:1.7.4
+    image: ghcr.io/cosmology-tech/starship/hermes:v1.7.4
     config:
       global:
         log_level: "info"
