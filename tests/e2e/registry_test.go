@@ -61,7 +61,11 @@ func (s *TestSuite) TestRegistry_ListChains() {
 		expChain := s.config.GetChain(chain.ChainId)
 		s.Require().NotNil(expChain)
 
-		s.Require().Equal(expChain.Type, chain.ChainName)
+		if expChain.Type == "custom" {
+			s.Require().Equal(expChain.Name, chain.ChainName)
+		} else {
+			s.Require().Equal(expChain.Type, chain.ChainName)
+		}
 	}
 }
 
@@ -79,7 +83,11 @@ func (s *TestSuite) TestRegistry_GetChain() {
 		s.MakeRegistryRequest(req, respChain)
 
 		s.Require().Equal(chain.Name, respChain.ChainId)
-		s.Require().Equal(chain.Type, respChain.ChainName)
+		if chain.Type == "custom" {
+			s.Require().Equal(chain.Name, respChain.ChainName)
+		} else {
+			s.Require().Equal(chain.Type, respChain.ChainName)
+		}
 		if chain.Ports.Rpc != 0 {
 			s.Require().Equal(fmt.Sprintf("http://localhost:%d", chain.Ports.Rpc), respChain.Apis.Rpc[0].Address)
 		}
@@ -161,10 +169,14 @@ func (s *TestSuite) TestRegistry_GetChainAssets() {
 		respAssets := &pb.ResponseChainAssets{}
 		s.MakeRegistryRequest(req, respAssets)
 
-		s.Require().Equal(chain.Type, respAssets.ChainName)
+		chainName := chain.Type
+		if chain.Type == "custom" {
+			chainName = chain.Name
+		}
+		s.Require().Equal(chainName, respAssets.ChainName)
 
 		expNumAssets := 1
-		if n, ok := expectedAssets[chain.Type]; ok {
+		if n, ok := expectedAssets[chainName]; ok {
 			expNumAssets = n
 		}
 
