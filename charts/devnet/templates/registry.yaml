@@ -116,7 +116,11 @@ data:
   assetlist.json: |-
     {
       "$schema": "../assetlist.schema.json",
+      {{- if eq $chain.type "custom" }}
+      "chain_name": "{{ $chain.name }}",
+      {{- else }}
       "chain_name": "{{ $chain.type }}",
+      {{- end }}
       {{- if hasKey $chain "assets" }}
       "assets": {{ toJson $chain.assets }}
       {{- else }}
@@ -145,7 +149,11 @@ data:
   chain.json: |-
     {
       "$schema": "../chain.schema.json",
+      {{- if eq $chain.type "custom" }}
+      "chain_name": "{{ $chain.name }}",
+      {{- else }}
       "chain_name": "{{ $chain.type }}",
+      {{- end }}
       "status": "live",
       "network_type": "mainnet",
       "chain_id": "{{ $chain.name }}",
