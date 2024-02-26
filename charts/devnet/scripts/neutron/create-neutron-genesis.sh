@@ -4,9 +4,11 @@ DENOM="${DENOM:=untrn}"
 STAKEDENOM=${DENOM:-untrn}
 COINS="${COINS:=100000000000000000untrn}"
 CHAIN_ID="${CHAIN_ID:=neutron-1}"
-CHAIN_BIN="${CHAIN_BIN:=neutrond}"
+BINARY="${CHAIN_BIN:=neutrond}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.neutrond}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
+
+BRANCH="${BRANCH:=v2.0.1}"
 
 GENESIS_PATH="$CHAIN_DIR/config/genesis.json"
 BASE_DIR=./data
@@ -21,37 +23,47 @@ mkdir -p $CONTRACTS_BINARIES_DIR $THIRD_PARTY_CONTRACTS_DIR
 function download_contract() {
     CONTRACT_NAME="$1"  # <type of contract>/<contract name>
     CONTRACT_URI=${CONTRACT_NAME#"./"}
-    curl https://github.com/neutron-org/neutron/raw/main/$CONTRACT_URI -L -o $CONTRACT_NAME
+    curl https://github.com/neutron-org/neutron/raw/$BRANCH/$CONTRACT_URI -L -o $CONTRACT_NAME
 }
 
-$CHAIN_BIN init $CHAIN_ID --chain-id $CHAIN_ID
+$BINARY init $CHAIN_ID --chain-id $CHAIN_ID
 
 # Add genesis keys to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
-jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
 # Add relayer key to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
-jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
 # Add faucet key to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".faucet[0].name" $KEYS_CONFIG)
-jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
 # Add test addresses, admin address
 echo "Adding key.... demowallet1"
-jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add demowallet1 --index 1 --recover --keyring-backend="test"
-$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a demowallet1 --keyring-backend="test") $COINS --keyring-backend="test"
+jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet1 --index 1 --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a demowallet1 --keyring-backend="test") $COINS --keyring-backend="test"
 # Add test addresses, second multisig address
 echo "Adding key.... demowallet2"
-jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add demowallet2 --index 2 --recover --keyring-backend="test"
-$CHAIN_BIN add-genesis-account $($CHAIN_BIN keys show -a demowallet2 --keyring-backend="test") $COINS --keyring-backend="test"
+jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet2 --index 2 --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a demowallet2 --keyring-backend="test") $COINS --keyring-backend="test"
 
-ADMIN_ADDRESS=$($CHAIN_BIN keys show demowallet1 -a --keyring-backend="test")
-SECOND_MULTISIG_ADDRESS=$($CHAIN_BIN keys show demowallet2 -a --keyring-backend="test")
+# IMPORTANT! minimum_gas_prices should always contain at least one record, otherwise the chain will not start or halt
+MIN_GAS_PRICES_DEFAULT='[{"denom":"untrn","amount":"0"}]'
+MIN_GAS_PRICES=${MIN_GAS_PRICES:-"$MIN_GAS_PRICES_DEFAULT"}
+
+BYPASS_MIN_FEE_MSG_TYPES_DEFAULT='["/ibc.core.channel.v1.Msg/RecvPacket", "/ibc.core.channel.v1.Msg/Acknowledgement", "/ibc.core.client.v1.Msg/UpdateClient"]'
+BYPASS_MIN_FEE_MSG_TYPES=${BYPASS_MIN_FEE_MSG_TYPES:-"$BYPASS_MIN_FEE_MSG_TYPES_DEFAULT"}
+
+MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE_DEFAULT=1000000
+MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE=${MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE:-"$MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE_DEFAULT"}
+
+ADMIN_ADDRESS=$($BINARY keys show demowallet1 -a --keyring-backend="test")
+SECOND_MULTISIG_ADDRESS=$($BINARY keys show demowallet2 -a --keyring-backend="test")
 
 ls $CHAIN_DIR/config
 
@@ -98,7 +110,7 @@ CW4_GROUP_CONTRACT=$THIRD_PARTY_CONTRACTS_DIR/cw4_group.wasm
 download_contract $CW4_GROUP_CONTRACT
 
 echo "Add consumer section..."
-$CHAIN_BIN add-consumer-section
+$BINARY add-consumer-section --home "$CHAIN_DIR"
 ### PARAMETERS SECTION
 
 ## slashing params
@@ -190,8 +202,8 @@ echo "Initializing dao contract in genesis..."
 
 function store_binary() {
   CONTRACT_BINARY_PATH=$1
-  $CHAIN_BIN add-wasm-message store "$CONTRACT_BINARY_PATH" \
-    --output json --run-as "${ADMIN_ADDRESS}" --keyring-backend=test
+  $BINARY add-wasm-message store "$CONTRACT_BINARY_PATH" \
+    --output json --run-as "${ADMIN_ADDRESS}" --keyring-backend=test --home "$CHAIN_DIR"
   BINARY_ID=$(jq -r "[.app_state.wasm.gen_msgs[] | select(.store_code != null)] | length" "$CHAIN_DIR/config/genesis.json")
   echo "$BINARY_ID"
 }
@@ -231,7 +243,7 @@ CW4_GROUP_CONTRACT_BINARY_ID=$(store_binary             "$CW4_GROUP_CONTRACT")
 
 function genaddr() {
   CODE_ID=$1
-  CONTRACT_ADDRESS=$($CHAIN_BIN debug generate-contract-address "$INSTANCE_ID_COUNTER" "$CODE_ID")
+  CONTRACT_ADDRESS=$($BINARY debug generate-contract-address "$INSTANCE_ID_COUNTER" "$CODE_ID")
   echo "$CONTRACT_ADDRESS"
 }
 
@@ -660,8 +672,8 @@ function init_contract() {
   INIT_MSG=$2
   LABEL=$3
   check_json "$INIT_MSG"
-  $CHAIN_BIN add-wasm-message instantiate-contract "$BINARY_ID" "$INIT_MSG" --label "$LABEL" \
-    --run-as "$DAO_CONTRACT_ADDRESS" --admin "$DAO_CONTRACT_ADDRESS"
+  $BINARY add-wasm-message instantiate-contract "$BINARY_ID" "$INIT_MSG" --label "$LABEL" \
+    --run-as "$DAO_CONTRACT_ADDRESS" --admin "$DAO_CONTRACT_ADDRESS" --home "$CHAIN_DIR"
 }
 
 # WARNING!
@@ -724,14 +736,14 @@ REGISTER_VESTING_ACCOUNTS_MSG='{
   }
 }'
 
-$CHAIN_BIN add-wasm-message execute "$DAO_CONTRACT_ADDRESS" "$ADD_SUBDAOS_MSG" \
-  --run-as "$DAO_CONTRACT_ADDRESS"
+$BINARY add-wasm-message execute "$DAO_CONTRACT_ADDRESS" "$ADD_SUBDAOS_MSG" \
+  --run-as "$DAO_CONTRACT_ADDRESS" --home "$CHAIN_DIR"
 
-$CHAIN_BIN add-wasm-message execute "$NEUTRON_VESTING_INVESTORS_CONTRACT_ADDRRES" "$SET_VESTING_TOKEN_MSG" \
-  --run-as "$ADMIN_ADDRESS"
+$BINARY add-wasm-message execute "$NEUTRON_VESTING_INVESTORS_CONTRACT_ADDRRES" "$SET_VESTING_TOKEN_MSG" \
+  --run-as "$ADMIN_ADDRESS" --home "$CHAIN_DIR"
 
-$CHAIN_BIN add-wasm-message execute "$NEUTRON_VESTING_INVESTORS_CONTRACT_ADDRRES" "$REGISTER_VESTING_ACCOUNTS_MSG" \
-  --amount 1000untrn --run-as "$ADMIN_ADDRESS"
+$BINARY add-wasm-message execute "$NEUTRON_VESTING_INVESTORS_CONTRACT_ADDRRES" "$REGISTER_VESTING_ACCOUNTS_MSG" \
+  --amount 1000untrn --run-as "$ADMIN_ADDRESS" --home "$CHAIN_DIR"
 
 function set_genesis_param() {
   param_name=$1
@@ -739,17 +751,38 @@ function set_genesis_param() {
   sed -i -e "s;\"$param_name\":.*;\"$param_name\": $param_value;g" "$GENESIS_PATH"
 }
 
-set_genesis_param admins                      "[\"$DAO_CONTRACT_ADDRESS\"]"                 # admin module
-set_genesis_param treasury_address            "\"$DAO_CONTRACT_ADDRESS\""                   # feeburner
-set_genesis_param fee_collector_address       "\"$DAO_CONTRACT_ADDRESS\""                   # tokenfactory
-set_genesis_param security_address            "\"$SECURITY_SUBDAO_CORE_CONTRACT_ADDRESS\"," # cron
-set_genesis_param limit                       5                                             # cron
-set_genesis_param allow_messages              "[\"*\"]"                                     # interchainaccounts
-set_genesis_param signed_blocks_window        "\"$SLASHING_SIGNED_BLOCKS_WINDOW\","         # slashing
-set_genesis_param min_signed_per_window       "\"$SLASHING_MIN_SIGNED\","                   # slashing
-set_genesis_param slash_fraction_double_sign  "\"$SLASHING_FRACTION_DOUBLE_SIGN\","         # slashing
-set_genesis_param slash_fraction_downtime     "\"$SLASHING_FRACTION_DOWNTIME\""             # slashing
-set_genesis_param minimum_gas_prices          "$MIN_GAS_PRICES"                             # globalfee
+function set_genesis_param_jq() {
+  param_path=$1
+  param_value=$2
+  jq "${param_path} = ${param_value}" > tmp_genesis_file.json < "$GENESIS_PATH" && mv tmp_genesis_file.json "$GENESIS_PATH"
+}
+
+function convert_bech32_base64_esc() {
+  $BINARY keys parse $1 --output json | jq .bytes | xxd -r -p | base64 | sed -e 's/\//\\\//g'
+}
+DAO_CONTRACT_ADDRESS_B64=$(convert_bech32_base64_esc "$DAO_CONTRACT_ADDRESS")
+echo $DAO_CONTRACT_ADDRESS_B64
+
+CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS="neutron1x69dz0c0emw8m2c6kp5v6c08kgjxmu30f4a8w5"
+CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64=$(convert_bech32_base64_esc "$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS")
+
+set_genesis_param admins                                 "[\"$DAO_CONTRACT_ADDRESS\"]"                    # admin module
+set_genesis_param treasury_address                       "\"$DAO_CONTRACT_ADDRESS\""                      # feeburner
+set_genesis_param fee_collector_address                  "\"$DAO_CONTRACT_ADDRESS\""                      # tokenfactory
+set_genesis_param security_address                       "\"$SECURITY_SUBDAO_CORE_CONTRACT_ADDRESS\","    # cron
+set_genesis_param limit                                  5                                                # cron
+#set_genesis_param allow_messages                        "[\"*\"]"                                        # interchainaccounts
+set_genesis_param signed_blocks_window                   "\"$SLASHING_SIGNED_BLOCKS_WINDOW\","            # slashing
+set_genesis_param min_signed_per_window                  "\"$SLASHING_MIN_SIGNED\","                      # slashing
+set_genesis_param slash_fraction_double_sign             "\"$SLASHING_FRACTION_DOUBLE_SIGN\","            # slashing
+set_genesis_param slash_fraction_downtime                "\"$SLASHING_FRACTION_DOWNTIME\""                # slashing
+set_genesis_param minimum_gas_prices                     "$MIN_GAS_PRICES,"                               # globalfee
+set_genesis_param max_total_bypass_min_fee_msg_gas_usage "\"$MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE\""    # globalfee
+set_genesis_param_jq ".app_state.globalfee.params.bypass_min_fee_msg_types" "$BYPASS_MIN_FEE_MSG_TYPES"   # globalfee
+set_genesis_param proposer_fee                          "\"0.25\""                                        # builder(POB)
+set_genesis_param escrow_account_address                "\"$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64\"," # builder(POB)
+set_genesis_param sudo_call_gas_limit                   "\"1000000\""                                     # contractmanager
+set_genesis_param max_gas                               "\"1000000000\""                                  # consensus_params
 
 if ! jq -e . "$GENESIS_PATH" >/dev/null 2>&1; then
     echo "genesis appears to become incorrect json" >&2
