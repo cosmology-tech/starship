@@ -572,7 +572,7 @@ defaultChains:
           svg: https://raw.githubusercontent.com/cosmos/chain-registry/master/cheqd/images/cheq.svg
         coingecko_id: cheqd-network
   neutron:
-    image: ghcr.io/cosmology-tech/starship/neutron:v1.0.4
+    image: ghcr.io/cosmology-tech/starship/neutron:v2.0.1
     home: /root/.neutrond
     binary: neutrond
     prefix: neutron
