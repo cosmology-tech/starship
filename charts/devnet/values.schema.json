@@ -136,7 +136,8 @@
               "injective",
               "polymer",
               "virtual",
-              "akash"
+              "akash",
+              "agoric"
             ]
           },
           "numValidators": {
