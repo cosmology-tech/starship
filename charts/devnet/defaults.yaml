@@ -635,8 +635,8 @@ defaultChains:
     denom: ubld
     prettyName: Agoric
     coins: 100000000000000ubld
-    hdPath: m/44'/118'/0'/0/0
-    coinType: 118
+    hdPath: m/44'/564'/0'/0/0
+    coinType: 564
     repo: https://github.com/Agoric/agoric-sdk
     assets:
       - base: ubld

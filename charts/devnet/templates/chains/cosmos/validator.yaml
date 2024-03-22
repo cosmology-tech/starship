@@ -183,6 +183,8 @@ spec:
             {{- include "devnet.genesisVars" $dataExposer | indent 12}}
             - name: KEYS_CONFIG
               value: /configs/keys.json
+            - name: SLOGFILE
+              value: "slog.slog"
           command:
             - bash
             - "-c"
@@ -210,8 +212,14 @@ spec:
                   - "-c"
                   - "-e"
                   - |
-                    sleep 30
+                    while [ $(curl -sw '%{http_code}' http://localhost:26657/status -o /dev/null) -ne 200 ]; do
+                      echo "Validator node does not seem to be ready. Waiting for it to start..."
+                      echo "Checking: http://localhost:26657/status"
+                      sleep 10;
+                    done
+
                     set -eux
+                    export
                     VAL_INDEX=${HOSTNAME##*-}
                     VAL_NAME="$(jq -r ".validators[0].name" $KEYS_CONFIG)-$VAL_INDEX"
                     echo "Validator Index: $VAL_INDEX, Key name: $VAL_NAME. Chain bin $CHAIN_BIN"
@@ -235,6 +243,12 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 26657
+            initialDelaySeconds: 10
+            periodSeconds: 10
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
