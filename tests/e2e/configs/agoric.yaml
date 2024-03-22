@@ -2,7 +2,7 @@ chains:
   - name: agoric-3
     type: agoric
     image: ghcr.io/agoric/agoric-3-proposals:main
-    numValidators: 2
+    numValidators: 1
     faucet:
       enabled: true
       type: starship
