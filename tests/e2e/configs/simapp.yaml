@@ -17,8 +17,8 @@ chains:
       cpu: "0.2"
       memory: "400M"
     faucet:
-      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0
       concurrency: 2
+      type: starship
       resources:
         cpu: "0.1"
         memory: "200M"
