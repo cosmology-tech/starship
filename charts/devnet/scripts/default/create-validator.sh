@@ -2,6 +2,7 @@
 
 DENOM="${DENOM:=uosmo}"
 CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
+CHAIN_DIR="${CHAIN_DIR:=$HOME/.osmosisd}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 VAL_NAME="${VAL_NAME:=osmosis}"
 NODE_URL="${NODE_URL:=http://0.0.0.0:26657}"
@@ -74,6 +75,7 @@ function cosmos-sdk-version-default() {
   then
     args+='--min-self-delegation=1000000'
   fi
+  $CHAIN_BIN keys list --keyring-backend test --output json --home $CHAIN_DIR | jq
   $CHAIN_BIN tx staking create-validator \
     --node $NODE_URL \
     --pubkey=$($CHAIN_BIN tendermint show-validator $NODE_ARGS) \
@@ -84,7 +86,8 @@ function cosmos-sdk-version-default() {
     --commission-rate="0.10" \
     --commission-max-rate="0.20" \
     --commission-max-change-rate="0.01" \
-    --keyring-backend="test" \
+    --keyring-backend test \
+    --home $CHAIN_DIR \
     --fees 100000$DENOM \
     --gas $GAS \
     --output json \

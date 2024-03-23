@@ -179,6 +179,8 @@ spec:
             {{- include "devnet.evnVars" $chain | indent 12 }}
             - name: FAUCET_ENABLED
               value: "{{ $chain.faucet.enabled }}"
+            - name: SLOGFILE
+              value: "slog.slog"
           command:
             - bash
             - "-c"
@@ -201,6 +203,14 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+          {{- if not ($chain.cometmock.enabled) }}
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 26657
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- end }}
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
@@ -277,7 +287,13 @@ spec:
               echo "FAUCET_PATH_PATTERN: $FAUCET_PATH_PATTERN"
 
               export | grep "FAUCET"
-              sleep 30
+
+              while [ $(curl -sw '%{http_code}' http://localhost:26657/status -o /dev/null) -ne 200 ]; do
+                echo "Validator node does not seem to be ready. Waiting for it to start..."
+                echo "Checking: http://localhost:26657/status"
+                sleep 10;
+              done
+
               /app/packages/faucet/bin/cosmos-faucet-dist start "http://localhost:26657"
           volumeMounts:
             - mountPath: /configs
@@ -328,7 +344,13 @@ spec:
               export FAUCET_MNEMONIC=$(jq -r ".faucet[0].mnemonic" /configs/keys.json)
 
               export | grep "FAUCET"
-              sleep 30
+
+              while [ $(curl -sw '%{http_code}' http://localhost:26657/status -o /dev/null) -ne 200 ]; do
+                echo "Validator node does not seem to be ready. Waiting for it to start..."
+                echo "Checking: http://localhost:26657/status"
+                sleep 10;
+              done
+
               /faucet/faucet --credit-coins="$CREDIT_COINS" --chain-fees="$FEES"
           volumeMounts:
             - mountPath: /configs

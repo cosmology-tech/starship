@@ -28,6 +28,7 @@ jobs:
           - "two-chain-cometmock.yaml"
           - "neutron.yaml"
           - "three-chain.yaml"
+          - "agoric.yaml"
       fail-fast: true
       max-parallel: 1
 
