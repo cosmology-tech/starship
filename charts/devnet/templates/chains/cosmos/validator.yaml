@@ -243,12 +243,14 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+          {{- if not ($chain.cometmock.enabled) }}
           readinessProbe:
             httpGet:
               path: /status
               port: 26657
             initialDelaySeconds: 10
             periodSeconds: 10
+          {{- end }}
         - name: exposer
           image: {{ $.Values.exposer.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
