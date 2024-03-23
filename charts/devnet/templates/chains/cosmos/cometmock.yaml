@@ -217,6 +217,12 @@ spec:
               name: scripts
             - mountPath: /configs
               name: addresses
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 22331
+            initialDelaySeconds: 10
+            periodSeconds: 10
       volumes:
         - name: node
           emptyDir: { }
