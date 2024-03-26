@@ -160,6 +160,7 @@ func (s *TestSuite) TestRegistry_GetChainAssets() {
 	expectedAssets := map[string]int{
 		"osmosis": 2,
 		"cosmos":  1,
+		"agoric":  2,
 	}
 
 	for _, chain := range s.config.Chains {
