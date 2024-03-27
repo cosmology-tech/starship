@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starshi
 
 USER root
 
-RUN apt update && apt -y install ca-certificates jq bash curl sed -y
+RUN apt update && apt -y install ca-certificates jq bash curl sed unzip -y
 
 ENV CODE_NAME="neutron-query-relayer"
 ENV VERSION=${VERSION:-"refs/heads/main"}
