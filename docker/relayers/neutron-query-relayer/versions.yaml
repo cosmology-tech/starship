@@ -1,0 +1,5 @@
+base: golang:1.21-bullseye
+versions:
+  - refs/heads/main
+  - refs/tags/v0.2.0
+  - refs/tags/v0.1.1
