@@ -776,6 +776,27 @@ defaultRelayers:
         mode: push # allowed values: push, pull. Valid only for 1.6.0+
   go-relayer:
     image: ghcr.io/cosmology-tech/starship/go-relayer:v2.4.1
+  neutron-query-relayer:
+    image: ghcr.io/cosmology-tech/starship/neutron-query-relayer:v0.2.0
+    config:
+      RELAYER_NEUTRON_CHAIN_TIMEOUT: 1000s
+      RELAYER_NEUTRON_CHAIN_GAP_PRICE: 0.5untrn
+      RELAYER_NEUTRON_CHAIN_GAS_LIMIT: 200000
+      RELAYER_NEUTRON_CHAIN_GAS_ADJUSTMENT: 2.0
+      RELAYER_NEUTRON_CHAIN_CONNECTION_ID:
+      RELAYER_NEUTRON_CHAIN_DEBUG: false
+      RELAYER_NEUTRON_CHAIN_KEYRING_BACKEND: test
+      RELAYER_NEUTRON_CHAIN_OUTPUT_FORMAT: json
+      RELAYER_NEUTRON_CHAIN_SIGN_MODE_STR: direct
+      RELAYER_TARGET_CHAIN_TIMEOUT: 1000s
+      RELAYER_TARGET_CHAIN_DEBUG: true
+      RELAYER_REGISTRY_ADDRESS: ""
+      RELAYER_ALLOW_TX_QUERIES: true
+      RELAYER_ALLOW_KV_CALLBACKS: true
+      RELAYER_MIN_KV_UPDATE_PERIOD: 1
+      RELAYER_STORAGE_PATH: "storage/leveldb"
+      RELAYER_CHECK_SUBMITTED_TX_STATUS_DELAY: 10
+      RELAYER_QUERIES_TASK_QUEUE_CAPACITY: 10000
 
 defaultScripts:
   createGenesis:

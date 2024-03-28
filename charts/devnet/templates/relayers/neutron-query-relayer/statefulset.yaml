@@ -1,0 +1,194 @@
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "hermes" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $relayer := include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
+{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $relayer.fullname }}
+spec:
+  serviceName: {{ $relayer.fullname }}
+  replicas: {{ $relayer.replicas }}
+  podManagementPolicy: "Parallel"
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: relayer
+      app.kubernetes.io/type: {{ $relayer.type }}
+      app.kubernetes.io/name: {{ $relayer.fullname }}
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: relayer
+        app.kubernetes.io/type: {{ $relayer.type }}
+        app.kubernetes.io/name: {{ $relayer.fullname }}
+        app.kubernetes.io/rawname: {{ $relayer.name }}
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      {{- include "imagePullSecrets" $relayer | indent 6 }}
+      initContainers:
+        - name: init-exposer
+          image: {{ $.Values.exposer.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          command:
+            - bash
+            - "-c"
+            - |
+              # Install exposer binary from the image
+              cp /bin/exposer /exposer/exposer
+              chmod +x /exposer/exposer
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: /exposer
+              name: exposer
+        {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
+        - name: init-relayer
+          image: {{ $relayer.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            - name: KEYS_CONFIG
+              value: /keys/keys.json
+            - name: RELAYER_DIR
+              value: /root/.hermes
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - bash
+            - "-c"
+            - |
+              set -ux
+
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
+              mkdir -p $RELAYER_DIR
+              cp /configs/config.toml $RELAYER_DIR/config.toml
+              cp /configs/config-cli.toml $RELAYER_DIR/config-cli.toml
+              cat $RELAYER_DIR/config.toml
+
+              MNEMONIC=$(jq -r ".relayers[0].mnemonic" $KEYS_CONFIG)
+              echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
+              MNEMONIC_CLI=$(jq -r ".relayers[1].mnemonic" $KEYS_CONFIG)
+              echo $MNEMONIC_CLI > $RELAYER_DIR/mnemonic-cli.txt
+
+              echo "Debug output for {{ $relayer.name }}..."
+              cat << EOF
+              {{ typeOf $relayer | indent 14 }}
+              {{ $relayer | toJson | indent 14 }}
+              EOF
+
+              {{- range $i, $chain := $relayer.chains }}
+              {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
+              echo "Creating key for {{ $chain }}..."
+              hermes keys add \
+                --chain {{ $chain }} \
+                --mnemonic-file $RELAYER_DIR/mnemonic.txt \
+                --key-name {{ $chain }} \
+                --hd-path {{ $fullchain.hdPath | quote }}
+              DENOM="{{ $fullchain.denom }}"
+              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
+              echo "Transfer tokens to address $RLY_ADDR"
+
+              echo "Creating key for {{ $chain }}-cli..."
+              hermes keys add \
+                --chain {{ $chain }} \
+                --mnemonic-file $RELAYER_DIR/mnemonic-cli.txt \
+                --key-name {{ $chain }}-cli \
+                --hd-path {{ $fullchain.hdPath | quote }}
+              {{- end }}
+
+              {{- range $i, $channel := $relayer.channels }}
+              hermes create channel \
+                {{- if (get $channel "new-connection" | default false) }}
+                --new-client-connection --yes \
+                {{- end }}
+                --a-chain {{ get $channel "a-chain" }} \
+                --b-chain {{ get $channel "b-chain" }} \
+                --a-port {{ get $channel "a-port" }} \
+                --b-port {{ get $channel "b-port" }}
+              {{- end }}
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+            - mountPath: /keys
+              name: keys
+            - mountPath: /scripts
+              name: scripts
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+      containers:
+        - name: relayer
+          image: {{ $relayer.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            - name: RELAYER_DIR
+              value: /root/.hermes
+          command:
+            - bash
+            - "-c"
+            - |
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
+              hermes start
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+        - name: exposer
+          image: {{ $relayer.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            - name: EXPOSER_HTTP_PORT
+              value: "8081"
+            - name: EXPOSER_GRPC_PORT
+              value: "9099"
+          command:
+            - bash
+            - "-c"
+            - |
+              /exposer/exposer
+          resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+            - mountPath: /exposer
+              name: exposer
+      volumes:
+        - name: relayer
+          emptyDir: { }
+        - name: relayer-config
+          configMap:
+            name: "{{ $relayer.fullname }}"
+        - name: keys
+          configMap:
+            name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
+        - name: exposer
+          emptyDir: { }
+---
+{{- end }}
+{{- end }}
