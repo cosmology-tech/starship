@@ -85,6 +85,8 @@ spec:
               value: "{{ $chain.faucet.enabled }}"
             - name: NUM_VALIDATORS
               value: "{{ $chain.numValidators }}"
+            - name: NUM_RELAYERS
+              value: "{{ len (get $.Values "relayers" | default list) }}"
           command:
             - bash
             - "-c"

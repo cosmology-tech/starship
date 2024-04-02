@@ -1,0 +1,48 @@
+chains:
+  - name: osmosis-1
+    type: osmosis
+    numValidators: 2
+    ports:
+      rest: 1313
+      rpc: 26653
+      exposer: 38083
+      faucet: 8001
+  - name: cosmoshub-4
+    type: cosmos
+    image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
+    numValidators: 2
+    faucet:
+      enabled: false
+    ports:
+      rest: 1317
+      rpc: 26657
+      exposer: 38087
+
+relayers:
+  - name: osmos-cosmos-1
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmoshub-4
+    ports:
+      rest: 3000
+      exposer: 3002
+  - name: osmos-cosmos-2
+    type: hermes
+    replicas: 1
+    chains:
+      - osmosis-1
+      - cosmoshub-4
+    ports:
+      rest: 4000
+      exposer: 4002
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+    grpc: 9091
+
+exposer:
+  image: anmol1696/exposer:20240116-33b8a00

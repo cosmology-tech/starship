@@ -64,7 +64,7 @@
       "mnemonic": "dad rural bridge own habit menu balance loan height rotate suit gym antenna convince traffic carry orphan service tower fatigue lady van prepare glide"
     }
   ],
-  "relayers-cli": [
+  "relayers_cli": [
     {
       "name": "relayer-cli-1",
       "type": "local",
