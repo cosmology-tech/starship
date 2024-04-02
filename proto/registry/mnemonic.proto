@@ -15,6 +15,7 @@ message Keys {
   repeated Mnemonic keys = 3;
   repeated Mnemonic relayers = 4;
   repeated Mnemonic faucet = 5;
+  repeated Mnemonic relayers_cli = 6;
 }
 
 message TypeKey {
