@@ -73,6 +73,13 @@ spec:
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(ibc-setup keys list | grep "{{ $fullchain.name }}" | awk '{print $2}')
               echo "Relayer address $RLY_ADDR"
+
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
               {{- end }}
 
               if [ $RLY_INDEX -eq 0 ]; then
