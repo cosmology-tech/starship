@@ -73,6 +73,13 @@ spec:
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(rly address "{{ $fullchain.name }}" | awk 'END{print}')
               echo "Relayer address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM"
+
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
               {{- end }}
 
               PATHEND="{{ index $relayer.chains 0 }}-{{ index $relayer.chains 1 }}"
