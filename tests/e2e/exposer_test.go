@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	urlpkg "net/url"
+	"time"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -144,7 +145,8 @@ func (s *TestSuite) TestExposer_GetKeys() {
 	s.Require().Len(resp.Genesis, 1)
 	s.Require().Len(resp.Validators, 1)
 	s.Require().Len(resp.Keys, 3)
-	s.Require().Len(resp.Relayers, 2)
+	s.Require().Len(resp.Relayers, 5)
+	s.Require().Len(resp.RelayersCli, 5)
 }
 
 func (s *TestSuite) TestExposer_CreateChannel() {
@@ -182,6 +184,8 @@ func (s *TestSuite) TestExposer_CreateChannel() {
 		s.Require().NoError(err)
 
 		s.Require().Contains(res["status"].(string), "SUCCESS Channel", "response from exposer creaste_channel", res)
+
+		time.Sleep(2 * time.Second)
 
 		// get number of channels after creating channel
 		ibcDataAfter := s.getIBCData(relayer.Chains[0], relayer.Chains[1])

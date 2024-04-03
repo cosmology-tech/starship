@@ -29,6 +29,7 @@ jobs:
           - "neutron.yaml"
           - "three-chain.yaml"
           - "agoric.yaml"
+          - "multi-relayer.yaml"
       fail-fast: true
       max-parallel: 1
 
