@@ -516,7 +516,8 @@
             "enum": [
               "go-relayer",
               "hermes",
-              "ts-relayer"
+              "ts-relayer",
+              "neutron-query-relayer"
             ]
           },
           "image": {

@@ -1,5 +1,5 @@
 {{- range $relayer := .Values.relayers }}
-{{- if eq $relayer.type "hermes" }}
+{{- if eq $relayer.type "neutron-query-relayer" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{ $relayer := include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
 {{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
@@ -34,20 +34,6 @@ spec:
     spec:
       {{- include "imagePullSecrets" $relayer | indent 6 }}
       initContainers:
-        - name: init-exposer
-          image: {{ $.Values.exposer.image }}
-          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
-          command:
-            - bash
-            - "-c"
-            - |
-              # Install exposer binary from the image
-              cp /bin/exposer /exposer/exposer
-              chmod +x /exposer/exposer
-          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
-          volumeMounts:
-            - mountPath: /exposer
-              name: exposer
         {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
         {{- include "devnet.init.wait" $initParams | indent 8 }}
         - name: init-relayer
@@ -151,30 +137,6 @@ spec:
               name: relayer
             - mountPath: /configs
               name: relayer-config
-        - name: exposer
-          image: {{ $relayer.image }}
-          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
-          env:
-            - name: EXPOSER_HTTP_PORT
-              value: "8081"
-            - name: EXPOSER_GRPC_PORT
-              value: "9099"
-          command:
-            - bash
-            - "-c"
-            - |
-              /exposer/exposer
-          resources: {{- include "getResourceObject" $.Values.exposer.resources | trim | nindent 12 }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsUser: 0
-          volumeMounts:
-            - mountPath: /root
-              name: relayer
-            - mountPath: /configs
-              name: relayer-config
-            - mountPath: /exposer
-              name: exposer
       volumes:
         - name: relayer
           emptyDir: { }
@@ -187,8 +149,6 @@ spec:
         - name: scripts
           configMap:
             name: setup-scripts
-        - name: exposer
-          emptyDir: { }
 ---
 {{- end }}
 {{- end }}
