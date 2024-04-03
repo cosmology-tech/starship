@@ -2,6 +2,7 @@
 {{- if eq $relayer.type "hermes" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{ $relayer := include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
+{{ $relayerIndex := include "devnet.relayerindex" (dict "name" $relayer.name "context" $) }}
 {{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
 ---
 apiVersion: apps/v1
@@ -62,6 +63,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: RELAYER_INDEX
+              value: "{{ $relayerIndex }}"
           command:
             - bash
             - "-c"
@@ -76,9 +79,9 @@ spec:
               cp /configs/config-cli.toml $RELAYER_DIR/config-cli.toml
               cat $RELAYER_DIR/config.toml
 
-              MNEMONIC=$(jq -r ".relayers[0].mnemonic" $KEYS_CONFIG)
+              MNEMONIC=$(jq -r ".relayers[$RELAYER_INDEX].mnemonic" $KEYS_CONFIG)
               echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
-              MNEMONIC_CLI=$(jq -r ".relayers[1].mnemonic" $KEYS_CONFIG)
+              MNEMONIC_CLI=$(jq -r ".relayers_cli[$RELAYER_INDEX].mnemonic" $KEYS_CONFIG)
               echo $MNEMONIC_CLI > $RELAYER_DIR/mnemonic-cli.txt
 
               echo "Debug output for {{ $relayer.name }}..."
@@ -97,7 +100,13 @@ spec:
                 --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
               RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
+
               echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
 
               echo "Creating key for {{ $chain }}-cli..."
               hermes keys add \
@@ -105,6 +114,14 @@ spec:
                 --mnemonic-file $RELAYER_DIR/mnemonic-cli.txt \
                 --key-name {{ $chain }}-cli \
                 --hd-path {{ $fullchain.hdPath | quote }}
+              RLY_ADDR_CLI=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}-cli".account')
+
+              echo "Transfer tokens to address $RLY_ADDR_CLI"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR_CLI \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
               {{- end }}
 
               {{- range $i, $channel := $relayer.channels }}

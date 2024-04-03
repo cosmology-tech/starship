@@ -37,3 +37,19 @@ Usage:
 {{- define "devnet.fullrelayer"}}
 {{ index (splitList "@return\n" (include "devnet.getrelayer" .)) 1 }}
 {{- end }}
+
+{{/*
+Given relayer name, return the relayer index in the list of relayers
+Usage:
+{{ include "devnet.relayerindex" (dict "name" osmo-juno "context" $) }}
+*/}}
+{{- define "devnet.relayerindex" -}}
+{{- $name := $.name -}}
+{{- $index := -1 -}}
+{{- range $i, $relayer := $.context.Values.relayers -}}
+{{- if eq $relayer.name $name -}}
+{{- $index = $i -}}
+{{- end -}}
+{{- end -}}
+{{- $index -}}
+{{- end -}}

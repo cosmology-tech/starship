@@ -802,7 +802,7 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
   starship:
-    image: ghcr.io/cosmology-tech/starship/faucet:20240103-d60aa21
+    image: ghcr.io/cosmology-tech/starship/faucet:20240402-c653ca2
     concurrency: 5
 
 defaultCometmock:
