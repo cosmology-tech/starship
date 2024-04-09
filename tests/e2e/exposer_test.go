@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	urlpkg "net/url"
-	"time"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"net/http"
+	urlpkg "net/url"
 
 	pb "github.com/cosmology-tech/starship/exposer/exposer"
 )
@@ -167,7 +165,7 @@ func (s *TestSuite) TestExposer_CreateChannel() {
 
 		body := map[string]string{
 			"a_chain":      relayer.Chains[0],
-			"a_connection": "connection-0",
+			"a_connection": ibcDataBefore.Chain_1.ConnectionId,
 			"a_port":       "transfer",
 			"b_port":       "transfer",
 		}
@@ -184,8 +182,6 @@ func (s *TestSuite) TestExposer_CreateChannel() {
 		s.Require().NoError(err)
 
 		s.Require().Contains(res["status"].(string), "SUCCESS Channel", "response from exposer creaste_channel", res)
-
-		time.Sleep(2 * time.Second)
 
 		// get number of channels after creating channel
 		ibcDataAfter := s.getIBCData(relayer.Chains[0], relayer.Chains[1])
