@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"os"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
 	"github.com/golang/protobuf/jsonpb"
 	lens "github.com/strangelove-ventures/lens/client"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"

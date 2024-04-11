@@ -8,12 +8,12 @@ import (
 	"os"
 	"time"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/stretchr/testify/suite"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 
