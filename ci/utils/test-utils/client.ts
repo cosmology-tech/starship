@@ -33,8 +33,9 @@ export const createClient = () => {
         return function(...args: any[]) {
           const argsString = args.map(arg => strip(JSON.stringify(arg))).join(', ');
           ctx.logs.push(`Call: ${prop}(${argsString})`);
-          // @ts-ignore
-          return originalMethod.apply(this, args);
+          // if you want to see nested Call, replace target with this
+          // I double checked both this and target, it does not call the exec in the methods when used internally
+          return originalMethod.apply(target, args);
         };
       }
       return originalMethod;

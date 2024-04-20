@@ -2,12 +2,14 @@ import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join, resolve } from 'path';
 
+import { StarshipConfig } from '../src/config';
+
 const fixtureDir = resolve(join(__dirname, '/../../../__fixtures__'));
 
 function loadConfig(filename: string) {
     const configPath = join(fixtureDir, filename);
     const configAsYaml = readFileSync(configPath, 'utf-8');
-    const config = yaml.load(configAsYaml);
+    const config: StarshipConfig = yaml.load(configAsYaml) as StarshipConfig;
     return {
         configPath,
         configAsYaml,

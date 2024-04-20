@@ -2,11 +2,11 @@ import chalk from 'chalk';
 import * as os from 'os';
 import * as yaml from 'js-yaml';
 import * as shell from 'shelljs';
-import { StarshipConfig } from './config';
+import { Chain, StarshipConfig } from './config';
 import { readFileSync } from 'fs';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
-
+import { Ports } from './config';
 export interface StarshipContext {
   helmName: string;
   helmFile: string;
@@ -19,12 +19,40 @@ export interface StarshipContext {
   curdir?: string;
 };
 
+export interface PodPorts {
+  registry: Ports,
+  explorer: Ports,
+  chains: {
+    defaultPorts: Ports,
+    [chainName: string]: Ports
+  }
+}
+
+// TODO talk to Anmol about moving these into yaml, if not already possible?
+const defaultPorts: PodPorts = {
+  explorer: {
+    rest: 8080
+  },
+  registry: {
+    grpc: 9090,
+    rest: 8080
+  },
+  chains: {
+    defaultPorts: {
+      rpc: 26657,
+      rest: 1317,
+      exposer: 8081,
+      faucet: 8000
+    }
+  }
+};
 export interface StarshipClientI {
   ctx: StarshipContext;
   version: string;
   dependencies: Dependency[];
   depsChecked: boolean;
   config: StarshipConfig;
+  podPorts: PodPorts
 };
 
 export class StarshipClient implements StarshipClientI{
@@ -33,6 +61,7 @@ export class StarshipClient implements StarshipClientI{
   dependencies: Dependency[] = defaultDependencies;
   depsChecked: boolean = false;
   config: StarshipConfig;
+  podPorts: PodPorts = defaultPorts;
 
   constructor(ctx: StarshipContext) {
     this.ctx = ctx;
@@ -113,9 +142,13 @@ export class StarshipClient implements StarshipClientI{
     this.removeHelm();
   }
 
-  private loadConfig(): void {
+  public loadConfig(): void {
     const fileContents = readFileSync(this.ctx.helmFile, 'utf8');
     this.config = yaml.load(fileContents) as StarshipConfig;
+  }
+
+  public setConfig(config: StarshipConfig): void {
+    this.config = config;
   }
 
   // TODO do we need this here?
@@ -214,68 +247,60 @@ export class StarshipClient implements StarshipClientI{
     this.exec(['helm', 'delete', this.ctx.helmName]);
   }
 
-  public startPortForward(): void {
-    this.stopPortForward();
-    this.log(chalk.magenta(`Port forwarding for config ${this.ctx.helmFile}`));
-    this.log(chalk.magenta("Port forwarding all chains"));
 
-    if (!this.config.chains.length) {
-      this.log(chalk.red("No chains to port-forward."));
-      return;
+  private forwardPort(chain: Chain, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
+      this.exec([
+        "kubectl", "port-forward",
+        `pods/${chain.name}-genesis-0`,
+        `${localPort}:${externalPort}`,
+        ">", "/dev/null",
+        "2>&1", "&"
+      ]);
+      this.log(chalk.yellow(`Forwarded ${chain.name}: local ${localPort} -> target (host) ${externalPort}`));
     }
-
-    this.config.chains.forEach(chain => {
-      const { rpc, rest, exposer, faucet } = chain.ports;
-      const forwardPort = (localPort: number, targetPort: number) => {
-        if (localPort !== undefined && targetPort !== undefined) {
-          this.exec([
-            "kubectl", "port-forward",
-            `pods/${chain.name}-genesis-0`,
-            `${localPort}:${targetPort}`,
-            ">", "/dev/null",
-            "2>&1", "&"
-          ]);
-        }
-      };
-
-      if (rpc) forwardPort(rpc, 26657);
-      if (rest) forwardPort(rest, 1317);
-      if (exposer) forwardPort(exposer, 8081);
-      if (faucet) forwardPort(faucet, 8000);
-
-      this.log(chalk.yellow(`chains: forwarded ${chain.name} lcd to http://localhost:${rest}, rpc to http://localhost:${rpc}, faucet to http://localhost:${faucet}`));
-    });
-
-    if (this.config.registry?.enabled) {
+  }
+  
+  private forwardPortService(serviceName: string, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        "service/registry",
-        "8081:8080",
+        `service/${serviceName}`,
+        `${localPort}:${externalPort}`,
         ">", "/dev/null",
         "2>&1", "&"
       ]);
-      this.exec([
-        "kubectl", "port-forward",
-        "service/registry",
-        "9091:9090",
-        ">", "/dev/null",
-        "2>&1", "&"
-      ]);
-      this.log(chalk.yellow("registry: forwarded registry lcd to grpc http://localhost:8081, to http://localhost:9091"));
-    }
-
-    if (this.config.explorer?.enabled) {
-      this.exec([
-        "kubectl", "port-forward",
-        "service/explorer",
-        "8080:8080",
-        ">", "/dev/null",
-        "2>&1", "&"
-      ]);
-      this.log(chalk.green("Open the explorer to get started.... http://localhost:8080"));
+      this.log(`Forwarded ${serviceName} on port ${localPort} to target port ${externalPort}`);
     }
   }
 
+  public startPortForward(): void {
+    if (!this.config) {
+      throw new Error('no config!');
+    }
+    this.log("Attempting to stop any existing port-forwards...");
+    this.stopPortForward();
+    this.log("Starting new port forwarding...");
+  
+    this.config.chains.forEach(chain => {
+      const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
+
+      if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc,  chainPodPorts.rpc);
+      if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
+      if (chain.ports.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
+      if (chain.ports.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
+    });
+  
+    if (this.config.registry?.enabled) {
+      this.forwardPortService("registry", this.config.registry.ports.rest, this.podPorts.registry.rest);
+      this.forwardPortService("registry", this.config.registry.ports.grpc, this.podPorts.registry.grpc);
+    }
+  
+    if (this.config.explorer?.enabled) {
+      this.forwardPortService("explorer", this.config.explorer.ports.rest, this.podPorts.explorer.rest);
+    }
+  }
+  
   public stopForward(): void {
     this.exec(['pkill', '-f', 'port-forward']);
   }
@@ -283,12 +308,13 @@ export class StarshipClient implements StarshipClientI{
   // TODO review with Anmol, which stopForward is better...
   public stopPortForward(): void {
     this.log(chalk.green("Trying to stop all port-forward, if any...."));
-    const pids = this.exec([
+    const result = this.exec([
       "ps", "-ef",
       "|", "grep", "-i", "'kubectl port-forward'",
       "|", "grep", "-v", "'grep'",
       "|", "awk", "'{print $2}'"
-    ]).split('\n');
+    ]);
+    const pids = (result || '').split('\n');
     pids.forEach(pid => {
       if (pid.trim()) {
         this.exec([
@@ -298,7 +324,6 @@ export class StarshipClient implements StarshipClientI{
     });
     this.exec(['sleep', '2']);
   }
-
 
   private setupKind(): void {
     if (this.ctx.kindCluster) {

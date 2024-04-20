@@ -1,7 +1,7 @@
-# starship-js
+# starshipjs
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/545047/188804067-28e67e5e-0214-4449-ab04-2e0c564a6885.svg" width="80"><br />
+  <img src="https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png" width="80"><br />
     Starship TypeScript Utilties
 </p>
 
@@ -12,6 +12,9 @@
    <a href="https://github.com/cosmology-tech/starshipjs/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg"></a>
 </p>
 
+Universal interchain development environment in k8s. The vision of this project is to have a single easy to use developer environment with full testing support for multichain use cases
+
+Utilities for [Starship](https://github.com/cosmology-tech/starship) 🚀
 
 ## install
 
@@ -20,7 +23,7 @@ npm install starshipjs
 ```
 ## Table of contents
 
-- [starship-js](#starship-js)
+- [starshipjs](#starshipjs)
   - [Install](#install)
   - [Table of contents](#table-of-contents)
 - [Developing](#developing)
