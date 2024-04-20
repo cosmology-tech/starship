@@ -62,7 +62,12 @@ export const createClient = () => {
   // Overriding the log method
   // @ts-ignore
   proxiedClient.log = (cmd: string) => {
-    ctx.logs.push(strip(cmd));
+    const str = strip(cmd);
+    if (/\n/.test(str)) {
+      ctx.logs.push('Log⬇\n' + str + '\nEndLog⬆');
+    } else {
+      ctx.logs.push('Log: ' + str);
+    }
   };
 
   return {

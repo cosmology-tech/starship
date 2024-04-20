@@ -7,6 +7,8 @@ import { readFileSync } from 'fs';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
 import { Ports } from './config';
+import deepmerge from 'deepmerge';
+
 export interface StarshipContext {
   helmName: string;
   helmFile: string;
@@ -20,10 +22,10 @@ export interface StarshipContext {
 };
 
 export interface PodPorts {
-  registry: Ports,
-  explorer: Ports,
-  chains: {
-    defaultPorts: Ports,
+  registry?: Ports,
+  explorer?: Ports,
+  chains?: {
+    defaultPorts?: Ports,
     [chainName: string]: Ports
   }
 }
@@ -122,7 +124,7 @@ export class StarshipClient implements StarshipClientI{
       if (dep.name === 'docker' && platform === 'darwin') {
         messages.push(chalk.gray("For macOS, you may also consider Docker for Mac: ") + chalk.white.bold(dep.macUrl));
       } else if (dep.name === 'docker') {
-        messages.push(chalk.gray("For advanced Docker usage and installation on other platforms, see: ") + chalk.white.bold("https://docs.docker.com/engine/install/"));
+        messages.push(chalk.gray("For advanced Docker usage and installation on other platforms, see: ") + chalk.white.bold(dep.url));
       }
 
       messages.push('\n'); // Adding a newline for separation between dependencies
@@ -151,6 +153,10 @@ export class StarshipClient implements StarshipClientI{
     this.config = config;
   }
 
+  public setPodPorts(ports: PodPorts): void {
+    this.podPorts = deepmerge(defaultPorts, ports);
+  }
+
   // TODO do we need this here?
   public test(): void {
     this.exec([
@@ -164,7 +170,7 @@ export class StarshipClient implements StarshipClientI{
   }
 
   public stop(): void {
-    this.stopForward();
+    this.stopPortForward();
     this.deleteHelm();
   }
 
@@ -283,7 +289,8 @@ export class StarshipClient implements StarshipClientI{
     this.log("Starting new port forwarding...");
   
     this.config.chains.forEach(chain => {
-      const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
+      // TODO Talk to Anmol about chain.name and chain.type, seems to be opposite of intuition using chainReg as concept
+      const chainPodPorts = this.podPorts.chains[chain.type] || this.podPorts.chains.defaultPorts;
 
       if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc,  chainPodPorts.rpc);
       if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
@@ -301,11 +308,11 @@ export class StarshipClient implements StarshipClientI{
     }
   }
   
-  public stopForward(): void {
-    this.exec(['pkill', '-f', 'port-forward']);
-  }
-
   // TODO review with Anmol, which stopForward is better...
+  // public stopForward(): void {
+  //   this.exec(['pkill', '-f', 'port-forward']);
+  // }
+
   public stopPortForward(): void {
     this.log(chalk.green("Trying to stop all port-forward, if any...."));
     const result = this.exec([
