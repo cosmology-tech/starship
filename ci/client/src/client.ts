@@ -2,15 +2,15 @@ import chalk from 'chalk';
 import deepmerge from 'deepmerge';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
+import { mkdirp } from 'mkdirp';
 import * as os from 'os';
+import { dirname } from 'path';
 import * as shell from 'shelljs';
 
 import { Chain, StarshipConfig } from './config';
 import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
-import { mkdirp } from 'mkdirp';
-import { dirname } from 'path';
 
 export interface StarshipContext {
   helmName: string;
@@ -93,7 +93,8 @@ export class StarshipClient implements StarshipClientI{
   private checkDependencies(): void {
     if (this.depsChecked) return;
 
-    const platform = os.platform();
+    // so CI/CD and local dev work nicely
+    const platform = process.env.NODE_ENV === 'test' ? 'linux' : os.platform();
     const messages: string[] = [];
     const depMessages: string[] = [];
     const missingDependencies = this.dependencies.filter(dep => !dep.installed);

@@ -10,7 +10,7 @@ exports[`StarshipClient has all deps 2`] = `"something"`;
 exports[`StarshipClient missing deps 1`] = `
 "Call: exec(["something"])
 Log⬇
-✓kubectl
+xkubectl
 xdocker
 ✓helm
 EndLog⬆
@@ -21,8 +21,11 @@ EndLog⬆
 Log⬇
 
 
+kubectl: https://kubernetes.io/docs/tasks/tools/
+
+
 docker: https://docs.docker.com/get-docker/
-For macOS, you may also consider Docker for Mac: https://docs.docker.com/desktop/install/mac-install/
+For advanced Docker usage and installation on other platforms, see: https://docs.docker.com/get-docker/
 
 
 EndLog⬆
