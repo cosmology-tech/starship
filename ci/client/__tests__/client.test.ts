@@ -11,11 +11,11 @@ describe('StarshipClient', () => {
 
     // helm
     client.setup();
-    client.install();
+    client.deploy();
     
     client.startPortForward();
 
-    client.stop();
+    client.undeploy();
 
     // remove helm chart
     client.teardown();

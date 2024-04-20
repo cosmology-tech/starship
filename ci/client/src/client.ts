@@ -169,13 +169,13 @@ export class StarshipClient implements StarshipClientI{
     ]);
   }
 
-  public stop(): void {
+  public undeploy(): void {
     this.stopPortForward();
     this.deleteHelm();
   }
 
   public clean(): void {
-    this.stop();
+    this.undeploy();
     this.cleanKind();
   }
 
@@ -207,7 +207,7 @@ export class StarshipClient implements StarshipClientI{
     ]);
   }
 
-  public install(): void {
+  public deploy(): void {
     this.log("Installing the helm chart. This is going to take a while.....");
     this.exec([
       'helm',

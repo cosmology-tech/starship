@@ -18,6 +18,8 @@ Utilities for [Starship](https://github.com/cosmology-tech/starship) 🚀
 
 ## install
 
+Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+
 ```sh
 npm install starshipjs @starship-ci/client
 
@@ -27,10 +29,65 @@ npm install starshipjs @starship-ci/client
 - [starshipjs](#starshipjs)
   - [Install](#install)
   - [Table of contents](#table-of-contents)
+- [Usage](#usage)
+- [Initializing the Client](#initializing-the-client)
+- [Starting Port Forwarding](#setting-up-and-installing-the-chart)
+- [Stopping And Cleaning up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
 
+## Using the StarshipClient
 
+The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
+
+### Initializing the Client
+
+First, you need to import and initialize the `StarshipClient` with your Helm configuration:
+
+```js
+import { StarshipClient } from '@starship-ci/client';
+
+const client = new StarshipClient({
+  helmName: 'osmojs',
+  helmFile: 'path/to/config.yaml',
+  helmRepo: 'starship',
+  helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
+  helmChart: 'devnet',
+  helmVersion: 'v0.1.38'
+});
+```
+
+### Setting Up and Installing the Chart
+
+After initializing, set up the environment and install the starship helm chart:
+
+```js
+// adds helm chart to registry
+client.setup();
+// installs helm chart
+client.deploy();
+```
+
+## Starting Port Forwarding
+
+For local development, you might need to forward ports from your Kubernetes pods:
+
+```js
+client.startPortForward();
+```
+
+## Stopping and Cleaning Up
+
+Once done with development or testing, you can stop the port forwarding and remove the Helm chart:
+
+```js
+// stop port forwarding AND
+// remove the deployed release from your Kubernetes cluster
+client.undeploy();
+
+// remove the helm chart
+client.teardown();
+```
 
 ## Developing
 

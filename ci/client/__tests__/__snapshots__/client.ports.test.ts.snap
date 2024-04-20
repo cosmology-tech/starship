@@ -7,7 +7,7 @@ Call: setup()
 helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
 helm search repo starship/devnet --version v0.1.38
-Call: install()
+Call: deploy()
 Log: Installing the helm chart. This is going to take a while.....
 helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.1.38
 Log: Run "kubectl get pods" to check the status of the cluster
@@ -31,7 +31,7 @@ kubectl port-forward service/registry 8081:8080 > /dev/null 2>&1 &
 Log: Forwarded registry on port 8081 to target port 8080
 kubectl port-forward service/registry 9091:9090 > /dev/null 2>&1 &
 Log: Forwarded registry on port 9091 to target port 9090
-Call: stop()
+Call: undeploy()
 Log: Trying to stop all port-forward, if any....
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
