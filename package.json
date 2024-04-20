@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/cosmology-tech/starship-js"
+    "url": "https://github.com/cosmology-tech/starshipjs"
   },
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {

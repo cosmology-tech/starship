@@ -13,7 +13,7 @@
   "registry": "https://registry.npmjs.org",
   "command": {
     "create": {
-      "homepage": "https://github.com/cosmology-tech/starship-js",
+      "homepage": "https://github.com/cosmology-tech/starshipjs",
       "license": "SEE LICENSE IN LICENSE",
       "access": "restricted"
     },
