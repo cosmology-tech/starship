@@ -24,19 +24,11 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 🔒 **Security-First Approach**: **StarshipJS** incorporates security best practices from the ground up. Facilitates secure coding practices and configurations, helping developers build secure blockchain applications by default, reducing the risk of vulnerabilities.
 
-## install
-
-Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
-
-```sh
-npm install starshipjs @starship-ci/client
-
-```
 ## Table of contents
 
 - [starshipjs](#starshipjs)
-  - [Install](#install)
-  - [Table of contents](#table-of-contents)
+- [Table of contents](#table-of-contents)
+- [Install](#install)
 - [Usage](#usage)
   - [Configuration](#configuration)
   - [Using the StarshipClient](#using-the-starshipclient)
@@ -45,6 +37,15 @@ npm install starshipjs @starship-ci/client
   - [Stopping And Cleaning up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
+
+## install
+
+Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+
+```sh
+npm install starshipjs @starship-ci/client
+
+```
 
 ## Usage 
 
