@@ -1,4 +1,4 @@
-# starshipjs
+# StarshipJS
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png" width="80"><br />
@@ -26,7 +26,7 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 ## Table of contents
 
-- [starshipjs](#starshipjs)
+- [StarshipJS](#starshipjs)
 - [Table of contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
