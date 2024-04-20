@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/10805402/242348990-c141d6cd-e1c9-413f-af68-283de029c3a4.png" width="80"><br />
-    Starship TypeScript Utilties
+    StarshipJS deploys and manages Starship, aimed to simplify testing for apps that span multiple blockchain networks
 </p>
 
 <p align="center" width="100%">
