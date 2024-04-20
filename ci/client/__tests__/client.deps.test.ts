@@ -5,7 +5,7 @@ describe('StarshipClient', () => {
     const { client, ctx } = createClient();
 
     client.dependencies = client.dependencies.map(dep=>{
-      if (['kubectl', 'docker'].includes(dep.name)) {
+      if (['docker'].includes(dep.name)) {
         return {
           ...dep,
           installed: false
