@@ -4,8 +4,15 @@ describe('StarshipClient', () => {
   it('missing deps', () => {
     const { client, ctx } = createClient();
 
-    client.dependencies.find(dep => dep.name === 'kubectl')!.installed = false;
-    client.dependencies.find(dep => dep.name === 'docker')!.installed = false;
+    client.dependencies = client.dependencies.map(dep=>{
+      if (['kubectl', 'docker'].includes(dep.name)) {
+        return {
+          ...dep,
+          installed: false
+        };
+      }
+      return dep;
+    });
 
     // @ts-ignore
     client.exec(['something'])
