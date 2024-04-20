@@ -50,6 +50,11 @@ export const createClient = () => {
     ctx.code = code;
   };
   
+  // @ts-ignore
+  proxiedClient.ensureFileExists = (_filename: string) => {
+    
+  };
+  
   // Overriding the exec method
   // @ts-ignore
   proxiedClient.exec = (cmd: string[]) => {

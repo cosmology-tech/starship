@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import deepmerge from 'deepmerge';
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import * as os from 'os';
 import * as shell from 'shelljs';
@@ -159,6 +159,7 @@ export class StarshipClient implements StarshipClientI{
   }
 
   public loadConfig(): void {
+    this.ensureFileExists(this.ctx.helmFile);
     this.config = this.loadYaml(this.ctx.helmFile) as StarshipConfig;
   }
 
@@ -171,6 +172,7 @@ export class StarshipClient implements StarshipClientI{
   }
 
   public loadPodPorts(filename: string): void {
+    this.ensureFileExists(filename);
     this.podPorts = this.loadYaml(filename) as PodPorts;
   }
 
@@ -232,7 +234,14 @@ export class StarshipClient implements StarshipClientI{
     ]);
   }
 
+  private ensureFileExists(filename: string): void {
+    if (!existsSync(filename)) {
+      throw new Error(`Configuration file not found: ${filename}`);
+    }
+  }
+
   public deploy(): void {
+    this.ensureFileExists(this.ctx.helmFile);
     this.log("Installing the helm chart. This is going to take a while.....");
     this.exec([
       'helm',
@@ -248,6 +257,7 @@ export class StarshipClient implements StarshipClientI{
   }
 
   public upgrade(): void {
+    this.ensureFileExists(this.ctx.helmFile);
     this.exec([
       'helm',
       'upgrade',
@@ -262,6 +272,7 @@ export class StarshipClient implements StarshipClientI{
   }
 
   public debug(): void {
+    this.ensureFileExists(this.ctx.helmFile);
     this.exec([
       'helm',
       'install',
