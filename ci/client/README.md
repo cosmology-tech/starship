@@ -12,9 +12,17 @@
    <a href="https://github.com/cosmology-tech/starshipjs/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg"></a>
 </p>
 
-Universal interchain development environment in k8s. The vision of this project is to have a single easy to use developer environment with full testing support for multichain use cases
+**StarshipJS** is the JS companion to deploy and manage [Starship](https://github.com/cosmology-tech/starship), tailored specifically for Node.js and TypeScript developers. This toolkit provides a seamless, easy-to-use interface that dramatically simplifies the development, testing, and deployment of interchain applications, whether on your local machine or CI/CD environments.
 
-Utilities for [Starship](https://github.com/cosmology-tech/starship) 🚀
+Designed with simplicity and speed in mind, **StarshipJS** enables developers to quickly integrate Starship into their blockchain projects without complex orchestration.
+
+## Features
+
+👨🏻‍💻 **Node.js and TypeScript Focused**: Tailored specifically for JavaScript ecosystems, **StarshipJS** brings simplicity to multi-chain development for Node.js and TypeScript environments, streamlining the setup and coding processes.
+
+🚀 **Simplified Interchain Development**: Enables the straightforward creation of applications that span multiple blockchain networks. This simplifies complex blockchain interactions, enhancing interoperability and making it easier to build sophisticated interchain solutions.
+
+🔒 **Security-First Approach**: **StarshipJS** incorporates security best practices from the ground up. Facilitates secure coding practices and configurations, helping developers build secure blockchain applications by default, reducing the risk of vulnerabilities.
 
 ## install
 
@@ -30,13 +38,17 @@ npm install starshipjs @starship-ci/client
   - [Install](#install)
   - [Table of contents](#table-of-contents)
 - [Usage](#usage)
-- [Initializing the Client](#initializing-the-client)
-- [Starting Port Forwarding](#setting-up-and-installing-the-chart)
-- [Stopping And Cleaning up](#stopping-and-cleaning-up)
+  - [Configuration](#configuration)
+  - [Using the StarshipClient](#using-the-starshipclient)
+  - [Initializing the Client](#initializing-the-client)
+  - [Starting Port Forwarding](#setting-up-and-installing-the-chart)
+  - [Stopping And Cleaning up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
 
-## Using the StarshipClient
+## Usage 
+
+### Using the StarshipClient
 
 The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
 
@@ -57,6 +69,21 @@ const client = new StarshipClient({
 });
 ```
 
+### Configuration
+
+After initializing, you can load in your config. Assuming you have a `yaml` file:
+
+```js
+client.loadConfig();
+```
+
+If you don't have one, you can set and save a configuration directly from the client:
+
+```js
+client.setConfig(config);
+client.saveConfig(config);
+```
+
 ### Setting Up and Installing the Chart
 
 After initializing, set up the environment and install the starship helm chart:
@@ -68,7 +95,7 @@ client.setup();
 client.deploy();
 ```
 
-## Starting Port Forwarding
+### Starting Port Forwarding
 
 For local development, you might need to forward ports from your Kubernetes pods:
 
@@ -76,7 +103,7 @@ For local development, you might need to forward ports from your Kubernetes pods
 client.startPortForward();
 ```
 
-## Stopping and Cleaning Up
+### Stopping and Cleaning Up
 
 Once done with development or testing, you can stop the port forwarding and remove the Helm chart:
 

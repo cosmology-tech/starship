@@ -1,4 +1,5 @@
 import { join, relative } from 'path';
+
 import { createClient, expectClient } from '../test-utils/client';
 import { config, outputDir } from '../test-utils/config';
 
@@ -9,20 +10,15 @@ describe('StarshipClient', () => {
     client.dependencies.forEach(dep => dep.installed = true);
 
     client.setConfig(config.config);
-    client.setPodPorts({
-        chains: {
-            osmosis: {
-                exposer: 98988,
-                faucet: 1000000,
-                grpc: 909090,
-                rest: 6767676
-            }
-        }
-    });
-    const portYaml = join(outputDir, 'custom-pod-ports.yaml');
+    const helmFile = client.ctx.helmFile;
+    client.ctx.helmFile = join(outputDir, 'my-config.yaml');
+    client.ctx.helmFile = relative(process.cwd(), client.ctx.helmChart)
+    client.saveConfig();
+    client.ctx.helmFile = helmFile;
+
+    const portYaml = join(outputDir, 'default-pod-ports.yaml');
     const relativePortYaml = relative(process.cwd(), portYaml);
     client.savePodPorts(relativePortYaml);
-
 
     // helm
     client.setup();

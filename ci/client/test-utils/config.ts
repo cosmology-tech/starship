@@ -4,7 +4,8 @@ import { join, resolve } from 'path';
 
 import { StarshipConfig } from '../src/config';
 
-const fixtureDir = resolve(join(__dirname, '/../../../__fixtures__'));
+export const fixtureDir = resolve(join(__dirname, '/../../../__fixtures__'));
+export const outputDir = resolve(join(__dirname, '/../../../__output__'));
 
 function loadConfig(filename: string) {
     const configPath = join(fixtureDir, filename);

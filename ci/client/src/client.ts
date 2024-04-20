@@ -1,13 +1,16 @@
 import chalk from 'chalk';
-import * as os from 'os';
+import deepmerge from 'deepmerge';
+import { readFileSync, writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
+import * as os from 'os';
 import * as shell from 'shelljs';
+
 import { Chain, StarshipConfig } from './config';
-import { readFileSync } from 'fs';
+import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
-import { Ports } from './config';
-import deepmerge from 'deepmerge';
+import { mkdirp } from 'mkdirp';
+import { dirname } from 'path';
 
 export interface StarshipContext {
   helmName: string;
@@ -144,9 +147,31 @@ export class StarshipClient implements StarshipClientI{
     this.removeHelm();
   }
 
+  private loadYaml(filename: string): any {
+    const fileContents = readFileSync(filename, 'utf8');
+    return yaml.load(fileContents);
+  }
+
+  private saveYaml(filename: string, obj: any): any {
+    const yamlContent = yaml.dump(obj);
+    mkdirp.sync(dirname(filename));
+    writeFileSync(filename, yamlContent, 'utf8');
+  }
+
   public loadConfig(): void {
-    const fileContents = readFileSync(this.ctx.helmFile, 'utf8');
-    this.config = yaml.load(fileContents) as StarshipConfig;
+    this.config = this.loadYaml(this.ctx.helmFile) as StarshipConfig;
+  }
+
+  public saveConfig(): void {
+    this.saveYaml(this.ctx.helmFile, this.config);
+  }
+
+  public savePodPorts(filename: string): void {
+    this.saveYaml(filename, this.podPorts);
+  }
+
+  public loadPodPorts(filename: string): void {
+    this.podPorts = this.loadYaml(filename) as PodPorts;
   }
 
   public setConfig(config: StarshipConfig): void {
