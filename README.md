@@ -2,13 +2,21 @@
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/545047/188804067-28e67e5e-0214-4449-ab04-2e0c564a6885.svg" width="80"><br />
-    __MODULEDESC__
+    Starship TypeScript Utilties
 </p>
+
+<p align="center" width="100%">
+  <a href="https://github.com/cosmology-tech/starshipjs/actions/workflows/run-tests.yml">
+    <img height="20" src="https://github.com/cosmology-tech/starshipjs/actions/workflows/run-tests.yml/badge.svg" />
+  </a>
+   <a href="https://github.com/cosmology-tech/starshipjs/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-BSD%203--Clause%20Clear-blue.svg"></a>
+</p>
+
 
 ## install
 
 ```sh
-npm install starship-js
+npm install starshipjs
 ```
 ## Table of contents
 
