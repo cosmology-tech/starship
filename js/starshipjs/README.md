@@ -30,9 +30,8 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [Table of contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
-  - [Configuration](#configuration)
-  - [Using the StarshipClient](#using-the-starshipclient)
   - [Initializing the Client](#initializing-the-client)
+  - [Configuration](#configuration)
   - [Starting Port Forwarding](#setting-up-and-installing-the-chart)
   - [Stopping And Cleaning up](#stopping-and-cleaning-up)
 - [Developing](#developing)
@@ -48,8 +47,6 @@ npm install starshipjs @starship-ci/client
 ```
 
 ## Usage 
-
-### Using the StarshipClient
 
 The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
 
