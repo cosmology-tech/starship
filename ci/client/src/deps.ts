@@ -24,10 +24,5 @@ export const dependencies: Dependency[] = [
         name: 'helm',
         url: 'https://helm.sh/docs/intro/install/',
         installed: !!shell.which('helm')
-    },
-    {
-        name: 'yq',
-        url: 'https://github.com/mikefarah/yq/#install',
-        installed: !!shell.which('yq')
     }
 ];
