@@ -53,7 +53,7 @@ export const createClient = () => {
   // @ts-ignore
   proxiedClient.exec = (cmd: string[]) => {
     // @ts-ignore
-    proxiedClient.checkDependencies();
+    client.checkDependencies();
     ctx.commands.push(cmd.join(' '));
     ctx.logs.push(cmd.join(' '));
   };

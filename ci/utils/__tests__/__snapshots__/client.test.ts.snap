@@ -4,26 +4,21 @@ exports[`StarshipClient setup 1`] = `
 "Call: setup()
 Call: setupHelm()
 Call: exec(["helm","repo","add","starship","https://cosmology-tech.github.io/starship/"])
-Call: checkDependencies()
 helm repo add starship https://cosmology-tech.github.io/starship/
 Call: exec(["helm","repo","update"])
-Call: checkDependencies()
 helm repo update
 Call: exec(["helm","search","repo","starship/devnet","--version","v0.1.38"])
-Call: checkDependencies()
 helm search repo starship/devnet --version v0.1.38
 Call: install()
 Call: log("Installing the helm chart. This is going to take a while.....")
 Installing the helm chart. This is going to take a while.....
 Call: exec(["helm","install","-f","../../__fixtures__/config.yaml","osmojs","starship/devnet","--version","v0.1.38"])
-Call: checkDependencies()
 helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.1.38
 Call: log("Run \\"kubectl get pods\\" to check the status of the cluster")
 Run "kubectl get pods" to check the status of the cluster
 Call: teardown()
 Call: removeHelm()
 Call: exec(["helm","repo","remove","starship"])
-Call: checkDependencies()
 helm repo remove starship"
 `;
 

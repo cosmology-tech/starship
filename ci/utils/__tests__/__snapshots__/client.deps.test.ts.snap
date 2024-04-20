@@ -2,7 +2,6 @@
 
 exports[`StarshipClient has all deps 1`] = `
 "Call: exec(["something"])
-Call: checkDependencies()
 something"
 `;
 
@@ -10,16 +9,12 @@ exports[`StarshipClient has all deps 2`] = `"something"`;
 
 exports[`StarshipClient missing deps 1`] = `
 "Call: exec(["something"])
-Call: checkDependencies()
-Call: log("\\u001b[31mx\\u001b[39mkubectl\\n\\u001b[31mx\\u001b[39mdocker\\n\\u001b[32m✓\\u001b[39mhelm\\n\\u001b[32m✓\\u001b[39myq")
 xkubectl
 xdocker
 ✓helm
 ✓yq
-Call: log("\\nPlease install the missing dependencies:")
 
 Please install the missing dependencies:
-Call: log("\\n\\n\\u001b[1m\\u001b[37mkubectl: \\u001b[39m\\u001b[22m\\u001b[36mhttps://kubernetes.io/docs/tasks/tools/\\u001b[39m\\n\\u001b[90mAlternatively, you can install Docker for Mac which includes Kubernetes: \\u001b[39m\\u001b[37m\\u001b[1mhttps://docs.docker.com/desktop/install/mac-install/\\u001b[22m\\u001b[39m\\n\\n\\n\\u001b[1m\\u001b[37mdocker: \\u001b[39m\\u001b[22m\\u001b[36mhttps://docs.docker.com/get-docker/\\u001b[39m\\n\\u001b[90mFor macOS, you may also consider Docker for Mac: \\u001b[39m\\u001b[37m\\u001b[1mhttps://docs.docker.com/desktop/install/mac-install/\\u001b[22m\\u001b[39m\\n\\n")
 
 
 kubectl: https://kubernetes.io/docs/tasks/tools/
@@ -30,7 +25,6 @@ docker: https://docs.docker.com/get-docker/
 For macOS, you may also consider Docker for Mac: https://docs.docker.com/desktop/install/mac-install/
 
 
-Call: exit(1)
 something"
 `;
 
