@@ -19,7 +19,8 @@ Utilities for [Starship](https://github.com/cosmology-tech/starship) 🚀
 ## install
 
 ```sh
-npm install starshipjs
+npm install starshipjs @starship-ci/client
+
 ```
 ## Table of contents
 
@@ -28,6 +29,8 @@ npm install starshipjs
   - [Table of contents](#table-of-contents)
 - [Developing](#developing)
 - [Credits](#credits)
+
+
 
 ## Developing
 
