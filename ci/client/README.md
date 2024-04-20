@@ -106,7 +106,7 @@ client.startPortForward();
 Once done with development or testing, you can stop the port forwarding and remove the Helm chart:
 
 ```js
-// stop port forwarding AND
+// stop port forwarding
 // remove the deployed release from your Kubernetes cluster
 client.undeploy();
 
