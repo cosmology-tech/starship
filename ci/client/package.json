@@ -1,6 +1,6 @@
 {
   "name": "@starship-ci/client",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "Starship CI Client",
   "main": "index.js",
@@ -52,7 +52,7 @@
     "shelljs": "^0.8.5"
   },
   "devDependencies": {
-    "@types/shelljs": "^0.8.15",
-    "@types/js-yaml": "^4.0.9"
+    "@types/js-yaml": "^4.0.9",
+    "@types/shelljs": "^0.8.15"
   }
 }
