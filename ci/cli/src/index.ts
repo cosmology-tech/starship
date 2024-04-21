@@ -53,13 +53,17 @@ async function main() {
     case 'setup':
       client.setup();
       break;
-    case 'startPortForward':
+    case 'start-port-forward':
       client.startPortForward();
       break;
-    case 'printForwardPids':
+    case 'get-pods':
+      client.getPods();
+      break;
+    case 'port-pids':
       client.printForwardPids();
       break;
-    case 'stopPortForward':
+    case 'stop-port-forward':
+    case 'stop-ports':
       client.stopPortForward();
       break;
     case 'teardown':
@@ -71,16 +75,16 @@ async function main() {
     case 'undeploy':
       client.undeploy();
       break;
-    case 'cleanKind':
+    case 'clean-kind':
       client.cleanKind();
       break;
-    case 'deleteHelm':
+    case 'delete-helm':
       client.deleteHelm();
       break;
-    case 'removeHelm':
+    case 'remove-helm':
       client.removeHelm();
       break;
-    case 'setupKind':
+    case 'setup-kind':
       client.setupKind();
       break;
     case 'clean':

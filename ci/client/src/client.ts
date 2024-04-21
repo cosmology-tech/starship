@@ -297,6 +297,11 @@ export class StarshipClient implements StarshipClientI {
     this.exec(['helm', 'delete', this.ctx.helmName]);
   }
 
+  public getPods(): void {
+      this.exec([
+        "kubectl", "get pods --all-namespaces"
+      ]);
+  }
 
   private forwardPort(chain: Chain, localPort: number, externalPort: number): void {
     if (localPort !== undefined && externalPort !== undefined) {

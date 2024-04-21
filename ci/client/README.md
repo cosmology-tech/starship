@@ -78,10 +78,10 @@ yarn starship deploy
 kubectl get pods
 
 # port forwarding
-yarn starship startPortForward
+yarn starship start-ports
 
 # check pids
-yarn starship printForwardPids
+yarn starship port-pids
 ```
 
 #### Running End-to-End Tests
@@ -98,7 +98,7 @@ yarn starship:watch
 
 ```sh
 # stop port forwarding (done by clean() too)
-# yarn starship stopPortForward
+# yarn starship stop-ports
 
 # stop ports and delete & remove helm chart
 yarn starship clean

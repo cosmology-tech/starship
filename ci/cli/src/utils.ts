@@ -58,19 +58,19 @@ export function displayUsage() {
 Usage: starship <command> [options]
 
 Commands:
-  deploy           Deploy starship using specified options or configuration file.
-  setup            Setup initial configuration and dependencies.
-  startPortForward Start port forwarding for the deployed services.
-  stopPortForward  Stop port forwarding.
-  teardown         Remove all components related to the deployment.
-  upgrade          Upgrade the deployed application to a new version.
-  undeploy         Remove starship deployment using specified options or configuration file.
-  cleanKind        Clean up Kubernetes kind cluster resources.
-  deleteHelm       Delete a specific Helm release.
-  removeHelm       Remove Helm chart from local configuration.
-  setupKind        Setup a Kubernetes kind cluster for development.
-  clean            Perform a clean operation to tidy up resources.
-  version, -v      Display the version of the Starship Client.
+  deploy             Deploy starship using specified options or configuration file.
+  setup              Setup initial configuration and dependencies.
+  start-ports        Start port forwarding for the deployed services.
+  stop-ports         Stop port forwarding.
+  teardown           Remove all components related to the deployment.
+  upgrade            Upgrade the deployed application to a new version.
+  undeploy           Remove starship deployment using specified options or configuration file.
+  delete-helm        Delete a specific Helm release.
+  remove-helm        Remove Helm chart from local configuration.
+  clean-kind         Clean up Kubernetes kind cluster resources.
+  setup-kind         Setup a Kubernetes kind cluster for development.
+  clean              Perform a clean operation to tidy up resources.
+  version, -v        Display the version of the Starship Client.
 
 Configuration File:
   --config <path>       Specify the path to the JSON configuration file containing all settings.
@@ -88,7 +88,7 @@ Command-line Options:
 Examples:
   $ starship setup
   $ starship deploy --helmFile ./config/helm.yaml --helmName my-release
-  $ starship startPortForward --config ./config/settings.json
+  $ starship start-ports --config ./config/settings.json
   $ starship undeploy --config ./config/settings.json
   $ starship teardown
 

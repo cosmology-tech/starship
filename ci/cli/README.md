@@ -68,10 +68,10 @@ yarn starship deploy
 kubectl get pods
 
 # port forwarding
-yarn starship startPortForward
+yarn starship start-ports
 
 # check pids
-yarn starship printForwardPids
+yarn starship port-pids
 ```
 
 #### Running End-to-End Tests
@@ -88,7 +88,7 @@ yarn starship:watch
 
 ```sh
 # stop port forwarding (done by clean() too)
-# yarn starship stopPortForward
+# yarn starship stop-ports
 
 # stop ports and delete & remove helm chart
 yarn starship clean
@@ -113,9 +113,9 @@ Here are some common usages of the starship CLI:
 starship setup --helmFile ./config/helm.yaml --helmName my-release
 starship deploy --helmFile ./config/helm.yaml --helmName my-release
 starship undeploy --config ./config/settings.json
-starship setupKind
-starship startPortForward
-starship stopPortForward
+starship setup-kind
+starship start-ports
+starship stop-ports
 starship upgrade
 starship teardown
 starship clean
@@ -130,15 +130,15 @@ Here's a concise overview of the commands available in the `starship` CLI:
 | ---------------- | ----------------------------------------------- |
 | `setup`          | Setup initial configuration and dependencies.   |
 | `deploy`         | Deploy starship using specified options or configuration file. |
-| `startPortForward` | Start port forwarding for the deployed services. |
-| `stopPortForward` | Stop port forwarding.                           |
+| `start-ports`    | Start port forwarding for the deployed services. |
+| `stop-ports` | Stop port forwarding.                           |
 | `teardown`       | Remove all components related to the deployment. |
 | `upgrade`        | Upgrade the deployed application to a new version. |
 | `undeploy`       | Remove starship deployment using specified options or configuration file. |
-| `cleanKind`      | Clean up Kubernetes kind cluster resources.     |
-| `deleteHelm`     | Delete a specific Helm release.                 |
-| `removeHelm`     | Remove Helm chart from local configuration.     |
-| `setupKind`      | Setup a Kubernetes kind cluster for development. |
+| `delete-helm`     | Delete a specific Helm release.                 |
+| `remove-helm`     | Remove Helm chart from local configuration.     |
+| `setup-kind`      | Setup a Kubernetes kind cluster for development. |
+| `clean-kind`      | Clean up Kubernetes kind cluster resources.     |
 | `clean`          | Perform a clean operation to tidy up resources. |
 | `version`, `-v`  | Display the version of the Starship Client.     |
 
