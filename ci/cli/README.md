@@ -20,6 +20,10 @@ Designed with simplicity and speed in mind, **Starship** enables developers to q
 - [StarshipJS](#starshipjs)
 - [Table of contents](#table-of-contents)
 - [Install](#install)
+- [Recommended Usage](#recommended-usage)
+  - [Deploying Starship](#deploying-starship)
+  - [Running End-to-End Tests](#running-end-to-end-tests)
+  - [Teardown](#teardown)
 - [Examples](#examples)
 - [Commands](#commands)
 - [Options](#options)
@@ -32,6 +36,61 @@ Install `@starship-ci/cli` globally to use the `starship` command:
 
 ```sh
 npm install -g @starship-ci/cli
+```
+
+### Recommended Usage
+
+Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most recommended setup. Consider everything else after this section "advanced setup".
+
+- We recommend studying the [osmojs starship integration](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship) and replicating it.
+- Add your configs, similar to how it's done [here](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship/configs)
+- Add your workflows for github [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
+- Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/20d749c8c5a4ec3db374221dabdf185fa18025a3/packages/osmojs/package.json#L34C5-L38C74)
+— Note the jest configurations in the [osmojs package](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs)
+
+
+This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
+
+#### Deploying `starship`
+
+```sh
+# setup helm/starship
+yarn starship setup
+
+# sanity check
+kubectl get pods --all-namespaces
+
+# deploy starship
+yarn starship deploy
+
+# wait til STATUS=Running
+kubectl get pods
+
+# port forwarding
+yarn starship startPortForward
+
+# check pids
+yarn starship printForwardPids
+```
+
+#### Running End-to-End Tests
+
+```sh
+# test
+yarn starship:test
+
+# watch 
+yarn starship:watch
+```
+
+#### Teardown
+
+```sh
+# stop port forwarding (done by clean() too)
+# yarn starship stopPortForward
+
+# stop ports and delete & remove helm chart
+yarn starship clean
 ```
 
 ## Examples 
