@@ -39,6 +39,7 @@ npm install -g @starship-ci/cli
 Here are some common usages of the starship CLI:
 
 ```sh
+starship setup --helmFile ./config/helm.yaml --helmName my-release
 starship deploy --helmFile ./config/helm.yaml --helmName my-release
 starship undeploy --config ./config/settings.json
 starship setupKind
@@ -56,8 +57,8 @@ Here's a concise overview of the commands available in the `starship` CLI:
 
 | Command          | Description                                     |
 | ---------------- | ----------------------------------------------- |
-| `deploy`         | Deploy starship using specified options or configuration file. |
 | `setup`          | Setup initial configuration and dependencies.   |
+| `deploy`         | Deploy starship using specified options or configuration file. |
 | `startPortForward` | Start port forwarding for the deployed services. |
 | `stopPortForward` | Stop port forwarding.                           |
 | `teardown`       | Remove all components related to the deployment. |

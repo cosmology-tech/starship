@@ -50,6 +50,8 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 ## CLI Usage
 
+See more usage in the [`StarshipJS CLI`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/cli) documentation.
+
 ### Install the CLI
 
 ```sh
@@ -72,6 +74,8 @@ starship teardown --config ./config/settings.json
 ```
 
 ## StarshipClient Usage
+
+See more info in the [`StarshipJS Client`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/client) documentation.
 
 ### Install the StarshipClient
 
