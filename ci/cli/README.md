@@ -149,6 +149,7 @@ Options in the CLI allow for dynamic configuration of `starship`. You can specif
 | Option             | Description                                           |
 |--------------------|-------------------------------------------------------|
 | `--config <path>`  | Specify the path to the JSON configuration file containing all settings. |
+| `--no-tty`         | for CI/CD, it's a good idea to set `--no-tty` to disable interactive prompts |
 | `--helmFile <path>`| Specify the path to the Helm file.                    |
 | `--helmName <name>`| Specify the Helm release name.                        |
 | `--helmRepo <repo>`| Specify the Helm repository.                          |
