@@ -35,6 +35,7 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [Features](#features)
 - [Packages](#packages)
 - [Table of contents](#table-of-contents)
+- [Install](#install)
 - [Recommended Usage](#recommended-usage-📘)
   - [Deploying Starship](#deploying-starship-🚀)
   - [Running End-to-End Tests](#running-end-to-end-tests-🧪)
@@ -51,6 +52,14 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
   - [Stopping and Cleaning Up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
+
+## Install
+
+Install `@starship-ci/cli` with `npm` or `yarn`:
+
+```sh
+npm install @starship-ci/cli
+```
 
 ### Recommended Usage 📘
 
