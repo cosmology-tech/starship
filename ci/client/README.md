@@ -46,7 +46,6 @@ Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
 
 ```sh
 npm install starshipjs @starship-ci/client
-
 ```
 
 ### Recommended Usage 📘

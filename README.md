@@ -55,10 +55,10 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 ## Install
 
-Install `@starship-ci/cli` with `npm` or `yarn`:
+Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
 
 ```sh
-npm install @starship-ci/cli
+npm install starshipjs @starship-ci/client
 ```
 
 ### Recommended Usage 📘
