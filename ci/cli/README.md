@@ -20,10 +20,10 @@ Designed with simplicity and speed in mind, **Starship** enables developers to q
 - [StarshipJS](#starshipjs)
 - [Table of contents](#table-of-contents)
 - [Install](#install)
-- [Recommended Usage](#recommended-usage)
-  - [Deploying Starship](#deploying-starship)
-  - [Running End-to-End Tests](#running-end-to-end-tests)
-  - [Teardown](#teardown)
+- [Recommended Usage](#recommended-usage-📘)
+  - [Deploying Starship](#deploying-starship-🚀)
+  - [Running End-to-End Tests](#running-end-to-end-tests-🧪)
+  - [Teardown](#teardown-🛠️)
 - [CLI Usage](#cli-usage)
   - [CLI Examples](#cli-examples)
   - [CLI Commands](#cli-commands)
@@ -31,7 +31,7 @@ Designed with simplicity and speed in mind, **Starship** enables developers to q
 - [Developing](#developing)
 - [Credits](#credits)
 
-## install
+## Install
 
 Install `@starship-ci/cli` with `npm` or `yarn`:
 
@@ -39,7 +39,7 @@ Install `@starship-ci/cli` with `npm` or `yarn`:
 npm install @starship-ci/cli
 ```
 
-### Recommended Usage
+### Recommended Usage 📘
 
 Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most recommended setup. Consider everything else after this section "advanced setup".
 
@@ -52,7 +52,7 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 
 This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
 
-#### Deploying `Starship`
+#### Deploying `Starship` 🚀
 
 ```sh
 # setup helm/starship
@@ -74,7 +74,7 @@ yarn starship start-ports
 yarn starship port-pids
 ```
 
-#### Running End-to-End Tests
+#### Running End-to-End Tests 🧪
 
 ```sh
 # test
@@ -84,7 +84,7 @@ yarn starship:test
 yarn starship:watch
 ```
 
-#### Teardown
+#### Teardown 🛠️
 
 ```sh
 # stop port forwarding (done by clean() too)

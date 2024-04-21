@@ -28,10 +28,10 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [StarshipJS](#starshipjs)
 - [Table of contents](#table-of-contents)
 - [Install](#install)
-- [Recommended Usage](#recommended-usage)
-  - [Deploying Starship](#deploying-starship)
-  - [Running End-to-End Tests](#running-end-to-end-tests)
-  - [Teardown](#teardown)
+- [Recommended Usage](#recommended-usage-📘)
+  - [Deploying Starship](#deploying-starship-🚀)
+  - [Running End-to-End Tests](#running-end-to-end-tests-🧪)
+  - [Teardown](#teardown-🛠️)
 - [Advanced Usage](#advanced-usage)
   - [Initializing the Client](#initializing-the-client)
   - [Configuration](#configuration)
@@ -40,7 +40,7 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [Developing](#developing)
 - [Credits](#credits)
 
-## install
+## Install
 
 Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
 
@@ -49,7 +49,7 @@ npm install starshipjs @starship-ci/client
 
 ```
 
-### Recommended Usage
+### Recommended Usage 📘
 
 Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most recommended setup. Consider everything else after this section "advanced setup".
 
@@ -62,7 +62,7 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 
 This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
 
-#### Deploying `Starship`
+#### Deploying `Starship` 🚀
 
 ```sh
 # setup helm/starship
@@ -84,7 +84,7 @@ yarn starship start-ports
 yarn starship port-pids
 ```
 
-#### Running End-to-End Tests
+#### Running End-to-End Tests 🧪
 
 ```sh
 # test
@@ -94,7 +94,7 @@ yarn starship:test
 yarn starship:watch
 ```
 
-#### Teardown
+#### Teardown 🛠️
 
 ```sh
 # stop port forwarding (done by clean() too)

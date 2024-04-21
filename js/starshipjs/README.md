@@ -32,7 +32,7 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [Developing](#developing)
 - [Credits](#credits)
 
-## install
+## Install
 
 Install the test utilities `starshipjs`:
 
