@@ -1,25 +1,27 @@
 import { ChainRegistryFetcher } from '@chain-registry/client';
-import fs from 'fs';
-import yaml from 'js-yaml';
-import fetch from 'node-fetch';
+export class Config {
+  private static instance: Config;
+  public registry?: ChainRegistryFetcher;
+  public configFile?: string;
 
-export interface ConfigType {
-  registry?: ChainRegistryFetcher;
-  configFile?: string;
-}
+  // keep instantiation private to enforce singletone
+  private constructor() {}
 
-export const Config: ConfigType = {
-  registry: undefined,
-  configFile: undefined,
+  public static getInstance(): Config {
+    if (!Config.instance) {
+      Config.instance = new Config();
+    }
+    return Config.instance;
+  }
 
-  // @ts-ignore
-  set setConfigFile(configFile: string) {
+  setConfigFile(configFile: string) {
     this.configFile = configFile;
-  },
-  set setRegistry(registry: ChainRegistryFetcher) {
+  }
+
+  setRegistry(registry: ChainRegistryFetcher) {
     this.registry = registry;
   }
-};
+}
 
 export interface ChainConfig {
   registry: {
@@ -40,90 +42,4 @@ export interface ChainConfig {
   }>;
 }
 
-export const useRegistry = async (configFile: string): Promise<ChainRegistryFetcher> => {
-  const config = yaml.load(fs.readFileSync(configFile, 'utf8')) as ChainConfig;
-  const registryUrl = `http://localhost:${config.registry.ports.rest}`;
-
-  const urls: string[] = [];
-  config.chains.forEach((chain) => {
-    urls.push(
-      `${registryUrl}/chains/${chain.name}`,
-      `${registryUrl}/chains/${chain.name}/assets`
-    );
-  });
-  config.relayers.forEach((relayer) => {
-    urls.push(
-      `${registryUrl}/ibc/${relayer.chains[0]}/${relayer.chains[1]}`,
-      `${registryUrl}/ibc/${relayer.chains[1]}/${relayer.chains[0]}`
-    );
-  });
-
-  const options = {
-    urls
-  };
-  const registry = new ChainRegistryFetcher(options);
-  await registry.fetchUrls();
-
-  return registry;
-};
-
-export const useChain = (chainName: string) => {
-  const registry = Config.registry;
-  const configFile = Config.configFile;
-  const config = yaml.load(fs.readFileSync(configFile, 'utf8')) as ChainConfig;
-
-  const chain = registry!.getChain(chainName);
-  const chainInfo = registry!.getChainInfo(chainName);
-  const chainID = chainInfo.chain.chain_id;
-
-  const getRpcEndpoint = () => {
-    return `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.rpc
-    }`;
-  };
-  const getRestEndpoint = () => {
-    return `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.rest
-    }`;
-  };
-
-  const getGenesisMnemonic = async () => {
-    const url = `http://localhost:${config.registry.ports.rest}/chains/${chainID}/keys`;
-    const response = await fetch(url, {});
-    const data = await response.json();
-    return data['genesis'][0]['mnemonic'];
-  };
-
-  const getCoin = () => {
-    return chainInfo.fetcher.getChainAssetList(chainName).assets[0];
-  };
-
-  const creditFromFaucet = async (address: string, denom: string | null = null) => {
-    const faucetEndpoint = `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.faucet
-    }/credit`;
-    if (!denom) {
-      denom = getCoin().base;
-    }
-    await fetch(faucetEndpoint, {
-      method: 'POST',
-      body: JSON.stringify({
-        address,
-        denom
-      }),
-      headers: {
-        'Content-type': 'application/json'
-      }
-    });
-  };
-
-  return {
-    chain,
-    chainInfo,
-    getCoin,
-    getRpcEndpoint,
-    getRestEndpoint,
-    getGenesisMnemonic,
-    creditFromFaucet
-  };
-};
+export const ConfigContext = Config.getInstance();
