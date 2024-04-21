@@ -60,7 +60,7 @@ export interface StarshipClientI {
   podPorts: PodPorts
 };
 
-export class StarshipClient implements StarshipClientI{
+export class StarshipClient implements StarshipClientI {
   ctx: StarshipContext;
   version: string;
   dependencies: Dependency[] = defaultDependencies;
@@ -310,7 +310,7 @@ export class StarshipClient implements StarshipClientI{
       this.log(chalk.yellow(`Forwarded ${chain.name}: local ${localPort} -> target (host) ${externalPort}`));
     }
   }
-  
+
   private forwardPortService(serviceName: string, localPort: number, externalPort: number): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
@@ -331,63 +331,53 @@ export class StarshipClient implements StarshipClientI{
     this.log("Attempting to stop any existing port-forwards...");
     this.stopPortForward();
     this.log("Starting new port forwarding...");
-  
+
     this.config.chains.forEach(chain => {
       // TODO Talk to Anmol about chain.name and chain.type, seems to be opposite of intuition using chainReg as concept
       const chainPodPorts = this.podPorts.chains[chain.type] || this.podPorts.chains.defaultPorts;
 
-      if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc,  chainPodPorts.rpc);
+      if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
       if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
       if (chain.ports.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
       if (chain.ports.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
     });
-  
+
     if (this.config.registry?.enabled) {
       this.forwardPortService("registry", this.config.registry.ports.rest, this.podPorts.registry.rest);
       this.forwardPortService("registry", this.config.registry.ports.grpc, this.podPorts.registry.grpc);
     }
-  
+
     if (this.config.explorer?.enabled) {
       this.forwardPortService("explorer", this.config.explorer.ports.rest, this.podPorts.explorer.rest);
     }
   }
-  
-  // TODO review with Anmol, which stopForward is better...
-  // public stopForward(): void {
-  //   this.exec(['pkill', '-f', 'port-forward']);
-  // }
 
-  public stopPortForward(): void {
-    this.log(chalk.green("Trying to stop all port-forward, if any...."));
+  private getForwardPids(): string[] {
     const result = this.exec([
       "ps", "-ef",
       "|", "grep", "-i", "'kubectl port-forward'",
       "|", "grep", "-v", "'grep'",
       "|", "awk", "'{print $2}'"
     ]);
-    const pids = (result || '').split('\n');
+    const pids = (result || '').split('\n').map(pid => pid.trim()).filter(a => a !== '')
+    return pids;
+  }
+
+  public stopPortForward(): void {
+    this.log(chalk.green("Trying to stop all port-forward, if any...."));
+    const pids = this.getForwardPids();
     pids.forEach(pid => {
-      if (pid.trim()) {
-        this.exec([
-          "kill", "-15", pid
-        ]);
-      }
+      this.exec([
+        "kill", "-15", pid
+      ]);
     });
     this.exec(['sleep', '2']);
   }
 
   public printForwardPids(): void {
-    const result = this.exec([
-      "ps", "-ef",
-      "|", "grep", "-i", "'kubectl port-forward'",
-      "|", "grep", "-v", "'grep'",
-      "|", "awk", "'{print $2}'"
-    ]);
-    const pids = (result || '').split('\n');
+    const pids = this.getForwardPids();
     pids.forEach(pid => {
-      if (pid.trim()) {
-        console.log(pid);
-      }
+      console.log(pid);
     });
   }
 
