@@ -53,8 +53,7 @@ export const loadConfig = (argv: any): Config => {
   }
 }
 
-export function displayUsage() {
-    console.log(`
+export const usageText =`
 Usage: starship <command> [options]
 
 Commands:
@@ -94,5 +93,8 @@ Examples:
 
 Additional Help:
   $ starship help          Display this help information.
-`);
+`;
+
+export function displayUsage() {
+  console.log(usageText);
 };

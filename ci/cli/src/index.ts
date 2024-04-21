@@ -3,7 +3,7 @@ import { StarshipClient } from '@starship-ci/client'; // Adjust the import path 
 import minimist from 'minimist';
 
 import { Inquirerer, type Question } from './prompt';
-import { displayUsage, displayVersion, loadConfig } from './utils';
+import { displayUsage, displayVersion, loadConfig, usageText } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
@@ -11,12 +11,16 @@ const argv = minimist(process.argv.slice(2), {
   }
 });
 
+if (!('tty' in argv)) {
+  argv.tty = true;
+}
+
 if (argv.version) {
   displayVersion();
   process.exit(0);
 }
 
-const prompter = new Inquirerer();
+const prompter = new Inquirerer(!argv.tty);
 
 const questions: Question[] = [
   'helmName',
@@ -40,7 +44,7 @@ async function main() {
 
   // Load configuration and prompt for missing parameters
   const config = loadConfig(argv);
-  const args = await prompter.prompt({ ...config.context }, questions);
+  const args = await prompter.prompt({ ...config.context }, questions, usageText);
   
   const client = new StarshipClient(args);
   client.setConfig(config.starship);
@@ -53,7 +57,7 @@ async function main() {
     case 'setup':
       client.setup();
       break;
-    case 'start-port-forward':
+    case 'start-ports':
       client.startPortForward();
       break;
     case 'get-pods':
@@ -62,7 +66,6 @@ async function main() {
     case 'port-pids':
       client.printForwardPids();
       break;
-    case 'stop-port-forward':
     case 'stop-ports':
       client.stopPortForward();
       break;
