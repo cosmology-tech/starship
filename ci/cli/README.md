@@ -59,13 +59,13 @@ This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and oth
 yarn starship setup
 
 # sanity check
-kubectl get pods --all-namespaces
+yarn starship get-pods
 
 # deploy starship
 yarn starship deploy
 
 # wait til STATUS=Running
-kubectl get pods
+yarn starship get-pods
 
 # port forwarding
 yarn starship start-ports

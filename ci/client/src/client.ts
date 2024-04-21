@@ -261,7 +261,7 @@ export class StarshipClient implements StarshipClientI {
       '--version',
       this.ctx.helmVersion
     ]);
-    this.log("Run \"kubectl get pods\" to check the status of the cluster");
+    this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
 
   public upgrade(): void {
