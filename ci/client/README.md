@@ -62,7 +62,7 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 
 This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
 
-#### Deploying `starship`
+#### Deploying `Starship`
 
 ```sh
 # setup helm/starship

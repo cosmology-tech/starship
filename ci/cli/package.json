@@ -57,5 +57,6 @@
     "deepmerge": "^4.3.1",
     "js-yaml": "^4.1.0",
     "minimist": "^1.2.8"
-  }
+  },
+  "gitHead": "f274802408d1984d5e2ba23bb260801b0c8db59a"
 }
