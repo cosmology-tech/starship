@@ -1,8 +1,8 @@
 {
-  "name": "@starship-ci/client",
-  "version": "0.1.2",
+  "name": "@starship-ci/cli",
+  "version": "0.1.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
-  "description": "Starship CI Client",
+  "description": "Starship CLI",
   "main": "index.js",
   "module": "esm/index.js",
   "types": "index.d.ts",
@@ -19,11 +19,15 @@
   "bugs": {
     "url": "https://github.com/cosmology-tech/starshipjs/issues"
   },
+  "bin": {
+    "starship": "./index.js"
+  },
   "scripts": {
     "copy": "copyfiles -f ../../LICENSE README.md package.json dist",
     "clean": "del dist/**",
     "prepare": "npm run build",
     "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy",
+    "dev": "ts-node src/index",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -43,16 +47,14 @@
     "DApps",
     "web3",
     "interchain"
-  ],
+  ],  
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9"
+  },
   "dependencies": {
+    "@starship-ci/client": "^0.1.2",
     "chalk": "^4.1.0",
     "deepmerge": "^4.3.1",
-    "js-yaml": "^4.1.0",
-    "mkdirp": "3.0.1",
-    "shelljs": "^0.8.5"
-  },
-  "devDependencies": {
-    "@types/shelljs": "^0.8.15",
-    "@types/js-yaml": "^4.0.9"
+    "js-yaml": "^4.1.0"
   }
 }

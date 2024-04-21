@@ -4,7 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { mkdirp } from 'mkdirp';
 import * as os from 'os';
-import { dirname } from 'path';
+import { dirname, resolve } from 'path';
 import * as shell from 'shelljs';
 
 import { Chain, StarshipConfig } from './config';
@@ -83,7 +83,7 @@ export class StarshipClient implements StarshipClientI{
 
   private log(str: string): void {
     // add log level
-    this.log(str);
+    console.log(str);
   }
 
   private exit(code: number): void {
@@ -149,14 +149,16 @@ export class StarshipClient implements StarshipClientI{
   }
 
   private loadYaml(filename: string): any {
-    const fileContents = readFileSync(filename, 'utf8');
+    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
+    const fileContents = readFileSync(path, 'utf8');
     return yaml.load(fileContents);
   }
 
   private saveYaml(filename: string, obj: any): any {
+    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
     const yamlContent = yaml.dump(obj);
-    mkdirp.sync(dirname(filename));
-    writeFileSync(filename, yamlContent, 'utf8');
+    mkdirp.sync(dirname(path));
+    writeFileSync(path, yamlContent, 'utf8');
   }
 
   public loadConfig(): void {
@@ -179,6 +181,10 @@ export class StarshipClient implements StarshipClientI{
 
   public setConfig(config: StarshipConfig): void {
     this.config = config;
+  }
+
+  public setContext(ctx: StarshipContext): void {
+    this.ctx = ctx;
   }
 
   public setPodPorts(ports: PodPorts): void {
@@ -207,7 +213,7 @@ export class StarshipClient implements StarshipClientI{
     this.cleanKind();
   }
 
-  private setupHelm(): void {
+  public setupHelm(): void {
     this.exec([
       'helm',
       'repo',
@@ -226,7 +232,7 @@ export class StarshipClient implements StarshipClientI{
     ]);
   }
 
-  private removeHelm(): void {
+  public removeHelm(): void {
     this.exec([
       'helm',
       'repo',
@@ -236,7 +242,8 @@ export class StarshipClient implements StarshipClientI{
   }
 
   private ensureFileExists(filename: string): void {
-    if (!existsSync(filename)) {
+    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
+    if (!existsSync(path)) {
       throw new Error(`Configuration file not found: ${filename}`);
     }
   }
@@ -286,7 +293,7 @@ export class StarshipClient implements StarshipClientI{
     ]);
   }
 
-  private deleteHelm(): void {
+  public deleteHelm(): void {
     this.exec(['helm', 'delete', this.ctx.helmName]);
   }
 
@@ -369,13 +376,13 @@ export class StarshipClient implements StarshipClientI{
     this.exec(['sleep', '2']);
   }
 
-  private setupKind(): void {
+  public setupKind(): void {
     if (this.ctx.kindCluster) {
       this.exec(['kind', 'create', 'cluster', '--name', this.ctx.kindCluster]);
     }
   }
 
-  private cleanKind(): void {
+  public cleanKind(): void {
     if (this.ctx.kindCluster) {
       this.exec(['kind', 'delete', 'cluster', '--name', this.ctx.kindCluster]);
     }
