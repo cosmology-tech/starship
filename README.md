@@ -219,22 +219,22 @@ client.teardown();
 Before using StarshipJS, you need to set up the configuration for your blockchain network.
 
 ```js
-import { Config } from 'starshipjs';
-import path from 'path';
+import { ConfigContext } from 'starshipjs';
+import { join } from 'path';
 
 // Path to your YAML configuration file
-const configFile = path.join(__dirname, 'path', 'to', 'your', 'config.yaml');
+const configFile = join(__dirname, 'your-config.yaml');
 
 // Set the configuration file in StarshipJS
-Config.setConfigFile = configFile;
+ConfigContext.setConfigFile(configFile);
 ```
 
 ### Registry
 
 ```js
-import { useRegistry, Config } from 'starshipjs';
+import { useRegistry, ConfigContext } from 'starshipjs';
 
-Config.setRegistry = await useRegistry(Config.configFile);
+ConfigContext.setRegistry(await useRegistry(Config.configFile));
 ```
 
 ## Chain Info
