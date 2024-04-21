@@ -71,9 +71,6 @@ starship undeploy --config ./config/settings.json
 starship teardown --config ./config/settings.json
 ```
 
-
-https://github.com/cosmology-tech/StarshipJS/tree/main/ci/client
-
 ## StarshipClient Usage
 
 ### Install the StarshipClient
