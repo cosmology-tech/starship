@@ -27,7 +27,7 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 - [`StarshipJS`](https://github.com/cosmology-tech/StarshipJS/tree/main/js/starshipjs): A JavaScript library providing the foundational tools and utilities for starship development, designed to work seamlessly with Node.js and TypeScript.
 - [`StarshipJS CLI`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/cli): The command-line interface that allows developers to easily deploy, manage, and interact with starship directly from the terminal.
-- [`StarshipJS Client`](https://github.com/cosmology-tech/StarshipJS/tree/main/js/client): A client library that encapsulates interaction with starship, simplifying command executions and state management through an intuitive API.
+- [`StarshipJS Client`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/client): A client library that encapsulates interaction with starship, simplifying command executions and state management through an intuitive API.
 
 ## Table of contents
 
