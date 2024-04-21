@@ -24,18 +24,19 @@ Designed with simplicity and speed in mind, **Starship** enables developers to q
   - [Deploying Starship](#deploying-starship)
   - [Running End-to-End Tests](#running-end-to-end-tests)
   - [Teardown](#teardown)
-- [Examples](#examples)
-- [Commands](#commands)
-- [Options](#options)
+- [CLI Usage](#cli-usage)
+  - [CLI Examples](#cli-examples)
+  - [CLI Commands](#cli-commands)
+  - [CLI Options](#cli-options)
 - [Developing](#developing)
 - [Credits](#credits)
 
 ## install
 
-Install `@starship-ci/cli` globally to use the `starship` command:
+Install `@starship-ci/cli` with `npm` or `yarn`:
 
 ```sh
-npm install -g @starship-ci/cli
+npm install @starship-ci/cli
 ```
 
 ### Recommended Usage
@@ -93,7 +94,18 @@ yarn starship:watch
 yarn starship clean
 ```
 
-## Examples 
+## CLI Usage
+
+### Install the CLI
+
+While it's not recommended due to upgrades and package management, you can install globally: 
+
+
+```sh
+npm install -g @starship-ci/cli
+```
+
+### CLI Examples 
 
 Here are some common usages of the starship CLI:
 
@@ -109,7 +121,7 @@ starship teardown
 starship clean
 ```
 
-## Commands
+### CLI Commands
 
 Here's a concise overview of the commands available in the `starship` CLI:
 
@@ -130,7 +142,7 @@ Here's a concise overview of the commands available in the `starship` CLI:
 | `clean`          | Perform a clean operation to tidy up resources. |
 | `version`, `-v`  | Display the version of the Starship Client.     |
 
-## Options
+## CLI Options
 
 Options in the CLI allow for dynamic configuration of `starship`. You can specify individual options directly in the command line to fine-tune the behavior of the tool. Alternatively, you can use the `--config` option to specify a YAML configuration file that sets up the initial parameters. If both methods are used, any options provided directly in the command line will override the corresponding settings in the configuration file, giving you the flexibility to customize specific aspects of the deployment without altering the entire configuration.
 
