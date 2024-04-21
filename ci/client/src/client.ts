@@ -376,6 +376,21 @@ export class StarshipClient implements StarshipClientI{
     this.exec(['sleep', '2']);
   }
 
+  public printForwardPids(): void {
+    const result = this.exec([
+      "ps", "-ef",
+      "|", "grep", "-i", "'kubectl port-forward'",
+      "|", "grep", "-v", "'grep'",
+      "|", "awk", "'{print $2}'"
+    ]);
+    const pids = (result || '').split('\n');
+    pids.forEach(pid => {
+      if (pid.trim()) {
+        console.log(pid);
+      }
+    });
+  }
+
   public setupKind(): void {
     if (this.ctx.kindCluster) {
       this.exec(['kind', 'create', 'cluster', '--name', this.ctx.kindCluster]);

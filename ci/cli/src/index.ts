@@ -56,6 +56,9 @@ async function main() {
     case 'startPortForward':
       client.startPortForward();
       break;
+    case 'printForwardPids':
+      client.printForwardPids();
+      break;
     case 'stopPortForward':
       client.stopPortForward();
       break;
