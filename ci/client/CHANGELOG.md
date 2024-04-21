@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/cosmology-tech/starshipjs/compare/@starship-ci/client@1.0.0...@starship-ci/client@1.1.0) (2024-04-21)
+
+**Note:** Version bump only for package @starship-ci/client
+
+
+
+
+
 # [1.0.0](https://github.com/cosmology-tech/starshipjs/compare/@starship-ci/client@0.4.0...@starship-ci/client@1.0.0) (2024-04-21)
 
 **Note:** Version bump only for package @starship-ci/client
