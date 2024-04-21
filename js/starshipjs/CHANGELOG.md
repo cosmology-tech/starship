@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/cosmology-tech/starshipjs/compare/starshipjs@1.1.1...starshipjs@1.1.2) (2024-04-21)
+
+**Note:** Version bump only for package starshipjs
+
+
+
+
+
 ## [1.1.1](https://github.com/cosmology-tech/starshipjs/compare/starshipjs@1.1.0...starshipjs@1.1.1) (2024-04-21)
 
 **Note:** Version bump only for package starshipjs
