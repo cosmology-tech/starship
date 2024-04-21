@@ -45,10 +45,6 @@ async function main() {
   const client = new StarshipClient(args);
   client.setConfig(config.starship);
 
-  // Mocking the exec method for demonstration purposes
-  // @ts-ignore
-  client.exec = (cmd: string) => console.log(cmd);
-
   // Execute command based on input
   switch (command) {
     case 'deploy':
