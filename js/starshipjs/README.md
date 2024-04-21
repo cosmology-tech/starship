@@ -29,88 +29,62 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [Table of contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
-  - [Initializing the Client](#initializing-the-client)
-  - [Configuration](#configuration)
-  - [Starting Port Forwarding](#setting-up-and-installing-the-chart)
-  - [Stopping And Cleaning up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
 
 ## install
 
-Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+Install the test utilities `starshipjs`:
 
 ```sh
-npm install starshipjs @starship-ci/client
+npm install starshipjs
 
 ```
 
 ## Usage 
 
-The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
-
-### Initializing the Client
-
-First, you need to import and initialize the `StarshipClient` with your Helm configuration:
-
-```js
-import { StarshipClient } from '@starship-ci/client';
-
-const client = new StarshipClient({
-  helmName: 'osmojs',
-  helmFile: 'path/to/config.yaml',
-  helmRepo: 'starship',
-  helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-  helmChart: 'devnet',
-  helmVersion: 'v0.1.38'
-});
-```
-
 ### Configuration
 
-After initializing, you can load in your config. Assuming you have a `yaml` file:
+Before using StarshipJS, you need to set up the configuration for your blockchain network.
 
 ```js
-client.loadConfig();
+import { Config } from 'starshipjs';
+import path from 'path';
+
+// Path to your YAML configuration file
+const configFile = path.join(__dirname, 'path', 'to', 'your', 'config.yaml');
+
+// Set the configuration file in StarshipJS
+Config.setConfigFile = configFile;
 ```
 
-If you don't have one, you can set and save a configuration directly from the client:
+### Registry
 
 ```js
-client.setConfig(config);
-client.saveConfig(config);
+import { useRegistry, Config } from 'starshipjs';
+
+Config.setRegistry = await useRegistry(Config.configFile);
 ```
 
-### Setting Up and Installing the Chart
+## Chain Info
 
-After initializing, set up the environment and install the starship helm chart:
+Get detailed chain information about the blockchain network:
 
 ```js
-// adds helm chart to registry
-client.setup();
-// installs helm chart
-client.deploy();
+const { chainInfo } = useChain('osmosis');
+
+console.log(chainInfo);
 ```
 
-### Starting Port Forwarding
+## Credits and Faucets
 
-For local development, you might need to forward ports from your Kubernetes pods:
-
-```js
-client.startPortForward();
-```
-
-### Stopping and Cleaning Up
-
-Once done with development or testing, you can stop the port forwarding and remove the Helm chart:
+If your blockchain network supports faucets, you can use them to get test tokens:
 
 ```js
-// stop port forwarding
-// remove the deployed release from your Kubernetes cluster
-client.undeploy();
+const { creditFromFaucet } = useChain('osmosis');
+const address = 'your-blockchain-address';
 
-// remove the helm chart
-client.teardown();
+await creditFromFaucet(address);
 ```
 
 ## Developing
