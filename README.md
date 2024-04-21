@@ -149,6 +149,54 @@ client.undeploy();
 client.teardown();
 ```
 
+## StarshipJS Usage 
+
+[`StarshipJS`](https://github.com/cosmology-tech/StarshipJS/tree/main/js/starshipjs) is a utility library that provides helpers to leverage [Starship](https://github.com/cosmology-tech/starship)'s internal chain registry, emulating the style of code used in projects like [cosmos-kit](https://github.com/cosmology-tech/cosmos-kit).
+
+### StarshipJS Configuration
+
+Before using StarshipJS, you need to set up the configuration for your blockchain network.
+
+```js
+import { Config } from 'starshipjs';
+import path from 'path';
+
+// Path to your YAML configuration file
+const configFile = path.join(__dirname, 'path', 'to', 'your', 'config.yaml');
+
+// Set the configuration file in StarshipJS
+Config.setConfigFile = configFile;
+```
+
+### Registry
+
+```js
+import { useRegistry, Config } from 'starshipjs';
+
+Config.setRegistry = await useRegistry(Config.configFile);
+```
+
+## Chain Info
+
+Get detailed chain information about the blockchain network:
+
+```js
+const { chainInfo } = useChain('osmosis');
+
+console.log(chainInfo);
+```
+
+## Credits and Faucets
+
+If your blockchain network supports faucets, you can use them to get test tokens:
+
+```js
+const { creditFromFaucet } = useChain('osmosis');
+const address = 'your-blockchain-address';
+
+await creditFromFaucet(address);
+```
+
 ## Developing
 
 

@@ -43,6 +43,8 @@ npm install starshipjs
 
 ## Usage 
 
+StarshipJS is a utility library that provides helpers to leverage [Starship](https://github.com/cosmology-tech/starship)'s internal chain registry, emulating the style of code used in projects like [cosmos-kit](https://github.com/cosmology-tech/cosmos-kit).
+
 ### Configuration
 
 Before using StarshipJS, you need to set up the configuration for your blockchain network.
