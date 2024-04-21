@@ -13,6 +13,8 @@ describe('StarshipClient', () => {
     const helmFile = client.ctx.helmFile;
     client.ctx.helmFile = join(outputDir, 'my-config.yaml');
     client.ctx.helmFile = relative(process.cwd(), client.ctx.helmChart)
+    // @ts-ignore
+    client.saveYaml = () => {};
     client.saveConfig();
     client.ctx.helmFile = helmFile;
 
