@@ -23,31 +23,66 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 
 🔒 **Security-First Approach**: **StarshipJS** incorporates security best practices from the ground up. Facilitates secure coding practices and configurations, helping developers build secure blockchain applications by default, reducing the risk of vulnerabilities.
 
+## Packages
+
+- [`StarshipJS`](https://github.com/cosmology-tech/StarshipJS/tree/main/js/starshipjs): A JavaScript library providing the foundational tools and utilities for starship development, designed to work seamlessly with Node.js and TypeScript.
+- [`StarshipJS CLI`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/cli): The command-line interface that allows developers to easily deploy, manage, and interact with starship directly from the terminal.
+- [`StarshipJS Client`](https://github.com/cosmology-tech/StarshipJS/tree/main/js/client): A client library that encapsulates interaction with starship, simplifying command executions and state management through an intuitive API.
+
 ## Table of contents
 
 - [StarshipJS](#starshipjs)
+- [Features](#features)
+- [Packages](#packages)
 - [Table of contents](#table-of-contents)
-- [Install](#install)
-- [Usage](#usage)
+- [CLI Usage](#cli-usage)
+  - [Install the CLI](#install-the-cli)
+  - [Run Starship](#run-starship)
+  - [Teardown Starship](#teardown-starship)
+- [StarshipClient Usage](#starshipclient-usage)
   - [Initializing the Client](#initializing-the-client)
   - [Configuration](#configuration)
-  - [Starting Port Forwarding](#setting-up-and-installing-the-chart)
-  - [Stopping And Cleaning up](#stopping-and-cleaning-up)
+  - [Setting UP and Installing the Chart](#setting-up-and-installing-the-chart)
+  - [Starting Port Forwarding](#starting-port-forwarding)
+  - [Stopping and Cleaning Up](#stopping-and-cleaning-up)
 - [Developing](#developing)
 - [Credits](#credits)
 
-## install
+## CLI Usage
 
-Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+### Install the CLI
 
 ```sh
-npm install starshipjs @starship-ci/client
-
+npm install -g @starship-ci/cli
 ```
 
-## Usage 
+### Run starship
 
-The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
+```sh
+starship setup --config ./config/settings.json
+starship deploy --config ./config/settings.json
+starship startPortForward --config ./config/settings.json
+```
+
+### Teardown starship
+
+```sh
+starship undeploy --config ./config/settings.json
+starship teardown --config ./config/settings.json
+```
+
+
+https://github.com/cosmology-tech/StarshipJS/tree/main/ci/client
+
+## StarshipClient Usage
+
+### Install the StarshipClient
+
+Install the CI client `@starship-ci/client`:
+
+```sh
+npm install @starship-ci/client
+```
 
 ### Initializing the Client
 
