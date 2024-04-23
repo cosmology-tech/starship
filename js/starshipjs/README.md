@@ -28,7 +28,8 @@ Designed with simplicity and speed in mind, **StarshipJS** enables developers to
 - [StarshipJS](#starshipjs)
 - [Table of contents](#table-of-contents)
 - [Install](#install)
-- [Usage](#usage)
+- [Using with CI/CD](#using-with-cicd)
+- [Using the Client](#using-the-client)
 - [Developing](#developing)
 - [Credits](#credits)
 
@@ -38,10 +39,21 @@ Install the test utilities `starshipjs`:
 
 ```sh
 npm install starshipjs
-
 ```
 
-## Usage 
+## Using with CI/CD
+
+NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/cli)) in a package.json to get starship working.
+
+Once you add `@starship-ci/cli` to your project, you can spint up `starship` as easy as 1-2-3:
+
+```sh
+yarn starship setup
+yarn starship deploy
+yarn starship start-ports
+```
+
+## Using the Client 
 
 StarshipJS is a utility library that provides helpers to leverage [Starship](https://github.com/cosmology-tech/starship)'s internal chain registry, emulating the style of code used in projects like [cosmos-kit](https://github.com/cosmology-tech/cosmos-kit).
 
