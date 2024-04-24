@@ -11,7 +11,7 @@ Run
 ```bash
 helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version 0.1.45
+helm search repo starship/devnet --version 0.2.0
 ```
 
 ## 3.2) Define the desired infrastructure
@@ -35,14 +35,14 @@ touch starship.yaml
 Add following content to `starship.yaml` with the following content
 ```yaml
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     numValidators: 1
     ports:
       rest: 1313
       rpc: 26653
-  - name: gaia-1
-    type: cosmos
+  - id: gaia-1
+    name: cosmos
     numValidators: 1
     ports:
       rest: 1317
@@ -76,7 +76,7 @@ For the tutorial we will keep it simple.
 ## 3.3) Spin up the infrastructure
 Spin up the infrastructure with
 ```bash
-helm install -f starship.yaml tutorial starship/devnet --version 0.1.45
+helm install -f starship.yaml tutorial starship/devnet --version 0.2.0
 
 # Where
 # -f starship.yaml: use the starship.yaml file as the configuration

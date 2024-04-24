@@ -1,6 +1,6 @@
 chains:
-  - name: agoric-3
-    type: agoric
+  - id: agoric-3
+    name: agoric
     image: ghcr.io/agoric/agoric-3-proposals:main
     numValidators: 1
     faucet:
@@ -13,8 +13,8 @@ chains:
     resources:
       cpu: 1
       memory: 2Gi
-  - name: cosmoshub-4
-    type: cosmos
+  - id: cosmoshub-4
+    name: cosmos
     image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 1
     ports:

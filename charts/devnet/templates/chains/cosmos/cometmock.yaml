@@ -1,9 +1,9 @@
 {{- range $chain := .Values.chains }}
-{{- if ne $chain.type "virtual" }}
-{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
+{{- if ne $chain.name "virtual" }}
+{{ $dataExposer := dict "chain" $chain.id "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 
-{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
 
 {{- if ($chain.cometmock.enabled) }}
 ---
@@ -12,7 +12,7 @@ kind: Service
 metadata:
   name: {{ $chain.hostname }}-cometmock
   labels:
-    app.kubernetes.io/name: {{ $chain.name }}-cometmock
+    app.kubernetes.io/name: {{ $chain.id }}-cometmock
 spec:
   clusterIP: None
   ports:
@@ -21,7 +21,7 @@ spec:
       protocol: TCP
       targetPort: 22331
   selector:
-    app.kubernetes.io/name: {{ $chain.name }}-cometmock
+    app.kubernetes.io/name: {{ $chain.id }}-cometmock
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -33,8 +33,8 @@ spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $chain.type }}
-      app.kubernetes.io/name: {{ $chain.name }}-cometmock
+      app.kubernetes.io/instance: {{ $chain.name }}
+      app.kubernetes.io/name: {{ $chain.id }}-cometmock
   template:
     metadata:
       annotations:
@@ -43,10 +43,10 @@ spec:
         sla: high
         tier: gateway
       labels:
-        app.kubernetes.io/instance: {{ $chain.type }}
+        app.kubernetes.io/instance: {{ $chain.name }}
         app.kubernetes.io/type: cometmock
-        app.kubernetes.io/name: {{ $chain.name }}-cometmock
-        app.kubernetes.io/rawname: {{ $chain.name }}-cometmock
+        app.kubernetes.io/name: {{ $chain.id }}-cometmock
+        app.kubernetes.io/rawname: {{ $chain.id }}-cometmock
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
@@ -98,7 +98,7 @@ spec:
             - "-c"
             - |
               while [ $(curl -sw '%{http_code}' http://{{ $chain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys -o /dev/null) -ne 200 ]; do
-                echo "Genesis validator does not seem to be ready for: {{ $chain.name }}. Waiting for it to start..."
+                echo "Genesis validator does not seem to be ready for: {{ $chain.id }}. Waiting for it to start..."
                 echo "Checking: http://{{ $chain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys"
                 sleep 10;
               done
@@ -106,7 +106,7 @@ spec:
               for i in $(seq 0 {{ sub $chain.numValidators 2 }});
               do
                 while [ $(curl -sw '%{http_code}' http://{{ $chain.hostname }}-validator-$i.{{ $chain.hostname }}-validator.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys -o /dev/null) -ne 200 ]; do
-                  echo "Validator does not seem to be ready for: {{ $chain.name }} validator-$i. Waiting for it to start..."
+                  echo "Validator does not seem to be ready for: {{ $chain.id }} validator-$i. Waiting for it to start..."
                   echo "Checking: http://{{ $chain.hostname }}-validator-$i.{{ $chain.hostname }}-validator.$NAMESPACE.svc.cluster.local:$GENESIS_PORT/priv_keys"
                   sleep 10;
                 done

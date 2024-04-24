@@ -1,7 +1,7 @@
 {{- range $chain := .Values.chains }}
-{{- if ne $chain.type "virtual" }}
+{{- if ne $chain.name "virtual" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
-{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -78,20 +78,20 @@ metadata:
 data:
   {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
   {{- range $chain := .Values.chains }}
-  {{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+  {{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
   {{ $host := "localhost" }}
   {{- if not $.Values.explorer.localhost }}
   {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.hostname $.Release.Namespace }}
   {{- end }}
-  {{ $chain.name }}.json: |-
+  {{ $chain.id }}.json: |-
     {
-      "chain_name": "{{ $chain.name }}",
-      "coingecko": "{{ $chain.type }}",
+      "chain_name": "{{ $chain.id }}",
+      "coingecko": "{{ $chain.name }}",
       {{- if $.Values.ingress.enabled }}
-      "api": "https://rest.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
+      "api": "https://rest.{{ $chain.id }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
       "rpc": [
-        "https://rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
-        "https://rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443"
+        "https://rpc.{{ $chain.id }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443",
+        "https://rpc.{{ $chain.id }}-genesis.{{ $.Values.ingress.host | replace "*." "" }}:443"
       ],
       {{- else }}
       "api": "http://{{ $host }}:{{ $chain.ports.rest }}",
@@ -111,7 +111,7 @@ data:
           "base": "{{ $chain.denom }}",
           "symbol": "{{ $chain.prefix | upper }}",
           "exponent": "6",
-          "coingecko_id": "{{ $chain.name }}",
+          "coingecko_id": "{{ $chain.id }}",
           "logo": ""
         }
       ]

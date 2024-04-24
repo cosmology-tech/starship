@@ -51,7 +51,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Convert $chain.name to name usable by templates
+Convert $chain.id to name usable by templates
 */}}
 {{- define "devnet.chain.name" -}}
 {{- printf "%s" . | replace "_" "-" | trunc 63 }}
@@ -159,7 +159,7 @@ Returns a comma seperated list of chain id
 {{- define "devnet.chains.ids" -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- $values = $chain.name | append $values -}}
+  {{- $values = $chain.id | append $values -}}
 {{- end -}}
 {{ join "," $values }}
 {{- end -}}
@@ -170,7 +170,7 @@ Returns a comma seperated list of urls for the RPC address based on internal DNS
 {{- define "devnet.chains.internal.rpc.addrs" -}}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $host := include "devnet.chain.name" $chain.id }}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $host | append $values -}}
 {{- end -}}
 {{ join "," $values }}
@@ -186,9 +186,9 @@ Returns a comma seperated list of urls for the RPC address
   {{- if and ($localhost) (($chain.ports).rpc) -}}
   {{- $values = printf "http://localhost:%v" $chain.ports.rpc | append $values -}}
   {{- else if $.Values.ingress.enabled }}
-  {{- $values = printf "https://rpc.%s-genesis.%s" $chain.name ($.Values.ingress.host | replace "*." "") | append $values -}}
+  {{- $values = printf "https://rpc.%s-genesis.%s" $chain.id ($.Values.ingress.host | replace "*." "") | append $values -}}
   {{- else -}}
-  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $host := include "devnet.chain.name" $chain.id }}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:26657" $host | append $values -}}
   {{- end -}}
 {{- end -}}
@@ -206,9 +206,9 @@ If registry.localhost is set to true, then use $chain ports
   {{- if and ($localhost) (($chain.ports).grpc) -}}
   {{- $values = printf "http://localhost:%v" $chain.ports.grpc | append $values -}}
   {{- else if $.Values.ingress.enabled }}
-  {{- $values = printf "https://grpc.%s-genesis.%s" $chain.name ($.Values.ingress.host | replace "*." "") | append $values -}}
+  {{- $values = printf "https://grpc.%s-genesis.%s" $chain.id ($.Values.ingress.host | replace "*." "") | append $values -}}
   {{- else -}}
-  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $host := include "devnet.chain.name" $chain.id }}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:9091" $host | append $values -}}
   {{- end -}}
 {{- end -}}
@@ -226,9 +226,9 @@ If registry.localhost is set to true, then use $chain ports
   {{- if and ($localhost) (($chain.ports).rest) -}}
   {{- $values = printf "http://localhost:%v" $chain.ports.rest | append $values -}}
   {{- else if $.Values.ingress.enabled }}
-  {{- $values = printf "https://rest.%s-genesis.%s" $chain.name ($.Values.ingress.host | replace "*." "") | append $values -}}
+  {{- $values = printf "https://rest.%s-genesis.%s" $chain.id ($.Values.ingress.host | replace "*." "") | append $values -}}
   {{- else -}}
-  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $host := include "devnet.chain.name" $chain.id }}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:1317" $host | append $values -}}
   {{- end -}}
 {{- end -}}
@@ -242,7 +242,7 @@ Returns a comma seperated list of urls for the Exposer address
 {{- $port := ($.Values.exposer.ports.rest | toString | default "8081") }}
 {{- $values := list -}}
 {{- range $chain := .Values.chains -}}
-  {{- $host := include "devnet.chain.name" $chain.name }}
+  {{- $host := include "devnet.chain.name" $chain.id }}
   {{- $values = printf "http://%s-genesis.$(NAMESPACE).svc.cluster.local:%s" $host $port | append $values -}}
 {{- end -}}
 {{ join "," $values }}

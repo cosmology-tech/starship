@@ -29,7 +29,7 @@ func (s *TestSuite) TestFaucet_Status() {
 	s.T().Log("running test for /status endpoint for faucet")
 
 	for _, chain := range s.config.Chains {
-		s.Run(fmt.Sprintf("facuet test for: %s", chain.Name), func() {
+		s.Run(fmt.Sprintf("facuet test for: %s", chain.ID), func() {
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
@@ -77,12 +77,12 @@ func (s *TestSuite) getChainAccounts(chain *Chain) []string {
 }
 
 func (s *TestSuite) getChainDenoms(chain *Chain) string {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.Name), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.ID), nil)
 	s.Require().NoError(err)
 
 	respChain := &pb.ChainRegistry{}
 	s.MakeRegistryRequest(req, respChain)
-	s.Require().Equal(chain.Name, respChain.ChainId)
+	s.Require().Equal(chain.ID, respChain.ChainId)
 
 	s.Require().NotEmpty(respChain.Fees.FeeTokens[0].Denom)
 
@@ -122,14 +122,14 @@ func (s *TestSuite) TestFaucet_Credit() {
 	expCreditedAmt := float64(10000000000)
 
 	for _, chain := range s.config.Chains {
-		s.Run(fmt.Sprintf("facuet test for: %s", chain.Name), func() {
+		s.Run(fmt.Sprintf("facuet test for: %s", chain.ID), func() {
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
 
 			// fetch denom and address from an account on chain
 			denom := s.getChainDenoms(chain)
-			addr := getAddressFromType(chain.Type)
+			addr := getAddressFromType(chain.Name)
 			beforeBalance := s.getAccountBalance(chain, addr, denom)
 
 			body := map[string]string{
