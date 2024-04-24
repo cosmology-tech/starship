@@ -82,7 +82,7 @@ Environment variables for chain from configmaps
 */}}
 {{- define "devnet.evnVars" }}
 - name: CHAIN_ID
-  value: {{ .name }}
+  value: {{ .id }}
 {{- end }}
 
 {{/*
