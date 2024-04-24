@@ -1,7 +1,7 @@
 {{- if .Values.registry.enabled }}
 {{ $listIDs := list }}
 {{- range $.Values.chains -}}
-{{ $listIDs = .name | append $listIDs }}
+{{ $listIDs = .id | append $listIDs }}
 {{- end }}
 {{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest "context" $ }}
 ---
