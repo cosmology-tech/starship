@@ -1,8 +1,8 @@
 package e2e
 
 type Chain struct {
-	ID            string                 `name:"id" json:"name" yaml:"name"`
-	Name          string                 `name:"name" json:"type" yaml:"type"`
+	ID            string                 `name:"id" json:"id" yaml:"id"`
+	Name          string                 `name:"name" json:"name" yaml:"name"`
 	NumValidators int                    `name:"num-validators" json:"num_validators" yaml:"numValidators"`
 	Cometmock     *Feature               `name:"cometmock" json:"cometmock" yaml:"cometmock"`
 	Faucet        *Feature               `name:"faucet" json:"faucet" yaml:"faucet"`

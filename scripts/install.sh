@@ -60,7 +60,7 @@ function set_helm_args() {
     return 0
   fi
   for i in $(seq 0 $num_chains); do
-    chain=$(yq -r ".chains[$i].name" ${CONFIGFILE})
+    chain=$(yq -r ".chains[$i].id" ${CONFIGFILE})
     scripts=$(yq -r ".chains[$i].scripts" ${CONFIGFILE})
     if [[ "$scripts" == "null" ]]; then
       return 0
