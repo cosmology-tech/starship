@@ -44,13 +44,13 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@dda9039c44960084db5955b3ad4720b2255da430
+        uses: cosmology-tech/starship-action@0.2.19
         with:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
           version: 0.0.0
           chart: ./charts/devnet
-          cli-version: d60aa2158bbcd43a3ed8ab3558f50f9618677e05
+          cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
       - name: Run tests
         run: |
