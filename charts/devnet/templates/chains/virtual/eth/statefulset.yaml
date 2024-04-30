@@ -1,5 +1,5 @@
 {{- range $chain := .Values.chains }}
-{{- if eq $chain.type "virtual" }}
+{{- if eq $chain.name "virtual" }}
 {{- if eq $chain.subtype "eth" }}
 
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}

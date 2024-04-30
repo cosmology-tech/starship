@@ -1,7 +1,7 @@
 {{- if .Values.registry.enabled }}
 {{ $listIDs := list }}
 {{- range $.Values.chains -}}
-{{ $listIDs = .name | append $listIDs }}
+{{ $listIDs = .id | append $listIDs }}
 {{- end }}
 {{ $initParams := dict "chains" $listIDs "port" $.Values.exposer.ports.rest "context" $ }}
 ---
@@ -81,8 +81,8 @@ spec:
 {{- include "getResourceObject" .Values.registry.resources | indent 12 }}
           volumeMounts:
             {{- range $chain := .Values.chains }}
-            - mountPath: /configs/{{ $chain.name }}
-              name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
+            - mountPath: /configs/{{ $chain.id }}
+              name: registry-configs-{{- include "devnet.chain.name" $chain.id }}
             {{- end }}
           readinessProbe:
             tcpSocket:
@@ -96,14 +96,14 @@ spec:
             periodSeconds: 10
       volumes:
         {{- range $chain := .Values.chains }}
-        - name: registry-configs-{{- include "devnet.chain.name" $chain.name }}
+        - name: registry-configs-{{- include "devnet.chain.name" $chain.id }}
           configMap:
-            name: registry-{{- include "devnet.chain.name" $chain.name }}
+            name: registry-{{- include "devnet.chain.name" $chain.id }}
         {{- end }}
 ---
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 {{- range $chain := .Values.chains }}
-{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
 {{ $host := "localhost" }}
 {{- if not $.Values.registry.localhost }}
 {{ $host := printf "%s-genesis.%s.svc.cluster.local" $chain.hostname $.Release.Namespace }}
@@ -116,10 +116,10 @@ data:
   assetlist.json: |-
     {
       "$schema": "../assetlist.schema.json",
-      {{- if eq $chain.type "custom" }}
-      "chain_name": "{{ $chain.name }}",
+      {{- if eq $chain.name "custom" }}
+      "chain_name": "{{ $chain.id }}",
       {{- else }}
-      "chain_name": "{{ $chain.type }}",
+      "chain_name": "{{ $chain.name }}",
       {{- end }}
       {{- if hasKey $chain "assets" }}
       "assets": {{ toJson $chain.assets }}
@@ -141,7 +141,7 @@ data:
               "exponent": 6
             }
           ],
-          "coingecko_id": "{{ $chain.type }}"
+          "coingecko_id": "{{ $chain.name }}"
         }
       ]
       {{- end }}
@@ -149,14 +149,14 @@ data:
   chain.json: |-
     {
       "$schema": "../chain.schema.json",
-      {{- if eq $chain.type "custom" }}
-      "chain_name": "{{ $chain.name }}",
+      {{- if eq $chain.name "custom" }}
+      "chain_name": "{{ $chain.id }}",
       {{- else }}
-      "chain_name": "{{ $chain.type }}",
+      "chain_name": "{{ $chain.name }}",
       {{- end }}
       "status": "live",
       "network_type": "mainnet",
-      "chain_id": "{{ $chain.name }}",
+      "chain_id": "{{ $chain.id }}",
       "pretty_name": "{{ $chain.prettyName }}",
       "bech32_prefix": "{{ $chain.prefix }}",
       "daemon_name": "{{ $chain.binary }}",

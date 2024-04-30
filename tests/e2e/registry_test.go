@@ -61,10 +61,10 @@ func (s *TestSuite) TestRegistry_ListChains() {
 		expChain := s.config.GetChain(chain.ChainId)
 		s.Require().NotNil(expChain)
 
-		if expChain.Type == "custom" {
-			s.Require().Equal(expChain.Name, chain.ChainName)
+		if expChain.Name == "custom" {
+			s.Require().Equal(expChain.ID, chain.ChainName)
 		} else {
-			s.Require().Equal(expChain.Type, chain.ChainName)
+			s.Require().Equal(expChain.Name, chain.ChainName)
 		}
 	}
 }
@@ -76,17 +76,17 @@ func (s *TestSuite) TestRegistry_GetChain() {
 	s.T().Log("running test for /chains/{chain} endpoint for registry")
 
 	for _, chain := range s.config.Chains {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.Name), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s", chain.ID), nil)
 		s.Require().NoError(err)
 
 		respChain := &pb.ChainRegistry{}
 		s.MakeRegistryRequest(req, respChain)
 
-		s.Require().Equal(chain.Name, respChain.ChainId)
-		if chain.Type == "custom" {
-			s.Require().Equal(chain.Name, respChain.ChainName)
+		s.Require().Equal(chain.ID, respChain.ChainId)
+		if chain.Name == "custom" {
+			s.Require().Equal(chain.ID, respChain.ChainName)
 		} else {
-			s.Require().Equal(chain.Type, respChain.ChainName)
+			s.Require().Equal(chain.Name, respChain.ChainName)
 		}
 		if chain.Ports.Rpc != 0 {
 			s.Require().Equal(fmt.Sprintf("http://localhost:%d", chain.Ports.Rpc), respChain.Apis.Rpc[0].Address)
@@ -99,7 +99,7 @@ func (s *TestSuite) TestRegistry_GetChain() {
 		}
 
 		// chain specific assetertions
-		if chain.Type == "osmosis" {
+		if chain.Name == "osmosis" {
 			s.Require().Equal("osmosis", respChain.PrettyName)
 		}
 	}
@@ -112,7 +112,7 @@ func (s *TestSuite) TestRegistry_ListChainPeers() {
 	s.T().Log("running test for /chains/{chain}/peers endpoint for registry")
 
 	for _, chain := range s.config.Chains {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/peers", chain.Name), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/peers", chain.ID), nil)
 		s.Require().NoError(err)
 
 		respPeers := &pb.Peers{}
@@ -130,7 +130,7 @@ func (s *TestSuite) TestRegistry_ListChainApis() {
 	s.T().Log("running test for /chains/{chain}/apis endpoint for registry")
 
 	for _, chain := range s.config.Chains {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/apis", chain.Name), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/apis", chain.ID), nil)
 		s.Require().NoError(err)
 
 		respAPIs := &pb.APIs{}
@@ -164,15 +164,15 @@ func (s *TestSuite) TestRegistry_GetChainAssets() {
 	}
 
 	for _, chain := range s.config.Chains {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.Name), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.ID), nil)
 		s.Require().NoError(err)
 
 		respAssets := &pb.ResponseChainAssets{}
 		s.MakeRegistryRequest(req, respAssets)
 
-		chainName := chain.Type
-		if chain.Type == "custom" {
-			chainName = chain.Name
+		chainName := chain.Name
+		if chain.Name == "custom" {
+			chainName = chain.ID
 		}
 		s.Require().Equal(chainName, respAssets.ChainName)
 
@@ -258,9 +258,9 @@ func (s *TestSuite) TestRegistry_GetChainAssets_Osmosis() {
 	  ]
 	}`
 
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.Name), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/assets", chain.ID), nil)
 	s.Require().NoError(err)
-	host := fmt.Sprintf("http://0.0.0.0:%d/chains/%s/assets", s.config.Registry.Ports.Rest, chain.Name)
+	host := fmt.Sprintf("http://0.0.0.0:%d/chains/%s/assets", s.config.Registry.Ports.Rest, chain.ID)
 	url, err := urlpkg.Parse(host)
 	s.Require().NoError(err)
 	req.URL = url
@@ -299,7 +299,7 @@ func (s *TestSuite) TestRegistry_GetChainKeys() {
 	s.T().Log("running test for /chains/{chain}/keys endpoint for registry")
 
 	for _, chain := range s.config.Chains {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/keys", chain.Name), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/chains/%s/keys", chain.ID), nil)
 		s.Require().NoError(err)
 
 		respKeys := &pb.Keys{}

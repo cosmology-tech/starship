@@ -45,8 +45,8 @@ timeouts:
 
 chains: []
   # Examples running chains
-  # - name: osmosis-1
-  #   type: osmosis
+  # - id: osmosis-1
+  #   name: osmosis
   #   numValidators: 4
   #   upgrade:
   #     enabled: true
@@ -69,8 +69,8 @@ chains: []
   #   ports:
   #     rpc: 26653
   #     rest: 1313
-  # - name: core-1
-  #   type: persistencecore
+  # - id: core-1
+  #   name: persistencecore
   #   numValidators: 3
   #   upgrade:
   #     enabled: true
@@ -82,8 +82,8 @@ chains: []
   #   ports:
   #     rpc: 26657
   #     rest: 1317
-  # - name: core-2
-  #   type: persistencecore
+  # - id: core-2
+  #   name: persistencecore
   #   numValidators: 3
   #   build:
   #     # build directive will instruct the chart to build the chain source from
@@ -93,28 +93,28 @@ chains: []
   #   ports:
   #     rpc: 26658
   #     rest: 1318
-  # - name: juno-1
-  #   type: juno
+  # - id: juno-1
+  #   name: juno
   #   numValidators: 2
   #   ports:
   #     rpc: 26654
   #     rest: 1314
-  # - name: wasmd
-  #   type: wasmd
+  # - id: wasmd
+  #   name: wasmd
   #   numValidators: 3
   #   ports:
   #     rpc: 26659
   #     rest: 1319
-  # - name: osmosis-4
-  #   type: osmosis
+  # - id: osmosis-4
+  #   name: osmosis
   #   numValidators: 2
   #   # genesis override local to genesis.json
   #   # this genesis directive is converted to a patch.json file
   #   # then then `jq -s '.[0] * .[1]' genesis.json patch.json > genesis.json` is run
   #   genesis:
   #     auth: ...
-  # - name: osmosis-2
-  #   type: osmosis
+  # - id: osmosis-2
+  #   name: osmosis
   #   numValidators: 2
   #   # scripts directive will replace the default scripts with the given scripts
   #   # please make sure the current scripts are compatible with Starship

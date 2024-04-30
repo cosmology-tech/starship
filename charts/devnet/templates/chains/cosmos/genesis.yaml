@@ -1,9 +1,9 @@
 {{- range $chain := .Values.chains }}
-{{- if ne $chain.type "virtual" }}
-{{ $dataExposer := dict "chain" $chain.name "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
+{{- if ne $chain.name "virtual" }}
+{{ $dataExposer := dict "chain" $chain.id "port" ($.Values.exposer.ports.rest | quote | default "8081") }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 
-{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -15,8 +15,8 @@ spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app.kubernetes.io/instance: {{ $chain.type }}
-      app.kubernetes.io/name: {{ $chain.name }}-genesis
+      app.kubernetes.io/instance: {{ $chain.name }}
+      app.kubernetes.io/name: {{ $chain.id }}-genesis
   template:
     metadata:
       annotations:
@@ -25,10 +25,10 @@ spec:
         sla: high
         tier: gateway
       labels:
-        app.kubernetes.io/instance: {{ $chain.type }}
-        app.kubernetes.io/type: {{ $chain.name }}
-        app.kubernetes.io/name: {{ $chain.name }}-genesis
-        app.kubernetes.io/rawname: {{ $chain.name }}
+        app.kubernetes.io/instance: {{ $chain.name }}
+        app.kubernetes.io/type: {{ $chain.id }}
+        app.kubernetes.io/name: {{ $chain.id }}-genesis
+        app.kubernetes.io/rawname: {{ $chain.id }}
         app.kubernetes.io/version: {{ $.Chart.AppVersion }}
     spec:
       {{- include "imagePullSecrets" $chain | indent 6 }}
@@ -61,7 +61,7 @@ spec:
             - name: GOBIN
               value: /go/bin
             - name: CHAIN_NAME
-              value: {{ $chain.name }}
+              value: {{ $chain.id }}
             {{ include "devnet.defaultEvnVars" $chain | indent 12 }}
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
@@ -319,7 +319,7 @@ spec:
             - name: FAUCET_CHAIN_BINARY
               value: "{{ $chain.binary }}"
             - name: FAUCET_CHAIN_ID
-              value: "{{ $chain.name }}"
+              value: "{{ $chain.id }}"
             - name: COINS
               value: "{{ $chain.coins }}"
           command:
@@ -376,11 +376,11 @@ spec:
             name: keys
         - name: scripts
           configMap:
-            name: setup-scripts-{{- include "devnet.chain.name" $chain.name }}
+            name: setup-scripts-{{- include "devnet.chain.name" $chain.id }}
         {{- if hasKey $chain "genesis" }}
         - name: patch
           configMap:
-            name: patch-{{- include "devnet.chain.name" $chain.name }}
+            name: patch-{{- include "devnet.chain.name" $chain.id }}
         {{- end }}
         {{- if and ($chain.faucet.enabled) (eq $chain.faucet.type "starship") }}
         - name: faucet

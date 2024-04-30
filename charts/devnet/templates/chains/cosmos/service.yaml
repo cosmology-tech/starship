@@ -1,16 +1,16 @@
 {{ $portMap := dict "p2p" 26656 "address" 26658 "grpc" 9090 "rest" 1317 }}
 {{- range $chain := .Values.chains }}
-{{- if ne $chain.type "virtual" }}
+{{- if ne $chain.name "virtual" }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 
-{{ $chain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $chain.hostname }}-genesis
   labels:
-    app.kubernetes.io/name: {{ $chain.name }}-genesis
+    app.kubernetes.io/name: {{ $chain.id }}-genesis
 spec:
   clusterIP: None
   ports:
@@ -39,16 +39,16 @@ spec:
       protocol: TCP
       targetPort: 8000
   selector:
-    app.kubernetes.io/name: {{ $chain.name }}-genesis
+    app.kubernetes.io/name: {{ $chain.id }}-genesis
 ---
 {{- if gt $chain.numValidators 1.0}}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "devnet.chain.name" $chain.name }}-validator
+  name: {{ include "devnet.chain.name" $chain.id }}-validator
   labels:
-    app.kubernetes.io/name: {{ $chain.name }}-validator
+    app.kubernetes.io/name: {{ $chain.id }}-validator
 spec:
   clusterIP: None
   ports:
@@ -73,7 +73,7 @@ spec:
       protocol: TCP
       targetPort: {{ $.Values.exposer.ports.rest | default 8081 }}
   selector:
-    app.kubernetes.io/name: {{ $chain.name }}-validator
+    app.kubernetes.io/name: {{ $chain.id }}-validator
 ---
 {{- end }}
 {{- end }}

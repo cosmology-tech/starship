@@ -1,6 +1,6 @@
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     numValidators: 1
     metrics: true
     ports:
