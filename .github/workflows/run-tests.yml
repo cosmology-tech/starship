@@ -2,7 +2,9 @@ name: Run Tests
 
 on:
   push:
-
+    branches:
+      - main
+      - release/*
   pull_request:
     types: [opened, reopened]
 
@@ -14,6 +16,9 @@ jobs:
     steps:
       - name: Checkout Repository 🛎️
         uses: actions/checkout@v4
+
+      - name: Change dir to clients/js
+        run: cd clients/js
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
