@@ -13,12 +13,14 @@ on:
 jobs:
   starshipjs-tests:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: clients/js
+
     steps:
       - name: Checkout Repository 🛎️
         uses: actions/checkout@v4
-
-      - name: Change dir to clients/js
-        run: cd clients/js
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
