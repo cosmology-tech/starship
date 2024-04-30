@@ -5,8 +5,8 @@ import (
 )
 
 type Chain struct {
+	ID            string  `name:"id" json:"id" yaml:"id"`
 	Name          string  `name:"name" json:"name" yaml:"name"`
-	Type          string  `name:"type" json:"type" yaml:"type"`
 	NumValidators int     `name:"num-validators" json:"num_validators" yaml:"numValidators"`
 	Ports         Port    `name:"ports" json:"ports" yaml:"ports"`
 	Upgrade       Upgrade `name:"upgrade" json:"upgrade" yaml:"upgrade"`
@@ -71,7 +71,7 @@ type Config struct {
 // HasChainId returns true if chain id found in list of chains
 func (c *Config) HasChainId(chainId string) bool {
 	for _, chain := range c.Chains {
-		if chain.Name == chainId {
+		if chain.ID == chainId {
 			return true
 		}
 	}
@@ -82,7 +82,7 @@ func (c *Config) HasChainId(chainId string) bool {
 // GetChain returns the Chain object pointer for the given chain id
 func (c *Config) GetChain(chainId string) *Chain {
 	for _, chain := range c.Chains {
-		if chain.Name == chainId {
+		if chain.ID == chainId {
 			return chain
 		}
 	}

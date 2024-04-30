@@ -8,18 +8,18 @@ Usage:
 {{- required "default file must have setup" $defaultFile.defaultChains -}}
 {{- $chain := dict -}}
 {{- range $chainIter := $.context.Values.chains -}}
-{{- if eq $chainIter.name $.name -}}
+{{- if eq $chainIter.id $.name -}}
 {{- $chain = $chainIter | deepCopy -}}
 {{- end }}
 {{- end }}
-{{- required "chain need to exist" $chain.type -}}
+{{- required "chain need to exist" $chain.id -}}
 
-{{- $defaultChain := get $defaultFile.defaultChains $chain.type | default dict -}}
+{{- $defaultChain := get $defaultFile.defaultChains $chain.name | default dict -}}
 
 {{/* merge defaultChain values into the $chain dict*/}}
 {{- $chain = merge $chain $defaultChain -}}
 
-{{ $_ := set $chain "hostname" (include "devnet.chain.name" $chain.name) }}
+{{ $_ := set $chain "hostname" (include "devnet.chain.name" $chain.id) }}
 
 {{- $faucet := get $chain "faucet" | default dict -}}
 {{- $faucet = mergeOverwrite ($.context.Values.faucet | deepCopy) $faucet -}}

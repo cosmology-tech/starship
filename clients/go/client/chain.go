@@ -22,10 +22,10 @@ type ChainClients []*ChainClient
 func NewChainClients(logger *zap.Logger, config *Config) (ChainClients, error) {
 	var clients []*ChainClient
 	for _, chain := range config.Chains {
-		client, err := NewChainClient(logger, config, chain.Name)
+		client, err := NewChainClient(logger, config, chain.ID)
 		if err != nil {
 			logger.Error("unable to create client for chain",
-				zap.String("chain_id", chain.Name),
+				zap.String("chain_id", chain.ID),
 				zap.Error(err),
 			)
 			return nil, err

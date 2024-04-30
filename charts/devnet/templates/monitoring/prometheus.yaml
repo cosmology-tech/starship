@@ -186,7 +186,7 @@ data:
           - targets: ['localhost:9090']
       
       {{- range $i, $chain := .Values.chains }}
-      {{ $fullchain := include "devnet.fullchain" (dict "name" $chain.name "file" $defaultFile "context" $) | fromJson }}
+      {{ $fullchain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
       {{- if $fullchain.metrics }}
       - job_name: '{{ $fullchain.name }}-genesis'
         static_configs:

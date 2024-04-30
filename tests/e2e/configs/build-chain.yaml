@@ -1,13 +1,13 @@
 chains:
-  - name: cosmoshub-4
-    type: cosmos
+  - id: cosmoshub-4
+    name: cosmos
     numValidators: 2
     ports:
       rest: 1317
       rpc: 26657
       exposer: 38087
-  - name: core-1
-    type: persistencecore
+  - id: core-1
+    name: persistencecore
     numValidators: 2
     build:
       enabled: true
