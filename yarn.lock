@@ -3548,6 +3548,16 @@ inquirer@^8.2.4:
     through "^2.3.6"
     wrap-ansi "^6.0.1"
 
+inquirerer@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/inquirerer/-/inquirerer-1.9.0.tgz#108071773a28ea5b950271572ac3051f34e0c92e"
+  integrity sha512-/LAn/F70YvRQZWz9r1q1seoO2oRMiSCSK8xKHGlkNebSibx5FppUKZLEjXgkCy1tgccas933q/Y7qNccFxrYkw==
+  dependencies:
+    chalk "^4.1.0"
+    deepmerge "^4.3.1"
+    js-yaml "^4.1.0"
+    minimist "^1.2.8"
+
 interpret@^1.0.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
@@ -6325,10 +6335,10 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-symlink-workspace@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/symlink-workspace/-/symlink-workspace-1.1.0.tgz#476811e1fb5a00c529e44c8b37765dbefff77e19"
-  integrity sha512-7kF6g/7bpDRCi7KdJNPnMrXURehpb6Sd5yHePSnHT+8pD2uec5Se3KPHwyUFFK/vEYhgKX6qabtr1Qmrtzjr8g==
+symlink-workspace@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/symlink-workspace/-/symlink-workspace-1.9.0.tgz#df4c5ce48bd55e54580e813126c643a86e29e759"
+  integrity sha512-eKSISj/3r5gLU4NCY5Ir16PLPavHYb2s2DMN7wGheaZAMlUGEuq8qUhlmbBMR8J32Yq9PCtcA+yritgHpwUDfw==
   dependencies:
     chalk "4.1.2"
     glob "8.1.0"
