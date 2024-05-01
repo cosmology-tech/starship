@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { StarshipClient } from '@starship-ci/client'; // Adjust the import path as necessary
+import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { Inquirerer, type Question } from './prompt';
 import { displayUsage, displayVersion, loadConfig, usageText } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
@@ -20,7 +20,9 @@ if (argv.version) {
   process.exit(0);
 }
 
-const prompter = new Inquirerer(!argv.tty);
+const prompter = new Inquirerer({
+  noTty: !argv.tty
+});
 
 const questions: Question[] = [
   'helmName',
@@ -29,7 +31,7 @@ const questions: Question[] = [
   'helmRepoUrl',
   'helmChart',
   'helmVersion'
-].map(name => ({ name }));
+].map(name => ({ name, type: 'text' }));
 
 // Main function to run the application
 async function main() {
@@ -44,7 +46,9 @@ async function main() {
 
   // Load configuration and prompt for missing parameters
   const config = loadConfig(argv);
-  const args = await prompter.prompt({ ...config.context }, questions, usageText);
+  const args = await prompter.prompt({ ...config.context }, questions, {
+    usageText
+  });
   
   const client = new StarshipClient(args);
   client.setConfig(config.starship);

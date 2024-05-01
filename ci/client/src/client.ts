@@ -24,6 +24,14 @@ export interface StarshipContext {
   curdir?: string;
 };
 
+export const defaultStarshipContext: Partial<StarshipContext> = {
+  helmName: 'starship',
+  helmRepo: 'starship',
+  helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
+  helmChart: 'devnet',
+  helmVersion: 'v0.1.38'
+};
+
 export interface PodPorts {
   registry?: Ports,
   explorer?: Ports,
@@ -69,7 +77,7 @@ export class StarshipClient implements StarshipClientI {
   podPorts: PodPorts = defaultPorts;
 
   constructor(ctx: StarshipContext) {
-    this.ctx = ctx;
+    this.ctx = deepmerge(defaultStarshipContext, ctx);
     // TODO add semver check against net
     this.version = readAndParsePackageJson().version;
   }

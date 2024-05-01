@@ -2,7 +2,7 @@ import { existsSync,readFileSync } from "fs";
 import { dirname,join } from "path";
 
 // need to search due to the dist/ folder and src/, etc. 
-function findPackageJson(currentDir: string) {
+function findPackageJson(currentDir: string): any {
   const filePath = join(currentDir, 'package.json');
 
   // Check if package.json exists in the current directory
