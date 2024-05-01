@@ -23,12 +23,12 @@ data:
   {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
   {{- range $i, $chain := $relayer.chains }}
   {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
-  {{ $fullchain.name }}.json: |-
+  {{ $fullchain.id }}.json: |-
     {
       "type": "cosmos",
       "value": {
         "key": "default",
-        "chain-id": "{{ $fullchain.name }}",
+        "chain-id": "{{ $fullchain.id }}",
         "rpc-addr": "http://{{ include "devnet.chain.name" $chain }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657",
         "account-prefix": "{{ $fullchain.prefix }}",
         "keyring-backend": "test",
