@@ -1,4 +1,4 @@
-name: Run JS Client
+name: Run Client Tests
 
 on:
   push:

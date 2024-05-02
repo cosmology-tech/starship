@@ -1,0 +1,11 @@
+explorer:
+  rest: 8080
+registry:
+  grpc: 9090
+  rest: 8080
+chains:
+  defaultPorts:
+    rpc: 26657
+    rest: 1317
+    exposer: 8081
+    faucet: 8000
