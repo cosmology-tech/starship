@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run Client Tests
 
 on:
   push:
@@ -9,8 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tests:
+  starshipjs-tests:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: clients/js
+
     steps:
       - name: Checkout Repository 🛎️
         uses: actions/checkout@v4

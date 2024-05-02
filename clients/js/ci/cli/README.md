@@ -6,9 +6,9 @@
 </p>
 
 <p align="center" width="100%">
-  <a href="https://github.com/cosmology-tech/starshipjs/actions/workflows/run-tests.yml">
-    <img height="20" src="https://github.com/cosmology-tech/starshipjs/actions/workflows/run-tests.yml/badge.svg" />
-  </a><a href="https://github.com/cosmology-tech/starshipjs/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href="https://github.com/cosmology-tech/starship/actions/workflows/run-client-tests.yml">
+    <img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/run-client-tests.yml/badge.svg" />
+  </a><a href="https://github.com/cosmology-tech/starship/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
 
 **`starship`** is the command-line interface designed to deploy and manage [Starship](https://cosmology.zone/products/starship), catering specifically to Node.js and TypeScript developers. This CLI tool offers a seamless and intuitive interface that dramatically simplifies the development, testing, and deployment of interchain applications across both local environments and CI/CD pipelines.
