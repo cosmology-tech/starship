@@ -71,7 +71,7 @@ spec:
               {{- range $i, $chain := $relayer.chains }}
               {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
               DENOM="{{ $fullchain.denom }}"
-              RLY_ADDR=$(ibc-setup keys list | grep "{{ $fullchain.name }}" | awk '{print $2}')
+              RLY_ADDR=$(ibc-setup keys list | grep "{{ $fullchain.id }}" | awk '{print $2}')
               echo "Relayer address $RLY_ADDR"
 
               echo "Transfer tokens to address $RLY_ADDR"

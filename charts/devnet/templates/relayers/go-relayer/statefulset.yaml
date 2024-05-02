@@ -64,15 +64,15 @@ spec:
               {{- range $i, $chain := $relayer.chains }}
               {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
 
-              echo "Adding {{ $fullchain.name }} chain"
-              rly chains add --file "/configs/{{ $fullchain.name }}.json" {{ $fullchain.name }}
+              echo "Adding {{ $fullchain.id }} chain"
+              rly chains add --file "/configs/{{ $fullchain.id }}.json" {{ $fullchain.id }}
 
-              echo "Restoring {{ $fullchain.name }} keys"
-              rly keys restore {{ $fullchain.name }} default "$MNEMONIC"
+              echo "Restoring {{ $fullchain.id }} keys"
+              rly keys restore {{ $fullchain.id }} default "$MNEMONIC"
 
               DENOM="{{ $fullchain.denom }}"
-              RLY_ADDR=$(rly address "{{ $fullchain.name }}" | awk 'END{print}')
-              echo "Relayer address $RLY_ADDR on {{ $fullchain.name }} chain with denom $DENOM"
+              RLY_ADDR=$(rly address "{{ $fullchain.id }}" | awk 'END{print}')
+              echo "Relayer address $RLY_ADDR on {{ $fullchain.id }} chain with denom $DENOM"
 
               echo "Transfer tokens to address $RLY_ADDR"
               bash -e /scripts/transfer-tokens.sh \
