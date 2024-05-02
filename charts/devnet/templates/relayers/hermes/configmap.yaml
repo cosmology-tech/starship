@@ -126,10 +126,10 @@ data:
     max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
     trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
     trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default "2" }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default "3" }}" }
-    {{- if eq $fullchain.type "evmos" }}
+    {{- if eq $fullchain.name "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
-    {{- else if eq $fullchain.type "injective" }}
+    {{- else if eq $fullchain.name "injective" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/injective.crypto.v1beta1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
     {{- else }}
@@ -255,10 +255,10 @@ data:
     max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
     trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
     trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default "2" }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default "3" }}" }
-    {{- if eq $fullchain.type "evmos" }}
+    {{- if eq $fullchain.name "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
-    {{- else if eq $fullchain.type "injective" }}
+    {{- else if eq $fullchain.name "injective" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/injective.crypto.v1beta1.ethsecp256k1.PubKey' } }
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
     {{- else }}
