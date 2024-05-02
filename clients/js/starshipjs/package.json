@@ -1,0 +1,44 @@
+{
+  "name": "starship-js",
+  "version": "0.0.1",
+  "author": "Dan Lynch <pyramation@gmail.com>",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmology-tech/starship"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "workspaces": [
+    "js/*",
+    "ci/*"
+  ],
+  "scripts": {
+    "clean": "lerna run clean",
+    "build": "lerna run build --stream",
+    "symlink": "symlink-workspace --logLevel error",
+    "postinstall": "yarn symlink"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "copyfiles": "^2.4.1",
+    "del-cli": "^5.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "jest": "^29.6.2",
+    "lerna": "^6",
+    "prettier": "^3.0.2",
+    "strip-ansi": "^6",
+    "symlink-workspace": "^1.9.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.1.6"
+  }
+}

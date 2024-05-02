@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StarshipClient has all deps 1`] = `
+"Call: exec(["something"])
+something"
+`;
+
+exports[`StarshipClient has all deps 2`] = `"something"`;
+
+exports[`StarshipClient missing deps 1`] = `
+"Call: exec(["something"])
+Log⬇
+xkubectl
+xdocker
+✓helm
+EndLog⬆
+Log⬇
+
+Please install the missing dependencies:
+EndLog⬆
+Log⬇
+
+
+kubectl: https://kubernetes.io/docs/tasks/tools/
+
+
+docker: https://docs.docker.com/get-docker/
+For advanced Docker usage and installation on other platforms, see: https://docs.docker.com/get-docker/
+
+
+EndLog⬆
+something"
+`;
+
+exports[`StarshipClient missing deps 2`] = `"something"`;

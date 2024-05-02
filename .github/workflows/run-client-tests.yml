@@ -1,0 +1,41 @@
+name: Run Client Tests
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+  pull_request:
+    types: [opened, reopened]
+
+  workflow_dispatch:
+
+jobs:
+  starshipjs-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: clients/js
+
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: yarn build
+
+      - name: Test @starship-ci/client
+        run: cd ci/client && yarn test
+      
+      # - name: Test starshipjs
+      #   run: cd js/starshipjs && yarn test
+        

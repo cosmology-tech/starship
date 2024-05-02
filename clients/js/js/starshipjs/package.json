@@ -1,0 +1,40 @@
+{
+  "name": "starshipjs",
+  "version": "1.1.4",
+  "author": "Dan Lynch <pyramation@gmail.com>",
+  "description": "JS utilities for Starship",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/cosmology-tech/starship",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmology-tech/starship"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmology-tech/starship/issues"
+  },
+  "scripts": {
+    "copy": "copyfiles -f ../../LICENSE README.md package.json dist",
+    "clean": "del dist/**",
+    "prepare": "npm run build",
+    "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.11"
+  },
+  "dependencies": {
+    "@chain-registry/client": "1.18.1",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^2.6.9"
+  },
+  "keywords": [],
+  "gitHead": "f274802408d1984d5e2ba23bb260801b0c8db59a"
+}
