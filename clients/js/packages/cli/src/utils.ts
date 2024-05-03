@@ -1,4 +1,4 @@
-import { StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
+import { defaultStarshipContext, StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
 import { StarshipConfig } from '@starship-ci/client';
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
@@ -6,6 +6,7 @@ import * as yaml from 'js-yaml';
 import { dirname, resolve } from 'path';
 
 import { readAndParsePackageJson } from './package';
+import deepmerge from 'deepmerge';
 
 // Function to display the version information
 export function displayVersion() {
@@ -32,7 +33,7 @@ export interface Config {
 
 export const loadConfig = (argv: any): Config => {
   if (argv.config) {
-    const context = loadYaml(argv.config) as StarshipContext
+    const context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
     if (context.helmFile) {
       const dir = dirname(argv.config);
       const configPath = resolve(resolvePath(dir), context.helmFile);
