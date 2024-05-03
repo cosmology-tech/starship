@@ -67,6 +67,9 @@ async function main() {
     case 'get-pods':
       client.getPods();
       break;
+    case 'wait-for-pods':
+      client.waitForPods();
+      break;
     case 'port-pids':
       client.printForwardPids();
       break;

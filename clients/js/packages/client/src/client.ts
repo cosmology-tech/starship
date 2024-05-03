@@ -76,17 +76,19 @@ export class StarshipClient implements StarshipClientI {
   config: StarshipConfig;
   podPorts: PodPorts = defaultPorts;
 
+  private podStatuses = new Map<string, string>(); // To keep track of pod statuses
+
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
     // TODO add semver check against net
     this.version = readAndParsePackageJson().version;
   }
 
-  private exec(cmd: string[]): shell.ShellString {
+  private exec(cmd: string[], log: boolean = true, silent: boolean = false): shell.ShellString {
     this.checkDependencies();
     const str = cmd.join(' ');
-    this.log(str);
-    return shell.exec(str);
+    if (log) this.log(str);
+    return shell.exec(str, { silent });
   }
 
   private log(str: string): void {
@@ -306,9 +308,93 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public getPods(): void {
-      this.exec([
-        "kubectl", "get pods --all-namespaces"
-      ]);
+    this.exec([
+      "kubectl",
+      "get pods"
+      // "--all-namespaces"
+    ]);
+  }
+
+  private getPodNames(): string[] {
+    const result = this.exec([
+      'kubectl',
+      'get',
+      'pods',
+      '--no-headers',
+      '-o',
+      'custom-columns=:metadata.name'
+    ], false, true)
+  
+    // Split the output by new lines and filter out any empty lines
+    const podNames = result.split('\n').filter(name => name.trim() !== '');
+  
+    return podNames;
+  }
+
+  public areAllPodsRunning(): boolean {
+    let allRunning = true;
+    this.podStatuses.forEach((status) => {
+      if (status !== 'Running') {
+        allRunning = false;
+      }
+    });
+    return allRunning;
+  }
+
+  private checkPodStatus(podName: string): void {
+    const result = this.exec([
+      'kubectl',
+      'get',
+      'pods',
+      podName,
+      '--no-headers',
+      '-o',
+      'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason'
+    ], false, true).trim();
+  
+    const [status, reason] = result.split(' ');
+    this.podStatuses.set(podName, status);
+
+    if (status === 'Running') {
+      // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
+    } else if (status === 'Terminating') {
+      // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
+    } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
+      // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
+      this.exit(1);
+    } else {
+      // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
+      // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
+    }
+  }
+  
+  public waitForPods(): void {
+    const podNames = this.getPodNames();
+  
+    // Check the status of each pod retrieved
+    podNames.forEach(podName => {
+      this.checkPodStatus(podName);
+    });
+
+    this.displayPodStatuses();
+
+    if (!this.areAllPodsRunning()) {
+      setTimeout(() => this.waitForPods(), 2500)
+    }
+  }
+
+  private displayPodStatuses(): void {
+    this.exec(['clear'], false); // Clear the terminal for each update
+    this.podStatuses.forEach((status, podName) => {
+      let statusColor = chalk.red(status);
+      if (status === 'Running') {
+        statusColor = chalk.green(status);
+      } else if (status === 'Terminating') {
+        statusColor = chalk.gray(status);
+      }
+  
+      console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
+    });
   }
 
   private forwardPort(chain: Chain, localPort: number, externalPort: number): void {

@@ -62,6 +62,7 @@ export const createClient = () => {
     client.checkDependencies();
     ctx.commands.push(cmd.join(' '));
     ctx.logs.push(cmd.join(' '));
+    return '';
   };
 
   // Overriding the log method
