@@ -12,8 +12,7 @@
     "access": "restricted"
   },
   "workspaces": [
-    "js/*",
-    "ci/*"
+    "packages/*"
   ],
   "scripts": {
     "clean": "lerna run clean",
