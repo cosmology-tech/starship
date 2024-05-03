@@ -2,27 +2,27 @@
 
 Here we will go into details of the `chains` top level directive in the Starship config file.
 
-## `name`
-Name of the chain, this is used as the `chain-id` of the chain
+## `id`
+ID of the chain, this is used as the `chain-id` of the chain
 ```yaml
 chains:
-- name: osmosis-1
+- id: osmosis-1
   ...
-- name: gaia-2
+- id: gaia-2
   ...
-- name: juno-1
+- id: juno-1
   ...
 ```
 
-## `type`
+## `name`
 Type of chain is a short hand to use the default key values for a chain found [here](https://github.com/cosmology-tech/starship/blob/main/charts/devnet/values.yaml#L54...#L244)
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   ...
-- name: gaia-2
-  type: cosmos
+- id: gaia-2
+  name: cosmos
   ...
 ```
 
@@ -30,20 +30,20 @@ One can override the default values supported by `defaultChain` by simply mentio
 Here is how one can set the docker image of the default values
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   image: ghcr.io/cosmology-tech/starship/osmosis:v15.0.0
   coins: 100000000000000uosmo
   ...
 ```
 
-### `type: custom`
+### `name: custom`
 Optionally one can define the type to `custom`, and pass all the default params directly into the chain directive. This is useful when one is
 trying setup a chain not supported in the `defaultChains`.
 ```yaml
 chains:
-- name: osmosis-1
-  type: custom
+- id: osmosis-1
+  name: custom
   image: ghcr.io/cosmology-tech/starship/osmosis:v15.1.2-wasmvm1.1.2
   home: /root/.osmosisd
   binary: osmosisd
@@ -58,12 +58,12 @@ chains:
 
 ## `image` (optional)
 Already mentioned above, but here we will go deeper into how the docker images are used for the chain. By default this value is taken from
-the `type` directive. This is the standard way of running chains at specific versions.
+the `name` directive. This is the standard way of running chains at specific versions.
 
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   image: "<docker-image>"
   ...
 ```
@@ -80,8 +80,8 @@ Number of validators to run for the chain. It must be greater than 1, can go up 
 
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 2
 ```
 
@@ -95,8 +95,8 @@ which is 5, then other validators are created with random mnemonic on initializa
 Ports directive in the `chains` directive is used for `kubectl port-forward` forwarding kubernetes service ports to local host.
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 2
   ports:
     rest: 1317     # Rest endpoint of the Genesis validator node (most used)
@@ -116,8 +116,8 @@ Available endpoints for extra services:
 Resource directive is something with which you can control how much resources to provide to each of the chain node.
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 1
   resources:
     cpu: 1       # 1 CPU
@@ -130,8 +130,8 @@ One can provide fractional cpus and memory as per the resource constraints of th
 Usually when running in the CI or locally you can provide partial resources like following:
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 1
   resources:
     cpu: "0.2"      # 0.2 CPU
@@ -153,8 +153,8 @@ overridden with this directive, specially for compatible cosmjs version with the
 
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 1
   faucet:
     enabled: true           # optional, default is true, need to specify if want to disable faucet, set to false
@@ -181,8 +181,8 @@ When the directive is `enabled`, then the docker image is set to a [`runner` doc
 which is a basic alpine image with starship dependencies.
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 2
   build:
     enabled: true
@@ -190,15 +190,15 @@ chains:
 ```
 We fetch the source from the `repo` defined in the `defaultChains`.
 
-If you are using the `type: custom`, then you need to specify `repo` directive, from where to get the source.
+If you are using the `name: custom`, then you need to specify `repo` directive, from where to get the source.
 
 ## `upgrade` (optional)
 If you want to perform a software upgrade on a chain, then this directive is here help. This will not perform the chain
 upgrade, but prepare the chain nodes to be able to do an actual software upgrade.
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 2
   upgrade:
     enabled: true             # enable the directive
@@ -219,8 +219,8 @@ Patch `genesis.json` file directly from the config file using this directive. On
 patch for genesis is applied.
 ```yaml
 chains:
-- name: osmosis-1
-  type: osmosis
+- id: osmosis-1
+  name: osmosis
   numValidators: 2
   genesis:
     app_state:
@@ -247,8 +247,8 @@ One can choose the sub-scripts that need to be overwritten, default scripts will
 
 ```yaml
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     numValidators: 1
     scripts:
       createGenesis:
@@ -284,8 +284,8 @@ that connect with the cometmock pod.
 Enabling cometmock is really simple with following
 ```yaml
 chains:
-- name: cosmoshub-4
-  type: cosmos
+- id: cosmoshub-4
+  name: cosmos
   numValidators: 4
   cometmock:
     enabled: true

@@ -6,8 +6,8 @@ import (
 )
 
 type Chain struct {
+	ID            string                 `name:"id" json:"id,omitempty" yaml:"id"`
 	Name          string                 `name:"name" json:"name,omitempty" yaml:"name"`
-	Type          string                 `name:"type" json:"type,omitempty" yaml:"type"`
 	Image         string                 `name:"image" json:"image,omitempty" yaml:"image"`
 	NumValidators int                    `name:"num-validators" json:"num_validators,omitempty" yaml:"numValidators"`
 	Scripts       map[string]ScriptData  `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
@@ -19,7 +19,7 @@ type Chain struct {
 }
 
 func (c *Chain) GetName() string {
-	return strings.Replace(c.Name, "_", "-", -1)
+	return strings.Replace(c.ID, "_", "-", -1)
 }
 
 func (c *Chain) GetRPCAddr() string {
@@ -119,7 +119,7 @@ type HelmConfig struct {
 // HasChainId returns true if chain id found in list of chains
 func (c *HelmConfig) HasChainId(chainId string) bool {
 	for _, chain := range c.Chains {
-		if chain.Name == chainId {
+		if chain.ID == chainId {
 			return true
 		}
 	}
@@ -130,7 +130,7 @@ func (c *HelmConfig) HasChainId(chainId string) bool {
 // GetChain returns the Chain object pointer for the given chain id
 func (c *HelmConfig) GetChain(chainId string) *Chain {
 	for _, chain := range c.Chains {
-		if chain.Name == chainId {
+		if chain.ID == chainId {
 			return chain
 		}
 	}

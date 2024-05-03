@@ -26,11 +26,11 @@ spec:
     {{- end }}
     {{- range $chain := $.Values.chains }}
     - hosts:
-        - "rest.{{ $chain.name }}-genesis.{{ $host }}"
-      secretName: rest.{{ $chain.name }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
+        - "rest.{{ $chain.id }}-genesis.{{ $host }}"
+      secretName: rest.{{ $chain.id }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
     - hosts:
-        - "rpc.{{ $chain.name }}-genesis.{{ $host }}"
-      secretName: rpc.{{ $chain.name }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
+        - "rpc.{{ $chain.id }}-genesis.{{ $host }}"
+      secretName: rpc.{{ $chain.id }}-genesis.{{ $.Values.ingress.type }}-ingress-tls
     {{- end }}
   rules:
     {{- if $.Values.explorer.enabled }}
@@ -58,38 +58,38 @@ spec:
                   name: http
     {{- end }}
     {{- range $chain := $.Values.chains }}
-    - host: "rest.{{ $chain.name }}-genesis.{{ $host }}"
+    - host: "rest.{{ $chain.id }}-genesis.{{ $host }}"
       http:
         paths:
           - pathType: ImplementationSpecific
             path: "/(.*)"
             backend:
               service:
-                name: {{ $chain.name }}-genesis
+                name: {{ $chain.id }}-genesis
                 port:
                   name: rest
           - pathType: ImplementationSpecific
             path: "/faucet/(.*)"
             backend:
               service:
-                name: {{ $chain.name }}-genesis
+                name: {{ $chain.id }}-genesis
                 port:
                   name: faucet
           - pathType: ImplementationSpecific
             path: "/exposer/(.*)"
             backend:
               service:
-                name: {{ $chain.name }}-genesis
+                name: {{ $chain.id }}-genesis
                 port:
                   name: exposer
-    - host: "rpc.{{ $chain.name }}-genesis.{{ $host }}"
+    - host: "rpc.{{ $chain.id }}-genesis.{{ $host }}"
       http:
         paths:
           - pathType: ImplementationSpecific
             path: "/(.*)"
             backend:
               service:
-                name: {{ $chain.name }}-genesis
+                name: {{ $chain.id }}-genesis
                 port:
                   name: rpc
     {{- end }}

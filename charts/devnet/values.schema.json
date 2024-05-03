@@ -105,10 +105,10 @@
       "items": {
         "type": "object",
         "properties": {
-          "name": {
+          "id": {
             "type": "string"
           },
-          "type": {
+          "name": {
             "type": "string",
             "enum": [
               "custom",
@@ -497,8 +497,8 @@
         },
         "additionalProperties": false,
         "required": [
+          "id",
           "name",
-          "type",
           "numValidators"
         ]
       }

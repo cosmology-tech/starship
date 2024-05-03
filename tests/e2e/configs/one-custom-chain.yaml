@@ -1,6 +1,6 @@
 chains:
-  - name: custom-1
-    type: custom
+  - id: custom-1
+    name: custom
     numValidators: 1
     image: anmol1696/osmosis:latest
     home: /root/.osmosisd

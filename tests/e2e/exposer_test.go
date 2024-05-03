@@ -55,7 +55,7 @@ func (s *TestSuite) TestExposer_GetGenesisFile() {
 
 	// assert results to expected values
 	s.Require().NotNil(resp)
-	s.Require().Equal(chain.Name, resp.AsMap()["chain_id"])
+	s.Require().Equal(chain.ID, resp.AsMap()["chain_id"])
 }
 
 func (s *TestSuite) TestExposer_GetPubKey() {
