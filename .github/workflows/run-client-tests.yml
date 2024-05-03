@@ -34,8 +34,7 @@ jobs:
         run: yarn build
 
       - name: Test @starship-ci/client
-        run: cd ci/client && yarn test
+        run: cd packages/client && yarn test
       
       # - name: Test starshipjs
       #   run: cd js/starshipjs && yarn test
-        
