@@ -38,7 +38,7 @@ jobs:
         working-directory: starship
 
     env:
-      CONFIG_FILE: "tests/e2e/configs/${{ matrix.config-file }}"
+      CONFIG_FILE: "starship/tests/e2e/configs/${{ matrix.config-file }}"
 
     steps:
       - name: Get PR branch

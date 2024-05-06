@@ -80,6 +80,10 @@ jobs:
     env:
       DOCKER_REPO: ghcr.io/cosmology-tech/starship
 
+    defaults:
+      run:
+        working-directory: starship
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -100,14 +104,14 @@ jobs:
       - name: Build chains
         if: github.event_name == 'pull_request'
         run: |
-          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all
 
       - name: Build and push all chains
         if: github.event_name == 'push'
         run: |
-          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all --push
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push
 
       - name: Force Build and Push for workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
-          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force
+          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force
