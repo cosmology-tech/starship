@@ -18,6 +18,11 @@ jobs:
   lint-test:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: starship/
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,4 +42,4 @@ jobs:
         uses: helm/chart-testing-action@v2.3.1
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs starship/charts --charts charts/devnet
+        run: ct lint --chart-dirs charts --charts charts/devnet
