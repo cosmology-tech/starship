@@ -1,10 +1,8 @@
 go 1.21
 
 use (
-	./clients/go/client
 	./cmd/starship
 
-	./examples/upgrade-test
 	./exposer
 	./faucet
 	./registry
