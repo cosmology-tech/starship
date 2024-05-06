@@ -70,13 +70,13 @@ runs:
         values: ${{ env.CONFIG_FILE }}
         port-forward: true
         version: 0.0.0
-        chart: ./starship/charts/devnet
+        chart: ./charts/devnet
         kubeconfig: ${{ steps.kubeconfig.outputs.content }}
         cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
     - name: Run tests
       run: |
-        cd starship/tests/e2e/ && go test -v ./...
+        cd tests/e2e/ && go test -v ./...
       env:
         TEST_CONFIG_FILE: ${{ inputs.config-file }}
       shell: bash
