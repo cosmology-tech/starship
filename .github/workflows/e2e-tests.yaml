@@ -41,7 +41,11 @@ jobs:
       max-parallel: 1
 
     env:
-      CONFIG_FILE: "tests/e2e/configs/${{ matrix.config-file }}"
+      CONFIG_FILE: "starship/tests/e2e/configs/${{ matrix.config-file }}"
+
+    defaults:
+      run:
+        working-directory: starship
 
     steps:
       - name: Checkout

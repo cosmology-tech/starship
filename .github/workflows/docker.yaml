@@ -6,13 +6,13 @@ on:
       - main
       - release/*
     paths:
-      - "docker/**"
+      - "starship/docker/**"
       - ".github/workflows/docker.yaml"
   pull_request:
     branches:
       - main
     paths:
-      - "docker/**"
+      - "starship/docker/**"
       - ".github/workflows/docker.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
@@ -58,17 +58,17 @@ jobs:
       - name: Build
         if: github.event_name == 'pull_request'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
 
       - name: Build and push
         if: github.event_name == 'push'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
 
       - name: Force Build and Push for workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
 
   build-push-chains:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -79,6 +79,10 @@ jobs:
 
     env:
       DOCKER_REPO: ghcr.io/cosmology-tech/starship
+
+    defaults:
+      run:
+        working-directory: starship
 
     steps:
       - name: Checkout

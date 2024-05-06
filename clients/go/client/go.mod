@@ -3,7 +3,7 @@ module github.com/cosmology-tech/starship/clients/go/client
 go 1.21
 
 replace (
-	github.com/cosmology-tech/starship/registry => ../../../registry
+	github.com/cosmology-tech/starship/registry => ../../../starship/registry
 	github.com/strangelove-ventures/lens => github.com/Anmol1696/lens v0.1.1-0.20230331154219-5027f163133a
 )
 

@@ -21,7 +21,7 @@ jobs:
       max-parallel: 4
 
     env:
-      CONFIG_FILE: "tests/smoke/ci/${{ matrix.config-file }}"
+      CONFIG_FILE: "starship/tests/smoke/ci/${{ matrix.config-file }}"
 
     steps:
       - name: Checkout
@@ -34,7 +34,7 @@ jobs:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
           version: 0.0.0
-          chart: ./charts/devnet
+          chart: ./starship/charts/devnet
           timeout: 10m
           cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
@@ -72,7 +72,7 @@ jobs:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
           version: 0.0.0
-          chart: ./charts/devnet
+          chart: ./starship/charts/devnet
           timeout: 10m
           cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
@@ -97,7 +97,7 @@ jobs:
       max-parallel: 4
 
     env:
-      CONFIG_FILE: "tests/smoke/ci/${{ matrix.config-file }}"
+      CONFIG_FILE: "starship/tests/smoke/ci/${{ matrix.config-file }}"
 
     steps:
       - name: Checkout
@@ -110,7 +110,7 @@ jobs:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
           version: 0.0.0
-          chart: ./charts/devnet
+          chart: ./starship/charts/devnet
           timeout: 10m
           cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
