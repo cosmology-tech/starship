@@ -54,7 +54,7 @@ jobs:
           values: ${{ env.CONFIG_FILE }}
           port-forward: true
           version: 0.0.0
-          chart: ./charts/devnet
+          chart: ./starship/charts/devnet
           cli-version: f35dc85407b350077765a0b3c17a4c1632c7d53c
 
       - name: Run tests
