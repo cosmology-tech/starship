@@ -6,13 +6,13 @@ on:
       - main
       - release/*
     paths:
-      - "docker/**"
+      - "starship/docker/**"
       - ".github/workflows/docker.yaml"
   pull_request:
     branches:
       - main
     paths:
-      - "docker/**"
+      - "starship/docker/**"
       - ".github/workflows/docker.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
@@ -58,17 +58,17 @@ jobs:
       - name: Build
         if: github.event_name == 'pull_request'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all
 
       - name: Build and push
         if: github.event_name == 'push'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
 
       - name: Force Build and Push for workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
-          ./scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
+          ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
 
   build-push-chains:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -100,14 +100,14 @@ jobs:
       - name: Build chains
         if: github.event_name == 'pull_request'
         run: |
-          cd docker/chains && ./build-docker-chains.sh --chain all --tag all
+          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all
 
       - name: Build and push all chains
         if: github.event_name == 'push'
         run: |
-          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push
+          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all --push
 
       - name: Force Build and Push for workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         run: |
-          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force
+          cd starship/docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force

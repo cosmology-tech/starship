@@ -30,7 +30,7 @@ jobs:
 
       - name: Build exposer
         run: |
-          cd exposer && make build
+          cd starship/exposer && make build
 
   build-registry:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -47,7 +47,7 @@ jobs:
 
       - name: Build registry
         run: |
-          cd registry && make build
+          cd starship/registry && make build
 
   build-faucet:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -64,4 +64,4 @@ jobs:
 
       - name: Build faucet
         run: |
-          cd faucet && make build
+          cd starship/faucet && make build

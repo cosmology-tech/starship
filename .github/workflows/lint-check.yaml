@@ -37,4 +37,4 @@ jobs:
         uses: helm/chart-testing-action@v2.3.1
 
       - name: Run chart-testing (lint)
-        run: ct lint --chart-dirs charts --charts charts/devnet
+        run: ct lint --chart-dirs starship/charts --charts charts/devnet
