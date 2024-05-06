@@ -76,7 +76,7 @@ runs:
 
     - name: Run tests
       run: |
-        cd tests/e2e/ && go test -v ./...
+        cd starship/tests/e2e/ && go test -v ./...
       env:
         TEST_CONFIG_FILE: ${{ inputs.config-file }}
       shell: bash
