@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - anmol/automated-docs-pipeline  # debug branch: todo: remove before merge
     paths:
       - "docs/**"
       - ".github/workflows/docs.yaml"
