@@ -4,56 +4,31 @@ on:
   push:
     branches:
       - main
+      - anmol/automated-docs-pipeline  # debug branch: todo: remove before merge
     paths:
       - "docs/**"
       - ".github/workflows/docs.yaml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "docs/**"
-      - ".github/workflows/docs.yaml"
-    types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
   deploy:
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.4.0
+      - name: Clone docs repository
+        run: git clone https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/cosmology-tech/docs.git external-docs
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.DOCS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DOCS_AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
-
-      - name: Install AWS CLI v2
+      - name: Sync the docs
         run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
-          unzip -q /tmp/awscliv2.zip -d /tmp
-          rm /tmp/awscliv2.zip
-          sudo /tmp/aws/install --update
-          rm -rf /tmp/aws/
-        shell: bash
-
-      - name: Dependencies
-        run: cd docs/ && yarn
-
-      - name: Build docs
-        run: cd docs/ && yarn run export
-
-      - name: Deploy
-        if: github.ref == 'refs/heads/main'
-        run: |
-          aws s3 sync docs/out/ s3://starship.cosmology.tech
-          aws cloudfront create-invalidation --distribution-id E1LIY8AZD4EEQD --paths "/*"
-          cd docs/ && ./seo/prepare.sh
+          rsync -av --delete ./docs/pages/ ./external-docs/docs/pages/starship/
+          cd external-docs
+          git config user.name 'GitHub Action'
+          git config user.email 'action@github.com'
+          git add .
+          git commit -m "Aotumated: Update starship documentation from starship repo"
+          if git diff --quiet; then
+              echo "No changes to commit."
+          else
+              git push
