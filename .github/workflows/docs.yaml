@@ -32,3 +32,4 @@ jobs:
               echo "No changes to commit."
           else
               git push
+          fi
