@@ -28,7 +28,7 @@ jobs:
           git config user.email 'action@github.com'
           git add .
           git commit -m "Aotumated: Update starship documentation from starship repo"
-          if git diff --quiet; then
+          if git diff --cached --quiet; then
               echo "No changes to commit."
           else
               git push
