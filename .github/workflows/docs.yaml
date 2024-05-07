@@ -22,7 +22,7 @@ jobs:
 
       - name: Sync the docs
         run: |
-          rsync -av --delete ./docs/pages/ ./external-docs/docs/pages/starship/
+          rsync -av --delete ./docs/pages/ ./external-docs/pages/starship/
           cd external-docs
           git config user.name 'GitHub Action'
           git config user.email 'action@github.com'
