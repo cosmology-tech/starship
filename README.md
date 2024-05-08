@@ -19,32 +19,71 @@ for multichain use cases
 
 ## Installation
 In order to get started with starship, one needs to install the following
-* `kubectl`: https://kubernetes.io/docs/tasks/tools/
-* `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
+* `kubectl`: https://kubernetes.io/docs/tasks/tools/ (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) for simple install)
 * `helm`: https://helm.sh/docs/intro/install/
-* `jq`: https://stedolan.github.io/jq/download/
-* `yq`: https://github.com/mikefarah/yq/#install
 
-## Getting started
-Follow the steps here: https://docs.cosmology.zone/starship
+## Install
 
-## Using helm chart
-In order to use the helm chart externally without this repo.
-```bash
-helm repo add starship https://cosmology-tech.github.io/starship
-helm repo update
+Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
 
-helm search repo starship/devnet
-```
-Fetch the values.yaml file and update them before installing the chart
-```bash
-helm show values starship/devnet > custom-values.yaml
-# change custom-values.yaml file
-
-helm install -f custom-values.yaml starship/devnet --generate-name
+```sh
+npm install starshipjs @starship-ci/client
 ```
 
-**NOTE: It is recommended to still copy the Makefile from the repo to use the handy commands**
+### Recommended Usage 📘
+
+Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most recommended setup. Consider everything else after this section "advanced setup".
+
+- We recommend studying the [osmojs starship integration](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship) and replicating it.
+- Add your configs, similar to how it's done [here](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship/configs)
+- Add your workflows for github [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
+- Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/20d749c8c5a4ec3db374221dabdf185fa18025a3/packages/osmojs/package.json#L34C5-L38C74)
+— Note the jest configurations in the [osmojs package](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs)
+
+
+This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
+
+#### Deploying `Starship` 🚀
+
+```sh
+# setup helm/starship
+yarn starship setup
+
+# sanity check
+yarn starship get-pods
+
+# deploy starship
+yarn starship deploy
+
+# wait til STATUS=Running
+yarn starship get-pods
+
+# port forwarding
+yarn starship start-ports
+
+# check pids
+yarn starship port-pids
+```
+
+#### Running End-to-End Tests 🧪
+
+```sh
+# test
+yarn starship:test
+
+# watch 
+yarn starship:watch
+```
+
+#### Teardown 🛠️
+
+```sh
+# stop port forwarding (done by clean() too)
+# yarn starship stop-ports
+
+# stop ports and delete & remove helm chart
+yarn starship clean
+```
 
 ## Related
 
