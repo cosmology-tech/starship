@@ -5,12 +5,13 @@
 </p>
 
 <p align="center" width="100%">
-   <a href="https://github.com/cosmology-tech/starship/releases/latest"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg"></a>
    <a href="https://github.com/cosmology-tech/starship/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-   <a href="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/releases/latest"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/release.yaml/badge.svg"></a>
    <a href="https://github.com/cosmology-tech/starship/actions/workflows/build.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/build.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/e2e-tests.yaml/badge.svg"></a>
    <a href="https://github.com/cosmology-tech/starship/actions/workflows/docs.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/docs.yaml/badge.svg"></a>
    <a href="https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/starship-docker.yaml/badge.svg"></a>
+   <a href="https://github.com/cosmology-tech/starship/actions/workflows/run-client-tests.yml"><img height="20" src="https://github.com/cosmology-tech/starship/actions/workflows/run-client-tests.yml/badge.svg" /></a>
 </p>
 
 Universal interchain development environment in k8s. The vision of this project
