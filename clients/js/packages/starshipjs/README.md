@@ -43,7 +43,7 @@ npm install starshipjs
 
 ## Using with CI/CD
 
-NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](https://github.com/cosmology-tech/StarshipJS/tree/main/ci/cli)) in a package.json to get starship working.
+NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](https://github.com/cosmology-tech/starship/tree/main/clients/js/packages/cli)) in a package.json to get starship working.
 
 Once you add `@starship-ci/cli` to your project, you can spint up `starship` as easy as 1-2-3:
 
