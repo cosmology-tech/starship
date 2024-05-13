@@ -287,6 +287,7 @@ chains:
   - name: neutron
     base: ghcr.io/strangelove-ventures/heighliner/neutron
     tags:
+      - v3.0.4
       - v2.0.1
       - v1.0.4
   - name: union
