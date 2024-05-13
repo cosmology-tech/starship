@@ -3,18 +3,23 @@
 _You can skip directly to **TLDR** for the quickest start._
 
 In this step, we will setup the dependencies for our project. We will use
-* `docker`
-* `kind`
-* `kubectl`
+* `kubectl` (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) for simple install)
 * `helm`
-* `yq`
 
 > Note: For local setup make sure you have docker setup and running. Run `docker ps` to check if docker is running.
 
-## 1.1) Installation
+## 1.1) Install `starshipjs`
+
+Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+
+```sh
+npm install -g @starship-ci/cli
+```
+
+## 1.1) Setup
 Run the following commands to get the dependencies installed.
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/dev-setup.sh)
+```sh
+starship setup
 ```
 
 This will fetch all the dependencies and install them in the `~/.local/bin` directory.
