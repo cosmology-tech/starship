@@ -1,6 +1,6 @@
 chains:
-  - name: simapp
-    type: simapp
+  - id: simapp
+    name: simapp
     image: ghcr.io/cosmos/simapp:latest
     numValidators: 2
     ports:
