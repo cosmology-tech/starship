@@ -60,87 +60,21 @@ spec:
             - |
               set -ux
 
-              echo "Adding key...." $(jq -r ".relayers[$RELAYER_INDEX].name" $KEYS_CONFIG)
-              jq -r ".relayers[$RELAYER_INDEX].mnemonic" $KEYS_CONFIG | neutrond keys add $(jq -r ".relayers[$RELAYER_INDEX].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-          {{- end }}
-          {{- end }}
-        - name: init-relayer
-          image: {{ $relayer.image }}
-          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
-          env:
-            - name: KEYS_CONFIG
-              value: /keys/keys.json
-            - name: RELAYER_DIR
-              value: /root/.hermes
-            - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          command:
-            - bash
-            - "-c"
-            - |
-              set -ux
+              echo "Adding key.... relayer"
+              jq -r ".relayers[$RELAYER_INDEX].mnemonic" $KEYS_CONFIG | neutrond keys add relayer --recover --keyring-backend="test"
 
-              RLY_INDEX=${HOSTNAME##*-}
-              echo "Relayer Index: $RLY_INDEX"
-
-              mkdir -p $RELAYER_DIR
-              cp /configs/config.toml $RELAYER_DIR/config.toml
-              cp /configs/config-cli.toml $RELAYER_DIR/config-cli.toml
-              cat $RELAYER_DIR/config.toml
-
-              MNEMONIC=$(jq -r ".relayers[0].mnemonic" $KEYS_CONFIG)
-              echo $MNEMONIC > $RELAYER_DIR/mnemonic.txt
-              MNEMONIC_CLI=$(jq -r ".relayers[1].mnemonic" $KEYS_CONFIG)
-              echo $MNEMONIC_CLI > $RELAYER_DIR/mnemonic-cli.txt
-
-              echo "Debug output for {{ $relayer.name }}..."
-              cat << EOF
-              {{ typeOf $relayer | indent 14 }}
-              {{ $relayer | toJson | indent 14 }}
-              EOF
-
-              {{- range $i, $chain := $relayer.chains }}
-              {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
-              echo "Creating key for {{ $chain }}..."
-              hermes keys add \
-                --chain {{ $chain }} \
-                --mnemonic-file $RELAYER_DIR/mnemonic.txt \
-                --key-name {{ $chain }} \
-                --hd-path {{ $fullchain.hdPath | quote }}
               DENOM="{{ $fullchain.denom }}"
-              RLY_ADDR=$(hermes --json keys list --chain {{ $chain }} | tail -1 | jq -r '.result."{{ $chain }}".account')
+              RLY_ADDR=$(hermes --json keys list --chain {{ $fullchain.id }} | tail -1 | jq -r '.result."{{ $fullchain.id }}".account')
               echo "Transfer tokens to address $RLY_ADDR"
 
-              echo "Creating key for {{ $chain }}-cli..."
-              hermes keys add \
-                --chain {{ $chain }} \
-                --mnemonic-file $RELAYER_DIR/mnemonic-cli.txt \
-                --key-name {{ $chain }}-cli \
-                --hd-path {{ $fullchain.hdPath | quote }}
-              {{- end }}
-
-              {{- range $i, $channel := $relayer.channels }}
-              hermes create channel \
-                {{- if (get $channel "new-connection" | default false) }}
-                --new-client-connection --yes \
-                {{- end }}
-                --a-chain {{ get $channel "a-chain" }} \
-                --b-chain {{ get $channel "b-chain" }} \
-                --a-port {{ get $channel "a-port" }} \
-                --b-port {{ get $channel "b-port" }}
-              {{- end }}
-          volumeMounts:
-            - mountPath: /root
-              name: relayer
-            - mountPath: /configs
-              name: relayer-config
-            - mountPath: /keys
-              name: keys
-            - mountPath: /scripts
-              name: scripts
-          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
+          {{- end }}
+          {{- end }}
       containers:
         - name: relayer
           image: {{ $relayer.image }}
@@ -148,6 +82,40 @@ spec:
           env:
             - name: RELAYER_DIR
               value: /root/.hermes
+            {{- range $key, $value := $relayer.config }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+            - name: RELAYER_NEUTRON_CHAIN_RPC_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-rpc-addr
+            - name: RELAYER_NEUTRON_CHAIN_REST_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-rest-addr
+            - name: RELAYER_NEUTRON_CHAIN_HOME_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-home-dir
+            - name: RELAYER_TARGET_CHAIN_RPC_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-target-chain-rpc-addr
+            - name: RELAYER_REGISTRY_ADDRESSES
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-registry-addresses
+            - name: RELAYER_LISTEN_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-listen-addr
           command:
             - bash
             - "-c"
@@ -155,7 +123,7 @@ spec:
               RLY_INDEX=${HOSTNAME##*-}
               echo "Relayer Index: $RLY_INDEX"
 
-              hermes start
+              neutron_query_relayer start
           resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
           securityContext:
             allowPrivilegeEscalation: false

@@ -12,7 +12,7 @@ metadata:
 data:
   {{- range $i, $chain := $relayer.chains }}
   {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
-  {{- if eq $fullchain.type "neutron" }}
+  {{- if eq $fullchain.name "neutron" }}
   relayer-neutron-chain-rpc-addr: "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
   relayer-neutron-chain-rest-addr: "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:1317"
   relayer-neutron-chain-home-dir: "{{ $fullchain.home }}"
