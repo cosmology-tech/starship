@@ -5,9 +5,15 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - "starship/charts/**"
+      - ".github/workflows/lint-check.yaml"
   pull_request:
     branches:
       - main
+    paths:
+      - "starship/charts/**"
+      - ".github/workflows/lint-check.yaml"
     types: [ opened, reopened, synchronize, ready_for_review ]
 
 concurrency:

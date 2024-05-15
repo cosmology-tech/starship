@@ -5,7 +5,15 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - "clients/js/**"
+      - ".github/workflows/run-client-tests.yml"
   pull_request:
+    branches:
+      - main
+    paths:
+      - "clients/js/**"
+      - ".github/workflows/run-client-tests.yml"
     types: [opened, reopened]
 
   workflow_dispatch:

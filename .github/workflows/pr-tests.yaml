@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - "starship/**"
+      - "!starship/docker/**"
+      - ".github/workflows/pr-tests.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
 
 concurrency:
