@@ -10,13 +10,13 @@ export const useRegistry = async (configFile: string): Promise<ChainRegistryFetc
   const registryUrl = `http://localhost:${config.registry.ports.rest}`;
 
   const urls: string[] = [];
-  config.chains.forEach((chain) => {
+  config.chains?.forEach((chain) => {
     urls.push(
       `${registryUrl}/chains/${chain.name}`,
       `${registryUrl}/chains/${chain.name}/assets`
     );
   });
-  config.relayers.forEach((relayer) => {
+  config.relayers?.forEach((relayer) => {
     urls.push(
       `${registryUrl}/ibc/${relayer.chains[0]}/${relayer.chains[1]}`,
       `${registryUrl}/ibc/${relayer.chains[1]}/${relayer.chains[0]}`
