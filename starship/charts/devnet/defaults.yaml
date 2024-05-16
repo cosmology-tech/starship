@@ -81,7 +81,7 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
-  cosmos:
+  cosmoshub:
     image: ghcr.io/cosmology-tech/starship/gaia:v14.1.0
     home: /root/.gaia
     binary: gaiad

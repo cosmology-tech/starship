@@ -8,7 +8,7 @@ chains:
       exposer: 38083
       faucet: 8001
   - id: cosmoshub-4
-    name: cosmos
+    name: cosmoshub
     numValidators: 2
     ports:
       rest: 1317
