@@ -25,10 +25,10 @@ In order to get started with starship, one needs to install the following
 
 ## Install
 
-Install the test utilities `starshipjs` and the CI client `@starship-ci/client`:
+Install the test utilities `starshipjs` and the CLI `@starship-ci/cli`:
 
 ```sh
-npm install starshipjs @starship-ci/client
+yarn add --dev starshipjs @starship-ci/cli
 ```
 
 ### Recommended Usage 📘
