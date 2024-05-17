@@ -220,7 +220,6 @@ export class StarshipClient implements StarshipClientI {
 
   public clean(): void {
     this.undeploy();
-    this.cleanKind();
   }
 
   public setupHelm(): void {
@@ -478,17 +477,5 @@ export class StarshipClient implements StarshipClientI {
     pids.forEach(pid => {
       console.log(pid);
     });
-  }
-
-  public setupKind(): void {
-    if (this.ctx.kindCluster) {
-      this.exec(['kind', 'create', 'cluster', '--name', this.ctx.kindCluster]);
-    }
-  }
-
-  public cleanKind(): void {
-    if (this.ctx.kindCluster) {
-      this.exec(['kind', 'delete', 'cluster', '--name', this.ctx.kindCluster]);
-    }
   }
 }

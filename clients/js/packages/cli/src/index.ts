@@ -85,20 +85,11 @@ async function main() {
     case 'undeploy':
       client.undeploy();
       break;
-    case 'clean-kind':
-      client.cleanKind();
-      break;
     case 'delete-helm':
       client.deleteHelm();
       break;
     case 'remove-helm':
       client.removeHelm();
-      break;
-    case 'setup-kind':
-      client.setupKind();
-      break;
-    case 'clean':
-      client.clean();
       break;
     default:
       console.log(`Unknown command: ${command}`);
