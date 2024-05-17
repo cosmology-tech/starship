@@ -12,7 +12,7 @@ var addresses = map[string][]string{
 		"osmo1clpqr4nrk4khgkxj78fcwwh6dl3uw4epasmvnj",
 		"osmo15urq2dtp9qce4fyc85m6upwm9xul30495qdm4l",
 	},
-	"cosmos": {
+	"cosmoshub": {
 		"cosmos1c4k24jzduc365kywrsvf5ujz4ya6mwymy8vq4q",
 		"cosmos196ax4vc0lwpxndu9dyhvca7jhxp70rmcfhxsrt",
 		"cosmos1t5u0jfg3ljsjrh2m9e47d4ny2hea7eehxrzdgd",
