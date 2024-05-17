@@ -13,12 +13,12 @@ import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
 
 export interface StarshipContext {
-  helmName: string;
+  helmName?: string;
   helmFile: string;
-  helmRepo: string;
-  helmRepoUrl: string;
-  helmChart: string;
-  helmVersion: string;
+  helmRepo?: string;
+  helmRepoUrl?: string;
+  helmChart?: string;
+  helmVersion?: string;
   kindCluster?: string;
   verbose?: boolean;
   curdir?: string;
@@ -29,7 +29,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.1.38'
+  helmVersion: 'v0.2.0'
 };
 
 export interface PodPorts {

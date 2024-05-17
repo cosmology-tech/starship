@@ -77,13 +77,9 @@ Configuration File:
                         Command-line options will override settings from this file if both are provided.
 
 Command-line Options:
-  --helmFile <path>     Specify the path to the Helm file.
-  --helmName <name>     Specify the Helm release name.
-  --helmRepo <repo>     Specify the Helm repository.
-  --helmRepoUrl <url>   Specify the Helm repository URL.
-  --helmChart <chart>   Specify the Helm chart.
-  --helmVersion <ver>   Specify the version of the Helm chart.
-  --kindCluster <name>  Specify the name of the Kubernetes kind cluster.
+  --helmFile <path>     Specify the path to the Helm file, the actual config file. Required.
+  --helmName <name>     Specify the Helm release name, default: starship.
+  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.0.
 
 Examples:
   $ starship setup
