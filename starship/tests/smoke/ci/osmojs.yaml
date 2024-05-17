@@ -11,7 +11,7 @@ chains:
       cpu: "0.2"
       memory: "200M"
   - id: cosmos-2
-    name: cosmos
+    name: cosmoshub
     numValidators: 1
     ports:
       rest: 1313

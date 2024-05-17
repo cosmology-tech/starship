@@ -1,6 +1,6 @@
 chains:
   - id: cosmoshub-4
-    name: cosmos
+    name: cosmoshub
     numValidators: 2
     ports:
       rest: 1317
