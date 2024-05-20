@@ -17,7 +17,6 @@ install_macos() {
         kubectl) brew install kubectl ;;
         helm) brew install helm ;;
         yq) brew install yq ;;
-        kind) brew install kind ;;
     esac
 }
 
@@ -30,7 +29,6 @@ install_linux() {
         kubectl) curl -Lks "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" > ~/.local/bin/kubectl && chmod +x ~/.local/bin/kubectl ;;
         helm) curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash ;;
         yq) curl -Lks "https://github.com/mikefarah/yq/releases/download/v4.33.3/yq_linux_amd64" > ~/.local/bin/yq && chmod +x ~/.local/bin/yq ;;
-        kind) curl -Lks https://kind.sigs.k8s.io/dl/v0.18.1/kind-linux-amd64 > ~/.local/bin/kind && chmod +x ~/.local/bin/kind ;;
     esac
 }
 
@@ -62,7 +60,6 @@ check_binary() {
 check_binary kubectl
 check_binary helm
 check_binary yq
-check_binary kind
 check_binary docker
 
 color green "All binaries are installed"
