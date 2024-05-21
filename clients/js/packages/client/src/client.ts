@@ -431,8 +431,8 @@ export class StarshipClient implements StarshipClientI {
     this.log("Starting new port forwarding...");
 
     this.config.chains.forEach(chain => {
-      // TODO Talk to Anmol about chain.name and chain.type, seems to be opposite of intuition using chainReg as concept
-      const chainPodPorts = this.podPorts.chains[chain.type] || this.podPorts.chains.defaultPorts;
+      // TODO Talk to Anmol about chain.name and chain.name, seems to be opposite of intuition using chainReg as concept
+      const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
       if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
       if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
