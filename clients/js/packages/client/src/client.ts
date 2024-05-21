@@ -29,7 +29,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.2.0'
+  helmVersion: 'v0.2.1-rc0'
 };
 
 export interface PodPorts {
@@ -222,6 +222,13 @@ export class StarshipClient implements StarshipClientI {
     this.undeploy();
   }
 
+  public async start(): Promise<void> {
+    this.setup();
+    this.deploy();
+    await this.waitForPods(); // Ensure waitForPods completes before starting port forwarding
+    this.startPortForward();
+  }
+
   public setupHelm(): void {
     this.exec([
       'helm',
@@ -366,8 +373,8 @@ export class StarshipClient implements StarshipClientI {
       // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
     }
   }
-  
-  public waitForPods(): void {
+
+  public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
   
     // Check the status of each pod retrieved
@@ -378,7 +385,8 @@ export class StarshipClient implements StarshipClientI {
     this.displayPodStatuses();
 
     if (!this.areAllPodsRunning()) {
-      setTimeout(() => this.waitForPods(), 2500)
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      await this.waitForPods(); // Recursive call
     }
   }
 

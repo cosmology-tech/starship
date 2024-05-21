@@ -48,6 +48,12 @@ async function main() {
 
   // Execute command based on input
   switch (command) {
+    case 'start':
+      client.start().catch((err: any) => {
+        console.error('An error occurred during start:', err);
+        process.exit(1);
+      });
+      break;
     case 'deploy':
       client.deploy();
       break;
@@ -61,7 +67,10 @@ async function main() {
       client.getPods();
       break;
     case 'wait-for-pods':
-      client.waitForPods();
+      client.waitForPods().catch((err: any) => {
+        console.error('An error occurred during wait-for-pods:', err);
+        process.exit(1);
+      });
       break;
     case 'port-pids':
       client.printForwardPids();
