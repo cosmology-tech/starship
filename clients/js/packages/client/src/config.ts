@@ -5,14 +5,17 @@ export interface Ports {
   exposer?: number;
   grpc?: number;
 }
+
 export interface Resources {
   cpu: number;
   memory: string;
 }
+
 export interface FaucetConfig {
   enabled: boolean;
   type: string;
 }
+
 export interface Chain {
   name: string;
   type: string;
@@ -22,6 +25,7 @@ export interface Chain {
   faucet?: FaucetConfig;
   resources?: Resources;
 }
+
 export interface Relayer {
   name: string;
   type: string;
