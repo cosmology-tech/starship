@@ -3,7 +3,7 @@ import { StarshipClient } from '@starship-ci/client'; // Adjust the import path 
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { displayUsage, displayVersion, loadConfig, usageText } from './utils';
+import { displayUsage, displayVersion, loadConfig, usageText, params } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
@@ -24,14 +24,7 @@ const prompter = new Inquirerer({
   noTty: !argv.tty
 });
 
-const questions: Question[] = [
-  'helmName',
-  'helmFile',
-  'helmRepo',
-  'helmRepoUrl',
-  'helmChart',
-  'helmVersion'
-].map(name => ({ name, type: 'text' }));
+const questions: Question[] = params.map(name => ({ name, type: 'text' }));
 
 // Main function to run the application
 async function main() {

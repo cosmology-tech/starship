@@ -1,11 +1,11 @@
-import { defaultStarshipContext, StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
-import { StarshipConfig } from '@starship-ci/client';
+import {defaultStarshipContext, StarshipConfig, StarshipContext} from '@starship-ci/client'; // Adjust the import path as necessary
+import { type Question } from 'inquirerer';
 import chalk from 'chalk';
-import { readFileSync } from 'fs';
+import {readFileSync} from 'fs';
 import * as yaml from 'js-yaml';
-import { dirname, resolve } from 'path';
+import {dirname, resolve} from 'path';
 
-import { readAndParsePackageJson } from './package';
+import {readAndParsePackageJson} from './package';
 import deepmerge from 'deepmerge';
 
 // Function to display the version information
@@ -31,27 +31,46 @@ export interface Config {
   starship: StarshipConfig
 }
 
-export const loadConfig = (argv: any): Config => {
-  if (argv.config) {
-    const context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
-    if (context.helmFile) {
-      const dir = dirname(argv.config);
-      const configPath = resolve(resolvePath(dir), context.helmFile);
-      context.helmFile = configPath;
-      const starship = loadYaml(configPath) as StarshipConfig
+export const params: string[] = [
+  'helmName',
+  'helmFile',
+  'helmRepo',
+  'helmRepoUrl',
+  'helmChart',
+  'helmVersion',
+]
 
-      return {
-        context,
-        starship
-      }
+export const loadConfig = (argv: any): Config => {
+  console.log("argv: ", argv);
+  console.log("argv.config: ", argv.config);
+  let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
+  let starship: StarshipConfig = {} as StarshipConfig;
+
+  if (argv.config) {
+    context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
+  }
+
+  console.log("context", context);
+
+  // Override context with command-line arguments dynamically based on StarshipContext keys
+  params.forEach(key => {
+    if (argv[key] !== undefined) {
+      console.log("key: ", key, " argv[key]: ", argv[key]);
+      // @ts-ignore
+      context[key] = argv[key];
     }
+  });
+
+  if (context.helmFile) {
+    const dir = dirname(argv.config || process.cwd());
+    context.helmFile = resolve(resolvePath(dir), context.helmFile);
   }
-  return {
-    // @ts-ignore
-    context: {},
-    // @ts-ignore
-    starship: {}
-  }
+
+  starship = loadYaml(context.helmFile) as StarshipConfig
+
+  console.log("starship: ", starship);
+
+  return {context, starship};
 }
 
 export const usageText =`
