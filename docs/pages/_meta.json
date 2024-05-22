@@ -2,6 +2,7 @@
   "index": "Introduction",
   "get-started": "Get Started",
   "config": "Configuration",
+  "cli": "CLI",
   "tests": "E2E Tests",
   "advanced": "Advanced Usage"
 }
