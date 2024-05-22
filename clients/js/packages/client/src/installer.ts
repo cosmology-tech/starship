@@ -34,6 +34,13 @@ export class StarshipInstaller {
         }
     }
 
+    async checkAndInstallDependencies() {
+        for (const dependency of Object.keys(this.installations)) {
+            console.log(`Checking ${dependency}...`);
+            await this.checkAndInstallBinary(dependency);
+        }
+    }
+
     async installBinary(binaryName: string) {
         const platform = os.platform();
         const installation = this.installations[binaryName];
@@ -45,7 +52,7 @@ export class StarshipInstaller {
     }
 
     private async runInstallation(command: string) {
-            shell.exec(command);
+        shell.exec(command);
     }
 }
 

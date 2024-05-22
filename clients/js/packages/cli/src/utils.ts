@@ -76,17 +76,14 @@ export const usageText =`
 Usage: starship <command> [options]
 
 Commands:
+  start              Start the Starship services.
+  stop               Remove all components related to the deployment.
   deploy             Deploy starship using specified options or configuration file.
   setup              Setup initial configuration and dependencies.
   start-ports        Start port forwarding for the deployed services.
   stop-ports         Stop port forwarding.
-  teardown           Remove all components related to the deployment.
-  upgrade            Upgrade the deployed application to a new version.
-  undeploy           Remove starship deployment using specified options or configuration file.
-  delete-helm        Delete a specific Helm release.
-  remove-helm        Remove Helm chart from local configuration.
-  clean-kind         Clean up Kubernetes kind cluster resources.
-  setup-kind         Setup a Kubernetes kind cluster for development.
+  delete             Delete a specific Helm release.
+  get-pods           Get the list of pods for the Helm release.
   clean              Perform a clean operation to tidy up resources.
   version, -v        Display the version of the Starship Client.
 

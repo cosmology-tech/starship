@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { StarshipClient } from '@starship-ci/client'; // Adjust the import path as necessary
+import { StarshipClient, StarshipInstaller } from '@starship-ci/client'; // Adjust the import path as necessary
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
@@ -26,6 +26,16 @@ const prompter = new Inquirerer({
 
 const questions: Question[] = params.map(name => ({ name, type: 'text' }));
 
+// Filter questions based on the command
+function getQuestionsForCommand(command: string): Question[] {
+  const commonQuestions = questions.filter(q => q.name !== 'helmFile');
+  if (['start', 'deploy', 'start-ports', 'wait-for-pods'].includes(command)) {
+    return questions; // Include all questions, including helmFile
+  } else {
+    return commonQuestions; // Exclude helmFile
+  }
+}
+
 // Main function to run the application
 async function main() {
   const command: string = argv._[0];
@@ -39,15 +49,24 @@ async function main() {
 
   // Load configuration and prompt for missing parameters
   const config = loadConfig(argv);
-  const args = await prompter.prompt({ ...config.context }, questions, {
+  const commandQuestions = getQuestionsForCommand(command);
+  const args = await prompter.prompt({ ...config.context }, commandQuestions, {
     usageText
   });
-  
+
   const client = new StarshipClient(args);
   client.setConfig(config.starship);
 
+  const installer = new StarshipInstaller();
+
   // Execute command based on input
   switch (command) {
+    case 'install':
+      installer.checkAndInstallDependencies().catch((err: any) => {
+          console.error('An error occurred during start:', err);
+          process.exit(1);
+      });
+      break;
     case 'start':
       client.start().catch((err: any) => {
         console.error('An error occurred during start:', err);
