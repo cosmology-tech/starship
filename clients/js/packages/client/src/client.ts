@@ -280,21 +280,6 @@ export class StarshipClient implements StarshipClientI {
     this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
 
-  public upgrade(): void {
-    this.ensureFileExists(this.ctx.helmFile);
-    this.exec([
-      'helm',
-      'upgrade',
-      '--debug',
-      '-f',
-      this.ctx.helmFile,
-      this.ctx.helmName,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
-      '--version',
-      this.ctx.helmVersion
-    ]);
-  }
-
   public debug(): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.exec([

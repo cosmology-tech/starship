@@ -81,9 +81,6 @@ async function main() {
     case 'teardown':
       client.teardown();
       break;
-    case 'upgrade':
-      client.upgrade();
-      break;
     case 'undeploy':
       client.undeploy();
       break;
