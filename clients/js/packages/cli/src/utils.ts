@@ -64,9 +64,8 @@ export const loadConfig = (argv: any): Config => {
   if (context.helmFile) {
     const dir = dirname(argv.config || process.cwd());
     context.helmFile = resolve(resolvePath(dir), context.helmFile);
+    starship = loadYaml(context.helmFile) as StarshipConfig
   }
-
-  starship = loadYaml(context.helmFile) as StarshipConfig
 
   console.log("starship: ", starship);
 
@@ -104,8 +103,7 @@ Examples:
   $ starship setup
   $ starship deploy --helmFile ./config/helm.yaml --helmName my-release
   $ starship start-ports --config ./config/settings.json
-  $ starship undeploy --config ./config/settings.json
-  $ starship teardown
+  $ starship stop --config ./config/settings.json
 
 Additional Help:
   $ starship help          Display this help information.

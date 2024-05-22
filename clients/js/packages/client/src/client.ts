@@ -14,7 +14,7 @@ import { readAndParsePackageJson } from './package';
 
 export interface StarshipContext {
   helmName?: string;
-  helmFile: string;
+  helmFile?: string;
   helmRepo?: string;
   helmRepoUrl?: string;
   helmChart?: string;
