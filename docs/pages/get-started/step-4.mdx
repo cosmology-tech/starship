@@ -17,22 +17,7 @@ osmosis-1-genesis-0         2/2     Running   0          37m
 registry-7f9f9f9f9f-2q2q2   1/1     Running   0          37m
 ```
 
-## 4.2) Connect to the cluster
-Once the pods are in `Running` state, you can port forward all the nodes to local host with handy scripts
-```bash
-cd getting-started/
-
-# Download the port-forward script
-curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/port-forward.sh > port-forward.sh
-# Make it executable
-chmod +x port-forward.sh
-# Run it with the config file
-./port-forward.sh --config=starship.yaml
-```
-
-This will forward the `ports` of the nodes in the `starship.yaml` to your local machine.
-
-## 4.3) Interact with the chains
+## 4.2) Interact with the chains
 You can then interact with the chain on localhost at
 * Osmosis: http://localhost:26653/status
 * Cosmos: http://localhost:26657/status
@@ -62,7 +47,7 @@ You can check the following endpoints on the registry service to get an idea of 
     * http://localhost:8081/chains/osmosis-1/keys: all the mnemonics for osmosis chain
     * http://localhost:8081/chains/gaia-1/keys: all the mnemonics for osmosis chain
 
-## 4.4) Check chain logs
+## 4.3) Check chain logs
 You can check the logs of the chain with
 ```bash
 # Osmosis logs
@@ -76,20 +61,15 @@ kubectl logs gaia-1-genesis-0
 kubectl logs -f gaia-1-genesis-0
 ```
 
-## 4.5) Cleanup
+## 4.4) Cleanup
 Once you are done with playing around, cleanup the resources with
 
 ```bash
 # delete helm chart
-helm delete tutorial
+starship stop
 
 # cleanup port forwarding
 pkill -f "port-forward"
-```
-
-Remove kind cluster (if used) with
-```bash
-kind delete clusters starship
 ```
 
 If you are using Docker Desktop for kubernetes cluster, please Disable it in Settings, Kubernetes
