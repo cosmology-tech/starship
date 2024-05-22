@@ -21,10 +21,6 @@ export class StarshipInstaller {
             mac: 'brew install helm',
             linux: 'curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash'
         },
-        kind: {
-            mac: 'brew install kind',
-            linux: `curl -Lks https://kind.sigs.k8s.io/dl/v0.18.0/kind-linux-amd64 > ~/.local/bin/kind && chmod +x ~/.local/bin/kind`
-        }
     };
 
     async checkAndInstallBinary(binaryName: string) {

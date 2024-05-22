@@ -3,7 +3,7 @@ import { StarshipClient } from '@starship-ci/client'; // Adjust the import path 
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { displayUsage, displayVersion, loadConfig, usageText } from './utils';
+import { displayUsage, displayVersion, loadConfig, usageText, params } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
@@ -24,14 +24,7 @@ const prompter = new Inquirerer({
   noTty: !argv.tty
 });
 
-const questions: Question[] = [
-  'helmName',
-  'helmFile',
-  'helmRepo',
-  'helmRepoUrl',
-  'helmChart',
-  'helmVersion'
-].map(name => ({ name, type: 'text' }));
+const questions: Question[] = params.map(name => ({ name, type: 'text' }));
 
 // Main function to run the application
 async function main() {
@@ -55,6 +48,12 @@ async function main() {
 
   // Execute command based on input
   switch (command) {
+    case 'start':
+      client.start().catch((err: any) => {
+        console.error('An error occurred during start:', err);
+        process.exit(1);
+      });
+      break;
     case 'deploy':
       client.deploy();
       break;
@@ -68,7 +67,10 @@ async function main() {
       client.getPods();
       break;
     case 'wait-for-pods':
-      client.waitForPods();
+      client.waitForPods().catch((err: any) => {
+        console.error('An error occurred during wait-for-pods:', err);
+        process.exit(1);
+      });
       break;
     case 'port-pids':
       client.printForwardPids();
@@ -79,26 +81,14 @@ async function main() {
     case 'teardown':
       client.teardown();
       break;
-    case 'upgrade':
-      client.upgrade();
-      break;
     case 'undeploy':
       client.undeploy();
-      break;
-    case 'clean-kind':
-      client.cleanKind();
       break;
     case 'delete-helm':
       client.deleteHelm();
       break;
     case 'remove-helm':
       client.removeHelm();
-      break;
-    case 'setup-kind':
-      client.setupKind();
-      break;
-    case 'clean':
-      client.clean();
       break;
     default:
       console.log(`Unknown command: ${command}`);
