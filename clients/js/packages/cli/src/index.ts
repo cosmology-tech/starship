@@ -78,17 +78,11 @@ async function main() {
     case 'stop-ports':
       client.stopPortForward();
       break;
-    case 'teardown':
-      client.teardown();
+    case 'stop':
+      client.stop();
       break;
     case 'undeploy':
-      client.undeploy();
-      break;
-    case 'delete-helm':
       client.deleteHelm();
-      break;
-    case 'remove-helm':
-      client.removeHelm();
       break;
     default:
       console.log(`Unknown command: ${command}`);

@@ -32,13 +32,11 @@ kubectl port-forward service/registry 8081:8080 > /dev/null 2>&1 &
 Log: Forwarded registry on port 8081 to target port 8080
 kubectl port-forward service/registry 9091:9090 > /dev/null 2>&1 &
 Log: Forwarded registry on port 9091 to target port 9090
-Call: undeploy()
+Call: stop()
 Log: Trying to stop all port-forward, if any....
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
-helm delete osmojs
-Call: teardown()
-helm repo remove starship"
+helm delete osmojs"
 `;
 
 exports[`StarshipClient setup 2`] = `
@@ -58,6 +56,5 @@ kubectl port-forward service/registry 8081:8080 > /dev/null 2>&1 &
 kubectl port-forward service/registry 9091:9090 > /dev/null 2>&1 &
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
-helm delete osmojs
-helm repo remove starship"
+helm delete osmojs"
 `;

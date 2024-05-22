@@ -154,10 +154,6 @@ export class StarshipClient implements StarshipClientI {
     this.setupHelm();
   }
 
-  public teardown(): void {
-    this.removeHelm();
-  }
-
   private loadYaml(filename: string): any {
     const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
     const fileContents = readFileSync(path, 'utf8');
@@ -213,13 +209,9 @@ export class StarshipClient implements StarshipClientI {
     ]);
   }
 
-  public undeploy(): void {
+  public stop(): void {
     this.stopPortForward();
     this.deleteHelm();
-  }
-
-  public clean(): void {
-    this.undeploy();
   }
 
   public async start(): Promise<void> {
@@ -245,15 +237,6 @@ export class StarshipClient implements StarshipClientI {
       `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
       '--version',
       this.ctx.helmVersion
-    ]);
-  }
-
-  public removeHelm(): void {
-    this.exec([
-      'helm',
-      'repo',
-      'remove',
-      this.ctx.helmRepo
     ]);
   }
 

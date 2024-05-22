@@ -15,10 +15,8 @@ describe('StarshipClient', () => {
     
     client.startPortForward();
 
-    client.undeploy();
-
     // remove helm chart
-    client.teardown();
+    client.stop();
 
     expectClient(ctx, -1);
   });
