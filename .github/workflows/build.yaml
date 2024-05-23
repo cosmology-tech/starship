@@ -5,9 +5,19 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - "starship/exposer/**"
+      - "starship/registry/**"
+      - "starship/faucet/**"
+      - ".github/workflows/build.yaml"
   pull_request:
     branches:
       - main
+    paths:
+      - "starship/exposer/**"
+      - "starship/registry/**"
+      - "starship/faucet/**"
+      - ".github/workflows/build.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
 
 concurrency:

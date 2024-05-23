@@ -1,6 +1,6 @@
 chains:
   - id: cosmoshub-4
-    name: cosmos
+    name: cosmoshub
     numValidators: 1
     ports:
       rpc: 26653

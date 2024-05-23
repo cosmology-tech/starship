@@ -14,7 +14,7 @@ chains:
       cpu: 1
       memory: 2Gi
   - id: cosmoshub-4
-    name: cosmos
+    name: cosmoshub
     image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 1
     ports:

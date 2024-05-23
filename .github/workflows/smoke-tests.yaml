@@ -59,7 +59,7 @@ jobs:
       max-parallel: 4
 
     env:
-      CONFIG_FILE: "tests/smoke/ci/${{ matrix.config-file }}"
+      CONFIG_FILE: "starship/tests/smoke/ci/${{ matrix.config-file }}"
 
     steps:
       - name: Checkout

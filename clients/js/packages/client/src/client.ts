@@ -13,12 +13,12 @@ import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
 
 export interface StarshipContext {
-  helmName: string;
-  helmFile: string;
-  helmRepo: string;
-  helmRepoUrl: string;
-  helmChart: string;
-  helmVersion: string;
+  helmName?: string;
+  helmFile?: string;
+  helmRepo?: string;
+  helmRepoUrl?: string;
+  helmChart?: string;
+  helmVersion?: string;
   kindCluster?: string;
   verbose?: boolean;
   curdir?: string;
@@ -29,7 +29,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.1.38'
+  helmVersion: 'v0.2.1'
 };
 
 export interface PodPorts {
@@ -154,10 +154,6 @@ export class StarshipClient implements StarshipClientI {
     this.setupHelm();
   }
 
-  public teardown(): void {
-    this.removeHelm();
-  }
-
   private loadYaml(filename: string): any {
     const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
     const fileContents = readFileSync(path, 'utf8');
@@ -213,14 +209,16 @@ export class StarshipClient implements StarshipClientI {
     ]);
   }
 
-  public undeploy(): void {
+  public stop(): void {
     this.stopPortForward();
     this.deleteHelm();
   }
 
-  public clean(): void {
-    this.undeploy();
-    this.cleanKind();
+  public async start(): Promise<void> {
+    this.setup();
+    this.deploy();
+    await this.waitForPods(); // Ensure waitForPods completes before starting port forwarding
+    this.startPortForward();
   }
 
   public setupHelm(): void {
@@ -239,15 +237,6 @@ export class StarshipClient implements StarshipClientI {
       `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
       '--version',
       this.ctx.helmVersion
-    ]);
-  }
-
-  public removeHelm(): void {
-    this.exec([
-      'helm',
-      'repo',
-      'remove',
-      this.ctx.helmRepo
     ]);
   }
 
@@ -272,21 +261,6 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.helmVersion
     ]);
     this.log("Run \"starship get-pods\" to check the status of the cluster");
-  }
-
-  public upgrade(): void {
-    this.ensureFileExists(this.ctx.helmFile);
-    this.exec([
-      'helm',
-      'upgrade',
-      '--debug',
-      '-f',
-      this.ctx.helmFile,
-      this.ctx.helmName,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
-      '--version',
-      this.ctx.helmVersion
-    ]);
   }
 
   public debug(): void {
@@ -367,8 +341,8 @@ export class StarshipClient implements StarshipClientI {
       // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
     }
   }
-  
-  public waitForPods(): void {
+
+  public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
   
     // Check the status of each pod retrieved
@@ -379,7 +353,8 @@ export class StarshipClient implements StarshipClientI {
     this.displayPodStatuses();
 
     if (!this.areAllPodsRunning()) {
-      setTimeout(() => this.waitForPods(), 2500)
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      await this.waitForPods(); // Recursive call
     }
   }
 
@@ -432,8 +407,8 @@ export class StarshipClient implements StarshipClientI {
     this.log("Starting new port forwarding...");
 
     this.config.chains.forEach(chain => {
-      // TODO Talk to Anmol about chain.name and chain.type, seems to be opposite of intuition using chainReg as concept
-      const chainPodPorts = this.podPorts.chains[chain.type] || this.podPorts.chains.defaultPorts;
+      // TODO Talk to Anmol about chain.name and chain.name, seems to be opposite of intuition using chainReg as concept
+      const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
       if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
       if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
@@ -478,17 +453,5 @@ export class StarshipClient implements StarshipClientI {
     pids.forEach(pid => {
       console.log(pid);
     });
-  }
-
-  public setupKind(): void {
-    if (this.ctx.kindCluster) {
-      this.exec(['kind', 'create', 'cluster', '--name', this.ctx.kindCluster]);
-    }
-  }
-
-  public cleanKind(): void {
-    if (this.ctx.kindCluster) {
-      this.exec(['kind', 'delete', 'cluster', '--name', this.ctx.kindCluster]);
-    }
   }
 }

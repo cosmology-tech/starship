@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { StarshipClient } from '@starship-ci/client'; // Adjust the import path as necessary
+import { StarshipClient, StarshipInstaller } from '@starship-ci/client'; // Adjust the import path as necessary
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { displayUsage, displayVersion, loadConfig, usageText } from './utils';
+import { displayUsage, displayVersion, loadConfig, usageText, params } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
@@ -24,14 +24,17 @@ const prompter = new Inquirerer({
   noTty: !argv.tty
 });
 
-const questions: Question[] = [
-  'helmName',
-  'helmFile',
-  'helmRepo',
-  'helmRepoUrl',
-  'helmChart',
-  'helmVersion'
-].map(name => ({ name, type: 'text' }));
+const questions: Question[] = params.map(name => ({ name, type: 'text' }));
+
+// Filter questions based on the command
+function getQuestionsForCommand(command: string): Question[] {
+  const commonQuestions = questions.filter(q => q.name !== 'helmFile');
+  if (['start', 'deploy', 'start-ports', 'wait-for-pods'].includes(command)) {
+    return questions; // Include all questions, including helmFile
+  } else {
+    return commonQuestions; // Exclude helmFile
+  }
+}
 
 // Main function to run the application
 async function main() {
@@ -46,15 +49,30 @@ async function main() {
 
   // Load configuration and prompt for missing parameters
   const config = loadConfig(argv);
-  const args = await prompter.prompt({ ...config.context }, questions, {
+  const commandQuestions = getQuestionsForCommand(command);
+  const args = await prompter.prompt({ ...config.context }, commandQuestions, {
     usageText
   });
-  
+
   const client = new StarshipClient(args);
   client.setConfig(config.starship);
 
+  const installer = new StarshipInstaller();
+
   // Execute command based on input
   switch (command) {
+    case 'install':
+      installer.checkAndInstallDependencies().catch((err: any) => {
+          console.error('An error occurred during start:', err);
+          process.exit(1);
+      });
+      break;
+    case 'start':
+      client.start().catch((err: any) => {
+        console.error('An error occurred during start:', err);
+        process.exit(1);
+      });
+      break;
     case 'deploy':
       client.deploy();
       break;
@@ -68,7 +86,10 @@ async function main() {
       client.getPods();
       break;
     case 'wait-for-pods':
-      client.waitForPods();
+      client.waitForPods().catch((err: any) => {
+        console.error('An error occurred during wait-for-pods:', err);
+        process.exit(1);
+      });
       break;
     case 'port-pids':
       client.printForwardPids();
@@ -76,29 +97,11 @@ async function main() {
     case 'stop-ports':
       client.stopPortForward();
       break;
-    case 'teardown':
-      client.teardown();
-      break;
-    case 'upgrade':
-      client.upgrade();
+    case 'stop':
+      client.stop();
       break;
     case 'undeploy':
-      client.undeploy();
-      break;
-    case 'clean-kind':
-      client.cleanKind();
-      break;
-    case 'delete-helm':
       client.deleteHelm();
-      break;
-    case 'remove-helm':
-      client.removeHelm();
-      break;
-    case 'setup-kind':
-      client.setupKind();
-      break;
-    case 'clean':
-      client.clean();
       break;
     default:
       console.log(`Unknown command: ${command}`);

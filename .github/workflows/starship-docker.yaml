@@ -5,6 +5,19 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - "starship/registry/**"
+      - "starship/exposer/**"
+      - "starship/faucet/**"
+      - ".github/workflows/starship-docker.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "starship/registry/**"
+      - "starship/exposer/**"
+      - "starship/faucet/**"
+      - ".github/workflows/starship-docker.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-starship-docker
@@ -68,7 +81,7 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         uses: docker/build-push-action@v4
         with:
-          push: true
+          push: ${{ github.event_name == 'push' }}
           context: ${{ matrix.type }}/
           tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
           platforms: linux/amd64,linux/arm64

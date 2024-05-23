@@ -20,10 +20,6 @@ export const createClient = () => {
   const client = new StarshipClient({
     helmName: 'osmojs',
     helmFile: relative(process.cwd(), config.configPath),
-    helmRepo: 'starship',
-    helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-    helmChart: 'devnet',
-    helmVersion: 'v0.1.38'
   });
 
   const handler = {

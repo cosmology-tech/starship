@@ -21,10 +21,6 @@ export class StarshipInstaller {
             mac: 'brew install helm',
             linux: 'curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash'
         },
-        kind: {
-            mac: 'brew install kind',
-            linux: `curl -Lks https://kind.sigs.k8s.io/dl/v0.18.0/kind-linux-amd64 > ~/.local/bin/kind && chmod +x ~/.local/bin/kind`
-        }
     };
 
     async checkAndInstallBinary(binaryName: string) {
@@ -35,6 +31,13 @@ export class StarshipInstaller {
                 console.log(chalk.red(`Installation of ${binaryName} failed. Please install ${binaryName} manually.`));
                 process.exit(1);
             }
+        }
+    }
+
+    async checkAndInstallDependencies() {
+        for (const dependency of Object.keys(this.installations)) {
+            console.log(`Checking ${dependency}...`);
+            await this.checkAndInstallBinary(dependency);
         }
     }
 
@@ -49,7 +52,7 @@ export class StarshipInstaller {
     }
 
     private async runInstallation(command: string) {
-            shell.exec(command);
+        shell.exec(command);
     }
 }
 

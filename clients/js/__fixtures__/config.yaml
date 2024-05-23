@@ -1,6 +1,6 @@
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     image: pyramation/osmosis:v16.1.0
     numValidators: 1
     ports:
@@ -8,8 +8,8 @@ chains:
       rpc: 26657
       faucet: 8007
 
-  - name: cosmos-2
-    type: cosmos
+  - id: cosmos-2
+    name: cosmos
     numValidators: 1
     ports:
       rest: 1313

@@ -11,7 +11,7 @@ chains:
       exposer: 38083
       faucet: 8001
   - id: cosmoshub-4
-    name: cosmos
+    name: cosmoshub
     image: ghcr.io/cosmology-tech/starship/gaia:v10.0.1
     numValidators: 2
     metrics: true

@@ -1,11 +1,11 @@
-import { defaultStarshipContext, StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
-import { StarshipConfig } from '@starship-ci/client';
+import {defaultStarshipContext, StarshipConfig, StarshipContext} from '@starship-ci/client'; // Adjust the import path as necessary
+import { type Question } from 'inquirerer';
 import chalk from 'chalk';
-import { readFileSync } from 'fs';
+import {readFileSync} from 'fs';
 import * as yaml from 'js-yaml';
-import { dirname, resolve } from 'path';
+import {dirname, resolve} from 'path';
 
-import { readAndParsePackageJson } from './package';
+import {readAndParsePackageJson} from './package';
 import deepmerge from 'deepmerge';
 
 // Function to display the version information
@@ -31,44 +31,59 @@ export interface Config {
   starship: StarshipConfig
 }
 
-export const loadConfig = (argv: any): Config => {
-  if (argv.config) {
-    const context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
-    if (context.helmFile) {
-      const dir = dirname(argv.config);
-      const configPath = resolve(resolvePath(dir), context.helmFile);
-      context.helmFile = configPath;
-      const starship = loadYaml(configPath) as StarshipConfig
+export const params: string[] = [
+  'helmName',
+  'helmFile',
+  'helmRepo',
+  'helmRepoUrl',
+  'helmChart',
+  'helmVersion',
+]
 
-      return {
-        context,
-        starship
-      }
+export const loadConfig = (argv: any): Config => {
+  console.log("argv: ", argv);
+  console.log("argv.config: ", argv.config);
+  let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
+  let starship: StarshipConfig = {} as StarshipConfig;
+
+  if (argv.config) {
+    context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
+  }
+
+  console.log("context", context);
+
+  // Override context with command-line arguments dynamically based on StarshipContext keys
+  params.forEach(key => {
+    if (argv[key] !== undefined) {
+      console.log("key: ", key, " argv[key]: ", argv[key]);
+      // @ts-ignore
+      context[key] = argv[key];
     }
+  });
+
+  if (context.helmFile) {
+    const dir = dirname(argv.config || process.cwd());
+    context.helmFile = resolve(resolvePath(dir), context.helmFile);
+    starship = loadYaml(context.helmFile) as StarshipConfig
   }
-  return {
-    // @ts-ignore
-    context: {},
-    // @ts-ignore
-    starship: {}
-  }
+
+  console.log("starship: ", starship);
+
+  return {context, starship};
 }
 
 export const usageText =`
 Usage: starship <command> [options]
 
 Commands:
+  start              Start the Starship services.
+  stop               Remove all components related to the deployment.
   deploy             Deploy starship using specified options or configuration file.
   setup              Setup initial configuration and dependencies.
   start-ports        Start port forwarding for the deployed services.
   stop-ports         Stop port forwarding.
-  teardown           Remove all components related to the deployment.
-  upgrade            Upgrade the deployed application to a new version.
-  undeploy           Remove starship deployment using specified options or configuration file.
-  delete-helm        Delete a specific Helm release.
-  remove-helm        Remove Helm chart from local configuration.
-  clean-kind         Clean up Kubernetes kind cluster resources.
-  setup-kind         Setup a Kubernetes kind cluster for development.
+  delete             Delete a specific Helm release.
+  get-pods           Get the list of pods for the Helm release.
   clean              Perform a clean operation to tidy up resources.
   version, -v        Display the version of the Starship Client.
 
@@ -77,20 +92,15 @@ Configuration File:
                         Command-line options will override settings from this file if both are provided.
 
 Command-line Options:
-  --helmFile <path>     Specify the path to the Helm file.
-  --helmName <name>     Specify the Helm release name.
-  --helmRepo <repo>     Specify the Helm repository.
-  --helmRepoUrl <url>   Specify the Helm repository URL.
-  --helmChart <chart>   Specify the Helm chart.
-  --helmVersion <ver>   Specify the version of the Helm chart.
-  --kindCluster <name>  Specify the name of the Kubernetes kind cluster.
+  --helmFile <path>     Specify the path to the Helm file, the actual config file. Required.
+  --helmName <name>     Specify the Helm release name, default: starship.
+  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.0.
 
 Examples:
   $ starship setup
   $ starship deploy --helmFile ./config/helm.yaml --helmName my-release
   $ starship start-ports --config ./config/settings.json
-  $ starship undeploy --config ./config/settings.json
-  $ starship teardown
+  $ starship stop --config ./config/settings.json
 
 Additional Help:
   $ starship help          Display this help information.
