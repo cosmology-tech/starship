@@ -289,7 +289,13 @@ func (s *TestSuite) TestRegistry_ListIBC() {
 	s.MakeRegistryRequest(req, respIBC)
 
 	// assert results to expected values
-	s.Require().GreaterOrEqual(len(respIBC.Data), len(s.config.Relayers)*2, "number of ibc information should be double the number of relayers")
+	expectedConnections := 0
+	for _, relayer := range s.config.Relayers {
+		if relayer.Type != "neutron-query-relayer" {
+			expectedConnections += 2
+		}
+	}
+	s.Require().GreaterOrEqual(len(respIBC.Data), expectedConnections, "number of ibc information should be double the number of relayers")
 }
 
 func (s *TestSuite) TestRegistry_GetChainKeys() {

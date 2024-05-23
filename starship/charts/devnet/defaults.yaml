@@ -816,6 +816,9 @@ defaultScripts:
   buildChain:
     name: build-chain.sh
     file: scripts/default/build-chain.sh
+  ibcConnection:
+    name: ibc-connection.sh
+    file: scripts/default/ibc-connection.sh
 
 defaultFaucet:
   cosmjs:

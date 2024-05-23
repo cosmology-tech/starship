@@ -50,4 +50,6 @@ metadata:
 data:
   transfer-tokens.sh: |-
     {{- $.Files.Get "scripts/default/transfer-tokens.sh" | nindent 4 }}
+  ibc-connection.sh: |-
+    {{- $.Files.Get "scripts/default/ibc-connection.sh" | nindent 4 }}
 ---

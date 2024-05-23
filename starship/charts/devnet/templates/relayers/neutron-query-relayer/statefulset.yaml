@@ -73,6 +73,12 @@ spec:
                 $DENOM \
                 http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
                 "{{ $fullchain.faucet.enabled }}" || true
+
+              echo "Wait for connection id to be created"
+              bash -e /scripts/ibc-connection.sh \
+                http://registry.$NAMESPACE.svc.cluster.local:8080 \
+                {{ index $relayer.chains 0 }} \
+                {{ index $relayer.chains 1 }}
           {{- end }}
           {{- end }}
           volumeMounts:
