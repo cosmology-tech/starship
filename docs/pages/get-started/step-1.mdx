@@ -14,13 +14,12 @@ In this step, we will setup the dependencies for our project. We will use
 ## 1.1) Installation
 Run the following commands to get the dependencies installed.
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/cosmology-tech/starship/main/scripts/dev-setup.sh)
+npm install -g @starship-ci/cli
 ```
 
-This will fetch all the dependencies and install them in the `~/.local/bin` directory.
-Please add it to your `PATH` variable with
+Run following command to install all the dependencies
 ```bash
-export PATH=$PATH:~/.local/bin
+starship install
 ```
 
 ## 1.2) Manual Installation
@@ -29,6 +28,4 @@ the required dependencies
 
 * `docker`: https://docs.docker.com/get-docker/
 * `kubectl`: https://kubernetes.io/docs/tasks/tools/
-* `kind`: https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 * `helm`: https://helm.sh/docs/intro/install/
-* `yq`: https://github.com/mikefarah/yq/#install

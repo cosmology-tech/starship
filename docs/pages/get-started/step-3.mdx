@@ -9,9 +9,7 @@ We use helm as the package manager for starship.
 
 Run
 ```bash
-helm repo add starship https://cosmology-tech.github.io/starship/
-helm repo update
-helm search repo starship/devnet --version 0.2.0
+starship setup
 ```
 
 ## 3.2) Define the desired infrastructure
@@ -29,7 +27,7 @@ Create a directory to play around in
 ```bash
 mkdir getting-started
 cd getting-started
-touch starship.yaml
+touch config.yaml
 ```
 
 Add following content to `starship.yaml` with the following content
@@ -56,11 +54,6 @@ relayers:
       - osmosis-1
       - gaia-1
 
-explorer:
-  enabled: true
-  ports:
-    rest: 8080
-
 registry:
   enabled: true
   ports:
@@ -76,14 +69,14 @@ For the tutorial we will keep it simple.
 ## 3.3) Spin up the infrastructure
 Spin up the infrastructure with
 ```bash
-helm install -f starship.yaml tutorial starship/devnet --version 0.2.0
-
-# Where
-# -f starship.yaml: use the starship.yaml file as the configuration
-# tutorial: name of the helm release
-# starship/devnet: helm chart to use
-# --version 0.1.45: version of the helm chart to use
+starship start --helmFile config.yaml
 ```
+
+This command will:
+* Create the necessary kubernetes resources
+* Deploy the chains and relayers and registry
+* Wait for pods to be in `Running` state
+* Runs port forwarding for the chains and registry to local ports
 
 This will take some time to spin up the infrastructure, you can check the status in another terminal with
 ```bash
@@ -92,5 +85,12 @@ kubectl get pods
 watch kubectl get pods
 ```
 
-You would need to wait for the pods to be in `Running` state.
-This can take up to 2-5 minutes, depending on the underlying machine.
+## 3.4) Check the status of the infrastructure
+```bash
+starship get-pods
+```
+
+Check chain registry status
+```bash
+curl http://localhost:8081/chains | jq
+```
