@@ -1,6 +1,6 @@
 {
   "name": "starshipjs",
-  "version": "2.0.1",
+  "version": "2.0.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "JS utilities for Starship",
   "main": "index.js",
