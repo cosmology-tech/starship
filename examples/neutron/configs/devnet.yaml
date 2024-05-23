@@ -1,6 +1,6 @@
 chains:
-  - name: neutron-1
-    type: neutron
+  - id: neutron-1
+    name: neutron
     numValidators: 1
     faucet:
       enabled: false
@@ -8,8 +8,8 @@ chains:
       rest: 1313
       rpc: 26653
       exposer: 38083
-  - name: cosmoshub-4
-    type: cosmos
+  - id: cosmoshub-4
+    name: cosmoshub
     numValidators: 4
     ports:
       rest: 1317

@@ -1,6 +1,6 @@
 chains:
-  - name: simapp
-    type: simapp
+  - id: simapp
+    name: simapp
     image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
     numValidators: 20
     ports:

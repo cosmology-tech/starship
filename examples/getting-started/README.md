@@ -34,6 +34,8 @@ make setup-deps
 Additionally, you would also need `docker` to be running on your machine as well.
 
 ## Spin up a cluster (if you don't have one already)
+Recommend to use Docker Desktop for Mac/Windows or Minikube for Linux.
+
 Optional step to setup a cluster with kind, if you already have a cluster running, you can skip this step.
 ```bash
 make setup-kind
