@@ -29,7 +29,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.2.1-rc0'
+  helmVersion: 'v0.2.1'
 };
 
 export interface PodPorts {

@@ -5,10 +5,10 @@ exports[`StarshipClient setup 1`] = `
 Call: setup()
 helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version v0.2.1-rc0
+helm search repo starship/devnet --version v0.2.1
 Call: deploy()
 Log: Installing the helm chart. This is going to take a while.....
-helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.1-rc0
+helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.1
 Log: Run "starship get-pods" to check the status of the cluster
 Call: startPortForward()
 Log: Attempting to stop any existing port-forwards...
@@ -42,8 +42,8 @@ helm delete osmojs"
 exports[`StarshipClient setup 2`] = `
 "helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version v0.2.1-rc0
-helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.1-rc0
+helm search repo starship/devnet --version v0.2.1
+helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.1
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
 kubectl port-forward pods/osmosis-genesis-0 26657:26657 > /dev/null 2>&1 &
