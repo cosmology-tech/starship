@@ -168,7 +168,7 @@ const client = new StarshipClient({
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.1.38'
+  helmVersion: 'v0.2.1'
 });
 ```
 
