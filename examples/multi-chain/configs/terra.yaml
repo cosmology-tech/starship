@@ -1,6 +1,6 @@
 chains:
-  - name: terra-1
-    type: custom
+  - id: terra-1
+    name: custom
     numValidators: 2
     image: ghcr.io/cfkelly18/starship-terra:latest
     home: /root/.terra

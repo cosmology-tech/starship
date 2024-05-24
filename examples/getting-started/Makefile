@@ -4,7 +4,7 @@ TINY_FILE = configs/tiny-starship.yaml
 
 HELM_REPO = starship
 HELM_CHART = devnet
-HELM_VERSION = v0.1.46
+HELM_VERSION = v0.2.1
 
 ###############################################################################
 ###                              All commands                               ###

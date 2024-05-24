@@ -1,20 +1,20 @@
 # Example values.yaml file will create 2 chains with 4 validators,
 # a ts-relayer between them and the explorer
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     numValidators: 1
     ports:
       rest: 1313
       rpc: 26653
-  - name: juno-1
-    type: juno
+  - id: juno-1
+    name: juno
     numValidators: 1
     ports:
       rest: 1315
       rpc: 26655
-  - name: cosmoshub-1
-    type: cosmos
+  - id: cosmoshub-1
+    name: cosmoshub
     numValidators: 1
     ports:
       rest: 1317

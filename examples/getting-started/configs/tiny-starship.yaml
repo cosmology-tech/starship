@@ -1,6 +1,6 @@
 chains:
-  - name: osmosis-1
-    type: osmosis
+  - id: osmosis-1
+    name: osmosis
     numValidators: 1
     ports:
       rest: 1313
@@ -8,8 +8,8 @@ chains:
     resources:
       cpu: "0.3"
       memory: "300M"
-  - name: gaia-1
-    type: cosmos
+  - id: gaia-1
+    name: cosmoshub
     numValidators: 1
     ports:
       rest: 1317
