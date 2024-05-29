@@ -144,6 +144,10 @@ chains: []
   #     buildChain:
   #       file: local/scripts/build-chain.sh
   #       data: |- # data is a multiline string injected from --set-file in helm
+  #   # set custom environment variables for the `validator` container
+  #   env:
+  #     - name: DEBUG
+  #       value: true
 
 # TODO: ability to check the srcConnection and destConnection to use
 relayers: []
