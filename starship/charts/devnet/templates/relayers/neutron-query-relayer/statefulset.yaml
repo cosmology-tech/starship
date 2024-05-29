@@ -1,0 +1,175 @@
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "neutron-query-relayer" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $relayer := include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
+{{ $relayerIndex := include "devnet.relayerindex" (dict "name" $relayer.name "context" $) }}
+{{ $initParams := dict "chains" $relayer.chains "port" $.Values.exposer.ports.rest "context" $ }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $relayer.fullname }}
+spec:
+  serviceName: {{ $relayer.fullname }}
+  replicas: {{ $relayer.replicas }}
+  podManagementPolicy: "Parallel"
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: relayer
+      app.kubernetes.io/type: {{ $relayer.type }}
+      app.kubernetes.io/name: {{ $relayer.fullname }}
+  template:
+    metadata:
+      annotations:
+        quality: release
+        role: api-gateway
+        sla: high
+        tier: gateway
+      labels:
+        app.kubernetes.io/instance: relayer
+        app.kubernetes.io/type: {{ $relayer.type }}
+        app.kubernetes.io/name: {{ $relayer.fullname }}
+        app.kubernetes.io/rawname: {{ $relayer.name }}
+        app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    spec:
+      {{- include "imagePullSecrets" $relayer | indent 6 }}
+      initContainers:
+        {{/* Waits for all upstream chains before starting relayer, vai init containers */}}
+        {{- include "devnet.init.wait" $initParams | indent 8 }}
+        - name: init-relayer
+          {{- range $i, $chain := $relayer.chains }}
+          {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
+          {{- if eq $fullchain.name "neutron" }}
+          image: {{ $fullchain.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            - name: KEYS_CONFIG
+              value: /keys/keys.json
+            - name: RELAYER_DIR
+              value: "{{ $fullchain.home }}"
+            - name: RELAYER_INDEX
+              value: "{{ $relayerIndex }}"
+            - name: NAMESPACE
+              valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+          command:
+            - bash
+            - "-c"
+            - |
+              set -ux
+
+              echo "Adding key.... relayer"
+              jq -r ".relayers[$RELAYER_INDEX].mnemonic" $KEYS_CONFIG | neutrond keys add relayer --recover --keyring-backend="test"
+
+              DENOM="{{ $fullchain.denom }}"
+              RLY_ADDR=$(neutrond keys show relayer -a --keyring-backend='test')
+              echo "Transfer tokens to address $RLY_ADDR"
+
+              echo "Transfer tokens to address $RLY_ADDR"
+              bash -e /scripts/transfer-tokens.sh \
+                $RLY_ADDR \
+                $DENOM \
+                http://{{ $fullchain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8000/credit \
+                "{{ $fullchain.faucet.enabled }}" || true
+
+              echo "Wait for connection id to be created"
+              bash -e /scripts/ibc-connection.sh \
+                http://registry.$NAMESPACE.svc.cluster.local:8080 \
+                {{ index $relayer.chains 0 }} \
+                {{ index $relayer.chains 1 }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+            - mountPath: /keys
+              name: keys
+            - mountPath: /scripts
+              name: scripts
+      containers:
+        - name: relayer
+          image: {{ $relayer.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            - name: RELAYER_DIR
+              value: /root/.hermes
+            {{- range $key, $value := $relayer.config }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+            - name: RELAYER_NEUTRON_CHAIN_SIGN_KEY_NAME
+              value: relayer
+            - name: RELAYER_NEUTRON_CHAIN_RPC_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-rpc-addr
+            - name: RELAYER_NEUTRON_CHAIN_REST_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-rest-addr
+            - name: RELAYER_NEUTRON_CHAIN_HOME_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-neutron-chain-home-dir
+            - name: RELAYER_TARGET_CHAIN_RPC_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-target-chain-rpc-addr
+            - name: RELAYER_REGISTRY_ADDRESSES
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-registry-addresses
+            - name: RELAYER_LISTEN_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ $relayer.fullname }}"
+                  key: relayer-listen-addr
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - bash
+            - "-c"
+            - |
+              RLY_INDEX=${HOSTNAME##*-}
+              echo "Relayer Index: $RLY_INDEX"
+
+              echo "Query connection id from registry service"
+              CONNECTION_ID=$(curl -s -X GET curl http://registry.$NAMESPACE.svc.cluster.local:8080/ibc/{{ index $relayer.chains 0 }}/{{ index $relayer.chains 1 }} | jq -r ".chain_1.connection_id")
+              echo "Connection ID: $CONNECTION_ID"
+
+              RELAYER_NEUTRON_CHAIN_CONNECTION_ID=$CONNECTION_ID neutron_query_relayer start
+          resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /root
+              name: relayer
+            - mountPath: /configs
+              name: relayer-config
+      volumes:
+        - name: relayer
+          emptyDir: { }
+        - name: relayer-config
+          configMap:
+            name: "{{ $relayer.fullname }}"
+        - name: keys
+          configMap:
+            name: keys
+        - name: scripts
+          configMap:
+            name: setup-scripts
+---
+{{- end }}
+{{- end }}

@@ -459,6 +459,22 @@
                   "file",
                   "data"
                 ]
+              },
+              "ibcConnection": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "data"
+                ]
               }
             },
             "additionalProperties": false
@@ -531,7 +547,8 @@
             "enum": [
               "go-relayer",
               "hermes",
-              "ts-relayer"
+              "ts-relayer",
+              "neutron-query-relayer"
             ]
           },
           "image": {

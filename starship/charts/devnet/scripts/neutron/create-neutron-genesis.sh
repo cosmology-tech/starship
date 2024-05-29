@@ -10,6 +10,10 @@ KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 
 BRANCH="${BRANCH:=v2.0.1}"
 
+FAUCET_ENABLED="${FAUCET_ENABLED:=true}"
+NUM_VALIDATORS="${NUM_VALIDATORS:=1}"
+NUM_RELAYERS="${NUM_RELAYERS:=0}"
+
 GENESIS_PATH="$CHAIN_DIR/config/genesis.json"
 BASE_DIR=./data
 
@@ -33,15 +37,23 @@ echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
 jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".genesis[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $BINARY add-genesis-account $($BINARY keys show -a $(jq -r .genesis[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
-# Add relayer key to the keyring and self delegate initial coins
-echo "Adding key...." $(jq -r ".relayers[0].name" $KEYS_CONFIG)
-jq -r ".relayers[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".relayers[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
-$BINARY add-genesis-account $($BINARY keys show -a $(jq -r .relayers[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
-
 # Add faucet key to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".faucet[0].name" $KEYS_CONFIG)
 jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $BINARY keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $BINARY add-genesis-account $($BINARY keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
+if [[ $FAUCET_ENABLED == "false" && $NUM_RELAYERS -gt "-1" ]];
+then
+  ## Add relayers keys and delegate tokens
+  for i in $(seq 0 $NUM_RELAYERS);
+  do
+    # Add relayer key and delegate tokens
+    RELAYER_KEY_NAME="$(jq -r ".relayers[$i].name" $KEYS_CONFIG)"
+    echo "Adding relayer key.... $RELAYER_KEY_NAME"
+    jq -r ".relayers[$i].mnemonic" $KEYS_CONFIG | $BINARY keys add $RELAYER_KEY_NAME --recover --keyring-backend="test"
+    $BINARY add-genesis-account $($BINARY keys show -a $RELAYER_KEY_NAME --keyring-backend="test") $COINS --keyring-backend="test"
+  done
+fi
 
 # Add test addresses, admin address
 echo "Adding key.... demowallet1"

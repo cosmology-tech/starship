@@ -1,0 +1,27 @@
+{{- $keys := .Files.Get "configs/keys.json" | fromJson }}
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "neutron-query-relayer" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $relayer = include "devnet.fullrelayer" (dict "name" $relayer.name "file" $defaultFile "context" $) | fromJson }}
+{{ $tag := include "image.tag" $relayer.image }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $relayer.fullname }}"
+data:
+  {{- range $i, $chain := $relayer.chains }}
+  {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
+  {{- if eq $fullchain.name "neutron" }}
+  relayer-neutron-chain-rpc-addr: "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
+  relayer-neutron-chain-rest-addr: "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:1317"
+  relayer-neutron-chain-home-dir: "{{ $fullchain.home }}"
+  {{- else }}
+  relayer-target-chain-rpc-addr: "http://{{ $fullchain.hostname }}-genesis.{{ $.Release.Namespace }}.svc.cluster.local:26657"
+  {{- end }}
+  {{- end }}
+  relayer-registry-addresses: ""
+  relayer-listen-addr: "127.0.0.1:9999"
+---
+{{- end }}
+{{- end }}

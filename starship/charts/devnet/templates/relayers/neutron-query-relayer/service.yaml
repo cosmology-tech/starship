@@ -1,0 +1,24 @@
+{{- range $relayer := .Values.relayers }}
+{{- if eq $relayer.type "neutron-query-relayer" }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+{{ $defaultRelayer := get $defaultFile.defaultRelayers $relayer.type | default dict }}
+{{ $relayer = mergeOverwrite $defaultRelayer $relayer }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $relayer.type }}-{{ $relayer.name }}
+  labels:
+    app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+spec:
+  clusterIP: None
+  ports:
+    - name: rest
+      port: 3000
+      protocol: TCP
+      targetPort: 9999
+  selector:
+    app.kubernetes.io/name: {{ $relayer.type }}-{{ $relayer.name }}
+---
+{{- end }}
+{{- end }}
