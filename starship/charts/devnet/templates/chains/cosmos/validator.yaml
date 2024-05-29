@@ -185,6 +185,10 @@ spec:
               value: /configs/keys.json
             - name: SLOGFILE
               value: "slog.slog"
+            {{- range $env := $chain.env }}
+            - name: {{ $env.name }}
+              value: {{ $env.value | quote }}
+            {{- end }}
           command:
             - bash
             - "-c"

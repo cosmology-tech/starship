@@ -183,6 +183,10 @@ spec:
               value: "{{ $chain.faucet.enabled }}"
             - name: SLOGFILE
               value: "slog.slog"
+            {{- range $env := $chain.env }}
+            - name: {{ $env.name }}
+              value: {{ $env.value | quote }}
+            {{- end }}
           command:
             - bash
             - "-c"
