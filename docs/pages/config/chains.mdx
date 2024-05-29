@@ -299,6 +299,20 @@ Noteable other versions are: `v0.34.x` as well as `v0.38.x`.
 If `cometmock` is enabled, during port-forwarding, we forward the `ports.rpc` to the cometmock endpoint.
 For in-cluster communication, make sure to connect to the cometmock service instead of validator service for rpc connections.
 
+## `env` (optional)
+The `env` directive allows you to set custom environment variables for the validator and genesis containers. This can be useful for enabling features like debug logging or configuring specific settings.
+
+The `env` directive expects an array of objects, each containing a `name` and `value` field. Here's an example of how to use the `env` directive:
+```yaml
+chains:
+- id: agoriclocal
+  name: agoric
+  numValidators: 1
+  env:
+    - name: DEBUG
+      value: SwingSet:vat,SwingSet:ls
+```
+
 ### Learn more
 To more about CometMock, have a look at the [blog](https://informal.systems/blog/cometmock) that explains its working
 
