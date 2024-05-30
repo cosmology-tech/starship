@@ -6,6 +6,7 @@ chains:
       enabled: false
     ics:
       enabled: true
+      provider: cosmoshub-4
     ports:
       rest: 1313
       rpc: 26653

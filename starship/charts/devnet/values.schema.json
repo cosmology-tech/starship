@@ -518,11 +518,15 @@
               },
               "image": {
                 "type": "string"
+              },
+              "provider": {
+                "type": "string"
               }
             },
             "additionalProperties": false,
             "required": [
-              "enabled"
+              "enabled",
+              "provider"
             ]
           }
         },

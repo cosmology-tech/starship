@@ -172,6 +172,44 @@ spec:
             - mountPath: /faucet
               name: faucet
         {{- end }}
+        {{- if $chain.ics.enabled }}
+        {{ $waitParams := dict "chain" (list $chain.ics.provider) "port" $.Values.exposer.ports.rest "context" $ }}
+        {{- include "devnet.init.wait" $waitParams | indent 8 }}
+        - name: init-ics
+          image: {{ get $chain.ics "image" | default $chain.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
+
+              echo "Fetching priv keys from provider exposer"
+              curl -s http://{{ $chain.ics.provider }}-genesis.$NAMESPACE.svc.cluster.local:8081/priv_keys | jq > $CHAIN_DIR/config/provider_priv_validator_key.json
+              cat $CHAIN_DIR/config/provider_priv_validator_key.json
+
+              echo "Replace provider priv validator key with provider keys"
+              mv $CHAIN_DIR/config/priv_validator_key.json $CHAIN_DIR/config/previous_priv_validator_key.json
+              mv $CHAIN_DIR/config/provider_priv_validator_key.json $CHAIN_DIR/config/priv_validator_key.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        {{- end }}
       containers:
         - name: validator
           image: {{ $chain.image }}
