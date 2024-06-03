@@ -297,3 +297,8 @@ chains:
       - v0.13.1
       - v0.13.0
       - v0.12.0
+  - name: dymension
+    base: ghcr.io/strangelove-ventures/heighliner/dymension
+    tags:
+      - v3.1.0
+      - v3.0.0
