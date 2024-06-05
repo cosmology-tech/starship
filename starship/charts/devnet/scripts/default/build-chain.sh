@@ -8,7 +8,12 @@ echo "Fetching code from tag"
 mkdir -p /tmp/chains/$CHAIN_NAME
 cd /tmp/chains/$CHAIN_NAME
 
-if [[ $CODE_TAG = v* ]]; then
+if [[ $CODE_TAG =~ ^[0-9a-fA-F]{40}$ ]]; then
+  echo "Trying to fetch code from commit hash"
+  curl -LO $CODE_REPO/archive/$CODE_TAG.zip
+  unzip $CODE_TAG.zip
+  code_dir=${CODE_REPO##*/}-${CODE_TAG:0:7}
+elif [[ $CODE_TAG = v* ]]; then
   echo "Trying to fetch code from tag"
   curl -LO $CODE_REPO/archive/refs/tags/$CODE_TAG.zip
   unzip $CODE_TAG.zip
