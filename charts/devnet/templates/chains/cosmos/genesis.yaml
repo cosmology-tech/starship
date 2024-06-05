@@ -279,7 +279,22 @@ spec:
               do
                   var="FAUCET_CREDIT_AMOUNT_$(printf '%s\n' ${coin//[[:digit:]]/} | tr '[:lower:]' '[:upper:]')"
                   amt="${coin//[!0-9]/}"
-                  export $var=$((amt/10000))
+
+                  if [ ${#amt} -gt 18 ]; then
+                    creditAmt=$(echo $amt | sed -e "s/000000000000000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000000000000$//")
+                  elif [ ${#amt} -gt 12 ]; then
+                    creditAmt=$(echo $amt | sed -e "s/000000000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000000$//")
+                  elif [ ${#amt} -gt 6 ]; then
+                    creditAmt=$(echo $amt | sed -e "s/000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000$//")
+                  else
+                    creditAmt=$amt
+                    feesAmt=$amt
+                  fi
+
+                  export $var=$(creditAmt)
               done
 
               export FAUCET_PATH_PATTERN="${HD_PATH:0:$((${#HD_PATH}-1))}a"
@@ -332,11 +347,22 @@ spec:
               do
                   amt="${coin//[!0-9]/}"
                   denom="${coin//[0-9]/}"
-                  creditAmt=$(echo ${coin//[!0-9]/} | sed -e "s/0000$//")
+
+                  # Calculate the order of magnitude
+                  if [ ${#amt} -gt 15 ]; then
+                    creditAmt=$(echo $amt | sed -e "s/000000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/000000000000$//")
+                  else
+                    creditAmt=$(echo $amt | sed -e "s/000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000$//")
+                  fi
+
+                  creditAmt=$(($amt / $divisor))
+
                   if [[ $CREDIT_COINS == "" ]]
                   then
                     CREDIT_COINS="$creditAmt$denom"
-                    feesAmt=$(echo ${coin//[!0-9]/} | sed -e "s/0000000$//")
+                    feesAmt=$(($amt / ($divisor * 1000)))  # Adjust fees accordingly
                     FEES="$feesAmt$denom"
                   else
                     CREDIT_COINS="${CREDIT_COINS},$creditAmt$denom"
