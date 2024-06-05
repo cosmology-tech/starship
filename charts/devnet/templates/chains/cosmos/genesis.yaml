@@ -280,18 +280,12 @@ spec:
                   var="FAUCET_CREDIT_AMOUNT_$(printf '%s\n' ${coin//[[:digit:]]/} | tr '[:lower:]' '[:upper:]')"
                   amt="${coin//[!0-9]/}"
 
-                  if [ ${#amt} -gt 18 ]; then
-                    creditAmt=$(echo $amt | sed -e "s/000000000000000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/0000000000000000000$//")
-                  elif [ ${#amt} -gt 12 ]; then
-                    creditAmt=$(echo $amt | sed -e "s/000000000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/0000000000000$//")
-                  elif [ ${#amt} -gt 6 ]; then
-                    creditAmt=$(echo $amt | sed -e "s/000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/0000000$//")
+                  if [ ${#amt} -gt 15 ]; then
+                    creditAmt=$(echo $amt | sed -e "s/000000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/000000000000$//")
                   else
-                    creditAmt=$amt
-                    feesAmt=$amt
+                    creditAmt=$(echo $amt | sed -e "s/000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000$//")
                   fi
 
                   export $var=$(creditAmt)
