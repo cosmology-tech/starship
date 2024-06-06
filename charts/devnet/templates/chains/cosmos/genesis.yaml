@@ -280,15 +280,15 @@ spec:
                   var="FAUCET_CREDIT_AMOUNT_$(printf '%s\n' ${coin//[[:digit:]]/} | tr '[:lower:]' '[:upper:]')"
                   amt="${coin//[!0-9]/}"
 
-                  if [ ${#amt} -gt 15 ]; then
+                  if [ ${#amt} -gt 18 ]; then
                     creditAmt=$(echo $amt | sed -e "s/000000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/000000000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000000$//")
                   else
-                    creditAmt=$(echo $amt | sed -e "s/000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/0000000000$//")
+                    creditAmt=$(echo $amt | sed -e "s/0000$//")
+                    feesAmt=$(echo $amt | sed -e "s/000000$//")
                   fi
 
-                  export $var=$(creditAmt)
+                  export $var="$creditAmt"
               done
 
               export FAUCET_PATH_PATTERN="${HD_PATH:0:$((${#HD_PATH}-1))}a"
@@ -343,20 +343,17 @@ spec:
                   denom="${coin//[0-9]/}"
 
                   # Calculate the order of magnitude
-                  if [ ${#amt} -gt 15 ]; then
+                  if [ ${#amt} -gt 18 ]; then
                     creditAmt=$(echo $amt | sed -e "s/000000000$//")
                     feesAmt=$(echo $amt | sed -e "s/000000000000$//")
                   else
-                    creditAmt=$(echo $amt | sed -e "s/000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/0000000000$//")
+                    creditAmt=$(echo $amt | sed -e "s/0000$//")
+                    feesAmt=$(echo $amt | sed -e "s/000000$//")
                   fi
-
-                  creditAmt=$(($amt / $divisor))
 
                   if [[ $CREDIT_COINS == "" ]]
                   then
                     CREDIT_COINS="$creditAmt$denom"
-                    feesAmt=$(($amt / ($divisor * 1000)))  # Adjust fees accordingly
                     FEES="$feesAmt$denom"
                   else
                     CREDIT_COINS="${CREDIT_COINS},$creditAmt$denom"
