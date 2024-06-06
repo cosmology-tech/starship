@@ -99,6 +99,9 @@ chains:
     base: public.ecr.aws/l9h3g6c6/injective-core
     file: Dockerfile.injective
     tags:
+      - v1.12.1
+      - v1.12.0
+      - v1.11.9
       - v1.11.6
       - v1.11.5
   - name: ics
