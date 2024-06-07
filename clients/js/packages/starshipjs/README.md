@@ -45,12 +45,51 @@ npm install starshipjs
 
 NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](https://github.com/cosmology-tech/starship/tree/main/clients/js/packages/cli)) in a package.json to get starship working.
 
-Once you add `@starship-ci/cli` to your project, you can spint up `starship` as easy as 1-2-3:
+### Install the packages
+
+Install `@starship-ci/cli` and `starshipjs`
+
+```sh
+yarn add @starship-ci/cli starshipjs
+```
+
+Add your configuration files, similar to these:
+
+- [Example `config.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/config.yaml)
+
+- [Example `starship.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/starship.yaml)
+
+- [Example `jest.config.js`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/jest.starship.config.js)
+
+
+### Update your `package.json` `scripts`:
+
+```json
+"starship": "starship --config ./starship/configs/starship.yaml",
+"starship:test": "jest --config ./jest.starship.config.js --verbose --bail",
+"starship:watch": "jest --watch --config ./jest.starship.config.js"
+```
+
+See an [example here](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/package.json).
+
+### Start starship 🚀
+
+```sh
+yarn starship start
+```
+
+### Manual setup & start
 
 ```sh
 yarn starship setup
 yarn starship deploy
 yarn starship start-ports
+```
+
+### Stopping starship
+
+```sh
+yarn starship stop
 ```
 
 ## Using the Client 

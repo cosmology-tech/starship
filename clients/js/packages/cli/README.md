@@ -45,10 +45,58 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 
 - We recommend studying the [osmojs starship integration](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship) and replicating it.
 - Add your configs, similar to how it's done [here](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship/configs)
-- Add your workflows for github [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
+- Add your workflows for GitHub Actions [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
 - Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/c456184666eda55cd6fee5cd09ba6c05c898d55c/packages/osmojs/package.json#L31-L34)
 — Note the jest configurations in the [osmojs package](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs)
 
+## Using with CI/CD
+
+### Install the packages
+
+Install `@starship-ci/cli` and `starshipjs`
+
+```sh
+yarn add @starship-ci/cli starshipjs
+```
+
+Add your configuration files, similar to these:
+
+- [Example `config.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/config.yaml)
+
+- [Example `starship.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/starship.yaml)
+
+- [Example `jest.config.js`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/jest.starship.config.js)
+
+
+### Update your `package.json` `scripts`:
+
+```json
+"starship": "starship --config ./starship/configs/starship.yaml",
+"starship:test": "jest --config ./jest.starship.config.js --verbose --bail",
+"starship:watch": "jest --watch --config ./jest.starship.config.js"
+```
+
+See an [example here](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/package.json).
+
+### Start starship 🚀
+
+```sh
+yarn starship start
+```
+
+### Manual setup & start
+
+```sh
+yarn starship setup
+yarn starship deploy
+yarn starship start-ports
+```
+
+### Stopping starship
+
+```sh
+yarn starship stop
+```
 
 This will allow you to run `yarn starship` to `start`, `setup`, `deploy`, `stop` and other `starship` commands:
 
