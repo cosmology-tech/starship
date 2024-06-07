@@ -119,9 +119,6 @@ yarn starship:watch
 #### Teardown 🛠️
 
 ```sh
-# stop port forwarding (done by clean() too)
-# yarn starship stop-ports
-
 # stop ports and delete deployment
 yarn starship stop
 ```
