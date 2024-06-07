@@ -30,6 +30,7 @@ export interface ChainConfig {
     }
   };
   chains: Array<{
+    id: string;
     name: string;
     ports: {
       rpc: number;

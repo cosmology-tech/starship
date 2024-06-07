@@ -376,12 +376,12 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${chain.name}-genesis-0`,
+        `pods/${chain.id}-genesis-0`,
         `${localPort}:${externalPort}`,
         ">", "/dev/null",
         "2>&1", "&"
       ]);
-      this.log(chalk.yellow(`Forwarded ${chain.name}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(chalk.yellow(`Forwarded ${chain.id}: local ${localPort} -> target (host) ${externalPort}`));
     }
   }
 
