@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@chain-registry/client": "1.18.1",
+    "@cosmjs/crypto": "^0.32.3",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.6.9"
   },
