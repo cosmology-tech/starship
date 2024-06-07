@@ -56,7 +56,7 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 Install `@starship-ci/cli` and `starshipjs`
 
 ```sh
-yarn add @starship-ci/cli starshipjs
+yarn add --dev starshipjs @starship-ci/cli
 ```
 
 Add your configuration files, similar to these:
