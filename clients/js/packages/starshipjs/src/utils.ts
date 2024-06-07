@@ -1,5 +1,3 @@
-import { Bip39, Random } from "@cosmjs/crypto";
+import { generateMnemonic } from 'bip39'
 
-export function generateMnemonic(): string {
-  return Bip39.encode(Random.getBytes(16)).toString();
-}
+export { generateMnemonic };
