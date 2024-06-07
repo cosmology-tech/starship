@@ -50,7 +50,7 @@ NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](htt
 Install `@starship-ci/cli` and `starshipjs`
 
 ```sh
-yarn add @starship-ci/cli starshipjs
+yarn add --dev starshipjs @starship-ci/cli
 ```
 
 Add your configuration files, similar to these:
