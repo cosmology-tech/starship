@@ -12,8 +12,8 @@ export const useRegistry = async (configFile: string): Promise<ChainRegistryFetc
   const urls: string[] = [];
   config.chains?.forEach((chain) => {
     urls.push(
-      `${registryUrl}/chains/${chain.name}`,
-      `${registryUrl}/chains/${chain.name}/assets`
+      `${registryUrl}/chains/${chain.id}`,
+      `${registryUrl}/chains/${chain.id}/assets`
     );
   });
   config.relayers?.forEach((relayer) => {
@@ -43,12 +43,12 @@ export const useChain = (chainName: string) => {
 
   const getRpcEndpoint = () => {
     return `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.rpc
+      config.chains.find((chain) => chain.id === chainID)!.ports.rpc
     }`;
   };
   const getRestEndpoint = () => {
     return `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.rest
+      config.chains.find((chain) => chain.id === chainID)!.ports.rest
     }`;
   };
 
@@ -65,7 +65,7 @@ export const useChain = (chainName: string) => {
 
   const creditFromFaucet = async (address: string, denom: string | null = null) => {
     const faucetEndpoint = `http://localhost:${
-      config.chains.find((chain) => chain.name === chainID)!.ports.faucet
+      config.chains.find((chain) => chain.id === chainID)!.ports.faucet
     }/credit`;
     if (!denom) {
       denom = getCoin().base;
