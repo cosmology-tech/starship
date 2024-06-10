@@ -38,6 +38,7 @@ export const params: string[] = [
   'helmRepoUrl',
   'helmChart',
   'helmVersion',
+  'helmNamespace',
 ]
 
 export const loadConfig = (argv: any): Config => {
