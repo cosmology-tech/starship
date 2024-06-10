@@ -41,12 +41,12 @@ export const useChain = (chainName: string) => {
   const chainInfo = registry!.getChainInfo(chainName);
   const chainID = chainInfo.chain.chain_id;
 
-  const getRpcEndpoint = () => {
+  const getRpcEndpoint = async () => {
     return `http://localhost:${
       config.chains.find((chain) => chain.id === chainID)!.ports.rpc
     }`;
   };
-  const getRestEndpoint = () => {
+  const getRestEndpoint = async () => {
     return `http://localhost:${
       config.chains.find((chain) => chain.id === chainID)!.ports.rest
     }`;
@@ -59,7 +59,7 @@ export const useChain = (chainName: string) => {
     return data['genesis'][0]['mnemonic'];
   };
 
-  const getCoin = () => {
+  const getCoin = async () => {
     return chainInfo.fetcher.getChainAssetList(chainName).assets[0];
   };
 
@@ -68,7 +68,7 @@ export const useChain = (chainName: string) => {
       config.chains.find((chain) => chain.id === chainID)!.ports.faucet
     }/credit`;
     if (!denom) {
-      denom = getCoin().base;
+      denom = (await getCoin()).base;
     }
     await fetch(faucetEndpoint, {
       method: 'POST',
