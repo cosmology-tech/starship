@@ -19,6 +19,7 @@ export interface StarshipContext {
   helmRepoUrl?: string;
   helmChart?: string;
   helmVersion?: string;
+  helmNamespace?: string;
   kindCluster?: string;
   verbose?: boolean;
   curdir?: string;
@@ -29,7 +30,8 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.2.1'
+  helmVersion: 'v0.2.1',
+  helmNamespace: '',
 };
 
 export interface PodPorts {
@@ -197,6 +199,14 @@ export class StarshipClient implements StarshipClientI {
     this.podPorts = deepmerge(defaultPorts, ports);
   }
 
+  public getArgs(): string[] {
+    const args = [];
+    if (this.ctx.helmNamespace) {
+      args.push('--namespace', this.ctx.helmNamespace);
+    }
+    return args;
+  }
+
   // TODO do we need this here?
   public test(): void {
     this.exec([
@@ -250,6 +260,7 @@ export class StarshipClient implements StarshipClientI {
   public deploy(): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.log("Installing the helm chart. This is going to take a while.....");
+
     this.exec([
       'helm',
       'install',
@@ -258,7 +269,8 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.helmName,
       `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
       '--version',
-      this.ctx.helmVersion
+      this.ctx.helmVersion,
+      ...this.getArgs(),
     ]);
     this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
@@ -273,7 +285,8 @@ export class StarshipClient implements StarshipClientI {
       '-f',
       this.ctx.helmFile,
       this.ctx.helmName,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`
+      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      ...this.getArgs(),,
     ]);
   }
 
@@ -284,7 +297,8 @@ export class StarshipClient implements StarshipClientI {
   public getPods(): void {
     this.exec([
       "kubectl",
-      "get pods"
+      "get pods",
+      ...this.getArgs(),
       // "--all-namespaces"
     ]);
   }
@@ -296,7 +310,8 @@ export class StarshipClient implements StarshipClientI {
       'pods',
       '--no-headers',
       '-o',
-      'custom-columns=:metadata.name'
+      'custom-columns=:metadata.name',
+      ...this.getArgs(),
     ], false, true)
   
     // Split the output by new lines and filter out any empty lines
@@ -323,7 +338,8 @@ export class StarshipClient implements StarshipClientI {
       podName,
       '--no-headers',
       '-o',
-      'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason'
+      'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason',
+      ...this.getArgs(),
     ], false, true).trim();
   
     const [status, reason] = result.split(' ');
@@ -378,6 +394,7 @@ export class StarshipClient implements StarshipClientI {
         "kubectl", "port-forward",
         `pods/${chain.id}-genesis-0`,
         `${localPort}:${externalPort}`,
+        ...this.getArgs(),
         ">", "/dev/null",
         "2>&1", "&"
       ]);
@@ -391,6 +408,7 @@ export class StarshipClient implements StarshipClientI {
         "kubectl", "port-forward",
         `service/${serviceName}`,
         `${localPort}:${externalPort}`,
+        ...this.getArgs(),
         ">", "/dev/null",
         "2>&1", "&"
       ]);
