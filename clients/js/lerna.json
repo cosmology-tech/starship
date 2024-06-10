@@ -10,7 +10,6 @@
   ],
   "version": "independent",
   "registry": "https://registry.npmjs.org",
-  "useWorkspaces": true,
   "command": {
     "create": {
       "homepage": "https://github.com/cosmology-tech/starship",
