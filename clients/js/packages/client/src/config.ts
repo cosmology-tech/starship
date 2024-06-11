@@ -122,6 +122,8 @@ export interface Images {
 }
 
 export interface StarshipConfig {
+  name: string,
+  version: string,
   chains: Chain[];
   relayers?: Relayer[];
   explorer?: Explorer;

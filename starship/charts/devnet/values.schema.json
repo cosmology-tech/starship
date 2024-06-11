@@ -3,6 +3,12 @@
   "title": "Generated schema for Root",
   "type": "object",
   "properties": {
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
     "resources": {
       "type": "object",
       "properties": {
