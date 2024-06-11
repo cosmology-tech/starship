@@ -94,11 +94,13 @@ Configuration File:
 
 Command-line Options:
   --helmName <name>     Specify the Helm release name, default: starship.
+                        Will overide config file settings for name.
   --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.3.
+                        Will overide config file settings for version.
 
 Examples:
   $ starship start --config ./config/two-chain.yaml
-  $ starship stop --config ./config/settings.json
+  $ starship stop --config ./config/two-chain.yaml
   
 If you want to run the deployment step by step
     $ starship deploy --config ./config/two-chain.yaml
