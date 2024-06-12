@@ -65,10 +65,9 @@ runs:
 
     - name: Setup Test infra
       id: starship-action
-      uses: cosmology-tech/starship-action@0.3.0
+      uses: cosmology-tech/starship-action@0.4.0
       with:
         values: ${{ env.CONFIG_FILE }}
-        port-forward: true
         version: 0.0.0
         chart: ./starship/charts/devnet
         kubeconfig: ${{ steps.kubeconfig.outputs.content }}
