@@ -429,6 +429,7 @@ export class StarshipClient implements StarshipClientI {
 
       if (chain.ports?.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
       if (chain.ports?.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
+      if (chain.ports?.grpc) this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
       if (chain.ports?.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
       if (chain.ports?.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
     });
