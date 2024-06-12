@@ -29,8 +29,8 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmName: 'starship',
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-  helmChart: 'devnet',
-  helmVersion: 'v0.2.1',
+  helmChart: 'starship/devnet',
+  helmVersion: 'v0.2.3',
   helmNamespace: '',
 };
 
@@ -244,7 +244,7 @@ export class StarshipClient implements StarshipClientI {
       'helm',
       'search',
       'repo',
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      this.ctx.helmChart,
       '--version',
       this.ctx.helmVersion
     ]);
@@ -267,7 +267,7 @@ export class StarshipClient implements StarshipClientI {
       '-f',
       this.ctx.helmFile,
       this.ctx.helmName,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      this.ctx.helmChart,
       '--version',
       this.ctx.helmVersion,
       ...this.getArgs(),
@@ -285,7 +285,7 @@ export class StarshipClient implements StarshipClientI {
       '-f',
       this.ctx.helmFile,
       this.ctx.helmName,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      this.ctx.helmChart,
       ...this.getArgs(),,
     ]);
   }
