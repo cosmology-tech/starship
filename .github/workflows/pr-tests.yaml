@@ -58,7 +58,7 @@ jobs:
           values: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          cli-version: 2.5.1
+          cli-version: 2.5.6
 
       - name: Run tests
         run: |
