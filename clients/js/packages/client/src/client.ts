@@ -208,6 +208,14 @@ export class StarshipClient implements StarshipClientI {
     return args;
   }
 
+  public getDeployArgs(): string[] {
+    const args = this.getArgs();
+    if (this.ctx.helmNamespace) {
+      args.push('--create-namespace');
+    }
+    return args;
+  }
+
   // TODO do we need this here?
   public test(): void {
     this.exec([
@@ -271,7 +279,7 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.helmChart,
       '--version',
       this.ctx.helmVersion,
-      ...this.getArgs(),
+      ...this.getDeployArgs(),
       ...options,
     ];
 
@@ -322,7 +330,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:metadata.name',
       ...this.getArgs(),
-    ], false, false)
+    ], false, true)
   
     // Split the output by new lines and filter out any empty lines
     const podNames = result.split('\n').filter(name => name.trim() !== '');
@@ -350,7 +358,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
-    ], true, false).trim();
+    ], false, true).trim();
   
     const [status, reason] = result.split(' ');
     this.podStatuses.set(podName, status);
