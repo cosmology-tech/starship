@@ -322,7 +322,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:metadata.name',
       ...this.getArgs(),
-    ], false, true)
+    ], false, false)
   
     // Split the output by new lines and filter out any empty lines
     const podNames = result.split('\n').filter(name => name.trim() !== '');
@@ -350,7 +350,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
-    ], false, true).trim();
+    ], true, false).trim();
   
     const [status, reason] = result.split(' ');
     this.podStatuses.set(podName, status);
@@ -370,9 +370,11 @@ export class StarshipClient implements StarshipClientI {
 
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
+    this.log(`pod names: ${podNames}`);
 
     // Check the status of each pod retrieved
     podNames.forEach(podName => {
+      console.log(`Checking status of pod: ${podName}`);
       this.checkPodStatus(podName);
     });
 
