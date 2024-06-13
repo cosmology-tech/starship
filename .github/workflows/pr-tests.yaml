@@ -56,11 +56,11 @@ jobs:
         with:
           node-version: "20.x"
           cache: "yarn"
-          cache-dependency-path: "clients/js/yarn.lock"
+          cache-dependency-path: "../clients/js/yarn.lock"
 
       - name: Install starshipjs
         run: |
-          cd clients/js
+          cd ../clients/js
           yarn build
         shell: bash
 
