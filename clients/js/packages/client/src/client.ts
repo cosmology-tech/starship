@@ -257,7 +257,7 @@ export class StarshipClient implements StarshipClientI {
     }
   }
 
-  public deploy(): void {
+  public deploy(options: string[] = []): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.log("Installing the helm chart. This is going to take a while.....");
 
@@ -271,6 +271,7 @@ export class StarshipClient implements StarshipClientI {
       '--version',
       this.ctx.helmVersion,
       ...this.getArgs(),
+      ...options,
     ];
 
     // Determine the data directory of the config file
@@ -295,17 +296,7 @@ export class StarshipClient implements StarshipClientI {
 
   public debug(): void {
     this.ensureFileExists(this.ctx.helmFile);
-    this.exec([
-      'helm',
-      'install',
-      '--dry-run',
-      '--debug',
-      '-f',
-      this.ctx.helmFile,
-      this.ctx.helmName,
-      this.ctx.helmChart,
-      ...this.getArgs(),,
-    ]);
+    this.deploy(['--dry-run', '--debug']);
   }
 
   public deleteHelm(): void {
