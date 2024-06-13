@@ -377,11 +377,9 @@ export class StarshipClient implements StarshipClientI {
 
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
-    this.log(`pod names: ${podNames}`);
 
     // Check the status of each pod retrieved
     podNames.forEach(podName => {
-      console.log(`Checking status of pod: ${podName}`);
       this.checkPodStatus(podName);
     });
 
