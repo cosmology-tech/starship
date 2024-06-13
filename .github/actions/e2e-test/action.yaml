@@ -65,12 +65,13 @@ runs:
 
     - name: Setup Test infra
       id: starship-action
-      uses: cosmology-tech/starship-action@0.4.1
+      uses: cosmology-tech/starship-action@0.4.3
       with:
         values: ${{ env.CONFIG_FILE }}
         version: 0.0.0
         chart: ./starship/charts/devnet
         kubeconfig: ${{ steps.kubeconfig.outputs.content }}
+        cli-version: 2.5.0
 
     - name: Run tests
       run: |
