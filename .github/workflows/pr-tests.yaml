@@ -55,7 +55,7 @@ jobs:
         id: starship-action
         uses: cosmology-tech/starship-action@8b97b7adfdd0388f3f7242424bb8dadbed234dd1
         with:
-          values: ${{ env.CONFIG_FILE }}
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
           cli-version: 2.5.6
