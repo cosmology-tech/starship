@@ -3,7 +3,7 @@ import fs from 'fs';
 import yaml from 'js-yaml';
 import fetch from 'node-fetch';
 
-import { ChainConfig, ConfigContext } from './config';
+import { type ChainConfig, ConfigContext } from './config';
 
 export const useRegistry = async (configFile: string): Promise<ChainRegistryFetcher> => {
   const config = yaml.load(fs.readFileSync(configFile, 'utf8')) as ChainConfig;

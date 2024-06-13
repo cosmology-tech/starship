@@ -92,7 +92,7 @@ yarn starship start-ports
 yarn starship stop
 ```
 
-## Using the Client 
+## Using the Client
 
 StarshipJS is a utility library that provides helpers to leverage [Starship](https://github.com/cosmology-tech/starship)'s internal chain registry, emulating the style of code used in projects like [cosmos-kit](https://github.com/cosmology-tech/cosmos-kit).
 
@@ -107,16 +107,41 @@ import { join } from 'path';
 // Path to your YAML configuration file
 const configFile = join(__dirname, 'your-config.yaml');
 
-// Set the configuration file in StarshipJS
-ConfigContext.setConfigFile(configFile);
+// using init for init the config and a default connected registry fetcher.
+await ConfigContext.init(configFile);
+
 ```
 
 ### Registry
 
+Using init for init the config and pass an optional customized registry fetcher.
+
 ```js
 import { useRegistry, ConfigContext } from 'starshipjs';
+import { join } from 'path';
 
-ConfigContext.setRegistry(await useRegistry(Config.configFile));
+// Path to your YAML configuration file
+const configFile = join(__dirname, 'your-config.yaml');
+
+const fetcher = new ChainRegistryFetcher({
+  // your own options
+});
+
+await ConfigContext.init(configFile, fetcher);
+```
+
+Or use `useRegistry` to get a registry fetcher.
+
+```js
+import { useRegistry, ConfigContext } from 'starshipjs';
+import { join } from 'path';
+
+// Path to your YAML configuration file
+const configFile = join(__dirname, 'your-config.yaml');
+
+const fetcher = await useRegistry(configFile);
+
+await ConfigContext.init(configFile, fetcher);
 ```
 
 ## Chain Info
