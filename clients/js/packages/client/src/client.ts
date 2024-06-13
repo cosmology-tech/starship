@@ -55,7 +55,7 @@ const defaultPorts: PodPorts = {
   chains: {
     defaultPorts: {
       rpc: 26657,
-      grpc:30657,
+      grpc: 9090,
       rest: 1317,
       exposer: 8081,
       faucet: 8000
