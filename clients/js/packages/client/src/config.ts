@@ -57,8 +57,26 @@ export interface Chain {
   };
   faucet?: FaucetConfig;
   ports?: Ports;
+  scripts?: {
+    createGenesis?: Script;
+    updateGenesis?: Script;
+    updateConfig?: Script;
+    createValidator?: Script;
+    transferTokens?: Script;
+    buildChain?: Script;
+    ibcConnection?: Script;
+  };
+  ics?: {
+    enabled: boolean;
+    image?: string;
+  };
   resources?: Resources;
 }
+
+export interface Script {
+  file?: string;
+  data?: string;
+};
 
 export interface Relayer {
   name: string;
