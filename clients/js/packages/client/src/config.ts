@@ -6,6 +6,7 @@ export interface Ports {
   faucet?: number;
   prometheus?: number;
   grafana?: number;
+  cometmock?: number;
 }
 
 export interface Resources {
@@ -67,6 +68,10 @@ export interface Chain {
     ibcConnection?: Script;
   };
   ics?: {
+    enabled: boolean;
+    image?: string;
+  };
+  cometmock?: {
     enabled: boolean;
     image?: string;
   };

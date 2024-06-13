@@ -57,7 +57,8 @@ const defaultPorts: PodPorts = {
       grpc: 9090,
       rest: 1317,
       exposer: 8081,
-      faucet: 8000
+      faucet: 8000,
+      cometmock: 22331,
     }
   }
 };
@@ -418,6 +419,20 @@ export class StarshipClient implements StarshipClientI {
     }
   }
 
+  private forwardPortCometmock(chain: Chain, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
+      this.exec([
+        "kubectl", "port-forward",
+        `pods/${chain.id}-cometmock-0`,
+        `${localPort}:${externalPort}`,
+        ...this.getArgs(),
+        ">", "/dev/null",
+        "2>&1", "&"
+      ]);
+      this.log(chalk.yellow(`Forwarded ${chain.id}: local ${localPort} -> target (host) ${externalPort}`));
+    }
+  }
+
   private forwardPortService(serviceName: string, localPort: number, externalPort: number): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
@@ -443,7 +458,11 @@ export class StarshipClient implements StarshipClientI {
     this.config.chains.forEach(chain => {
       const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
-      if (chain.ports?.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
+      if (chain.cometmock?.enabled) {
+        if (chain.ports?.rpc) this.forwardPortCometmock(chain, chain.ports.rpc, chainPodPorts.cometmock);
+      } else {
+        if (chain.ports?.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
+      }
       if (chain.ports?.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
       if (chain.ports?.grpc) this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
       if (chain.ports?.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
