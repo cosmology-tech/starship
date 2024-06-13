@@ -370,7 +370,7 @@ export class StarshipClient implements StarshipClientI {
 
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
-  
+
     // Check the status of each pod retrieved
     podNames.forEach(podName => {
       this.checkPodStatus(podName);
@@ -385,7 +385,7 @@ export class StarshipClient implements StarshipClientI {
   }
 
   private displayPodStatuses(): void {
-    this.exec(['clear'], false); // Clear the terminal for each update
+    console.clear();
     this.podStatuses.forEach((status, podName) => {
       let statusColor = chalk.red(status);
       if (status === 'Running') {
@@ -393,7 +393,6 @@ export class StarshipClient implements StarshipClientI {
       } else if (status === 'Terminating') {
         statusColor = chalk.gray(status);
       }
-  
       console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
     });
   }
