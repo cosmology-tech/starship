@@ -18,7 +18,9 @@
     "clean": "lerna run clean",
     "build": "lerna run build --stream",
     "symlink": "symlink-workspace --logLevel error",
-    "postinstall": "yarn symlink"
+    "postinstall": "yarn symlink",
+    "publish": "yarn build; yarn lerna publish --no-private",
+    "publish:minor": "yarn build; yarn lerna publish minor --no-private"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",

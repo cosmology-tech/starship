@@ -203,6 +203,13 @@ export class StarshipClient implements StarshipClientI {
     const args = [];
     if (this.ctx.helmNamespace) {
       args.push('--namespace', this.ctx.helmNamespace);
+    }
+    return args;
+  }
+
+  public getDeployArgs(): string[] {
+    const args = this.getArgs();
+    if (this.ctx.helmNamespace) {
       args.push('--create-namespace');
     }
     return args;
@@ -271,7 +278,7 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.helmChart,
       '--version',
       this.ctx.helmVersion,
-      ...this.getArgs(),
+      ...this.getDeployArgs(),
       ...options,
     ];
 
@@ -370,7 +377,7 @@ export class StarshipClient implements StarshipClientI {
 
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
-  
+
     // Check the status of each pod retrieved
     podNames.forEach(podName => {
       this.checkPodStatus(podName);
@@ -385,7 +392,7 @@ export class StarshipClient implements StarshipClientI {
   }
 
   private displayPodStatuses(): void {
-    this.exec(['clear'], false); // Clear the terminal for each update
+    console.clear();
     this.podStatuses.forEach((status, podName) => {
       let statusColor = chalk.red(status);
       if (status === 'Running') {
@@ -393,7 +400,6 @@ export class StarshipClient implements StarshipClientI {
       } else if (status === 'Terminating') {
         statusColor = chalk.gray(status);
       }
-  
       console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
     });
   }
