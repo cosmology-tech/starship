@@ -53,7 +53,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@8b97b7adfdd0388f3f7242424bb8dadbed234dd1
+        uses: cosmology-tech/starship-action@0.5.0
         with:
           config: ${{ env.CONFIG_FILE }}
           version: 0.0.0

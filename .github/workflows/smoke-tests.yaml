@@ -29,13 +29,12 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.4.3
+        uses: cosmology-tech/starship-action@0.5.0
         with:
-          values: ${{ env.CONFIG_FILE }}
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
-          cli-version: 2.5.0
+          cli-version: 2.5.6
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -66,13 +65,12 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.4.3
+        uses: cosmology-tech/starship-action@0.5.0
         with:
-          values: ${{ env.CONFIG_FILE }}
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
-          cli-version: 2.5.0
+          cli-version: 2.5.6
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -103,13 +101,12 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.4.3
+        uses: cosmology-tech/starship-action@0.5.0
         with:
-          values: ${{ env.CONFIG_FILE }}
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
-          cli-version: 2.5.0
+          cli-version: 2.5.6
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
