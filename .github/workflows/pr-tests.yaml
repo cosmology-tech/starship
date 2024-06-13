@@ -51,20 +51,6 @@ jobs:
           go-version: "1.21"
           check-latest: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.x"
-          cache: "yarn"
-          cache-dependency-path: "clients/js/yarn.lock"
-
-      - name: Install starshipjs
-        run: |
-          cd ../clients/js
-          yarn
-          yarn build
-        shell: bash
-
       - name: Setup Test infra
         id: starship-action
         uses: cosmology-tech/starship-action@731b85fc09ed469ae98bbe5ffcec66dd3166f352
