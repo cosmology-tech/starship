@@ -7,7 +7,7 @@ import * as os from 'os';
 import { dirname, resolve } from 'path';
 import * as shell from 'shelljs';
 
-import { Chain, StarshipConfig } from './config';
+import { Chain, Script, StarshipConfig } from './config';
 import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
@@ -20,7 +20,6 @@ export interface StarshipContext {
   helmChart?: string;
   helmVersion?: string;
   helmNamespace?: string;
-  kindCluster?: string;
   verbose?: boolean;
   curdir?: string;
 };
@@ -204,6 +203,7 @@ export class StarshipClient implements StarshipClientI {
     const args = [];
     if (this.ctx.helmNamespace) {
       args.push('--namespace', this.ctx.helmNamespace);
+      args.push('--create-namespace');
     }
     return args;
   }
@@ -258,11 +258,11 @@ export class StarshipClient implements StarshipClientI {
     }
   }
 
-  public deploy(): void {
+  public deploy(options: string[] = []): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.log("Installing the helm chart. This is going to take a while.....");
 
-    this.exec([
+    const cmd: string[] = [
       'helm',
       'install',
       '-f',
@@ -272,23 +272,32 @@ export class StarshipClient implements StarshipClientI {
       '--version',
       this.ctx.helmVersion,
       ...this.getArgs(),
-    ]);
+      ...options,
+    ];
+
+    // Determine the data directory of the config file
+    const datadir = resolve(dirname(this.ctx.helmFile!));
+
+    // Iterate through each chain to add script arguments
+    this.config.chains.forEach((chain, chainIndex) => {
+      if (chain.scripts) {
+        Object.keys(chain.scripts).forEach(scriptKey => {
+          const script = chain.scripts?.[scriptKey as keyof Chain['scripts']];
+          if (script && script.file) {
+            const scriptPath = resolve(datadir, script.file);
+            cmd.push(`--set-file chains[${chainIndex}].scripts.${scriptKey}.data=${scriptPath}`);
+          }
+        });
+      }
+    });
+
+    this.exec(cmd);
     this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
 
   public debug(): void {
     this.ensureFileExists(this.ctx.helmFile);
-    this.exec([
-      'helm',
-      'install',
-      '--dry-run',
-      '--debug',
-      '-f',
-      this.ctx.helmFile,
-      this.ctx.helmName,
-      this.ctx.helmChart,
-      ...this.getArgs(),,
-    ]);
+    this.deploy(['--dry-run', '--debug']);
   }
 
   public deleteHelm(): void {
