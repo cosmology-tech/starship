@@ -203,7 +203,6 @@ export class StarshipClient implements StarshipClientI {
     const args = [];
     if (this.ctx.helmNamespace) {
       args.push('--namespace', this.ctx.helmNamespace);
-      args.push('--create-namespace');
     }
     return args;
   }
