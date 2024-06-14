@@ -7,7 +7,7 @@ import * as os from 'os';
 import { dirname, resolve } from 'path';
 import * as shell from 'shelljs';
 
-import { Chain, Script, StarshipConfig } from './config';
+import {Chain, Relayer, Script, StarshipConfig} from './config';
 import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
@@ -39,7 +39,11 @@ export interface PodPorts {
   chains?: {
     defaultPorts?: Ports,
     [chainName: string]: Ports
-  }
+  },
+  relayers?: {
+    defaultPorts?: Ports,
+    [relayerName: string]: Ports
+  },
 }
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
@@ -59,6 +63,12 @@ const defaultPorts: PodPorts = {
       exposer: 8081,
       faucet: 8000,
       cometmock: 22331,
+    }
+  },
+  relayers: {
+    defaultPorts: {
+      rest: 3000,
+      exposer: 8081,
     }
   }
 };
@@ -433,6 +443,20 @@ export class StarshipClient implements StarshipClientI {
     }
   }
 
+  private forwardPortRelayer(relayer: Relayer, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
+      this.exec([
+        "kubectl", "port-forward",
+        `pods/${relayer.name}-0`,
+        `${localPort}:${externalPort}`,
+        ...this.getArgs(),
+        ">", "/dev/null",
+        "2>&1", "&"
+      ]);
+      this.log(chalk.yellow(`Forwarded ${relayer.name}: local ${localPort} -> target (host) ${externalPort}`));
+    }
+  }
+
   private forwardPortService(serviceName: string, localPort: number, externalPort: number): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
@@ -455,7 +479,7 @@ export class StarshipClient implements StarshipClientI {
     this.stopPortForward();
     this.log("Starting new port forwarding...");
 
-    this.config.chains.forEach(chain => {
+    this.config.chains?.forEach(chain => {
       const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
       if (chain.cometmock?.enabled) {
@@ -467,6 +491,12 @@ export class StarshipClient implements StarshipClientI {
       if (chain.ports?.grpc) this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
       if (chain.ports?.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
       if (chain.ports?.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
+    });
+
+    this.config.relayers?.forEach(relayer => {
+        const relayerPodPorts = this.podPorts.relayers[relayer.name] || this.podPorts.relayers.defaultPorts;
+        if (relayer.ports?.rest) this.forwardPortRelayer(relayer, relayer.ports.rest, relayerPodPorts.rest);
+        if (relayer.ports?.exposer) this.forwardPortRelayer(relayer, relayer.ports.exposer, relayerPodPorts.exposer);
     });
 
     if (this.config.registry?.enabled) {
