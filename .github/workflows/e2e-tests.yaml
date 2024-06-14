@@ -41,6 +41,7 @@ jobs:
           - "agoric.yaml"
           - "multi-relayer.yaml"
           - "neutron-relayer.yaml"
+          - "one-cosmoshub-starship-faucet.yaml"
       fail-fast: true
       max-parallel: 1
 
