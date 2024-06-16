@@ -366,21 +366,25 @@ export class StarshipClient implements StarshipClientI {
       podName,
       '--no-headers',
       '-o',
-      'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason',
+      'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
     ], false, true).trim();
-  
-    const [status, reason] = result.split(' ');
-    this.podStatuses.set(podName, status);
 
-    if (status === 'Running') {
+    const [status, readyList, reason] = result.split(/\s+/);
+    const ready = readyList.split(',').every(state => state === 'true');
+
+    if (status === 'Running' && ready) {
       // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
+      this.podStatuses.set(podName, status);
+    } else if (status === 'Running' && !ready) {
+      this.podStatuses.set(podName, 'RunningButNotReady');
     } else if (status === 'Terminating') {
       // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
     } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
       // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
       this.exit(1);
     } else {
+      this.podStatuses.set(podName, 'Pending');
       // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
       // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
     }
@@ -399,6 +403,10 @@ export class StarshipClient implements StarshipClientI {
     if (!this.areAllPodsRunning()) {
       await new Promise(resolve => setTimeout(resolve, 2500));
       await this.waitForPods(); // Recursive call
+    } else {
+      this.log(chalk.green('All pods are running!'));
+      // once the pods are in running state, wait for 10 more seconds
+      await new Promise(resolve => setTimeout(resolve, 10000));
     }
   }
 
