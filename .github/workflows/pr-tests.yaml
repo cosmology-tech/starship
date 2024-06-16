@@ -21,10 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    defaults:
-      run:
-        working-directory: starship
-
     strategy:
       matrix:
         config-file:
@@ -56,6 +52,7 @@ jobs:
         with:
           node-version: "20.x"
           cache: "yarn"
+          cache-dependency-path: clients/js
 
       - name: Install starshipjs
         run: |
@@ -79,6 +76,7 @@ jobs:
           cd tests/e2e/ && go test -v ./...
         env:
           TEST_CONFIG_FILE: ${{ env.CONFIG_FILE }}
+        working-directory: starship
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -89,3 +87,4 @@ jobs:
         env:
           DEVNET_NAME: ${{ steps.starship-action.outputs.name }}
           DEVNET_NAMESPACE: ${{ steps.starship-action.outputs.namespace }}
+        working-directory: starship
