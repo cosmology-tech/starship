@@ -64,17 +64,13 @@ jobs:
           node-version: "20.x"
           cache: "yarn"
 
-      - name: Install starshipjs
+      - name: Install starship CLI
         run: |
           cd clients/js
           yarn
           yarn build
           chmod +x node_modules/.bin/starship
           echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
-
-      - name: Verify starship CLI
-        run: |
-          starship --version
 
       - name: Setup Test infra
         id: starship-action

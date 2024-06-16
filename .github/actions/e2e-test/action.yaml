@@ -63,19 +63,31 @@ runs:
         go-version: "1.21"
         check-latest: true
 
+    - name: Create yarn.lock and package.json file if not exists
+      run: |
+        if [ ! -f $GITHUB_WORKSPACE/yarn.lock ]; then
+          echo 'Creating temporary yarn.lock file'
+          echo '' > $GITHUB_WORKSPACE/yarn.lock
+        fi
+        if [ ! -f $GITHUB_WORKSPACE/package.json ]; then
+          echo 'Creating temporary package.json file'
+          echo '{}' > $GITHUB_WORKSPACE/package.json
+        fi
+      shell: bash
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "20.x"
         cache: "yarn"
-        cache-dependency-path: clients/js
 
-    - name: Install starshipjs
+    - name: Install starship CLI
       run: |
         cd clients/js
+        yarn
         yarn build
-        ln -s $GITHUB_WORKSPACE/clients/js/dist/index.js /usr/local/bin/starship
-        starship --version
+        chmod +x node_modules/.bin/starship
+        echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
       shell: bash
 
     - name: Setup Test infra
@@ -86,7 +98,7 @@ runs:
         version: 0.0.0
         chart: ./starship/charts/devnet
         kubeconfig: ${{ steps.kubeconfig.outputs.content }}
-        cli-version: 2.6.1
+        cli-version: 0.0.0
 
     - name: Run tests
       run: |
