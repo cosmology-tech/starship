@@ -69,8 +69,8 @@ jobs:
           cd clients/js
           yarn
           yarn build
-          export PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH
-          echo "::add-path::$GITHUB_WORKSPACE/clients/js/node_modules/.bin"
+          chmod +x node_modules/.bin/starship
+          echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
           starship --version
 
       - name: Setup Test infra
