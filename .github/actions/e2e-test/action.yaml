@@ -73,11 +73,13 @@ runs:
       run: |
         cd clients/js
         yarn build
+        ln -s $GITHUB_WORKSPACE/clients/js/dist/index.js /usr/local/bin/starship
+        starship --version
       shell: bash
 
     - name: Setup Test infra
       id: starship-action
-      uses: cosmology-tech/starship-action@0.5.0
+      uses: cosmology-tech/starship-action@0.5.1
       with:
         config: ${{ env.CONFIG_FILE }}
         version: 0.0.0

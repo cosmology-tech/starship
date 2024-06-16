@@ -51,14 +51,28 @@ jobs:
           go-version: "1.21"
           check-latest: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+
+      - name: Install starshipjs
+        run: |
+          cd clients/js
+          yarn build
+          ln -s $GITHUB_WORKSPACE/clients/js/dist/index.js /usr/local/bin/starship
+          starship --version
+        shell: bash
+
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.5.0
+        uses: cosmology-tech/starship-action@0.5.1
         with:
           config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          cli-version: 2.6.1
+          cli-version: 0.0.0
 
       - name: Run tests
         run: |
