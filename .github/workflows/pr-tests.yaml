@@ -69,7 +69,8 @@ jobs:
           cd clients/js
           yarn
           yarn build
-          ln -s $GITHUB_WORKSPACE/clients/js/dist/index.js /usr/local/bin/starship
+          export PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH
+          echo "::add-path::$GITHUB_WORKSPACE/clients/js/node_modules/.bin"
           starship --version
 
       - name: Setup Test infra
