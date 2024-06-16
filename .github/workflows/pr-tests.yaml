@@ -67,6 +67,7 @@ jobs:
       - name: Install starshipjs
         run: |
           cd clients/js
+          yarn
           yarn build
           ln -s $GITHUB_WORKSPACE/clients/js/dist/index.js /usr/local/bin/starship
           starship --version
