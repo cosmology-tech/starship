@@ -99,7 +99,7 @@ export class StarshipClient implements StarshipClientI {
   private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
 
   // Define a constant for the restart threshold
-  private readonly RESTART_THRESHOLD = 5;
+  private readonly RESTART_THRESHOLD = 4;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
@@ -380,9 +380,9 @@ export class StarshipClient implements StarshipClientI {
       ...this.getArgs(),
     ], false, true).trim();
 
-    const [phase, readyList, restartCount, reason] = result.split(/\s+/);
+    const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
     const ready = readyList.split(',').every(state => state === 'true');
-    const restarts = parseInt(restartCount, 10);
+    const restarts = restartCountList.split(',').reduce((acc, count) => acc + parseInt(count, 10), 0);
 
     this.podStatuses.set(podName, { phase, ready, restartCount: restarts, reason });
 
@@ -426,7 +426,7 @@ export class StarshipClient implements StarshipClientI {
         statusColor = chalk.red(status.phase);
       }
 
-      console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
+      console.log(`[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`);
     });
   }
 

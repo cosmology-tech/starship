@@ -26,7 +26,8 @@
     "copy": "copyfiles -f ../../LICENSE README.md package.json dist",
     "clean": "del dist/**",
     "prepare": "npm run build",
-    "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy",
+    "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy; npm run chmod",
+    "chmod": "chmod +x dist/index.js",
     "dev": "ts-node src/index",
     "test": "jest",
     "test:watch": "jest --watch"
