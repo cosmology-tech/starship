@@ -424,7 +424,7 @@ export class StarshipClient implements StarshipClientI {
     } else {
       this.log(chalk.green('All pods are running!'));
       // once the pods are in running state, wait for 10 more seconds
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 
@@ -478,7 +478,7 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${relayer.name}-0`,
+        `pods/${relayer.type}-${relayer.name}-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
         ">", "/dev/null",
