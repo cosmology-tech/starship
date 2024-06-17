@@ -99,7 +99,7 @@ export class StarshipClient implements StarshipClientI {
   private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
 
   // Define a constant for the restart threshold
-  private readonly RESTART_THRESHOLD = 5;
+  private readonly RESTART_THRESHOLD = 4;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
@@ -380,9 +380,9 @@ export class StarshipClient implements StarshipClientI {
       ...this.getArgs(),
     ], false, true).trim();
 
-    const [phase, readyList, restartCount, reason] = result.split(/\s+/);
+    const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
     const ready = readyList.split(',').every(state => state === 'true');
-    const restarts = parseInt(restartCount, 10);
+    const restarts = restartCountList.split(',').reduce((acc, count) => acc + parseInt(count, 10), 0);
 
     this.podStatuses.set(podName, { phase, ready, restartCount: restarts, reason });
 
@@ -390,22 +390,6 @@ export class StarshipClient implements StarshipClientI {
       this.log(`${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`);
       this.exit(1);
     }
-
-    // if (status === 'Running' && ready) {
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
-    //   this.podStatuses.set(podName, status);
-    // } else if (status === 'Running' && !ready) {
-    //   this.podStatuses.set(podName, 'RunningButNotReady');
-    // } else if (status === 'Terminating') {
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
-    // } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
-    //   // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
-    //   this.exit(1);
-    // } else {
-    //   this.podStatuses.set(podName, 'Pending');
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
-    //   // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
-    // }
   }
 
   public async waitForPods(): Promise<void> {
@@ -424,7 +408,7 @@ export class StarshipClient implements StarshipClientI {
     } else {
       this.log(chalk.green('All pods are running!'));
       // once the pods are in running state, wait for 10 more seconds
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 
@@ -442,7 +426,7 @@ export class StarshipClient implements StarshipClientI {
         statusColor = chalk.red(status.phase);
       }
 
-      console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
+      console.log(`[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`);
     });
   }
 
@@ -478,7 +462,7 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${relayer.name}-0`,
+        `pods/${relayer.type}-${relayer.name}-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
         ">", "/dev/null",
