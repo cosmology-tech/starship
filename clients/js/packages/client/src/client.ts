@@ -81,6 +81,13 @@ export interface StarshipClientI {
   podPorts: PodPorts
 };
 
+export interface PodStatus {
+  phase: string;
+  ready: boolean;
+  restartCount: number;
+  reason?: string;
+}
+
 export class StarshipClient implements StarshipClientI {
   ctx: StarshipContext;
   version: string;
@@ -89,7 +96,10 @@ export class StarshipClient implements StarshipClientI {
   config: StarshipConfig;
   podPorts: PodPorts = defaultPorts;
 
-  private podStatuses = new Map<string, string>(); // To keep track of pod statuses
+  private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
+
+  // Define a constant for the restart threshold
+  private readonly RESTART_THRESHOLD = 5;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
@@ -351,7 +361,7 @@ export class StarshipClient implements StarshipClientI {
   public areAllPodsRunning(): boolean {
     let allRunning = true;
     this.podStatuses.forEach((status) => {
-      if (status !== 'Running') {
+      if (status.phase !== 'Running' || !status.ready) {
         allRunning = false;
       }
     });
@@ -366,28 +376,36 @@ export class StarshipClient implements StarshipClientI {
       podName,
       '--no-headers',
       '-o',
-      'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].state.waiting.reason',
+      'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].restartCount,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
     ], false, true).trim();
 
-    const [status, readyList, reason] = result.split(/\s+/);
+    const [phase, readyList, restartCount, reason] = result.split(/\s+/);
     const ready = readyList.split(',').every(state => state === 'true');
+    const restarts = parseInt(restartCount, 10);
 
-    if (status === 'Running' && ready) {
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
-      this.podStatuses.set(podName, status);
-    } else if (status === 'Running' && !ready) {
-      this.podStatuses.set(podName, 'RunningButNotReady');
-    } else if (status === 'Terminating') {
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
-    } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
-      // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
+    this.podStatuses.set(podName, { phase, ready, restartCount: restarts, reason });
+
+    if (restarts > this.RESTART_THRESHOLD) {
+      this.log(`${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`);
       this.exit(1);
-    } else {
-      this.podStatuses.set(podName, 'Pending');
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
-      // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
     }
+
+    // if (status === 'Running' && ready) {
+    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
+    //   this.podStatuses.set(podName, status);
+    // } else if (status === 'Running' && !ready) {
+    //   this.podStatuses.set(podName, 'RunningButNotReady');
+    // } else if (status === 'Terminating') {
+    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
+    // } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
+    //   // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
+    //   this.exit(1);
+    // } else {
+    //   this.podStatuses.set(podName, 'Pending');
+    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
+    //   // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
+    // }
   }
 
   public async waitForPods(): Promise<void> {
@@ -413,12 +431,17 @@ export class StarshipClient implements StarshipClientI {
   private displayPodStatuses(): void {
     console.clear();
     this.podStatuses.forEach((status, podName) => {
-      let statusColor = chalk.red(status);
-      if (status === 'Running') {
-        statusColor = chalk.green(status);
-      } else if (status === 'Terminating') {
-        statusColor = chalk.gray(status);
+      let statusColor;
+      if (status.phase === 'Running' && status.ready) {
+        statusColor = chalk.green(status.phase);
+      } else if (status.phase === 'Running' && !status.ready) {
+        statusColor = chalk.yellow('RunningButNotReady');
+      } else if (status.phase === 'Terminating') {
+        statusColor = chalk.gray(status.phase);
+      } else {
+        statusColor = chalk.red(status.phase);
       }
+
       console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
     });
   }
