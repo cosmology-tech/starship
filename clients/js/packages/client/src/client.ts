@@ -390,22 +390,6 @@ export class StarshipClient implements StarshipClientI {
       this.log(`${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`);
       this.exit(1);
     }
-
-    // if (status === 'Running' && ready) {
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
-    //   this.podStatuses.set(podName, status);
-    // } else if (status === 'Running' && !ready) {
-    //   this.podStatuses.set(podName, 'RunningButNotReady');
-    // } else if (status === 'Terminating') {
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
-    // } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
-    //   // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
-    //   this.exit(1);
-    // } else {
-    //   this.podStatuses.set(podName, 'Pending');
-    //   // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
-    //   // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
-    // }
   }
 
   public async waitForPods(): Promise<void> {
