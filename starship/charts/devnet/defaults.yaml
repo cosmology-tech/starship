@@ -88,7 +88,7 @@ defaultChains:
     prefix: cosmos
     denom: uatom
     prettyName: Cosmos Hub
-    coins: 100000000000000uatom,100000000000000stake
+    coins: 100000000000000uatom
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
