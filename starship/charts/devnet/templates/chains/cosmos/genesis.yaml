@@ -309,6 +309,8 @@ spec:
                 sleep 10;
               done
 
+              curl http://localhost:26657/status
+
               /app/packages/faucet/bin/cosmos-faucet-dist start "http://localhost:26657"
           volumeMounts:
             - mountPath: /configs
@@ -373,6 +375,8 @@ spec:
                 echo "Checking: http://localhost:26657/status"
                 sleep 10;
               done
+
+              curl http://localhost:26657/status
 
               /faucet/faucet --credit-coins="$CREDIT_COINS" --chain-fees="$FEES"
           volumeMounts:
