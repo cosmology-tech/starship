@@ -88,6 +88,18 @@ export interface PodStatus {
   reason?: string;
 }
 
+export const formatChainID = (input: string): string => {
+  // Replace underscores with hyphens
+  let formattedName = input.replace(/_/g, '-');
+
+  // Truncate the string to a maximum length of 63 characters
+  if (formattedName.length > 63) {
+    formattedName = formattedName.substring(0, 63);
+  }
+
+  return formattedName;
+};
+
 export class StarshipClient implements StarshipClientI {
   ctx: StarshipContext;
   version: string;
@@ -434,13 +446,13 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${chain.id}-genesis-0`,
+        `pods/${formatChainID(chain.id)}-genesis-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
         ">", "/dev/null",
         "2>&1", "&"
       ]);
-      this.log(chalk.yellow(`Forwarded ${chain.id}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
     }
   }
 
@@ -448,13 +460,13 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${chain.id}-cometmock-0`,
+        `pods/${formatChainID(chain.id)}-cometmock-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
         ">", "/dev/null",
         "2>&1", "&"
       ]);
-      this.log(chalk.yellow(`Forwarded ${chain.id}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
     }
   }
 
