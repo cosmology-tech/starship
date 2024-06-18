@@ -47,6 +47,7 @@ explorer:
 
 registry:
   enabled: true
+  image: anmol1696/registry:20240618-8d4ebe1
   ports:
     rest: 8081
     grpc: 9091

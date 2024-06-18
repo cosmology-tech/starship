@@ -21,18 +21,19 @@ import (
 type ChainClients []*ChainClient
 
 // NewChainClients returns a list of chain clients from a list of strings
-func NewChainClients(logger *zap.Logger, chainIDs, rpcAddrs, exposerAddrs []string, home string) (ChainClients, error) {
+func NewChainClients(logger *zap.Logger, config *Config, home string) (ChainClients, error) {
 	// make home if non existant
 	_ = os.MkdirAll(home, 0755)
 
+	chainIDs := strings.Split(config.ChainClientIDs, ",")
+
 	var clients []*ChainClient
 	for i := range chainIDs {
-		client, err := NewChainClient(logger, chainIDs[i], rpcAddrs[i], exposerAddrs[i], home)
+		client, err := NewChainClient(logger, config, chainIDs[i], home)
 
 		if err != nil {
 			logger.Error("unable to create client for chain",
 				zap.String("chain_id", chainIDs[i]),
-				zap.String("rpc_addr", rpcAddrs[i]),
 				zap.Error(err),
 			)
 			return nil, err
@@ -58,18 +59,26 @@ func (cc ChainClients) GetChainClient(chainID string) (*ChainClient, error) {
 type ChainClient struct {
 	logger      *zap.Logger
 	chainConfig *lens.ChainClientConfig
-	exposerAddr string
+	chainID     string
 
+	config *Config
 	client *lens.ChainClient
 
 	mu           sync.Mutex
 	chainIBCInfo ChainIBCInfos
 }
 
-func NewChainClient(logger *zap.Logger, chainID, rpcAddr, exposerAddr, home string) (*ChainClient, error) {
+func NewChainClient(logger *zap.Logger, config *Config, chainID, home string) (*ChainClient, error) {
+	chainClient := &ChainClient{
+		logger:       logger,
+		config:       config,
+		chainID:      chainID,
+		chainIBCInfo: nil,
+	}
+
 	ccc := &lens.ChainClientConfig{
-		ChainID:        chainID,
-		RPCAddr:        rpcAddr,
+		ChainID:        chainClient.ChainID(),
+		RPCAddr:        chainClient.RpcAddr(),
 		KeyringBackend: "test",
 		Debug:          true,
 		Timeout:        "20s",
@@ -80,13 +89,8 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, exposerAddr, home stri
 		return nil, err
 	}
 
-	chainClient := &ChainClient{
-		logger:       logger,
-		chainConfig:  ccc,
-		exposerAddr:  exposerAddr,
-		client:       client,
-		chainIBCInfo: nil,
-	}
+	chainClient.chainConfig = ccc
+	chainClient.client = client
 
 	// Cache initial values, the best effort
 	//_, _ = chainClient.GetCachedChainInfo()
@@ -95,7 +99,52 @@ func NewChainClient(logger *zap.Logger, chainID, rpcAddr, exposerAddr, home stri
 }
 
 func (c *ChainClient) ChainID() string {
-	return c.chainConfig.ChainID
+	return c.chainID
+}
+
+// ChainName returns the chain name for the chain id via config
+func (c *ChainClient) ChainName() string {
+	return c.GetChainNameFromChainID(c.chainID)
+}
+
+// GetChainNameFromChainID retruns the chain name for the chain id via config
+func (c *ChainClient) GetChainNameFromChainID(chainID string) string {
+	chainIDs := strings.Split(c.config.ChainClientIDs, ",")
+	chainNames := strings.Split(c.config.ChainClientNames, ",")
+
+	for i := range chainIDs {
+		if chainIDs[i] == chainID {
+			return chainNames[i]
+		}
+	}
+
+	return ""
+}
+
+func (c *ChainClient) ExposerAddr() string {
+	chainIDs := strings.Split(c.config.ChainClientIDs, ",")
+	exposerAddrs := strings.Split(c.config.ChainClientExposers, ",")
+
+	for i := range chainIDs {
+		if chainIDs[i] == c.ChainID() {
+			return exposerAddrs[i]
+		}
+	}
+
+	return ""
+}
+
+func (c *ChainClient) RpcAddr() string {
+	chainIDs := strings.Split(c.config.ChainClientIDs, ",")
+	rpcAddrs := strings.Split(c.config.ChainClientRPCs, ",")
+
+	for i := range chainIDs {
+		if chainIDs[i] == c.ChainID() {
+			return rpcAddrs[i]
+		}
+	}
+
+	return ""
 }
 
 func (c *ChainClient) GetNodeMoniker(ctx context.Context) (string, error) {
@@ -146,7 +195,7 @@ func (c *ChainClient) GetChainPeers(ctx context.Context) ([]*pb.Peer, error) {
 
 // GetChainKeys fetches keys from the chain exposer at `/keys` endpoint
 func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/keys", strings.Trim(c.exposerAddr, "/")))
+	resp, err := http.Get(fmt.Sprintf("%s/keys", strings.Trim(c.ExposerAddr(), "/")))
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +328,8 @@ func (c *ChainClient) GetChainInfo() (ChainIBCInfos, error) {
 
 		cii := &ChainIBCInfo{
 			IBCInfo: IBCInfo{
-				ChainId:      c.chainConfig.ChainID,
+				ChainId:      c.ChainID(),
+				ChainName:    c.ChainName(),
 				ChannelId:    channelInfo.ChannelId,
 				PortId:       channelInfo.PortId,
 				ConnectionId: connectionInfo.ConnectionId,
@@ -287,6 +337,7 @@ func (c *ChainClient) GetChainInfo() (ChainIBCInfos, error) {
 			},
 			Counterparty: IBCInfo{
 				ChainId:      cpChainId,
+				ChainName:    c.GetChainNameFromChainID(cpChainId),
 				ChannelId:    channelInfo.Counterparty.ChannelId,
 				PortId:       channelInfo.Counterparty.PortId,
 				ConnectionId: connectionInfo.Counterparty.ConnectionId,
