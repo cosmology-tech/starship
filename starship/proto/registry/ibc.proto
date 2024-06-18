@@ -19,7 +19,7 @@ message ChannelData {
 
   message Tags {
     string status = 1 [json_name = "status"];
-    bool perferred = 2 [json_name = "perferred"];
+    bool preferred = 2 [json_name = "preferred"];
     string dex = 3 [json_name = "dex"];
   }
 
