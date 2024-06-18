@@ -81,7 +81,7 @@ func (infos ChainIBCInfos) ToProto() []*pb.IBCData {
 			Tags: &pb.ChannelData_Tags{
 				// todo: fetch status from client status instead of hardcoding
 				Status:    "live",
-				Perferred: true,
+				Preferred: true,
 			},
 		}
 
@@ -135,7 +135,7 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 				Tags: &pb.ChannelData_Tags{
 					// todo: fetch status from client status instead of hardcoding
 					Status:    "live",
-					Perferred: true,
+					Preferred: true,
 				},
 			},
 		},
