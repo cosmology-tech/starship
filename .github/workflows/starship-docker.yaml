@@ -83,6 +83,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: ${{ github.event_name == 'push' }}
-          context: ${{ matrix.type }}/
+          context: starship/${{ matrix.type }}/
           tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
           platforms: linux/amd64,linux/arm64
