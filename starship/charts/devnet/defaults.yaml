@@ -88,7 +88,7 @@ defaultChains:
     prefix: cosmos
     denom: uatom
     prettyName: Cosmos Hub
-    coins: 100000000000000uatom,100000000000000stake
+    coins: 100000000000000uatom
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/cosmos/gaia
@@ -852,7 +852,7 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
   starship:
-    image: ghcr.io/cosmology-tech/starship/faucet:20240402-c653ca2
+    image: ghcr.io/cosmology-tech/starship/faucet:20240618-3879943
     concurrency: 5
 
 defaultCometmock:

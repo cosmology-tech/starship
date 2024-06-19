@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -50,9 +49,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 
 	chainClients, err := NewChainClients(
 		log,
-		strings.Split(config.ChainClientIDs, ","),
-		strings.Split(config.ChainClientRPCs, ","),
-		strings.Split(config.ChainClientExposers, ","),
+		config,
 		os.Getenv("HOME"),
 	)
 	if err != nil {

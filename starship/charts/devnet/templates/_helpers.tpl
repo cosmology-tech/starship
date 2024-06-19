@@ -165,6 +165,22 @@ Returns a comma seperated list of chain id
 {{- end -}}
 
 {{/*
+Returns a comma seperated list of chain name
+If chain name is custom, then use chain id instead.
+*/}}
+{{- define "devnet.chains.names" -}}
+{{- $values := list -}}
+{{- range $chain := .Values.chains -}}
+  {{- if eq $chain.name "custom" -}}
+    {{- $values = $chain.id | append $values -}}
+  {{- else -}}
+    {{- $values = $chain.name | append $values -}}
+  {{- end -}}
+{{- end -}}
+{{ join "," $values }}
+{{- end -}}
+
+{{/*
 Returns a comma seperated list of urls for the RPC address based on internal DNS
 */}}
 {{- define "devnet.chains.internal.rpc.addrs" -}}

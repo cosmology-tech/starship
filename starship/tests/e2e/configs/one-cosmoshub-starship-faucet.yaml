@@ -1,20 +1,18 @@
 chains:
-  - id: osmosis-1
-    name: osmosis
-    numValidators: 2
+  - id: cosmoshub-4
+    name: cosmoshub
+    numValidators: 1
     ports:
       rest: 1313
       rpc: 26653
       exposer: 38083
-      faucet: 8000
+      faucet: 8003
     resources:
-      cpu: "0.3"
-      memory: 600M
+      cpu: "0.5"
+      memory: 500M
     faucet:
+      type: starship
       concurrency: 2
-      resources:
-        cpu: "0.1"
-        memory: "200M"
 
 registry:
   enabled: true
@@ -27,10 +25,5 @@ registry:
 
 resources:
   wait:
-    cpu: "0.1"
-    memory: 100M
-
-exposer:
-  resources:
     cpu: "0.1"
     memory: 100M

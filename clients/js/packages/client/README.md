@@ -54,14 +54,44 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 
 - We recommend studying the [osmojs starship integration](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship) and replicating it.
 - Add your configs, similar to how it's done [here](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs/starship/configs)
-- Add your workflows for github [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
-- Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/20d749c8c5a4ec3db374221dabdf185fa18025a3/packages/osmojs/package.json#L34C5-L38C74)
+- Add your workflows for GitHub Actions [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
+- Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/c456184666eda55cd6fee5cd09ba6c05c898d55c/packages/osmojs/package.json#L31-L34)
 — Note the jest configurations in the [osmojs package](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs)
 
 
-This will allow you to run `yarn starship` to `setup`, `deploy`, `clean` and other `starship` commands:
+This will allow you to run `yarn starship` to `start`, `setup`, `deploy`, `stop` and other `starship` commands:
 
 #### Deploying `Starship` 🚀
+
+```sh
+yarn starship start
+
+# sanity check
+yarn starship get-pods
+```
+
+#### Running End-to-End Tests 🧪
+
+```sh
+# test
+yarn starship:test
+
+# watch 
+yarn starship:watch
+```
+
+#### Teardown 🛠️
+
+```sh
+# stop ports and delete deployment
+yarn starship stop
+```
+
+## Advanced Usage 
+
+### Manual setup
+
+Instead of using `yarn starship start`, you can also to each step, and do checks in between:
 
 ```sh
 # setup helm/starship
@@ -83,28 +113,6 @@ yarn starship start-ports
 yarn starship port-pids
 ```
 
-#### Running End-to-End Tests 🧪
-
-```sh
-# test
-yarn starship:test
-
-# watch 
-yarn starship:watch
-```
-
-#### Teardown 🛠️
-
-```sh
-# stop port forwarding (done by clean() too)
-# yarn starship stop-ports
-
-# stop ports and delete & remove helm chart
-yarn starship clean
-```
-
-## Advanced Usage 
-
 The `StarshipClient` simplifies managing Kubernetes resources, specifically tailored for developers working in interchain environments. Below is an example showing how to instantiate the client and use it to manage a Helm deployment:
 
 ### Initializing the Client
@@ -120,7 +128,7 @@ const client = new StarshipClient({
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'devnet',
-  helmVersion: 'v0.2.1'
+  helmVersion: 'v0.2.3'
 });
 ```
 

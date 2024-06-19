@@ -1,6 +1,6 @@
 {
   "name": "@starship-ci/client",
-  "version": "2.0.0",
+  "version": "2.7.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "Starship CI Client",
   "main": "index.js",
@@ -54,6 +54,5 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/shelljs": "^0.8.15"
-  },
-  "gitHead": "74b9309b34410e8fbe6b3949e0a45f6985292fcd"
+  }
 }

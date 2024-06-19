@@ -45,7 +45,40 @@ npm install starshipjs
 
 NOTE: Before you code! You'll want to use the CLI tool ([`@starship-ci/cli`](https://github.com/cosmology-tech/starship/tree/main/clients/js/packages/cli)) in a package.json to get starship working.
 
-Once you add `@starship-ci/cli` to your project, you can spint up `starship` as easy as 1-2-3:
+### Install the packages
+
+Install `@starship-ci/cli` and `starshipjs`
+
+```sh
+yarn add --dev starshipjs @starship-ci/cli
+```
+
+Add your configuration files, similar to these:
+
+- [Example `config.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/config.yaml)
+
+- [Example `starship.yaml`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/starship/configs/starship.yaml)
+
+- [Example `jest.config.js`](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/jest.starship.config.js)
+
+
+### Update your `package.json` `scripts`:
+
+```json
+"starship": "starship --config ./starship/configs/starship.yaml",
+"starship:test": "jest --config ./jest.starship.config.js --verbose --bail",
+"starship:watch": "jest --watch --config ./jest.starship.config.js"
+```
+
+See an [example here](https://github.com/osmosis-labs/osmojs/blob/main/packages/osmojs/package.json).
+
+### Start starship 🚀
+
+```sh
+yarn starship start
+```
+
+### Manual setup & start
 
 ```sh
 yarn starship setup
@@ -53,7 +86,13 @@ yarn starship deploy
 yarn starship start-ports
 ```
 
-## Using the Client 
+### Stopping starship
+
+```sh
+yarn starship stop
+```
+
+## Using the Client
 
 StarshipJS is a utility library that provides helpers to leverage [Starship](https://github.com/cosmology-tech/starship)'s internal chain registry, emulating the style of code used in projects like [cosmos-kit](https://github.com/cosmology-tech/cosmos-kit).
 
@@ -68,16 +107,41 @@ import { join } from 'path';
 // Path to your YAML configuration file
 const configFile = join(__dirname, 'your-config.yaml');
 
-// Set the configuration file in StarshipJS
-ConfigContext.setConfigFile(configFile);
+// using init for init the config and a default connected registry fetcher.
+await ConfigContext.init(configFile);
+
 ```
 
 ### Registry
 
+Using init for init the config and pass an optional customized registry fetcher.
+
 ```js
 import { useRegistry, ConfigContext } from 'starshipjs';
+import { join } from 'path';
 
-ConfigContext.setRegistry(await useRegistry(Config.configFile));
+// Path to your YAML configuration file
+const configFile = join(__dirname, 'your-config.yaml');
+
+const fetcher = new ChainRegistryFetcher({
+  // your own options
+});
+
+await ConfigContext.init(configFile, fetcher);
+```
+
+Or use `useRegistry` to get a registry fetcher.
+
+```js
+import { useRegistry, ConfigContext } from 'starshipjs';
+import { join } from 'path';
+
+// Path to your YAML configuration file
+const configFile = join(__dirname, 'your-config.yaml');
+
+const fetcher = await useRegistry(configFile);
+
+await ConfigContext.init(configFile, fetcher);
 ```
 
 ## Chain Info
