@@ -29,7 +29,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'starship/devnet',
-  helmVersion: 'v0.2.3',
+  helmVersion: 'v0.2.4',
   helmNamespace: '',
 };
 
