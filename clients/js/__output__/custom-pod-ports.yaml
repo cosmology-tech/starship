@@ -10,8 +10,13 @@ chains:
     rest: 1317
     exposer: 8081
     faucet: 8000
+    cometmock: 22331
   osmosis:
     exposer: 98988
     faucet: 1000000
     grpc: 909090
     rest: 6767676
+relayers:
+  defaultPorts:
+    rest: 3000
+    exposer: 8081
