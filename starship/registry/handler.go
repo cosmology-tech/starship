@@ -291,7 +291,7 @@ func (a *AppServer) GetIBCInfo(ctx context.Context, requestIBCInfo *pb.RequestIB
 
 	infoProtos := infos.ToProto()
 	for _, info := range infoProtos {
-		if info.Chain_2.ChainName == requestIBCInfo.Chain_2 {
+		if info.Chain_2.ChainName == client.GetChainNameFromChainID(requestIBCInfo.Chain_2) {
 			return info, nil
 		}
 	}

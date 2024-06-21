@@ -27,15 +27,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Create yarn.lock and package.json file if not exists
+        run: |
+          if [ ! -f $GITHUB_WORKSPACE/yarn.lock ]; then
+            echo 'Creating temporary yarn.lock file'
+            echo '' > $GITHUB_WORKSPACE/yarn.lock
+          fi
+          if [ ! -f $GITHUB_WORKSPACE/package.json ]; then
+            echo 'Creating temporary package.json file'
+            echo '{}' > $GITHUB_WORKSPACE/package.json
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+
+      - name: Install starship CLI
+        run: |
+          cd clients/js
+          yarn
+          yarn build
+          chmod +x node_modules/.bin/starship
+          echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
+
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.3.0
+        uses: cosmology-tech/starship-action@0.5.1
         with:
-          values: ${{ env.CONFIG_FILE }}
-          port-forward: true
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
+          cli-version: 0.0.0
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -64,15 +88,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Create yarn.lock and package.json file if not exists
+        run: |
+          if [ ! -f $GITHUB_WORKSPACE/yarn.lock ]; then
+            echo 'Creating temporary yarn.lock file'
+            echo '' > $GITHUB_WORKSPACE/yarn.lock
+          fi
+          if [ ! -f $GITHUB_WORKSPACE/package.json ]; then
+            echo 'Creating temporary package.json file'
+            echo '{}' > $GITHUB_WORKSPACE/package.json
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+
+      - name: Install starship CLI
+        run: |
+          cd clients/js
+          yarn
+          yarn build
+          chmod +x node_modules/.bin/starship
+          echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
+
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.3.0
+        uses: cosmology-tech/starship-action@0.5.1
         with:
-          values: ${{ env.CONFIG_FILE }}
-          port-forward: true
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
+          cli-version: 0.0.0
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster
@@ -101,15 +149,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Create yarn.lock and package.json file if not exists
+        run: |
+          if [ ! -f $GITHUB_WORKSPACE/yarn.lock ]; then
+            echo 'Creating temporary yarn.lock file'
+            echo '' > $GITHUB_WORKSPACE/yarn.lock
+          fi
+          if [ ! -f $GITHUB_WORKSPACE/package.json ]; then
+            echo 'Creating temporary package.json file'
+            echo '{}' > $GITHUB_WORKSPACE/package.json
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+
+      - name: Install starship CLI
+        run: |
+          cd clients/js
+          yarn
+          yarn build
+          chmod +x node_modules/.bin/starship
+          echo "PATH=$GITHUB_WORKSPACE/clients/js/node_modules/.bin:$PATH" >> $GITHUB_ENV
+
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.3.0
+        uses: cosmology-tech/starship-action@0.5.1
         with:
-          values: ${{ env.CONFIG_FILE }}
-          port-forward: true
+          config: ${{ env.CONFIG_FILE }}
           version: 0.0.0
           chart: ./starship/charts/devnet
-          timeout: 10m
+          cli-version: 0.0.0
 
       # todo: change this to be post step of the action
       - name: Cleanup cluster

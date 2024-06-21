@@ -64,6 +64,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: REGISTRY_CHAIN_CLIENT_IDS
               value: "{{ include "devnet.chains.ids" . }}"
+            - name: REGISTRY_CHAIN_CLIENT_NAMES
+              value: "{{ include "devnet.chains.names" . }}"
             - name: REGISTRY_CHAIN_CLIENT_RPCS
               value: "{{ include "devnet.chains.internal.rpc.addrs" . }}"
             - name: REGISTRY_CHAIN_API_RPCS

@@ -34,6 +34,7 @@ type ConnectionInfo struct {
 
 type IBCInfo struct {
 	ChainId      string `json:"chain_id"`
+	ChainName    string `json:"chain_name"`
 	ChannelId    string `json:"channel_id"`
 	PortId       string `json:"port_id"`
 	ConnectionId string `json:"connection_id"`
@@ -46,12 +47,12 @@ func (infos ChainIBCInfos) ToProto() []*pb.IBCData {
 	chainsIBCData := map[string]*pb.IBCData{}
 	for _, ibcInfo := range infos {
 		chain1 := &pb.IBCChain{
-			ChainName:    ibcInfo.ChainId,
+			ChainName:    ibcInfo.ChainName,
 			ClientId:     ibcInfo.ClientId,
 			ConnectionId: ibcInfo.ConnectionId,
 		}
 		chain2 := &pb.IBCChain{
-			ChainName:    ibcInfo.Counterparty.ChainId,
+			ChainName:    ibcInfo.Counterparty.ChainName,
 			ClientId:     ibcInfo.Counterparty.ClientId,
 			ConnectionId: ibcInfo.Counterparty.ConnectionId,
 		}
@@ -80,7 +81,7 @@ func (infos ChainIBCInfos) ToProto() []*pb.IBCData {
 			Tags: &pb.ChannelData_Tags{
 				// todo: fetch status from client status instead of hardcoding
 				Status:    "live",
-				Perferred: true,
+				Preferred: true,
 			},
 		}
 
@@ -110,12 +111,12 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 	return &pb.IBCData{
 		Schema: "../ibc_data.schema.json",
 		Chain_1: &pb.IBCChain{
-			ChainName:    info.ChainId,
+			ChainName:    info.ChainName,
 			ClientId:     info.ClientId,
 			ConnectionId: info.ConnectionId,
 		},
 		Chain_2: &pb.IBCChain{
-			ChainName:    info.Counterparty.ChainId,
+			ChainName:    info.Counterparty.ChainName,
 			ClientId:     info.Counterparty.ClientId,
 			ConnectionId: info.Counterparty.ConnectionId,
 		},
@@ -134,7 +135,7 @@ func (info *ChainIBCInfo) ToProto() *pb.IBCData {
 				Tags: &pb.ChannelData_Tags{
 					// todo: fetch status from client status instead of hardcoding
 					Status:    "live",
-					Perferred: true,
+					Preferred: true,
 				},
 			},
 		},

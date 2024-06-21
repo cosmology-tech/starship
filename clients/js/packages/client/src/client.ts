@@ -7,7 +7,7 @@ import * as os from 'os';
 import { dirname, resolve } from 'path';
 import * as shell from 'shelljs';
 
-import { Chain, StarshipConfig } from './config';
+import {Chain, Relayer, Script, StarshipConfig} from './config';
 import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
@@ -28,7 +28,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   helmName: '',
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-  helmChart: 'devnet',
+  helmChart: 'starship/devnet',
   helmNamespace: '',
   helmVersion: '',
 };
@@ -39,11 +39,15 @@ export interface PodPorts {
   chains?: {
     defaultPorts?: Ports,
     [chainName: string]: Ports
-  }
+  },
+  relayers?: {
+    defaultPorts?: Ports,
+    [relayerName: string]: Ports
+  },
 }
 
 const defaultName: string = "starship"
-const defaultVersion: string = "v0.2.3"
+const defaultVersion: string = "v0.2.4"
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -57,9 +61,17 @@ const defaultPorts: PodPorts = {
   chains: {
     defaultPorts: {
       rpc: 26657,
+      grpc: 9090,
       rest: 1317,
       exposer: 8081,
-      faucet: 8000
+      faucet: 8000,
+      cometmock: 22331,
+    }
+  },
+  relayers: {
+    defaultPorts: {
+      rest: 3000,
+      exposer: 8081,
     }
   }
 };
@@ -72,6 +84,25 @@ export interface StarshipClientI {
   podPorts: PodPorts
 };
 
+export interface PodStatus {
+  phase: string;
+  ready: boolean;
+  restartCount: number;
+  reason?: string;
+}
+
+export const formatChainID = (input: string): string => {
+  // Replace underscores with hyphens
+  let formattedName = input.replace(/_/g, '-');
+
+  // Truncate the string to a maximum length of 63 characters
+  if (formattedName.length > 63) {
+    formattedName = formattedName.substring(0, 63);
+  }
+
+  return formattedName;
+};
+
 export class StarshipClient implements StarshipClientI {
   ctx: StarshipContext;
   version: string;
@@ -80,7 +111,10 @@ export class StarshipClient implements StarshipClientI {
   config: StarshipConfig;
   podPorts: PodPorts = defaultPorts;
 
-  private podStatuses = new Map<string, string>(); // To keep track of pod statuses
+  private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
+
+  // Define a constant for the restart threshold
+  private readonly RESTART_THRESHOLD = 4;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
@@ -237,6 +271,14 @@ export class StarshipClient implements StarshipClientI {
     return args;
   }
 
+  public getDeployArgs(): string[] {
+    const args = this.getArgs();
+    if (this.ctx.helmNamespace) {
+      args.push('--create-namespace');
+    }
+    return args;
+  }
+
   // TODO do we need this here?
   public test(): void {
     this.exec([
@@ -274,7 +316,7 @@ export class StarshipClient implements StarshipClientI {
       'helm',
       'search',
       'repo',
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      this.ctx.helmChart,
       '--version',
       this.config.version
     ]);
@@ -287,37 +329,46 @@ export class StarshipClient implements StarshipClientI {
     }
   }
 
-  public deploy(): void {
+  public deploy(options: string[] = []): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.log("Installing the helm chart. This is going to take a while.....");
 
-    this.exec([
+    const cmd: string[] = [
       'helm',
       'install',
       '-f',
       this.ctx.helmFile,
       this.config.name,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
+      this.ctx.helmChart,
       '--version',
       this.config.version,
-      ...this.getArgs(),
-    ]);
+      ...this.getDeployArgs(),
+      ...options,
+    ];
+
+    // Determine the data directory of the config file
+    const datadir = resolve(dirname(this.ctx.helmFile!));
+
+    // Iterate through each chain to add script arguments
+    this.config.chains.forEach((chain, chainIndex) => {
+      if (chain.scripts) {
+        Object.keys(chain.scripts).forEach(scriptKey => {
+          const script = chain.scripts?.[scriptKey as keyof Chain['scripts']];
+          if (script && script.file) {
+            const scriptPath = resolve(datadir, script.file);
+            cmd.push(`--set-file chains[${chainIndex}].scripts.${scriptKey}.data=${scriptPath}`);
+          }
+        });
+      }
+    });
+
+    this.exec(cmd);
     this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
 
   public debug(): void {
     this.ensureFileExists(this.ctx.helmFile);
-    this.exec([
-      'helm',
-      'install',
-      '--dry-run',
-      '--debug',
-      '-f',
-      this.ctx.helmFile,
-      this.config.name,
-      `${this.ctx.helmRepo}/${this.ctx.helmChart}`,
-      ...this.getArgs(),,
-    ]);
+    this.deploy(['--dry-run', '--debug']);
   }
 
   public deleteHelm(): void {
@@ -353,7 +404,7 @@ export class StarshipClient implements StarshipClientI {
   public areAllPodsRunning(): boolean {
     let allRunning = true;
     this.podStatuses.forEach((status) => {
-      if (status !== 'Running') {
+      if (status.phase !== 'Running' || !status.ready) {
         allRunning = false;
       }
     });
@@ -368,29 +419,25 @@ export class StarshipClient implements StarshipClientI {
       podName,
       '--no-headers',
       '-o',
-      'custom-columns=:status.phase,:status.containerStatuses[*].state.waiting.reason',
+      'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].restartCount,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
     ], false, true).trim();
-  
-    const [status, reason] = result.split(' ');
-    this.podStatuses.set(podName, status);
 
-    if (status === 'Running') {
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.green('RUNNING')}`);
-    } else if (status === 'Terminating') {
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.gray('TERMINATING')}`);
-    } else if (reason && (reason.includes('ImagePullBackOff') || reason.includes('ErrImagePull'))) {
-      // this.log(`${chalk.blue(podName)} failed due to ${chalk.red(reason)}. Exiting...`);
+    const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
+    const ready = readyList.split(',').every(state => state === 'true');
+    const restarts = restartCountList.split(',').reduce((acc, count) => acc + parseInt(count, 10), 0);
+
+    this.podStatuses.set(podName, { phase, ready, restartCount: restarts, reason });
+
+    if (restarts > this.RESTART_THRESHOLD) {
+      this.log(`${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`);
       this.exit(1);
-    } else {
-      // this.log(`[${chalk.blue(podName)}]: ${chalk.red(status)}`);
-      // setTimeout(() => this.checkPodStatus(podName), 2500); // check every 2.5 seconds
     }
   }
 
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
-  
+
     // Check the status of each pod retrieved
     podNames.forEach(podName => {
       this.checkPodStatus(podName);
@@ -401,20 +448,28 @@ export class StarshipClient implements StarshipClientI {
     if (!this.areAllPodsRunning()) {
       await new Promise(resolve => setTimeout(resolve, 2500));
       await this.waitForPods(); // Recursive call
+    } else {
+      this.log(chalk.green('All pods are running!'));
+      // once the pods are in running state, wait for 10 more seconds
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 
   private displayPodStatuses(): void {
-    this.exec(['clear'], false); // Clear the terminal for each update
+    console.clear();
     this.podStatuses.forEach((status, podName) => {
-      let statusColor = chalk.red(status);
-      if (status === 'Running') {
-        statusColor = chalk.green(status);
-      } else if (status === 'Terminating') {
-        statusColor = chalk.gray(status);
+      let statusColor;
+      if (status.phase === 'Running' && status.ready) {
+        statusColor = chalk.green(status.phase);
+      } else if (status.phase === 'Running' && !status.ready) {
+        statusColor = chalk.yellow('RunningButNotReady');
+      } else if (status.phase === 'Terminating') {
+        statusColor = chalk.gray(status.phase);
+      } else {
+        statusColor = chalk.red(status.phase);
       }
-  
-      console.log(`[${chalk.blue(podName)}]: ${statusColor}`);
+
+      console.log(`[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`);
     });
   }
 
@@ -422,13 +477,41 @@ export class StarshipClient implements StarshipClientI {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
         "kubectl", "port-forward",
-        `pods/${chain.id}-genesis-0`,
+        `pods/${formatChainID(chain.id)}-genesis-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
         ">", "/dev/null",
         "2>&1", "&"
       ]);
-      this.log(chalk.yellow(`Forwarded ${chain.id}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
+    }
+  }
+
+  private forwardPortCometmock(chain: Chain, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
+      this.exec([
+        "kubectl", "port-forward",
+        `pods/${formatChainID(chain.id)}-cometmock-0`,
+        `${localPort}:${externalPort}`,
+        ...this.getArgs(),
+        ">", "/dev/null",
+        "2>&1", "&"
+      ]);
+      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
+    }
+  }
+
+  private forwardPortRelayer(relayer: Relayer, localPort: number, externalPort: number): void {
+    if (localPort !== undefined && externalPort !== undefined) {
+      this.exec([
+        "kubectl", "port-forward",
+        `pods/${relayer.type}-${relayer.name}-0`,
+        `${localPort}:${externalPort}`,
+        ...this.getArgs(),
+        ">", "/dev/null",
+        "2>&1", "&"
+      ]);
+      this.log(chalk.yellow(`Forwarded ${relayer.name}: local ${localPort} -> target (host) ${externalPort}`));
     }
   }
 
@@ -454,14 +537,24 @@ export class StarshipClient implements StarshipClientI {
     this.stopPortForward();
     this.log("Starting new port forwarding...");
 
-    this.config.chains.forEach(chain => {
-      // TODO Talk to Anmol about chain.name and chain.name, seems to be opposite of intuition using chainReg as concept
+    this.config.chains?.forEach(chain => {
       const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
-      if (chain.ports.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
-      if (chain.ports.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
-      if (chain.ports.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
-      if (chain.ports.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
+      if (chain.cometmock?.enabled) {
+        if (chain.ports?.rpc) this.forwardPortCometmock(chain, chain.ports.rpc, chainPodPorts.cometmock);
+      } else {
+        if (chain.ports?.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
+      }
+      if (chain.ports?.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
+      if (chain.ports?.grpc) this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
+      if (chain.ports?.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
+      if (chain.ports?.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
+    });
+
+    this.config.relayers?.forEach(relayer => {
+        const relayerPodPorts = this.podPorts.relayers[relayer.name] || this.podPorts.relayers.defaultPorts;
+        if (relayer.ports?.rest) this.forwardPortRelayer(relayer, relayer.ports.rest, relayerPodPorts.rest);
+        if (relayer.ports?.exposer) this.forwardPortRelayer(relayer, relayer.ports.exposer, relayerPodPorts.exposer);
     });
 
     if (this.config.registry?.enabled) {
