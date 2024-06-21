@@ -137,7 +137,8 @@
               "polymer",
               "virtual",
               "akash",
-              "agoric"
+              "agoric",
+              "dymension"
             ]
           },
           "numValidators": {

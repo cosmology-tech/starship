@@ -669,6 +669,38 @@ defaultChains:
             exponent: 6
         coingecko_id: inter-stable-token
         keywords: [ "inter-stable-token" ]
+  dymension:
+    image: ghcr.io/cosmology-tech/starship/dymension:v3.1.0
+    home: /root/.dymension
+    binary: dymd
+    prefix: dym
+    denom: adym
+    prettyName: Dymension Hub
+    coins: 100000000000000000000000000adym
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/dymensionxyz/dymension
+    assets:
+      - base: adym
+        description: "The native governance and staking token of the Dymension Hub"
+        name: Dymension
+        display: dym
+        symbol: DYM
+        logo_URIs:
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dymension/images/dymension-logo.png"
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/dymension/images/dymension-logo.svg"
+        denom_units:
+          - denom: adym
+            exponent: 0
+          - denom: dym
+            exponent: 18
+        coingecko_id: dymension
+        keywords: [ "dymension" ]
+    scripts:
+      updateGenesis:
+        file: scripts/dymension/update-genesis.sh
+      updateConfig:
+        file: scripts/dymension/update-config.sh
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
