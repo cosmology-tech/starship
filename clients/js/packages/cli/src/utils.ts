@@ -33,11 +33,10 @@ export interface Config {
 
 export const params: string[] = [
   'helmName',
-  'helmFile',
+  'helmVersion',
   'helmRepo',
   'helmRepoUrl',
   'helmChart',
-  'helmVersion',
   'helmNamespace',
 ]
 
