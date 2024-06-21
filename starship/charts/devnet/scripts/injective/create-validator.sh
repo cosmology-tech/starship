@@ -23,7 +23,7 @@ function cosmos-sdk-version-default() {
   $CHAIN_BIN tx staking create-validator \
     --pubkey=$($CHAIN_BIN tendermint show-validator) \
     --moniker $VAL_NAME \
-    --amount 100000000000000000000inj \
+    --amount 10000000000000000inj \
     --chain-id $CHAIN_ID \
     --from $VAL_NAME \
     --commission-rate="0.10" \

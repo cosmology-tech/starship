@@ -31,6 +31,8 @@ type Config struct {
 	ChainClientHome string `name:"chain-client-home" json:"chain_client_home" env:"CHAIN_CLIENT_HOME" usage:"Path to the home of lens client directory"`
 	// ChainClientIDs is a comma seperated list of chain ids for various chains
 	ChainClientIDs string `name:"chain-client-ids" json:"chain_client_ids" env:"CHAIN_CLIENT_IDS" usage:"Comma seperated list of chain ids for various chains"`
+	// ChainClientNames is a comma seperated list of chain names for various chains
+	ChainClientNames string `name:"chain-client-names" json:"chain_client_names" env:"CHAIN_CLIENT_NAMES" usage:"Comma seperated list of chain names for various chains"`
 	// ChainClientRPCs is a comma seperated list of chain rpc address for various chains, used to create connections
 	// Note: ChainClientRPCs is different from ChainAPIRPCs, as ChainClientRPCs is used for internal routing
 	// whereas ChainAPIRPCs is used for /chains endpoint result

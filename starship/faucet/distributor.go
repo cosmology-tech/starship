@@ -322,8 +322,13 @@ func (a *Account) GetBalance() (Coins, error) {
 		return nil, err
 	}
 
+	balances, ok := data["balances"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("balances not found in response: %v", data)
+	}
+
 	coins := Coins{}
-	for _, balance := range data["balances"].([]interface{}) {
+	for _, balance := range balances {
 		coins = append(coins, Coin{
 			balance.(map[string]interface{})["denom"].(string),
 			balance.(map[string]interface{})["amount"].(string),

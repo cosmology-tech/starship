@@ -38,6 +38,7 @@ export const params: string[] = [
   'helmRepoUrl',
   'helmChart',
   'helmVersion',
+  'helmNamespace',
 ]
 
 export const loadConfig = (argv: any): Config => {
@@ -62,7 +63,7 @@ export const loadConfig = (argv: any): Config => {
   });
 
   if (context.helmFile) {
-    const dir = dirname(argv.config || process.cwd());
+    const dir = argv.config ? dirname(argv.config) : process.cwd();
     context.helmFile = resolve(resolvePath(dir), context.helmFile);
     starship = loadYaml(context.helmFile) as StarshipConfig
   }
