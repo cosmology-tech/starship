@@ -1,3 +1,6 @@
+name: starship
+version: v0.2.3
+
 chains:
   - id: osmosis-1
     name: osmosis
