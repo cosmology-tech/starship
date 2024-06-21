@@ -1,0 +1,136 @@
+#!/bin/bash
+
+DENOM="${DENOM:=uosmo}"
+CHAIN_BIN="${CHAIN_BIN:=osmosisd}"
+CHAIN_DIR="${CHAIN_DIR:=$HOME/.osmosisd}"
+
+set -eux
+
+ls $CHAIN_DIR/config
+
+GENESIS_FILE=$CHAIN_DIR/config/genesis.json
+
+
+tmp=$(mktemp)
+
+set_gov_params() {
+  echo "setting gov params"
+  jq '.app_state.gov.deposit_params.min_deposit[0].denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.gov.deposit_params.min_deposit[0].amount = "1000000"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq -r '.app_state.gov.deposit_params.max_deposit_period |= "30s"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+  jq -r '.app_state.gov.voting_params.voting_period |= "30s"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+  jq -r '.app_state.gov.tally_params.quorum |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+  jq -r '.app_state.gov.tally_params.threshold |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+  jq -r '.app_state.gov.tally_params.veto_threshold |= "0.000000000000000000"' $CHAIN_DIR/config/genesis.json > /tmp/genesis.json; mv /tmp/genesis.json $CHAIN_DIR/config/genesis.json
+}
+
+set_hub_params() {
+  echo "setting hub params"
+  sed -i'' -e 's/bond_denom": ".*"/bond_denom": "adym"/' "$GENESIS_FILE"
+  sed -i'' -e 's/mint_denom": ".*"/mint_denom": "adym"/' "$GENESIS_FILE"
+
+  jq '.app_state.rollapp.params.dispute_period_in_blocks = "50"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+  #increase the tx size cost per byte from 10 to 100
+  jq '.app_state.auth.params.tx_size_cost_per_byte = "100"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+  jq -r '.app_state.staking.params.unbonding_time |= "120s"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+  # jail validators faster, and shorten recovery time, no slash for downtime
+  jq '.app_state.slashing.params.signed_blocks_window = "10000"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.slashing.params.min_signed_per_window = "0.800000000000000000"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.slashing.params.downtime_jail_duration = "120s"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.slashing.params.slash_fraction_downtime = "0.0"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+set_consenus_params() {
+  # cometbft's updated values
+	# 	MaxBytes: 4194304,  // four megabytes
+	# 	MaxGas:   10000000, // ten million
+  echo "setting consensus params"
+  jq '.consensus_params["block"]["max_bytes"] = "4194304"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.consensus_params["block"]["max_gas"] = "10000000"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+set_EVM_params() {
+  echo "setting EVM params"
+  jq '.app_state["feemarket"]["params"]["no_base_fee"] = true' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.evm.params.evm_denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.evm.params.enable_create = false' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+#Adding a "minute" epoch
+set_epochs_params() {
+  echo "setting epochs params"
+  jq '.app_state.epochs.epochs += [{
+  "identifier": "minute",
+  "start_time": "0001-01-01T00:00:00Z",
+  "duration": "60s",
+  "current_epoch": "0",
+  "current_epoch_start_time": "0001-01-01T00:00:00Z",
+  "epoch_counting_started": false,
+  "current_epoch_start_height": "0"
+  }]' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+#should be set to days on live net and lockable duration to 2 weeks
+set_incentives_params() {
+  echo "setting incentives params"
+  jq '.app_state.incentives.params.distr_epoch_identifier = "minute"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state.incentives.lockable_durations = ["60s"]' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+
+set_misc_params() {
+  echo "setting misc params"
+  jq '.app_state.crisis.constant_fee.denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq -r '.app_state.gamm.params.pool_creation_fee[0].denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state["txfees"]["basedenom"] = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+  jq '.app_state["txfees"]["params"]["epoch_identifier"] = "minute"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+
+  jq -r '.app_state.gamm.params.enable_global_pool_fees = true' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+set_bank_denom_metadata() {
+  echo "setting bank denom params"
+  jq '.app_state.bank.denom_metadata = [
+      {
+          "base": "adym",
+          "denom_units": [
+              {
+                  "aliases": [],
+                  "denom": "adym",
+                  "exponent": 0
+              },
+              {
+                  "aliases": [],
+                  "denom": "DYM",
+                  "exponent": 18
+              }
+          ],
+          "description": "Denom metadata for DYM (adym)",
+          "display": "DYM",
+          "name": "DYM",
+          "symbol": "DYM"
+      }
+  ]' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+set_authorised_deployer_account() {
+  jq --arg address $1 '.app_state.rollapp.params.deployer_whitelist += [{ "address": $address }]' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
+}
+
+set_consenus_params
+set_gov_params
+set_hub_params
+set_misc_params
+set_EVM_params
+set_bank_denom_metadata
+set_epochs_params
+set_incentives_params
+
+echo "Update genesis.json file with updated local params"
+sed -i "s/\"time_iota_ms\": \".*\"/\"time_iota_ms\": \"$TIME_IOTA_MS\"/" $CHAIN_DIR/config/genesis.json
+
+$CHAIN_BIN tendermint show-node-id
+

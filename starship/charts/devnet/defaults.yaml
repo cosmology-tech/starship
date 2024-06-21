@@ -696,6 +696,11 @@ defaultChains:
             exponent: 18
         coingecko_id: dymension
         keywords: [ "dymension" ]
+    scripts:
+      updateGenesis:
+        file: scripts/dymension/update-genesis.sh
+      updateConfig:
+        file: scripts/dymension/update-config.sh
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
