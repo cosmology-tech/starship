@@ -1,6 +1,6 @@
 {
   "name": "@starship-ci/cli",
-  "version": "2.7.2",
+  "version": "2.8.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "Starship CLI",
   "main": "index.js",
