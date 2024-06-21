@@ -4,15 +4,7 @@ In this step, we will spin up couple of cosmos chains and relayers between them.
 
 By the end of this tutorial you should be able to have osmosis and gaia chain running on your machine.
 
-## 3.1) Setup Starship Helm charts
-We use helm as the package manager for starship.
-
-Run
-```bash
-starship setup
-```
-
-## 3.2) Define the desired infrastructure
+## 3.1) Define the desired infrastructure
 We will now define the infrastructure for our starship, specify the chains and relayers run
 between them.
 
@@ -32,6 +24,8 @@ touch config.yaml
 
 Add following content to `starship.yaml` with the following content
 ```yaml
+name: starship-getting-started
+
 chains:
   - id: osmosis-1
     name: osmosis
@@ -69,7 +63,7 @@ For the tutorial we will keep it simple.
 ## 3.3) Spin up the infrastructure
 Spin up the infrastructure with
 ```bash
-starship start --helmFile config.yaml
+starship start --config config.yaml
 ```
 
 This command will:
