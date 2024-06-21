@@ -48,7 +48,7 @@ export const loadConfig = (argv: any): Config => {
   let starship: StarshipConfig = {} as StarshipConfig;
 
   if (argv.config) {
-    context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
+    context.helmFile = argv.config;
   }
 
   console.log("context", context);
@@ -89,19 +89,24 @@ Commands:
   version, -v        Display the version of the Starship Client.
 
 Configuration File:
-  --config <path>       Specify the path to the JSON configuration file containing all settings.
+  --config <path>       Specify the path to the configuration file containing the actual config file. Required.
                         Command-line options will override settings from this file if both are provided.
 
 Command-line Options:
-  --helmFile <path>     Specify the path to the Helm file, the actual config file. Required.
   --helmName <name>     Specify the Helm release name, default: starship.
-  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.0.
+                        Will overide config file settings for name.
+  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.3.
+                        Will overide config file settings for version.
 
 Examples:
-  $ starship setup
-  $ starship deploy --helmFile ./config/helm.yaml --helmName my-release
-  $ starship start-ports --config ./config/settings.json
-  $ starship stop --config ./config/settings.json
+  $ starship start --config ./config/two-chain.yaml
+  $ starship stop --config ./config/two-chain.yaml
+  
+If you want to run the deployment step by step
+    $ starship deploy --config ./config/two-chain.yaml
+    $ starship start-ports --config ./config/two-chain.yaml
+    $ starship stop-ports --config ./config/two-chain.yaml
+    $ starship stop --config ./config/two-chain.yaml
 
 Additional Help:
   $ starship help          Display this help information.
