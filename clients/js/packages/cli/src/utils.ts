@@ -63,8 +63,7 @@ export const loadConfig = (argv: any): Config => {
   });
 
   if (context.helmFile) {
-    const dir = argv.config ? dirname(argv.config) : process.cwd();
-    context.helmFile = resolve(resolvePath(dir), context.helmFile);
+    context.helmFile = resolvePath(context.helmFile);
     starship = loadYaml(context.helmFile) as StarshipConfig
   }
 
