@@ -109,6 +109,10 @@ spec:
               echo "Create node id json file"
               NODE_ID=$($CHAIN_BIN tendermint show-node-id)
               echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
+
+              echo "Create consensus key json file"
+              $CHAIN_BIN tendermint show-validator > $CHAIN_DIR/config/consensus_key.json
+              cat $CHAIN_DIR/config/consensus_key.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
@@ -175,8 +179,9 @@ spec:
         {{- if $chain.ics.enabled }}
         {{ $waitParams := dict "chain" (list $chain.ics.provider) "port" $.Values.exposer.ports.rest "context" $ }}
         {{- include "devnet.init.wait" $waitParams | indent 8 }}
+        {{ $icsChain := include "devnet.fullchain" (dict "name" $chain.ics.provider "file" $defaultFile "context" $) | fromJson }}
         - name: init-ics
-          image: {{ get $chain.ics "image" | default $chain.image }}
+          image: {{ $icsChain.image }}
           imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
           env:
             {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
@@ -191,16 +196,18 @@ spec:
             - bash
             - "-c"
             - |
-              VAL_INDEX=${HOSTNAME##*-}
-              echo "Validator Index: $VAL_INDEX"
+              export
 
               echo "Fetching priv keys from provider exposer"
-              curl -s http://{{ $chain.ics.provider }}-genesis.$NAMESPACE.svc.cluster.local:8081/priv_keys | jq > $CHAIN_DIR/config/provider_priv_validator_key.json
+              curl -s http://{{ $icsChain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8081/priv_keys | jq > $CHAIN_DIR/config/provider_priv_validator_key.json
               cat $CHAIN_DIR/config/provider_priv_validator_key.json
 
               echo "Replace provider priv validator key with provider keys"
               mv $CHAIN_DIR/config/priv_validator_key.json $CHAIN_DIR/config/previous_priv_validator_key.json
               mv $CHAIN_DIR/config/provider_priv_validator_key.json $CHAIN_DIR/config/priv_validator_key.json
+
+              echo "Create consumer addition proposal"
+
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
