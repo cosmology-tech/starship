@@ -1,4 +1,4 @@
-base: node:20-alpine
+base: node:16-alpine
 versions:
   - v0.32.3
   - v0.32.2
