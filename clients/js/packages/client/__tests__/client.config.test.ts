@@ -10,13 +10,13 @@ describe('StarshipClient', () => {
     client.dependencies.forEach(dep => dep.installed = true);
 
     client.setConfig(config.config);
-    const helmFile = client.ctx.helmFile;
-    client.ctx.helmFile = join(outputDir, 'my-config.yaml');
-    client.ctx.helmFile = relative(process.cwd(), client.ctx.helmChart)
+    const helmFile = client.ctx.config;
+    client.ctx.config = join(outputDir, 'my-config.yaml');
+    client.ctx.config = relative(process.cwd(), client.ctx.chart)
     // @ts-ignore
     client.saveYaml = () => {};
     client.saveConfig();
-    client.ctx.helmFile = helmFile;
+    client.ctx.config = helmFile;
 
     const portYaml = join(outputDir, 'default-pod-ports.yaml');
     const relativePortYaml = relative(process.cwd(), portYaml);
