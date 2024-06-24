@@ -29,6 +29,8 @@
     "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy; npm run chmod",
     "chmod": "chmod +x dist/index.js",
     "dev": "ts-node src/index",
+    "lint": "eslint .",
+    "format": "eslint . --fix",
     "test": "jest",
     "test:watch": "jest --watch"
   },
