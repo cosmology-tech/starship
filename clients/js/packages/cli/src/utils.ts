@@ -1,12 +1,10 @@
 import {defaultStarshipContext, StarshipConfig, StarshipContext} from '@starship-ci/client'; // Adjust the import path as necessary
-import { type Question } from 'inquirerer';
 import chalk from 'chalk';
 import {readFileSync} from 'fs';
 import * as yaml from 'js-yaml';
-import {dirname, resolve} from 'path';
+import { resolve} from 'path';
 
 import {readAndParsePackageJson} from './package';
-import deepmerge from 'deepmerge';
 
 // Function to display the version information
 export function displayVersion() {
