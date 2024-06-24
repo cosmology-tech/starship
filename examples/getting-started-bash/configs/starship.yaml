@@ -1,3 +1,6 @@
+name: getting-started
+version: v0.2.6
+
 chains:
   - id: osmosis-1
     name: osmosis
@@ -5,18 +8,12 @@ chains:
     ports:
       rest: 1313
       rpc: 26653
-    resources:
-      cpu: "0.3"
-      memory: "300M"
   - id: gaia-1
     name: cosmoshub
     numValidators: 1
     ports:
       rest: 1317
       rpc: 26657
-    resources:
-      cpu: "0.3"
-      memory: "300M"
 
 relayers:
   - name: osmos-gaia
@@ -25,25 +22,13 @@ relayers:
     chains:
       - osmosis-1
       - gaia-1
-    resources:
-      cpu: "0.1"
-      memory: "100M"
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
 
 registry:
   enabled: true
   ports:
     rest: 8081
-  resources:
-    cpu: "0.1"
-    memory: "100M"
-
-# configure default resources
-resources:
-  node:
-    cpu: "0.3"
-    memory: "300M"
-
-exposer:
-  resources:
-    cpu: "0.1"
-    memory: "100M"
