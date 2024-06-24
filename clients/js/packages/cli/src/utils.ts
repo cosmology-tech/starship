@@ -30,6 +30,7 @@ export interface Config {
 }
 
 export const params: string[] = [
+  'config',
   'name',
   'version',
   'repo',
@@ -40,13 +41,8 @@ export const params: string[] = [
 
 export const loadConfig = (argv: any): Config => {
   console.log("argv: ", argv);
-  console.log("argv.config: ", argv.config);
   let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
   let starship: StarshipConfig = {} as StarshipConfig;
-
-  if (argv.config) {
-    context.config = argv.config;
-  }
 
   console.log("context", context);
 

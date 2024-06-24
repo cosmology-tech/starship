@@ -28,11 +28,11 @@ const questions: Question[] = params.map(name => ({ name, type: 'text' }));
 
 // Filter questions based on the command
 function getQuestionsForCommand(command: string): Question[] {
-  const commonQuestions = questions.filter(q => q.name !== 'helmFile');
+  const commonQuestions = questions.filter(q => q.name !== 'config');
   if (['start', 'deploy', 'start-ports', 'wait-for-pods'].includes(command)) {
-    return questions; // Include all questions, including helmFile
+    return questions; // Include all questions, including config
   } else {
-    return commonQuestions; // Exclude helmFile
+    return commonQuestions; // Exclude config
   }
 }
 
