@@ -30,12 +30,12 @@ export interface Config {
 }
 
 export const params: string[] = [
-  'helmName',
-  'helmVersion',
-  'helmRepo',
-  'helmRepoUrl',
-  'helmChart',
-  'helmNamespace',
+  'name',
+  'version',
+  'repo',
+  'repoUrl',
+  'chart',
+  'namespace',
 ]
 
 export const loadConfig = (argv: any): Config => {
