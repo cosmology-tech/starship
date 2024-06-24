@@ -1,16 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`StarshipClient setup 1`] = `
-"Call: setConfig({"chains":[{"id":"osmosis-1","name":"osmosis","image":"pyramation/osmosis:v16.1.0","numValidators":1,"ports":{"rest":1317,"rpc":26657,"faucet":8007}},{"id":"cosmos-2","name":"cosmos","numValidators":1,"ports":{"rest":1313,"rpc":26653,"faucet":8003}}],"relayers":[{"name":"osmos-cosmos","type":"hermes","replicas":1,"chains":["osmosis-1","cosmos-2"]}],"registry":{"enabled":true,"ports":{"rest":8081,"grpc":9091}}})
+"Call: setConfig({"name":"starship","version":"v0.2.3","chains":[{"id":"osmosis-1","name":"osmosis","image":"pyramation/osmosis:v16.1.0","numValidators":1,"ports":{"rest":1317,"rpc":26657,"faucet":8007}},{"id":"cosmos-2","name":"cosmos","numValidators":1,"ports":{"rest":1313,"rpc":26653,"faucet":8003}}],"relayers":[{"name":"osmos-cosmos","type":"hermes","replicas":1,"chains":["osmosis-1","cosmos-2"]}],"registry":{"enabled":true,"ports":{"rest":8081,"grpc":9091}}})
+Log: config again: [object Object]
 Call: setPodPorts({"chains":{"osmosis":{"exposer":98988,"faucet":1000000,"grpc":909090,"rest":6767676}}})
 Call: savePodPorts("../../__output__/custom-pod-ports.yaml")
 Call: setup()
 helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version v0.2.4
+helm search repo starship/devnet --version v0.2.3
 Call: deploy()
 Log: Installing the helm chart. This is going to take a while.....
-helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.4
+helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.3
 Log: Run "starship get-pods" to check the status of the cluster
 Call: startPortForward()
 Log: Attempting to stop any existing port-forwards...
@@ -42,8 +43,8 @@ helm delete osmojs"
 exports[`StarshipClient setup 2`] = `
 "helm repo add starship https://cosmology-tech.github.io/starship/
 helm repo update
-helm search repo starship/devnet --version v0.2.4
-helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.4
+helm search repo starship/devnet --version v0.2.3
+helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.3
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
 kubectl port-forward pods/osmosis-1-genesis-0 1317:6767676 > /dev/null 2>&1 &

@@ -25,12 +25,12 @@ export interface StarshipContext {
 };
 
 export const defaultStarshipContext: Partial<StarshipContext> = {
-  helmName: 'starship',
+  helmName: '',
   helmRepo: 'starship',
   helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
   helmChart: 'starship/devnet',
-  helmVersion: 'v0.2.4',
   helmNamespace: '',
+  helmVersion: '',
 };
 
 export interface PodPorts {
@@ -45,6 +45,9 @@ export interface PodPorts {
     [relayerName: string]: Ports
   },
 }
+
+const defaultName: string = "starship"
+const defaultVersion: string = "v0.2.6"
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -205,6 +208,7 @@ export class StarshipClient implements StarshipClientI {
   public loadConfig(): void {
     this.ensureFileExists(this.ctx.helmFile);
     this.config = this.loadYaml(this.ctx.helmFile) as StarshipConfig;
+    this.overrideNameAndVersion();
   }
 
   public saveConfig(): void {
@@ -222,6 +226,7 @@ export class StarshipClient implements StarshipClientI {
 
   public setConfig(config: StarshipConfig): void {
     this.config = config;
+    this.overrideNameAndVersion();
   }
 
   public setContext(ctx: StarshipContext): void {
@@ -230,6 +235,32 @@ export class StarshipClient implements StarshipClientI {
 
   public setPodPorts(ports: PodPorts): void {
     this.podPorts = deepmerge(defaultPorts, ports);
+  }
+
+  private overrideNameAndVersion(): void {
+    if (!this.config) {
+      throw new Error('no config!');
+    }
+
+    // Override config name and version if provided in context
+    if (this.ctx.helmName) {
+      this.config.name = this.ctx.helmName;
+    }
+    if (this.ctx.helmVersion) {
+      this.config.version = this.ctx.helmVersion;
+    }
+
+    // Use default name and version if not provided
+    if (!this.config.name) {
+      this.log(chalk.yellow("No name specified, using default name: " + defaultName));
+      this.config.name = defaultName;
+    }
+    if (!this.config.version) {
+      this.log(chalk.yellow("No version specified, using default version: " + defaultVersion));
+      this.config.version = defaultVersion;
+    }
+
+    this.log('config again: ' + this.config);
   }
 
   public getArgs(): string[] {
@@ -287,7 +318,7 @@ export class StarshipClient implements StarshipClientI {
       'repo',
       this.ctx.helmChart,
       '--version',
-      this.ctx.helmVersion
+      this.config.version
     ]);
   }
 
@@ -307,10 +338,10 @@ export class StarshipClient implements StarshipClientI {
       'install',
       '-f',
       this.ctx.helmFile,
-      this.ctx.helmName,
+      this.config.name,
       this.ctx.helmChart,
       '--version',
-      this.ctx.helmVersion,
+      this.config.version,
       ...this.getDeployArgs(),
       ...options,
     ];
@@ -341,7 +372,7 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public deleteHelm(): void {
-    this.exec(['helm', 'delete', this.ctx.helmName]);
+    this.exec(['helm', 'delete', this.config.name]);
   }
 
   public getPods(): void {
