@@ -10,6 +10,7 @@ on:
       - "!starship/docker/**"
       - ".github/workflows/pr-tests.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-pr-tests
