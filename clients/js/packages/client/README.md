@@ -120,15 +120,15 @@ The `StarshipClient` simplifies managing Kubernetes resources, specifically tail
 First, you need to import and initialize the `StarshipClient` with your Helm configuration:
 
 ```js
-import { StarshipClient } from '@starship-ci/client';
+import {StarshipClient} from '@starship-ci/client';
 
 const client = new StarshipClient({
-  helmName: 'osmojs',
-  helmFile: 'path/to/config.yaml',
-  helmRepo: 'starship',
-  helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-  helmChart: 'devnet',
-  helmVersion: 'v0.2.3'
+  name: 'osmojs',
+  config: 'path/to/config.yaml',
+  repo: 'starship',
+  repoUrl: 'https://cosmology-tech.github.io/starship/',
+  chart: 'devnet',
+  version: 'v0.2.3'
 });
 ```
 

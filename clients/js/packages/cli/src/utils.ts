@@ -47,7 +47,7 @@ export const loadConfig = (argv: any): Config => {
   let starship: StarshipConfig = {} as StarshipConfig;
 
   if (argv.config) {
-    context.helmFile = argv.config;
+    context.config = argv.config;
   }
 
   console.log("context", context);
@@ -61,9 +61,9 @@ export const loadConfig = (argv: any): Config => {
     }
   });
 
-  if (context.helmFile) {
-    context.helmFile = resolvePath(context.helmFile);
-    starship = loadYaml(context.helmFile) as StarshipConfig
+  if (context.config) {
+    context.config = resolvePath(context.config);
+    starship = loadYaml(context.config) as StarshipConfig
   }
 
   console.log("starship: ", starship);
@@ -91,9 +91,9 @@ Configuration File:
                         Command-line options will override settings from this file if both are provided.
 
 Command-line Options:
-  --helmName <name>     Specify the Helm release name, default: starship.
+  --name <name>     Specify the Helm release name, default: starship.
                         Will overide config file settings for name.
-  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.3.
+  --version <ver>   Specify the version of the Helm chart, default: v0.2.6.
                         Will overide config file settings for version.
 
 Examples:
