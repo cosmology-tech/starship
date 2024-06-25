@@ -595,4 +595,10 @@ export class StarshipClient implements StarshipClientI {
       console.log(pid);
     });
   }
+
+  public check(): void {
+    this.checkDependencies();
+    this.exec(['helm', 'version']);
+    this.exec(['kubectl', 'version', '--short']);
+  }
 }
