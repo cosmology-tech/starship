@@ -103,6 +103,9 @@ async function main() {
     case 'undeploy':
       client.deleteHelm();
       break;
+    case 'check':
+      client.check();
+      break;
     default:
       console.log(`Unknown command: ${command}`);
       displayUsage();
