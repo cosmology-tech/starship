@@ -1,6 +1,6 @@
 {
   "name": "@starship-ci/client",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "Starship CI Client",
   "main": "index.js",
@@ -24,6 +24,8 @@
     "clean": "del dist/**",
     "prepare": "npm run build",
     "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy",
+    "lint": "eslint .",
+    "format": "eslint . --fix",
     "test": "jest",
     "test:watch": "jest --watch"
   },

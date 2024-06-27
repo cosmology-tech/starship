@@ -18,8 +18,8 @@ export const createClient = () => {
   };
 
   const client = new StarshipClient({
-    helmName: 'osmojs',
-    helmFile: relative(process.cwd(), config.configPath),
+    name: 'osmojs',
+    config: relative(process.cwd(), config.configPath),
   });
 
   const handler = {

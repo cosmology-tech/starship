@@ -10,6 +10,7 @@ on:
       - "!starship/docker/**"
       - ".github/workflows/pr-tests.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-pr-tests
@@ -75,10 +76,9 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.5.1
+        uses: cosmology-tech/starship-action@0.5.5
         with:
           config: ${{ env.CONFIG_FILE }}
-          version: 0.0.0
           chart: ./starship/charts/devnet
           cli-version: 0.0.0
 

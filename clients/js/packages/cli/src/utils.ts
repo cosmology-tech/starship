@@ -1,12 +1,10 @@
 import {defaultStarshipContext, StarshipConfig, StarshipContext} from '@starship-ci/client'; // Adjust the import path as necessary
-import { type Question } from 'inquirerer';
 import chalk from 'chalk';
 import {readFileSync} from 'fs';
 import * as yaml from 'js-yaml';
-import {dirname, resolve} from 'path';
+import { resolve} from 'path';
 
 import {readAndParsePackageJson} from './package';
-import deepmerge from 'deepmerge';
 
 // Function to display the version information
 export function displayVersion() {
@@ -32,24 +30,19 @@ export interface Config {
 }
 
 export const params: string[] = [
-  'helmName',
-  'helmFile',
-  'helmRepo',
-  'helmRepoUrl',
-  'helmChart',
-  'helmVersion',
-  'helmNamespace',
+  'config',
+  'name',
+  'version',
+  'repo',
+  'repoUrl',
+  'chart',
+  'namespace',
 ]
 
 export const loadConfig = (argv: any): Config => {
   console.log("argv: ", argv);
-  console.log("argv.config: ", argv.config);
   let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
   let starship: StarshipConfig = {} as StarshipConfig;
-
-  if (argv.config) {
-    context = deepmerge(defaultStarshipContext, loadYaml(argv.config)) as StarshipContext
-  }
 
   console.log("context", context);
 
@@ -62,10 +55,9 @@ export const loadConfig = (argv: any): Config => {
     }
   });
 
-  if (context.helmFile) {
-    const dir = argv.config ? dirname(argv.config) : process.cwd();
-    context.helmFile = resolve(resolvePath(dir), context.helmFile);
-    starship = loadYaml(context.helmFile) as StarshipConfig
+  if (context.config) {
+    context.config = resolvePath(context.config);
+    starship = loadYaml(context.config) as StarshipConfig
   }
 
   console.log("starship: ", starship);
@@ -89,19 +81,24 @@ Commands:
   version, -v        Display the version of the Starship Client.
 
 Configuration File:
-  --config <path>       Specify the path to the JSON configuration file containing all settings.
+  --config <path>       Specify the path to the configuration file containing the actual config file. Required.
                         Command-line options will override settings from this file if both are provided.
 
 Command-line Options:
-  --helmFile <path>     Specify the path to the Helm file, the actual config file. Required.
-  --helmName <name>     Specify the Helm release name, default: starship.
-  --helmVersion <ver>   Specify the version of the Helm chart, default: v0.2.0.
+  --name <name>     Specify the Helm release name, default: starship.
+                        Will overide config file settings for name.
+  --version <ver>   Specify the version of the Helm chart, default: v0.2.6.
+                        Will overide config file settings for version.
 
 Examples:
-  $ starship setup
-  $ starship deploy --helmFile ./config/helm.yaml --helmName my-release
-  $ starship start-ports --config ./config/settings.json
-  $ starship stop --config ./config/settings.json
+  $ starship start --config ./config/two-chain.yaml
+  $ starship stop --config ./config/two-chain.yaml
+  
+If you want to run the deployment step by step
+    $ starship deploy --config ./config/two-chain.yaml
+    $ starship start-ports --config ./config/two-chain.yaml
+    $ starship stop-ports --config ./config/two-chain.yaml
+    $ starship stop --config ./config/two-chain.yaml
 
 Additional Help:
   $ starship help          Display this help information.

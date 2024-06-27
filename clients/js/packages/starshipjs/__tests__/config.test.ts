@@ -1,7 +1,7 @@
+import { ChainRegistryFetcher } from "@chain-registry/client";
 import path from "path";
 
 import { Config, ConfigContext } from "../src/config";
-import { ChainRegistryFetcher } from "@chain-registry/client";
 
 // it's more recommended to use ConfigContext.init to set the config file and registry.
 it("1. throws without init;\n 2. init the setup and gets config;\n 3. throws when double init;\n", async () => {

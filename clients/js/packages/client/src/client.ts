@@ -7,30 +7,30 @@ import * as os from 'os';
 import { dirname, resolve } from 'path';
 import * as shell from 'shelljs';
 
-import {Chain, Relayer, Script, StarshipConfig} from './config';
+import {Chain, Relayer, StarshipConfig} from './config';
 import { Ports } from './config';
 import { dependencies as defaultDependencies, Dependency } from "./deps";
 import { readAndParsePackageJson } from './package';
 
 export interface StarshipContext {
-  helmName?: string;
-  helmFile?: string;
-  helmRepo?: string;
-  helmRepoUrl?: string;
-  helmChart?: string;
-  helmVersion?: string;
-  helmNamespace?: string;
+  name?: string;
+  config?: string;
+  repo?: string;
+  repoUrl?: string;
+  chart?: string;
+  version?: string;
+  namespace?: string;
   verbose?: boolean;
   curdir?: string;
 };
 
 export const defaultStarshipContext: Partial<StarshipContext> = {
-  helmName: 'starship',
-  helmRepo: 'starship',
-  helmRepoUrl: 'https://cosmology-tech.github.io/starship/',
-  helmChart: 'starship/devnet',
-  helmVersion: 'v0.2.4',
-  helmNamespace: '',
+  name: '',
+  repo: 'starship',
+  repoUrl: 'https://cosmology-tech.github.io/starship/',
+  chart: 'starship/devnet',
+  namespace: '',
+  version: '',
 };
 
 export interface PodPorts {
@@ -45,6 +45,9 @@ export interface PodPorts {
     [relayerName: string]: Ports
   },
 }
+
+const defaultName: string = "starship"
+const defaultVersion: string = "v0.2.6"
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -203,12 +206,13 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public loadConfig(): void {
-    this.ensureFileExists(this.ctx.helmFile);
-    this.config = this.loadYaml(this.ctx.helmFile) as StarshipConfig;
+    this.ensureFileExists(this.ctx.config);
+    this.config = this.loadYaml(this.ctx.config) as StarshipConfig;
+    this.overrideNameAndVersion();
   }
 
   public saveConfig(): void {
-    this.saveYaml(this.ctx.helmFile, this.config);
+    this.saveYaml(this.ctx.config, this.config);
   }
 
   public savePodPorts(filename: string): void {
@@ -222,6 +226,7 @@ export class StarshipClient implements StarshipClientI {
 
   public setConfig(config: StarshipConfig): void {
     this.config = config;
+    this.overrideNameAndVersion();
   }
 
   public setContext(ctx: StarshipContext): void {
@@ -232,17 +237,43 @@ export class StarshipClient implements StarshipClientI {
     this.podPorts = deepmerge(defaultPorts, ports);
   }
 
+  private overrideNameAndVersion(): void {
+    if (!this.config) {
+      throw new Error('no config!');
+    }
+
+    // Override config name and version if provided in context
+    if (this.ctx.name) {
+      this.config.name = this.ctx.name;
+    }
+    if (this.ctx.version) {
+      this.config.version = this.ctx.version;
+    }
+
+    // Use default name and version if not provided
+    if (!this.config.name) {
+      this.log(chalk.yellow("No name specified, using default name: " + defaultName));
+      this.config.name = defaultName;
+    }
+    if (!this.config.version) {
+      this.log(chalk.yellow("No version specified, using default version: " + defaultVersion));
+      this.config.version = defaultVersion;
+    }
+
+    this.log('config again: ' + this.config);
+  }
+
   public getArgs(): string[] {
     const args = [];
-    if (this.ctx.helmNamespace) {
-      args.push('--namespace', this.ctx.helmNamespace);
+    if (this.ctx.namespace) {
+      args.push('--namespace', this.ctx.namespace);
     }
     return args;
   }
 
   public getDeployArgs(): string[] {
     const args = this.getArgs();
-    if (this.ctx.helmNamespace) {
+    if (this.ctx.namespace) {
       args.push('--create-namespace');
     }
     return args;
@@ -254,7 +285,7 @@ export class StarshipClient implements StarshipClientI {
       'yarn',
       'run',
       'jest',
-      `--testPathPattern=../${this.ctx.helmRepo}`,
+      `--testPathPattern=../${this.ctx.repo}`,
       '--verbose',
       '--bail'
     ]);
@@ -277,17 +308,17 @@ export class StarshipClient implements StarshipClientI {
       'helm',
       'repo',
       'add',
-      this.ctx.helmRepo,
-      this.ctx.helmRepoUrl
+      this.ctx.repo,
+      this.ctx.repoUrl
     ]);
     this.exec(['helm', 'repo', 'update']);
     this.exec([
       'helm',
       'search',
       'repo',
-      this.ctx.helmChart,
+      this.ctx.chart,
       '--version',
-      this.ctx.helmVersion
+      this.config.version
     ]);
   }
 
@@ -299,24 +330,24 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public deploy(options: string[] = []): void {
-    this.ensureFileExists(this.ctx.helmFile);
+    this.ensureFileExists(this.ctx.config);
     this.log("Installing the helm chart. This is going to take a while.....");
 
     const cmd: string[] = [
       'helm',
       'install',
       '-f',
-      this.ctx.helmFile,
-      this.ctx.helmName,
-      this.ctx.helmChart,
+      this.ctx.config,
+      this.config.name,
+      this.ctx.chart,
       '--version',
-      this.ctx.helmVersion,
+      this.config.version,
       ...this.getDeployArgs(),
       ...options,
     ];
 
     // Determine the data directory of the config file
-    const datadir = resolve(dirname(this.ctx.helmFile!));
+    const datadir = resolve(dirname(this.ctx.config!));
 
     // Iterate through each chain to add script arguments
     this.config.chains.forEach((chain, chainIndex) => {
@@ -336,12 +367,12 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public debug(): void {
-    this.ensureFileExists(this.ctx.helmFile);
+    this.ensureFileExists(this.ctx.config);
     this.deploy(['--dry-run', '--debug']);
   }
 
   public deleteHelm(): void {
-    this.exec(['helm', 'delete', this.ctx.helmName]);
+    this.exec(['helm', 'delete', this.config.name]);
   }
 
   public getPods(): void {

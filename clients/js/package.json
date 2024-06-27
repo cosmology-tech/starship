@@ -18,6 +18,8 @@
     "clean": "lerna run clean",
     "build": "lerna run build --stream",
     "symlink": "symlink-workspace --logLevel error",
+    "lint": "lerna run lint",
+    "format": "lerna run format",
     "postinstall": "yarn symlink",
     "publish": "yarn build; yarn lerna publish --no-private",
     "publish:minor": "yarn build; yarn lerna publish minor --no-private"
