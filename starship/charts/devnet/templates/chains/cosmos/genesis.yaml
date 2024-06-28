@@ -207,9 +207,11 @@ spec:
               mv $CHAIN_DIR/config/provider_priv_validator_key.json $CHAIN_DIR/config/priv_validator_key.json
 
               echo "Create consumer addition proposal"
-
+              cat /proposal/proposal.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
+            - mountPath: /proposal
+              name: proposal
             - mountPath: {{ $chain.home }}
               name: node
             - mountPath: /configs
@@ -455,6 +457,11 @@ spec:
         {{- if and ($chain.faucet.enabled) (eq $chain.faucet.type "starship") }}
         - name: faucet
           emptyDir: { }
+        {{- end }}
+        {{- if $chain.ics.enabled }}
+        - name: proposal
+          configMap:
+            name: consumer-proposal-{{ $chain.hostname }}
         {{- end }}
 ---
 {{- end }}

@@ -29,7 +29,8 @@ data:
     {{ toJson $chain.genesis | nindent 4 }}
 ---
 {{- end }}
-{{- if hasKey $chain.ics.enabled }}
+{{- if $chain.ics.enabled }}
+{{ $icsChain := include "devnet.fullchain" (dict "name" $chain.ics.provider "file" $defaultFile "context" $) | fromJson }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -58,7 +59,8 @@ data:
       "validators_power_cap": 0,
       "validator_set_cap": 0,
       "allowlist": [],
-      "denylist": []
+      "denylist": [],
+      "deposit": "10000{{ $$icsChain.denom }}"
     }
 ---
 {{- end }}
