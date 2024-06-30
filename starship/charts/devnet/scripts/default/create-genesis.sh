@@ -46,7 +46,7 @@ then
   done
 fi
 
-## if facuet not enabled then add validator and relayer with index as keys and into gentx
+## if faucet not enabled then add validator and relayer with index as keys and into gentx
 if [[ $FAUCET_ENABLED == "false" && $NUM_VALIDATORS -gt "1" ]];
 then
   ## Add validators key and delegate tokens
