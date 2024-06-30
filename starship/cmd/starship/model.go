@@ -12,7 +12,7 @@ type Chain struct {
 	NumValidators int                    `name:"num-validators" json:"num_validators,omitempty" yaml:"numValidators"`
 	Scripts       map[string]ScriptData  `name:"scripts" json:"scripts,omitempty" yaml:"scripts"`
 	Cometmock     *Feature               `name:"cometmock" json:"cometmock,omitempty" yaml:"cometmock"`
-	Faucet        *Feature               `name:"facuet" json:"faucet,omitempty" yaml:"faucet"`
+	Faucet        *Feature               `name:"faucet" json:"faucet,omitempty" yaml:"faucet"`
 	Ports         Port                   `name:"ports" json:"ports,omitempty" yaml:"ports"`
 	Upgrade       Upgrade                `name:"upgrade" json:"upgrade,omitempty" yaml:"upgrade"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis,omitempty" yaml:"genesis"`
@@ -107,7 +107,7 @@ func (f *Feature) GetRESTAddr() string {
 // Need not be fully compatible with the values.schema.json file, just need
 // parts of the config file for performing  various functions, mainly port-forwarding
 // todo: move this to a more common place, outside just tests
-// todo: can be moved to proto defination
+// todo: can be moved to proto definition
 type HelmConfig struct {
 	Chains     []*Chain   `name:"chains" json:"chains" yaml:"chains"`
 	Relayers   []*Relayer `name:"relayers" json:"relayers" yaml:"relayers"`
