@@ -29,7 +29,7 @@ func (s *TestSuite) TestFaucet_Status() {
 	s.T().Log("running test for /status endpoint for faucet")
 
 	for _, chain := range s.config.Chains {
-		s.Run(fmt.Sprintf("facuet test for: %s", chain.ID), func() {
+		s.Run(fmt.Sprintf("faucet test for: %s", chain.ID), func() {
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
@@ -122,7 +122,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 	expCreditedAmt := float64(10000000000)
 
 	for _, chain := range s.config.Chains {
-		s.Run(fmt.Sprintf("facuet test for: %s", chain.ID), func() {
+		s.Run(fmt.Sprintf("faucet test for: %s", chain.ID), func() {
 			if chain.Ports.Faucet == 0 {
 				s.T().Skip("faucet not exposed via ports")
 			}
@@ -149,7 +149,7 @@ func (s *TestSuite) TestFaucet_Credit() {
 			afterBalance := s.getAccountBalance(chain, addr, denom)
 			s.T().Log("address:", addr, "after balance: ", afterBalance, "before balance:", beforeBalance)
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
-			// hence checking for difference is atleast expected value
+			// hence checking for difference is at least expected value
 			s.Require().GreaterOrEqual(afterBalance-beforeBalance, expCreditedAmt)
 		})
 	}
