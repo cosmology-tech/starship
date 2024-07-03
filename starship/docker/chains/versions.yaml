@@ -313,3 +313,9 @@ chains:
     tags:
       - v3.1.0
       - v3.0.0
+  - name: kujira
+    base: ghcr.io/strangelove-ventures/heighliner/kujira
+    tags:
+      - v1.1.0
+      - v1.0.2
+      - v0.9.3
