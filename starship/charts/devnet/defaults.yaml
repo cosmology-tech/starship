@@ -669,6 +669,33 @@ defaultChains:
             exponent: 6
         coingecko_id: inter-stable-token
         keywords: [ "inter-stable-token" ]
+  kujira:
+    image: ghcr.io/cosmology-tech/starship/kujira:v1.1.0
+    home: /root/.kujira
+    binary: kujirad
+    prefix: kujira
+    denom: ukuji
+    prettyName: Kujira
+    coins: 100000000000000ukuji
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/Team-Kujira/core
+    assets:
+      - base: ukuji
+        description: "The native staking and governance token of the Kujira chain."
+        name: Kujira
+        display: kuji
+        symbol: KUJI
+        logo_URIs:
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/images/kuji.png"
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/images/kuji.svg"
+        denom_units:
+          - denom: ukuji
+            exponent: 0
+          - denom: kuji
+            exponent: 6
+        coingecko_id: kujira
+        keywords: [ "kujira" ]
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz

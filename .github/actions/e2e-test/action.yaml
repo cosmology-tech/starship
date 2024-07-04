@@ -92,7 +92,7 @@ runs:
 
     - name: Setup Test infra
       id: starship-action
-      uses: cosmology-tech/starship-action@0.5.5
+      uses: cosmology-tech/starship-action@0.5.6
       with:
         config: ${{ env.CONFIG_FILE }}
         chart: ./starship/charts/devnet
