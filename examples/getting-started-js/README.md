@@ -66,3 +66,4 @@ You can then interact with the chain on localhost at
 * Osmosis: http://localhost:26653/status
 * Cosmos: http://localhost:26657/status
 * Ping Pub: http://localhost:8080
+* Local Chain Registry: http://localhost:8081/chains
