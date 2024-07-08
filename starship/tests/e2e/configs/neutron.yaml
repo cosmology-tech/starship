@@ -13,7 +13,7 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
-    numValidators: 2
+    numValidators: 1
     ports:
       rest: 1317
       rpc: 26657
@@ -27,6 +27,10 @@ relayers:
     chains:
       - neutron-1
       - cosmoshub-4
+    ics:
+      enabled: true
+      consumer: neutron-1
+      provider: cosmoshub-4
 
 registry:
   enabled: true

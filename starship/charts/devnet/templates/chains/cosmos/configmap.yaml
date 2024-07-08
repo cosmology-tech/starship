@@ -60,7 +60,7 @@ data:
       "validator_set_cap": 0,
       "allowlist": [],
       "denylist": [],
-      "deposit": "10000{{ $$icsChain.denom }}"
+      "deposit": "10000{{ $icsChain.denom }}"
     }
 ---
 {{- end }}
@@ -87,4 +87,6 @@ data:
     {{- $.Files.Get "scripts/default/transfer-tokens.sh" | nindent 4 }}
   ibc-connection.sh: |-
     {{- $.Files.Get "scripts/default/ibc-connection.sh" | nindent 4 }}
+  create-ics.sh: |-
+    {{- $.Files.Get "scripts/default/create-ics.sh" | nindent 4 }}
 ---

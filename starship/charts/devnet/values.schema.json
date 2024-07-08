@@ -602,7 +602,7 @@
                   "type": "boolean"
                 },
                 "channel-version": {
-                  "type": "string"
+                  "type": "number"
                 },
                 "order": {
                   "type": "string"
@@ -610,11 +610,30 @@
               },
               "required": [
                 "a-chain",
-                "b-chain",
                 "a-port",
                 "b-port"
               ]
             }
+          },
+          "ics": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "consumer": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "enabled",
+              "provider",
+              "consumer"
+            ]
           },
           "resources": { "$ref":  "#/$def/resources" },
           "ports": {

@@ -124,13 +124,27 @@ spec:
                 "{{ $fullchain.faucet.enabled }}" || true
               {{- end }}
 
+              {{- if $relayer.ics.enabled }}
+              echo "Creating IBC connection for {{ $relayer.ics.consumer }}..."
+              hermes create connection --a-chain {{ $relayer.ics.consumer }} --a-client 07-tendermint-0 --b-client 07-tendermint-0
+              hermes create channel --a-chain {{ $relayer.ics.consumer }} --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
+              {{- end }}
+
               {{- range $i, $channel := $relayer.channels }}
               hermes create channel \
                 {{- if (get $channel "new-connection" | default false) }}
                 --new-client-connection --yes \
+                --b-chain {{ get $channel "b-chain" }} \
+                {{- else if (hasKey $channel "a-connection") }}
+                --a-connection {{ get $channel "a-connection" }} \
+                {{- end }}
+                {{- if hasKey $channel "channel-version" }}
+                --channel-version {{ get $channel "channel-version" }} \
+                {{- end }}
+                {{- if hasKey $channel "order" }}
+                --order {{ get $channel "order" }} \
                 {{- end }}
                 --a-chain {{ get $channel "a-chain" }} \
-                --b-chain {{ get $channel "b-chain" }} \
                 --a-port {{ get $channel "a-port" }} \
                 --b-port {{ get $channel "b-port" }}
               {{- end }}

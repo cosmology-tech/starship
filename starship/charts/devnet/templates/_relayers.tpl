@@ -21,8 +21,16 @@ Usage:
 
 {{ $_ := set $relayer "fullname" (printf "%s-%s" $relayer.type $relayer.name) }}
 
+{{- if not (hasKey $relayer "ics")}}
+{{ $_ = set $relayer "ics" (dict "enabled" false) }}
+{{- end }}
+
 {{- if not (hasKey $relayer "channels")}}
+{{- if $relayer.ics.enabled }}
+{{ $_ = set $relayer "channels" (list (dict "a-chain" $relayer.ics.consumer "a-connection" "connection-0" "a-port" "consumer" "b-port" "provider" "order" "ordered" "channel-version" 1)) }}
+{{- else }}
 {{ $_ = set $relayer "channels" (list (dict "a-chain" (index $relayer.chains 0) "b-chain" (index $relayer.chains 1) "a-port" "transfer" "b-port" "transfer" "new-connection" true)) }}
+{{- end }}
 {{- end }}
 
 {{ println "@return" }}
