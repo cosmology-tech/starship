@@ -52,6 +52,11 @@ chains:
   - name: gaia
     base: ghcr.io/strangelove-ventures/heighliner/gaia
     tags:
+      - v18.1.0
+      - v18.0.0
+      - v17.3.0
+      - v17.2.0
+      - v17.1.0
       - v16.0.0
       - v15.2.0
       - v15.1.0
@@ -298,6 +303,8 @@ chains:
   - name: neutron
     base: ghcr.io/strangelove-ventures/heighliner/neutron
     tags:
+      - v3.0.6
+      - v3.0.5
       - v3.0.4
       - v2.0.1
       - v1.0.4
