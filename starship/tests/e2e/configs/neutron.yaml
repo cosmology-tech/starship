@@ -1,6 +1,7 @@
 chains:
   - id: neutron-1
     name: neutron
+    image: ghcr.io/strangelove-ventures/heighliner/neutron:v3.0.6
     numValidators: 1
     faucet:
       enabled: false
@@ -13,6 +14,7 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
+    image: ghcr.io/strangelove-ventures/heighliner/gaia:v17.3.0
     numValidators: 1
     ports:
       rest: 1317
