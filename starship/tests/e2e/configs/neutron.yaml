@@ -14,7 +14,7 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
-    image: ghcr.io/cosmology-tech/starship/gaia:v17.3.0
+    image: ghcr.io/cosmology-tech/starship/gaia:v17.2.0
     numValidators: 1
     ports:
       rest: 1317
@@ -25,12 +25,13 @@ chains:
 relayers:
   - name: neutron-cosmos
     type: hermes
+    image: ghcr.io/cosmology-tech/starship/hermes:1.10.0
     replicas: 1
     chains:
       - neutron-1
       - cosmoshub-4
     ics:
-      enabled: false
+      enabled: true
       consumer: neutron-1
       provider: cosmoshub-4
 
