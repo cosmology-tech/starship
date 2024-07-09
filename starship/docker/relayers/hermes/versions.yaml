@@ -1,6 +1,6 @@
 base: ghcr.io/informalsystems/hermes
 versions:
-  - v1.10.0
+  - 1.10.0
   - v1.9.0
   - v1.8.3
   - v1.7.4
