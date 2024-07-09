@@ -1,7 +1,7 @@
 chains:
   - id: neutron-1
     name: neutron
-    image: ghcr.io/strangelove-ventures/heighliner/neutron:v3.0.6
+    image: ghcr.io/cosmology-tech/starship/neutron:v3.0.6
     numValidators: 1
     faucet:
       enabled: false
@@ -14,7 +14,7 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
-    image: ghcr.io/strangelove-ventures/heighliner/gaia:v17.3.0
+    image: ghcr.io/cosmology-tech/starship/gaia:v17.3.0
     numValidators: 1
     ports:
       rest: 1317
@@ -30,7 +30,7 @@ relayers:
       - neutron-1
       - cosmoshub-4
     ics:
-      enabled: true
+      enabled: false
       consumer: neutron-1
       provider: cosmoshub-4
 

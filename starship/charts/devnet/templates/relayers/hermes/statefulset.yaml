@@ -130,24 +130,24 @@ spec:
               hermes create channel --a-chain {{ $relayer.ics.consumer }} --a-port consumer --b-port provider --order ordered --a-connection connection-0 --channel-version 1
               {{- end }}
 
-              {{- range $i, $channel := $relayer.channels }}
-              hermes create channel \
-                {{- if (get $channel "new-connection" | default false) }}
-                --new-client-connection --yes \
-                --b-chain {{ get $channel "b-chain" }} \
-                {{- else if (hasKey $channel "a-connection") }}
-                --a-connection {{ get $channel "a-connection" }} \
-                {{- end }}
-                {{- if hasKey $channel "channel-version" }}
-                --channel-version {{ get $channel "channel-version" }} \
-                {{- end }}
-                {{- if hasKey $channel "order" }}
-                --order {{ get $channel "order" }} \
-                {{- end }}
-                --a-chain {{ get $channel "a-chain" }} \
-                --a-port {{ get $channel "a-port" }} \
-                --b-port {{ get $channel "b-port" }}
-              {{- end }}
+{{/*              {{- range $i, $channel := $relayer.channels }}*/}}
+{{/*              hermes create channel \*/}}
+{{/*                {{- if (get $channel "new-connection" | default false) }}*/}}
+{{/*                --new-client-connection --yes \*/}}
+{{/*                --b-chain {{ get $channel "b-chain" }} \*/}}
+{{/*                {{- else if (hasKey $channel "a-connection") }}*/}}
+{{/*                --a-connection {{ get $channel "a-connection" }} \*/}}
+{{/*                {{- end }}*/}}
+{{/*                {{- if hasKey $channel "channel-version" }}*/}}
+{{/*                --channel-version {{ get $channel "channel-version" }} \*/}}
+{{/*                {{- end }}*/}}
+{{/*                {{- if hasKey $channel "order" }}*/}}
+{{/*                --order {{ get $channel "order" }} \*/}}
+{{/*                {{- end }}*/}}
+{{/*                --a-chain {{ get $channel "a-chain" }} \*/}}
+{{/*                --a-port {{ get $channel "a-port" }} \*/}}
+{{/*                --b-port {{ get $channel "b-port" }}*/}}
+{{/*              {{- end }}*/}}
           volumeMounts:
             - mountPath: /root
               name: relayer
@@ -171,7 +171,7 @@ spec:
             - |
               RLY_INDEX=${HOSTNAME##*-}
               echo "Relayer Index: $RLY_INDEX"
-
+              sleep infinity
               hermes start
           resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
           securityContext:

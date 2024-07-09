@@ -12,6 +12,7 @@ PROPOSAL_FILE="${PROPOSAL_FILE}"
 KEY_NAME="ics-setup"
 MAX_RETRIES=3
 RETRY_INTERVAL=30
+SUBMIT_PROPOSAL_CMD=""
 
 add_key() {
   # Add test keys to the keyring and self delegate initial coins
@@ -40,6 +41,17 @@ stake_tokens() {
   sleep 5
 }
 
+determine_proposal_command() {
+  echo "Determining the correct command to submit proposals..."
+  HELP_OUTPUT=$($CHAIN_BIN tx gov --help)
+  if echo "$HELP_OUTPUT" | grep -q "submit-legacy-proposal"; then
+    SUBMIT_PROPOSAL_CMD="submit-legacy-proposal"
+  else
+    SUBMIT_PROPOSAL_CMD="submit-proposal"
+  fi
+  echo "Using $SUBMIT_PROPOSAL_CMD for submitting proposals."
+}
+
 submit_proposal() {
   echo "Get all proposals"
   PROPOSALS_OUTPUT=$($CHAIN_BIN query gov proposals --output json --node $NODE_URL 2>&1 || true)
@@ -50,7 +62,7 @@ submit_proposal() {
   fi
 
   echo "Submit gov proposal on chain"
-  PROPOSAL_TX=$($CHAIN_BIN tx gov submit-proposal consumer-addition $PROPOSAL_FILE \
+  PROPOSAL_TX=$($CHAIN_BIN tx gov $SUBMIT_PROPOSAL_CMD consumer-addition $PROPOSAL_FILE \
     --from $KEY_NAME \
     --chain-id $CHAIN_ID \
     --node $NODE_URL \
@@ -120,6 +132,7 @@ main() {
   add_key
   get_validator_address
   stake_tokens
+  determine_proposal_command
   submit_proposal
   get_proposal_id
   vote_proposal

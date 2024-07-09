@@ -39,7 +39,7 @@ data:
   proposal.json: |-
     {
       "title": "Add {{ $chain.name }} consumer chain",
-      "description": "Add {{ $chain.name }} consumer chain with id {{ $chain.id }}",
+      "summary": "Add {{ $chain.name }} consumer chain with id {{ $chain.id }}",
       "chain_id": "{{ $chain.id }}",
       "initial_height": {
         "revision_height": 0,
