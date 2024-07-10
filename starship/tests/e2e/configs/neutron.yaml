@@ -1,7 +1,6 @@
 chains:
   - id: neutron-1
     name: neutron
-    image: anmol1696/neutron:v3.0.5
     numValidators: 1
     faucet:
       enabled: false
