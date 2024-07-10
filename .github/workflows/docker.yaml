@@ -16,6 +16,25 @@ on:
       - ".github/workflows/docker.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
   workflow_dispatch:
+    inputs:
+      type:
+        description: 'Type of docker image to build'
+        type: choice
+        required: true
+        options:
+          - "explorers"
+          - "faucet"
+          - "relayers"
+          - "starship"
+          - "chains"
+      process:
+        description: 'Process to run'
+        type: string
+        default: "all"
+      version:
+        description: 'Version of docker image to build'
+        type: string
+        default: "all"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-docker
@@ -66,7 +85,7 @@ jobs:
           ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push
 
       - name: Force Build and Push for workflow dispatch
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.type == matrix.build-type
         run: |
           ./starship/scripts/build-docker.sh --type ${{ matrix.build-type }} --process all --version all --push --force
 
@@ -112,6 +131,10 @@ jobs:
           cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push
 
       - name: Force Build and Push for workflow dispatch
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.type == 'chains'
         run: |
-          cd docker/chains && ./build-docker-chains.sh --chain all --tag all --push --force
+          cd docker/chains && ./build-docker-chains.sh --chain $PROCESS --tag $VERSION --push --force
+        env:
+          PROCESS: ${{ github.event.inputs.process }}
+          VERSION: ${{ github.event.inputs.version }}
+
