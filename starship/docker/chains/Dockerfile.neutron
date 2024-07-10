@@ -1,0 +1,17 @@
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE} as build-env
+
+ARG VERSION
+
+ENV CODE_REF="https://github.com/neutron-org/neutron/archive/refs/tags/${VERSION}.tar.gz"
+
+RUN apt-get update && apt-get install -y jq xxd curl make bash jq sed
+
+WORKDIR /opt/neutron
+
+ADD $CODE_REF neutron.tar.gz
+RUN tar --strip-components=1 -xvf neutron.tar.gz
+RUN rm -rf neutron.tar.gz
+
+RUN cd /opt/neutron && make install-test-binary
