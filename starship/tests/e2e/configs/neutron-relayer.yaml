@@ -28,6 +28,10 @@ relayers:
     chains:
       - neutron-1
       - cosmoshub-4
+    ics:
+      enabled: true
+      consumer: neutron-1
+      provider: cosmoshub-4
   - name: nqr-neutron-cosmos
     type: neutron-query-relayer
     replicas: 1
