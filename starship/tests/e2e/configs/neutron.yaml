@@ -1,7 +1,7 @@
 chains:
   - id: neutron-1
     name: neutron
-    image: ghcr.io/cosmology-tech/starship/neutron:v3.0.6
+    image: ghcr.io/cosmology-tech/starship/neutron:v3.0.5
     numValidators: 1
     faucet:
       enabled: false

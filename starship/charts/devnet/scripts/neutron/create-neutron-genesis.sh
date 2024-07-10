@@ -8,7 +8,7 @@ BINARY="${CHAIN_BIN:=neutrond}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.neutrond}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 
-BRANCH="${BRANCH:=v2.0.1}"
+BRANCH="${BRANCH:=v3.0.5}"
 
 FAUCET_ENABLED="${FAUCET_ENABLED:=true}"
 NUM_VALIDATORS="${NUM_VALIDATORS:=1}"
@@ -63,6 +63,10 @@ $BINARY add-genesis-account $($BINARY keys show -a demowallet1 --keyring-backend
 echo "Adding key.... demowallet2"
 jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet2 --index 2 --recover --keyring-backend="test"
 $BINARY add-genesis-account $($BINARY keys show -a demowallet2 --keyring-backend="test") $COINS --keyring-backend="test"
+# Add test addresses, second multisig address
+echo "Adding key.... demowallet2"
+jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet3 --index 3 --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a demowallet3 --keyring-backend="test") $COINS --keyring-backend="test"
 
 # IMPORTANT! minimum_gas_prices should always contain at least one record, otherwise the chain will not start or halt
 MIN_GAS_PRICES_DEFAULT='[{"denom":"untrn","amount":"0"}]'
@@ -775,9 +779,6 @@ function convert_bech32_base64_esc() {
 DAO_CONTRACT_ADDRESS_B64=$(convert_bech32_base64_esc "$DAO_CONTRACT_ADDRESS")
 echo $DAO_CONTRACT_ADDRESS_B64
 
-CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS="neutron1x69dz0c0emw8m2c6kp5v6c08kgjxmu30f4a8w5"
-CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64=$(convert_bech32_base64_esc "$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS")
-
 set_genesis_param admins                                 "[\"$DAO_CONTRACT_ADDRESS\"]"                    # admin module
 set_genesis_param treasury_address                       "\"$DAO_CONTRACT_ADDRESS\""                      # feeburner
 set_genesis_param fee_collector_address                  "\"$DAO_CONTRACT_ADDRESS\""                      # tokenfactory
@@ -792,7 +793,7 @@ set_genesis_param minimum_gas_prices                     "$MIN_GAS_PRICES,"     
 set_genesis_param max_total_bypass_min_fee_msg_gas_usage "\"$MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE\""    # globalfee
 set_genesis_param_jq ".app_state.globalfee.params.bypass_min_fee_msg_types" "$BYPASS_MIN_FEE_MSG_TYPES"   # globalfee
 set_genesis_param proposer_fee                          "\"0.25\""                                        # builder(POB)
-set_genesis_param escrow_account_address                "\"$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64\"," # builder(POB)
+set_genesis_param escrow_account_address                "\"$DAO_CONTRACT_ADDRESS_B64\","                  # builder(POB)
 set_genesis_param sudo_call_gas_limit                   "\"1000000\""                                     # contractmanager
 set_genesis_param max_gas                               "\"1000000000\""                                  # consensus_params
 
