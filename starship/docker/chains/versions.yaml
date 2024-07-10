@@ -301,7 +301,8 @@ chains:
     tags:
       - v1.4.4
   - name: neutron
-    base: ghcr.io/strangelove-ventures/heighliner/neutron
+    base: golang:1.21-bullseye
+    file: Dockerfile.neutron
     tags:
       - v3.0.6
       - v3.0.5
