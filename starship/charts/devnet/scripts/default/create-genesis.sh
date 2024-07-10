@@ -28,6 +28,11 @@ echo "Adding key...." $(jq -r ".faucet[0].name" $KEYS_CONFIG)
 jq -r ".faucet[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".faucet[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
 $CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .faucet[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
 
+# Add test keys to the keyring and self delegate initial coins
+echo "Adding key...." $(jq -r ".keys[0].name" $KEYS_CONFIG)
+jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN keys add $(jq -r ".keys[0].name" $KEYS_CONFIG) --recover --keyring-backend="test"
+$CHAIN_BIN $CHAIN_GENESIS_CMD add-genesis-account $($CHAIN_BIN keys show -a $(jq -r .keys[0].name $KEYS_CONFIG) --keyring-backend="test") $COINS --keyring-backend="test"
+
 if [[ $FAUCET_ENABLED == "false" && $NUM_RELAYERS -gt "-1" ]];
 then
   ## Add relayers keys and delegate tokens

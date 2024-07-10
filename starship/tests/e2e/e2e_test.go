@@ -90,7 +90,7 @@ func (s *TestSuite) TestChains_StakingParams() {
 		s.T().Skip("skip tests for neutron")
 	}
 
-	expUnbondingTime := "90s" // default value
+	expUnbondingTime := "300s" // default value
 	switch s.configFile {
 	case "configs/one-chain.yaml":
 		expUnbondingTime = "5s" // based on genesis override in one-chain.yaml file

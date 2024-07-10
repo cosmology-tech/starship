@@ -6,12 +6,14 @@ chains:
       enabled: false
     ics:
       enabled: true
+      provider: cosmoshub-4
     ports:
       rest: 1313
       rpc: 26653
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
+    image: ghcr.io/cosmology-tech/starship/gaia:v15.0.0
     numValidators: 2
     ports:
       rest: 1317
@@ -26,6 +28,10 @@ relayers:
     chains:
       - neutron-1
       - cosmoshub-4
+    ics:
+      enabled: true
+      consumer: neutron-1
+      provider: cosmoshub-4
   - name: nqr-neutron-cosmos
     type: neutron-query-relayer
     replicas: 1

@@ -846,6 +846,9 @@ defaultScripts:
   ibcConnection:
     name: ibc-connection.sh
     file: scripts/default/ibc-connection.sh
+  createICS:
+    name: create-ics.sh
+    file: scripts/default/create-ics.sh
 
 defaultFaucet:
   cosmjs:

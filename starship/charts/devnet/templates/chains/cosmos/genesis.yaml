@@ -109,6 +109,10 @@ spec:
               echo "Create node id json file"
               NODE_ID=$($CHAIN_BIN tendermint show-node-id)
               echo '{"node_id":"'$NODE_ID'"}' > $CHAIN_DIR/config/node_id.json
+
+              echo "Create consensus key json file"
+              $CHAIN_BIN tendermint show-validator > $CHAIN_DIR/config/consensus_key.json
+              cat $CHAIN_DIR/config/consensus_key.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - mountPath: {{ $chain.home }}
@@ -171,6 +175,65 @@ spec:
           volumeMounts:
             - mountPath: /faucet
               name: faucet
+        {{- end }}
+        {{- if $chain.ics.enabled }}
+        {{ $waitParams := dict "chain" (list $chain.ics.provider) "port" $.Values.exposer.ports.rest "context" $ }}
+        {{- include "devnet.init.wait" $waitParams | indent 8 }}
+        {{ $icsChain := include "devnet.fullchain" (dict "name" $chain.ics.provider "file" $defaultFile "context" $) | fromJson }}
+        - name: init-ics
+          image: {{ $icsChain.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+          command:
+            - bash
+            - "-c"
+            - |
+              export
+
+              echo "Fetching priv keys from provider exposer"
+              curl -s http://{{ $icsChain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:8081/priv_keys | jq > $CHAIN_DIR/config/provider_priv_validator_key.json
+              cat $CHAIN_DIR/config/provider_priv_validator_key.json
+
+              echo "Replace provider priv validator key with provider keys"
+              mv $CHAIN_DIR/config/priv_validator_key.json $CHAIN_DIR/config/previous_priv_validator_key.json
+              mv $CHAIN_DIR/config/provider_priv_validator_key.json $CHAIN_DIR/config/priv_validator_key.json
+
+              echo "Create consumer addition proposal"
+              DENOM={{ $icsChain.denom }} \
+                CHAIN_ID={{ $icsChain.id }} \
+                CHAIN_BIN={{ $icsChain.binary }} \
+                NODE_URL=http://{{ $icsChain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:26657 \
+                PROPOSAL_FILE=/proposal/proposal.json \
+                bash -e /scripts/create-ics.sh
+
+              echo "create ccv state file"
+              {{ $icsChain.binary }} query provider consumer-genesis {{ $chain.id }} \
+                --node http://{{ $icsChain.hostname }}-genesis.$NAMESPACE.svc.cluster.local:26657 \
+                -o json > $CHAIN_DIR/config/ccv-state.json
+              cat $CHAIN_DIR/config/ccv-state.json | jq
+
+              echo "Update genesis file with ccv state"
+              jq -s '.[0].app_state.ccvconsumer = .[1] | .[0]' $CHAIN_DIR/config/genesis.json $CHAIN_DIR/config/ccv-state.json > $CHAIN_DIR/config/genesis-ccv.json
+              mv $CHAIN_DIR/config/genesis.json $CHAIN_DIR/config/genesis-no-ccv.json
+              mv $CHAIN_DIR/config/genesis-ccv.json $CHAIN_DIR/config/genesis.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: /proposal
+              name: proposal
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
         {{- end }}
       containers:
         - name: validator
@@ -410,6 +473,11 @@ spec:
         {{- if and ($chain.faucet.enabled) (eq $chain.faucet.type "starship") }}
         - name: faucet
           emptyDir: { }
+        {{- end }}
+        {{- if $chain.ics.enabled }}
+        - name: proposal
+          configMap:
+            name: consumer-proposal-{{ $chain.hostname }}
         {{- end }}
 ---
 {{- end }}
