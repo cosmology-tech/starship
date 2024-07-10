@@ -27,7 +27,7 @@ Usage:
 
 {{- if not (hasKey $relayer "channels")}}
 {{- if $relayer.ics.enabled }}
-{{ $_ = set $relayer "channels" (list (dict "a-chain" $relayer.ics.consumer "a-connection" "connection-0" "a-port" "consumer" "b-port" "provider" "order" "ordered" "channel-version" 1)) }}
+{{ $_ = set $relayer "channels" (list (dict "a-chain" $relayer.ics.consumer "a-connection" "connection-0" "a-port" "consumer" "b-port" "provider" "order" "ordered" "channel-version" 1) (dict "a-chain" $relayer.ics.consumer "a-port" "transfer" "b-port" "transfer" "a-connection" "connection-0")) }}
 {{- else }}
 {{ $_ = set $relayer "channels" (list (dict "a-chain" (index $relayer.chains 0) "b-chain" (index $relayer.chains 1) "a-port" "transfer" "b-port" "transfer" "new-connection" true)) }}
 {{- end }}
