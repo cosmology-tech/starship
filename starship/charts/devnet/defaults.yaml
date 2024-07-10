@@ -587,6 +587,8 @@ defaultChains:
         file: scripts/neutron/create-neutron-genesis.sh
       updateGenesis:
         file: scripts/neutron/update-genesis.sh
+      updateConfig:
+        file: scripts/neutron/update-config.sh
     assets:
       - description: The native token of Neutron chain.
         denom_units:
