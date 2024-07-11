@@ -13,7 +13,6 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
-    image: ghcr.io/cosmology-tech/starship/gaia:v17.2.0
     numValidators: 1
     ports:
       rest: 1317
