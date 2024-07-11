@@ -170,7 +170,6 @@ spec:
             - |
               RLY_INDEX=${HOSTNAME##*-}
               echo "Relayer Index: $RLY_INDEX"
-              sleep infinity
               hermes start
           resources: {{- include "devnet.node.resources" ( dict "node" $relayer "context" $ ) | trim | nindent 12 }}
           securityContext:
