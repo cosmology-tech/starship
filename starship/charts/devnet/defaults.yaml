@@ -82,7 +82,7 @@ defaultChains:
     coinType: 118
     repo: https://github.com/CosmWasm/wasmd
   cosmoshub:
-    image: ghcr.io/cosmology-tech/starship/gaia:v14.1.0
+    image: ghcr.io/cosmology-tech/starship/gaia:v17.2.0
     home: /root/.gaia
     binary: gaiad
     prefix: cosmos
