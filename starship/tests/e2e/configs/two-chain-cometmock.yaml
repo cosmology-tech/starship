@@ -12,7 +12,7 @@ chains:
       exposer: 38083
   - id: cosmoshub-4
     name: cosmoshub
-    numValidators: 2
+    numValidators: 1
     faucet:
       enabled: false
     cometmock:
