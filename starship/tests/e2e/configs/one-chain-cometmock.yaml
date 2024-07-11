@@ -12,7 +12,7 @@ chains:
       enabled: false
     cometmock:
       enabled: true
-      image: ghcr.io/informalsystems/cometmock:v0.34.x
+      image: ghcr.io/informalsystems/cometmock:v0.37.x
 
 resources:
   wait:
