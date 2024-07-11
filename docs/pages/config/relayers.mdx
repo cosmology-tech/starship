@@ -139,3 +139,33 @@ Available endpoints on
 
 One can use the exposer endpoint on the relayer to create channel from outside.
 Note: Still an experimental feature on exposer
+
+## `ics` (optional, hermes only)
+ICS directive in the `relayers` directive is used for `hermes` relayer to specify the ICS setup to use
+
+```yaml
+chains:
+- id: neutron-1
+  name: neutron
+  numValidators: 1
+  ics:
+    enabled: true
+    provider: cosmoshub-4  # chain id of the provider chain
+- id: cosmoshub-4
+  name: cosmoshub
+  numValidators: 1
+
+relayers:
+- name: neutron-cosmos
+  type: hermes
+  replicas: 1
+  chains:
+    - neutron-1
+    - cosmoshub-4
+  ics:
+    enabled: true
+    consumer: neutron-1
+    provider: cosmoshub-4
+```
+
+If `ics` is enabled, then the `consumer` and `provider` chain must be specified. With that, we automagically open the consumer and provider ports for the relayer.

@@ -317,3 +317,21 @@ chains:
 To more about CometMock, have a look at the [blog](https://informal.systems/blog/cometmock) that explains its working
 
 > Note: Current support of cometmock has been tested with multiple chains with verion `0.34.x` and `0.37.x`.
+
+## `ics` (optional)
+The `ics` directive allows you to enable interchain security on the chain. This is useful when you want to test a chain which is ICS enabled
+
+```yaml
+chains:
+- id: neutron-1
+  name: neutron
+  numValidators: 1
+  ics:
+    enabled: true
+    provider: cosmoshub-4  # chain id of the provider chain
+- id: cosmoshub-4
+  name: cosmoshub
+  numValidators: 1
+```
+
+> Note: To complete the ICS setup one also needs to setup the relayer with ics enabled. Have a look at the [relayer](https://docs.cosmology.zone/starship/config/relayers#ics)
