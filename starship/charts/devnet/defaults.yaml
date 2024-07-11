@@ -572,7 +572,7 @@ defaultChains:
           svg: https://raw.githubusercontent.com/cosmos/chain-registry/master/cheqd/images/cheq.svg
         coingecko_id: cheqd-network
   neutron:
-    image: ghcr.io/cosmology-tech/starship/neutron:v2.0.1
+    image: ghcr.io/cosmology-tech/starship/neutron:v3.0.5
     home: /root/.neutrond
     binary: neutrond
     prefix: neutron
@@ -585,6 +585,10 @@ defaultChains:
     scripts:
       createGenesis:
         file: scripts/neutron/create-neutron-genesis.sh
+      updateGenesis:
+        file: scripts/neutron/update-genesis.sh
+      updateConfig:
+        file: scripts/neutron/update-config.sh
     assets:
       - description: The native token of Neutron chain.
         denom_units:

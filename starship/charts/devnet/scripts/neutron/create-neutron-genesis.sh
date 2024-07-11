@@ -8,19 +8,23 @@ BINARY="${CHAIN_BIN:=neutrond}"
 CHAIN_DIR="${CHAIN_DIR:=$HOME/.neutrond}"
 KEYS_CONFIG="${KEYS_CONFIG:=configs/keys.json}"
 
-BRANCH="${BRANCH:=v2.0.1}"
+BRANCH="${BRANCH:=v3.0.5}"
 
 FAUCET_ENABLED="${FAUCET_ENABLED:=true}"
 NUM_VALIDATORS="${NUM_VALIDATORS:=1}"
 NUM_RELAYERS="${NUM_RELAYERS:=0}"
 
+P2PPORT=${P2PPORT:-26656}
+RPCPORT=${RPCPORT:-26657}
+RESTPORT=${RESTPORT:-1317}
+ROSETTA=${ROSETTA:-8080}
+
 GENESIS_PATH="$CHAIN_DIR/config/genesis.json"
-BASE_DIR=./data
 
 CONTRACTS_BINARIES_DIR=${CONTRACTS_BINARIES_DIR:-./contracts}
 THIRD_PARTY_CONTRACTS_DIR=${THIRD_PARTY_CONTRACTS_DIR:-./contracts_thirdparty}
 
-set -eux
+set -euxo pipefail
 
 mkdir -p $CONTRACTS_BINARIES_DIR $THIRD_PARTY_CONTRACTS_DIR
 
@@ -63,6 +67,39 @@ $BINARY add-genesis-account $($BINARY keys show -a demowallet1 --keyring-backend
 echo "Adding key.... demowallet2"
 jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet2 --index 2 --recover --keyring-backend="test"
 $BINARY add-genesis-account $($BINARY keys show -a demowallet2 --keyring-backend="test") $COINS --keyring-backend="test"
+# Add test addresses, second multisig address
+echo "Adding key.... demowallet2"
+jq -r ".keys[0].mnemonic" $KEYS_CONFIG | $BINARY keys add demowallet3 --index 3 --recover --keyring-backend="test"
+$BINARY add-genesis-account $($BINARY keys show -a demowallet3 --keyring-backend="test") $COINS --keyring-backend="test"
+
+sed -i -e 's/timeout_commit = "5s"/timeout_commit = "1s"/g' "$CHAIN_DIR/config/config.toml"
+sed -i -e 's/timeout_propose = "3s"/timeout_propose = "1s"/g' "$CHAIN_DIR/config/config.toml"
+sed -i -e 's/index_all_keys = false/index_all_keys = true/g' "$CHAIN_DIR/config/config.toml"
+sed -i -e 's/enable = false/enable = true/g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's/swagger = false/swagger = true/g' "$CHAIN_DIR/config/app.toml"
+sed -i -e "s/minimum-gas-prices = \"\"/minimum-gas-prices = \"0$STAKEDENOM\"/g" "$CHAIN_DIR/config/app.toml"
+sed -i -e 's/enabled = false/enabled = true/g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's/prometheus-retention-time = 0/prometheus-retention-time = 1000/g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' "$CHAIN_DIR/config/app.toml"
+
+sed -i -e 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:'"$P2PPORT"'"#g' "$CHAIN_DIR/config/config.toml"
+sed -i -e 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:'"$RPCPORT"'"#g' "$CHAIN_DIR/config/config.toml"
+sed -i -e 's#"tcp://localhost:1317"#"tcp://0.0.0.0:'"$RESTPORT"'"#g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:'"$RESTPORT"'"#g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's#":8080"#":'"$ROSETTA"'"#g' "$CHAIN_DIR/config/app.toml"
+sed -i -e 's#localhost#0.0.0.0#g' "$CHAIN_DIR/config/app.toml"
+
+echo "Update client.toml file"
+sed -i -e 's#keyring-backend = "os"#keyring-backend = "test"#g' $CHAIN_DIR/config/client.toml
+sed -i -e 's#output = "text"#output = "json"#g' $CHAIN_DIR/config/client.toml
+sed -i -e "s#chain-id = \"\"#chain-id = \"$CHAIN_ID\"#g" $CHAIN_DIR/config/client.toml
+
+echo "Update genesis.json file with updated local params"
+sed -i "s/\"time_iota_ms\": \".*\"/\"time_iota_ms\": \"$TIME_IOTA_MS\"/" $CHAIN_DIR/config/genesis.json
+
+sed -i -e "s/\"denom\": \"stake\",/\"denom\": \"$DENOM\",/g" "$GENESIS_PATH"
+sed -i -e "s/\"mint_denom\": \"stake\",/\"mint_denom\": \"$DENOM\",/g" "$GENESIS_PATH"
+sed -i -e "s/\"bond_denom\": \"stake\"/\"bond_denom\": \"$DENOM\"/g" "$GENESIS_PATH"
 
 # IMPORTANT! minimum_gas_prices should always contain at least one record, otherwise the chain will not start or halt
 MIN_GAS_PRICES_DEFAULT='[{"denom":"untrn","amount":"0"}]'
@@ -775,9 +812,6 @@ function convert_bech32_base64_esc() {
 DAO_CONTRACT_ADDRESS_B64=$(convert_bech32_base64_esc "$DAO_CONTRACT_ADDRESS")
 echo $DAO_CONTRACT_ADDRESS_B64
 
-CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS="neutron1x69dz0c0emw8m2c6kp5v6c08kgjxmu30f4a8w5"
-CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64=$(convert_bech32_base64_esc "$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS")
-
 set_genesis_param admins                                 "[\"$DAO_CONTRACT_ADDRESS\"]"                    # admin module
 set_genesis_param treasury_address                       "\"$DAO_CONTRACT_ADDRESS\""                      # feeburner
 set_genesis_param fee_collector_address                  "\"$DAO_CONTRACT_ADDRESS\""                      # tokenfactory
@@ -792,7 +826,7 @@ set_genesis_param minimum_gas_prices                     "$MIN_GAS_PRICES,"     
 set_genesis_param max_total_bypass_min_fee_msg_gas_usage "\"$MAX_TOTAL_BYPASS_MIN_FEE_MSG_GAS_USAGE\""    # globalfee
 set_genesis_param_jq ".app_state.globalfee.params.bypass_min_fee_msg_types" "$BYPASS_MIN_FEE_MSG_TYPES"   # globalfee
 set_genesis_param proposer_fee                          "\"0.25\""                                        # builder(POB)
-set_genesis_param escrow_account_address                "\"$CONSUMER_REDISTRIBUTE_ACCOUNT_ADDRESS_B64\"," # builder(POB)
+set_genesis_param escrow_account_address                "\"$DAO_CONTRACT_ADDRESS_B64\","                  # builder(POB)
 set_genesis_param sudo_call_gas_limit                   "\"1000000\""                                     # contractmanager
 set_genesis_param max_gas                               "\"1000000000\""                                  # consensus_params
 
