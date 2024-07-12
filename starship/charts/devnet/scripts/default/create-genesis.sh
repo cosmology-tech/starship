@@ -16,7 +16,8 @@ NUM_RELAYERS="${NUM_RELAYERS:=0}"
 # check if the binary has genesis subcommand or not, if not, set CHAIN_GENESIS_CMD to empty
 CHAIN_GENESIS_CMD=$($CHAIN_BIN 2>&1 | grep -q "genesis-related subcommands" && echo "genesis" || echo "")
 
-jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $CHAIN_ID --chain-id $CHAIN_ID --recover
+jq -r ".genesis[0].mnemonic" $KEYS_CONFIG | $CHAIN_BIN init $CHAIN_ID --chain-id test-1 --recover
+sed -i -e "s/\"test-1\"/\"$CHAIN_ID\"/g" $CHAIN_DIR/config/genesis.json
 
 # Add genesis keys to the keyring and self delegate initial coins
 echo "Adding key...." $(jq -r ".genesis[0].name" $KEYS_CONFIG)
