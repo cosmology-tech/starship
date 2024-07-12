@@ -173,6 +173,43 @@ spec:
               name: addresses
             - mountPath: /scripts
               name: scripts
+        {{- if $chain.ics.enabled }}
+        {{ $icsChain := include "devnet.fullchain" (dict "name" $chain.ics.provider "file" $defaultFile "context" $) | fromJson }}
+        - name: init-ics
+          image: {{ $icsChain.image }}
+          imagePullPolicy: {{ $.Values.images.imagePullPolicy }}
+          env:
+            {{- include "devnet.defaultEvnVars" $chain | indent 12 }}
+            {{- include "devnet.evnVars" $chain | indent 12 }}
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KEYS_CONFIG
+              value: /configs/keys.json
+          command:
+            - bash
+            - "-c"
+            - |
+              VAL_INDEX=${HOSTNAME##*-}
+              echo "Validator Index: $VAL_INDEX"
+
+              echo "Fetching priv keys from provider exposer"
+              curl -s http://{{ $icsChain.hostname }}-validator-$VAL_INDEX.{{ $icsChain.hostname }}-validator.$NAMESPACE.svc.cluster.local:8081/priv_keys | jq > $CHAIN_DIR/config/provider_priv_validator_key.json
+              cat $CHAIN_DIR/config/provider_priv_validator_key.json
+
+              echo "Replace provider priv validator key with provider keys"
+              mv $CHAIN_DIR/config/priv_validator_key.json $CHAIN_DIR/config/previous_priv_validator_key.json
+              mv $CHAIN_DIR/config/provider_priv_validator_key.json $CHAIN_DIR/config/priv_validator_key.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ $chain.home }}
+              name: node
+            - mountPath: /configs
+              name: addresses
+            - mountPath: /scripts
+              name: scripts
+        {{- end }}
       containers:
         - name: validator
           image: {{ $chain.image }}
@@ -207,7 +244,7 @@ spec:
               $CHAIN_BIN start $START_ARGS
               {{- end }}
           {{/*If cometmock is enabled, then validator is initialized in hook of cometmock statefulset*/}}
-          {{- if not ($chain.cometmock.enabled) }}
+          {{- if and (not $chain.cometmock.enabled) (not $chain.ics.enabled) }}
           lifecycle:
             postStart:
               exec:
