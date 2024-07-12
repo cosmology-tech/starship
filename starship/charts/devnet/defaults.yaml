@@ -4,7 +4,7 @@
 # Note: Order of `coins` matters, since we take the first one as part of gentx
 defaultChains:
   osmosis:
-    image: ghcr.io/cosmology-tech/starship/osmosis:v21.0.0
+    image: ghcr.io/cosmology-tech/starship/osmosis:v25.0.0
     home: /root/.osmosisd
     binary: osmosisd
     prefix: osmo
