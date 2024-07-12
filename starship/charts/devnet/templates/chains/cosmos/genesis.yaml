@@ -177,7 +177,7 @@ spec:
               name: faucet
         {{- end }}
         {{- if $chain.ics.enabled }}
-        {{ $waitParams := dict "chain" (list $chain.ics.provider) "port" $.Values.exposer.ports.rest "context" $ }}
+        {{ $waitParams := dict "chains" (list $chain.ics.provider) "port" $.Values.exposer.ports.rest "context" $ }}
         {{- include "devnet.init.wait" $waitParams | indent 8 }}
         {{ $icsChain := include "devnet.fullchain" (dict "name" $chain.ics.provider "file" $defaultFile "context" $) | fromJson }}
         - name: init-ics
