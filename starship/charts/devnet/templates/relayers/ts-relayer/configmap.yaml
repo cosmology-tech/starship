@@ -19,7 +19,7 @@ data:
       {{- range $i, $chain := $relayer.chains }}
       {{ $fullchain := include "devnet.fullchain" (dict "name" $chain "file" $defaultFile "context" $) | fromJson }}
       {{ $chain }}:
-      chain_id: {{ $chain }}
+        chain_id: {{ $chain }}
         # You can include multiple RPC endpoints and it will rotate through them if
         # one is down (TODO)
         rpc:
