@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	pb "github.com/cosmology-tech/starship/registry/registry"
 	"net/http"
 	urlpkg "net/url"
 	"strconv"
 	"time"
+
+	pb "github.com/cosmology-tech/starship/registry/registry"
 )
 
 func (s *TestSuite) MakeFaucetRequest(chain *Chain, req *http.Request, unmarshal map[string]interface{}) {
@@ -115,6 +116,28 @@ func (s *TestSuite) getAccountBalance(chain *Chain, address string, denom string
 	return float64(0)
 }
 
+func (s *TestSuite) creditAccount(chain *Chain, addr, denom string) error {
+	body := map[string]string{
+		"denom":   denom,
+		"address": addr,
+	}
+	postBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(
+		fmt.Sprintf("http://0.0.0.0:%d/credit", chain.Ports.Faucet),
+		"application/json",
+		bytes.NewBuffer(postBody))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+	return nil
+}
+
 func (s *TestSuite) TestFaucet_Credit() {
 	s.T().Log("running test for /credit endpoint for faucet")
 
@@ -132,18 +155,8 @@ func (s *TestSuite) TestFaucet_Credit() {
 			addr := getAddressFromType(chain.Name)
 			beforeBalance := s.getAccountBalance(chain, addr, denom)
 
-			body := map[string]string{
-				"denom":   denom,
-				"address": addr,
-			}
-			postBody, err := json.Marshal(body)
+			err := s.creditAccount(chain, addr, denom)
 			s.Require().NoError(err)
-			resp, err := http.Post(
-				fmt.Sprintf("http://0.0.0.0:%d/credit", chain.Ports.Faucet),
-				"application/json",
-				bytes.NewBuffer(postBody))
-			s.Require().NoError(err)
-			s.Require().Equal(200, resp.StatusCode)
 
 			time.Sleep(4 * time.Second)
 			afterBalance := s.getAccountBalance(chain, addr, denom)
@@ -151,6 +164,46 @@ func (s *TestSuite) TestFaucet_Credit() {
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
 			// hence checking for difference is at least expected value
 			s.Require().GreaterOrEqual(afterBalance-beforeBalance, expCreditedAmt)
+		})
+	}
+}
+
+func (s *TestSuite) TestFaucet_Credit_MultipleRequests() {
+	s.T().Log("running test for multiple requests to /credit endpoint for faucet")
+
+	// expected amount to be credited via faucet
+	expCreditedAmt := float64(10000000000)
+
+	for _, chain := range s.config.Chains {
+		s.Run(fmt.Sprintf("multiple faucet requests test for: %s", chain.ID), func() {
+			if chain.Ports.Faucet == 0 {
+				s.T().Skip("faucet not exposed via ports")
+			}
+
+			// fetch denom and address from an account on chain
+			denom := s.getChainDenoms(chain)
+			addr := getAddressFromType(chain.Name)
+			beforeBalance := s.getAccountBalance(chain, addr, denom)
+
+			// Send multiple requests
+			numRequests := 3
+			for i := 0; i < numRequests; i++ {
+				err := s.creditAccount(chain, addr, denom)
+				s.Require().NoError(err)
+			}
+
+			// Allow more time for processing multiple requests
+			time.Sleep(15 * time.Second)
+
+			afterBalance := s.getAccountBalance(chain, addr, denom)
+			s.T().Log("address:", addr, "after balance: ", afterBalance, "before balance:", beforeBalance)
+
+			// Check that the balance has increased by at least the expected amount times the number of requests
+			expectedIncrease := expCreditedAmt * float64(numRequests)
+			actualIncrease := afterBalance - beforeBalance
+			s.Require().GreaterOrEqual(actualIncrease, expectedIncrease, 
+				"Balance didn't increase as expected. Actual increase: %f, Expected increase: %f", 
+				actualIncrease, expectedIncrease)
 		})
 	}
 }
