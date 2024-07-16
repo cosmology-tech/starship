@@ -7,7 +7,6 @@ import (
 	"net/http"
 	urlpkg "net/url"
 	"strconv"
-	"time"
 
 	pb "github.com/cosmology-tech/starship/registry/registry"
 )
@@ -158,7 +157,6 @@ func (s *TestSuite) TestFaucet_Credit() {
 			err := s.creditAccount(chain, addr, denom)
 			s.Require().NoError(err)
 
-			time.Sleep(4 * time.Second)
 			afterBalance := s.getAccountBalance(chain, addr, denom)
 			s.T().Log("address:", addr, "after balance: ", afterBalance, "before balance:", beforeBalance)
 			// note sometimes expected difference is 9x expected value (bug due to using holder address for test)
@@ -191,9 +189,6 @@ func (s *TestSuite) TestFaucet_Credit_MultipleRequests() {
 				err := s.creditAccount(chain, addr, denom)
 				s.Require().NoError(err)
 			}
-
-			// Allow more time for processing multiple requests
-			time.Sleep(15 * time.Second)
 
 			afterBalance := s.getAccountBalance(chain, addr, denom)
 			s.T().Log("address:", addr, "after balance: ", afterBalance, "before balance:", beforeBalance)
