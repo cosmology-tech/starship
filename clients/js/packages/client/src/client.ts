@@ -297,6 +297,7 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public async start(): Promise<void> {
+    this.checkConnection();
     this.setup();
     this.deploy();
     await this.waitForPods(); // Ensure waitForPods completes before starting port forwarding
@@ -382,6 +383,18 @@ export class StarshipClient implements StarshipClientI {
       ...this.getArgs(),
       // "--all-namespaces"
     ]);
+  }
+
+  public checkConnection(): void {
+    const result = this.exec(['kubectl', 'get', 'nodes'], false, true);
+
+    if (result.code !== 0) {
+      this.log(chalk.red('Error: Unable to connect to the Kubernetes cluster.'));
+      this.log(chalk.red('Please ensure that the Kubernetes cluster is configured correctly.'));
+      this.exit(1);
+    } else {
+      this.log(chalk.green('Kubernetes cluster connection is working correctly.'));
+    }
   }
 
   private getPodNames(): string[] {
