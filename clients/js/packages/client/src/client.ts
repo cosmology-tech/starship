@@ -189,7 +189,6 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public setup(): void {
-    this.checkConnection();
     this.setupHelm();
   }
 
