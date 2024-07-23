@@ -159,7 +159,7 @@ data:
       "status": "live",
       "network_type": "devnet",
       "chain_id": "{{ $chain.id }}",
-      "pretty_name": "{{ $chain.prettyName }}",
+      "pretty_name": "{{ $chain.prettyName }} Devnet",
       "bech32_prefix": "{{ $chain.prefix }}",
       "daemon_name": "{{ $chain.binary }}",
       "node_home": "{{ $chain.home }}",
