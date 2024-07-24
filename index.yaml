@@ -3,6 +3,19 @@ entries:
   devnet:
   - apiVersion: v2
     appVersion: 0.1.1
+    created: "2024-07-24T09:08:16.945849602Z"
+    description: A Helm chart for Kubernetes
+    digest: 2e3adc4d65a7b926f195a27cc8e7e7d5f9a921b1576d99532e9eb955eaaa31e4
+    maintainers:
+    - name: Starship
+      url: https://github.com/cosmology-tech/starship
+    name: devnet
+    type: application
+    urls:
+    - https://github.com/cosmology-tech/starship/releases/download/devnet-0.2.9/devnet-0.2.9.tgz
+    version: 0.2.9
+  - apiVersion: v2
+    appVersion: 0.1.1
     created: "2024-07-12T12:52:32.79189183Z"
     description: A Helm chart for Kubernetes
     digest: 3014c74a869d65e46388e93b57183ee3e1078d19fcb179b233561b8a983d1c2c
@@ -1275,4 +1288,4 @@ entries:
     urls:
     - https://github.com/cosmology-tech/starship/releases/download/devnet-0.1.30/devnet-0.1.30.tgz
     version: 0.1.30
-generated: "2024-07-12T12:52:32.792257938Z"
+generated: "2024-07-24T09:08:16.946182647Z"
