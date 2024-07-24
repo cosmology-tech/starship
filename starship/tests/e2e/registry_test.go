@@ -100,7 +100,7 @@ func (s *TestSuite) TestRegistry_GetChain() {
 
 		// chain specific assetertions
 		if chain.Name == "osmosis" {
-			s.Require().Equal("osmosis", respChain.PrettyName)
+			s.Require().Equal("Osmosis Devnet", respChain.PrettyName)
 		}
 	}
 }
