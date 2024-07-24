@@ -87,7 +87,7 @@ func NewAppServer(config *Config) (*AppServer, error) {
 	}
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.Host, config.HTTPPort),
-		Handler: app.panicRecovery(app.loggingMiddleware(mux)),
+		Handler: app.panicRecovery(app.corsMiddleware(app.loggingMiddleware(mux))),
 	}
 	app.httpServer = httpServer
 
