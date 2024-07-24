@@ -9,7 +9,7 @@ defaultChains:
     binary: osmosisd
     prefix: osmo
     denom: uosmo
-    prettyName: osmosis
+    prettyName: Osmosis
     coins: 100000000000000uosmo,100000000000000uion
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
