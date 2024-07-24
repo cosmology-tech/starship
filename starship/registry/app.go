@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpczap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -170,6 +171,18 @@ func (a *AppServer) panicRecovery(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)
+}
+
+func (a *AppServer) corsMiddleware(next http.Handler) http.Handler {
+	corsOptions := cors.Options{
+		AllowedOrigins:   []string{"*"}, // Adjust this to your needs
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}
+	return cors.New(corsOptions).Handler(next)
 }
 
 func (a *AppServer) Run() error {
