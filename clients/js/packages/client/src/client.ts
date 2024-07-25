@@ -47,7 +47,7 @@ export interface PodPorts {
 }
 
 const defaultName: string = "starship"
-const defaultVersion: string = "v0.2.6"
+const defaultVersion: string = "v0.2.10"
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -114,7 +114,7 @@ export class StarshipClient implements StarshipClientI {
   private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
 
   // Define a constant for the restart threshold
-  private readonly RESTART_THRESHOLD = 4;
+  private readonly RESTART_THRESHOLD = 3;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
