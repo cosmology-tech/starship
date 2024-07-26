@@ -1,22 +1,20 @@
-import {defaultStarshipContext, StarshipConfig, StarshipContext} from '@starship-ci/client'; // Adjust the import path as necessary
+import { defaultStarshipContext, StarshipConfig, StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
 import chalk from 'chalk';
-import {readFileSync} from 'fs';
+import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
-import { resolve} from 'path';
+import { resolve } from 'path';
 
-import {readAndParsePackageJson} from './package';
+import { readAndParsePackageJson } from './package';
 
 // Function to display the version information
 export function displayVersion() {
-    const pkg = readAndParsePackageJson();
-    console.log(chalk.green(`Name: ${pkg.name}`));
-    console.log(chalk.blue(`Version: ${pkg.version}`));
+  const pkg = readAndParsePackageJson();
+  console.log(chalk.green(`Name: ${pkg.name}`));
+  console.log(chalk.blue(`Version: ${pkg.version}`));
 }
-
 
 const resolvePath = (filename: string) =>
   filename.startsWith('/') ? filename : resolve((process.cwd(), filename));
-
 
 const loadYaml = (filename: string): any => {
   const path = resolvePath(filename);
@@ -44,8 +42,6 @@ export const loadConfig = (argv: any): Config => {
   let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
   let starship: StarshipConfig = {} as StarshipConfig;
 
-  console.log("context", context);
-
   // Override context with command-line arguments dynamically based on StarshipContext keys
   params.forEach(key => {
     if (argv[key] !== undefined) {
@@ -59,8 +55,6 @@ export const loadConfig = (argv: any): Config => {
     context.config = resolvePath(context.config);
     starship = loadYaml(context.config) as StarshipConfig
   }
-
-  console.log("starship: ", starship);
 
   return {context, starship};
 }
@@ -93,12 +87,15 @@ Command-line Options:
 Examples:
   $ starship start --config ./config/two-chain.yaml
   $ starship stop --config ./config/two-chain.yaml
-  
+
+If you want to setup starship for the first time
+  $ starship setup
+
 If you want to run the deployment step by step
-    $ starship deploy --config ./config/two-chain.yaml
-    $ starship start-ports --config ./config/two-chain.yaml
-    $ starship stop-ports --config ./config/two-chain.yaml
-    $ starship stop --config ./config/two-chain.yaml
+  $ starship deploy --config ./config/two-chain.yaml
+  $ starship start-ports --config ./config/two-chain.yaml
+  $ starship stop-ports --config ./config/two-chain.yaml
+  $ starship delete --config ./config/two-chain.yaml
 
 Additional Help:
   $ starship help          Display this help information.
@@ -106,4 +103,4 @@ Additional Help:
 
 export function displayUsage() {
   console.log(usageText);
-};
+}

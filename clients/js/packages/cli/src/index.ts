@@ -3,7 +3,7 @@ import { StarshipClient, StarshipInstaller } from '@starship-ci/client'; // Adju
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { displayUsage, displayVersion, loadConfig, params,usageText } from './utils';
+import { displayUsage, displayVersion, loadConfig, params, usageText } from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
