@@ -91,6 +91,18 @@ export interface PodStatus {
   reason?: string;
 }
 
+export interface ExecOptions {
+  log?: boolean;
+  silent?: boolean;
+  ignoreError?: boolean;
+}
+
+const defaultExecOptions: ExecOptions = {
+  log: true,
+  silent: false,
+  ignoreError: true,
+}
+
 export const formatChainID = (input: string): string => {
   // Replace underscores with hyphens
   let formattedName = input.replace(/_/g, '-');
@@ -122,11 +134,20 @@ export class StarshipClient implements StarshipClientI {
     this.version = readAndParsePackageJson().version;
   }
 
-  private exec(cmd: string[], log: boolean = true, silent: boolean = false): shell.ShellString {
+  private exec(cmd: string[], options: Partial<ExecOptions> = {}): shell.ShellString {
+    const opts = {...defaultExecOptions, ...options};
     this.checkDependencies();
     const str = cmd.join(' ');
-    if (log) this.log(str);
-    return shell.exec(str, { silent });
+    if (opts.log) this.log(str);
+
+    const result = shell.exec(str, { silent: opts.silent });
+
+    if (result.code !== 0 && !opts.ignoreError) {
+      this.log(chalk.red('Error: ') + result.stderr);
+      this.exit(result.code);
+    }
+
+    return result;
   }
 
   private log(str: string): void {
@@ -311,8 +332,8 @@ export class StarshipClient implements StarshipClientI {
       'add',
       this.ctx.repo,
       this.ctx.repoUrl
-    ]);
-    this.exec(['helm', 'repo', 'update']);
+    ], { ignoreError: false });
+    this.exec(['helm', 'repo', 'update'], { ignoreError: false });
     this.exec([
       'helm',
       'search',
@@ -320,7 +341,7 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.chart,
       '--version',
       this.config.version
-    ]);
+    ], { ignoreError: false });
   }
 
   private ensureFileExists(filename: string): void {
@@ -363,7 +384,7 @@ export class StarshipClient implements StarshipClientI {
       }
     });
 
-    this.exec(cmd);
+    this.exec(cmd, { ignoreError: false });
     this.log("Run \"starship get-pods\" to check the status of the cluster");
   }
 
@@ -386,7 +407,7 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public checkConnection(): void {
-    const result = this.exec(['kubectl', 'get', 'nodes'], false, true);
+    const result = this.exec(['kubectl', 'get', 'nodes'], { log: false, silent: true });
 
     if (result.code !== 0) {
       this.log(chalk.red('Error: Unable to connect to the Kubernetes cluster.'));
@@ -406,7 +427,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:metadata.name',
       ...this.getArgs(),
-    ], false, true)
+    ], { log: false, silent: true })
   
     // Split the output by new lines and filter out any empty lines
     const podNames = result.split('\n').filter(name => name.trim() !== '');
@@ -434,7 +455,7 @@ export class StarshipClient implements StarshipClientI {
       '-o',
       'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].restartCount,:status.containerStatuses[*].state.waiting.reason',
       ...this.getArgs(),
-    ], false, true).trim();
+    ], { log: false, silent: true }).trim();
 
     const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
     const ready = readyList.split(',').every(state => state === 'true');
