@@ -3,7 +3,13 @@ import { StarshipClient, StarshipInstaller } from '@starship-ci/client'; // Adju
 import { Inquirerer, type Question } from 'inquirerer';
 import minimist from 'minimist';
 
-import { displayUsage, displayVersion, loadConfig, params,usageText } from './utils';
+import {
+  displayUsage,
+  displayVersion,
+  loadConfig,
+  params,
+  usageText
+} from './utils';
 
 const argv = minimist(process.argv.slice(2), {
   alias: {
@@ -24,11 +30,11 @@ const prompter = new Inquirerer({
   noTty: !argv.tty
 });
 
-const questions: Question[] = params.map(name => ({ name, type: 'text' }));
+const questions: Question[] = params.map((name) => ({ name, type: 'text' }));
 
 // Filter questions based on the command
 function getQuestionsForCommand(command: string): Question[] {
-  const commonQuestions = questions.filter(q => q.name !== 'config');
+  const commonQuestions = questions.filter((q) => q.name !== 'config');
   if (['start', 'deploy', 'start-ports', 'wait-for-pods'].includes(command)) {
     return questions; // Include all questions, including config
   } else {
@@ -63,8 +69,8 @@ async function main() {
   switch (command) {
     case 'install':
       installer.checkAndInstallDependencies().catch((err: any) => {
-          console.error('An error occurred during start:', err);
-          process.exit(1);
+        console.error('An error occurred during start:', err);
+        process.exit(1);
       });
       break;
     case 'start':
@@ -112,7 +118,7 @@ async function main() {
 }
 
 // Improved error handling
-main().catch(err => {
+main().catch((err) => {
   console.error('An error occurred:', err);
   prompter.close();
   process.exit(1);

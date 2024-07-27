@@ -81,7 +81,7 @@ export interface Chain {
 export interface Script {
   file?: string;
   data?: string;
-};
+}
 
 export interface Relayer {
   name: string;
@@ -145,8 +145,8 @@ export interface Images {
 }
 
 export interface StarshipConfig {
-  name: string,
-  version: string,
+  name: string;
+  version: string;
   chains: Chain[];
   relayers?: Relayer[];
   explorer?: Explorer;

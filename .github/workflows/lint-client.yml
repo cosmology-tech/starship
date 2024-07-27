@@ -1,0 +1,45 @@
+name: Lint Client
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+    paths:
+      - "clients/js/**"
+      - ".github/workflows/lint-client.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "clients/js/**"
+      - ".github/workflows/lint-client.yml"
+    types: [opened, reopened]
+
+  workflow_dispatch:
+
+jobs:
+  starshipjs-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: clients/js
+
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: yarn build
+
+      - name: Run lint
+        run: yarn run lint

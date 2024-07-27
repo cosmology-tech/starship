@@ -1,3 +1,3 @@
-import { generateMnemonic } from 'bip39'
+import { generateMnemonic } from 'bip39';
 
 export { generateMnemonic };

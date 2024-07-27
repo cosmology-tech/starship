@@ -1,6 +1,6 @@
-import { ChainRegistryFetcher } from "@chain-registry/client";
+import { ChainRegistryFetcher } from '@chain-registry/client';
 
-import { useRegistry } from "./hooks";
+import { useRegistry } from './hooks';
 
 export class Config {
   // keep instantiation private to enforce singletone
@@ -34,7 +34,7 @@ export class Config {
     registryFetcher?: ChainRegistryFetcher
   ) {
     if (Config.instance && Config.instance.isInitialized) {
-      throw new Error("Config is already initialized.");
+      throw new Error('Config is already initialized.');
     }
 
     const fetcher = registryFetcher ?? (await useRegistry(configFile));
