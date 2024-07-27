@@ -1,14 +1,14 @@
-import { ChainRegistryFetcher } from "@chain-registry/client";
-import path from "path";
+import { ChainRegistryFetcher } from '@chain-registry/client';
+import path from 'path';
 
-import { ConfigContext } from "../src/config";
+import { ConfigContext } from '../src/config';
 
 // people can still use legacy ConfigContext to set the config file and registry.
-it("1. throws without init;\n 2. throws only init partially;\n 3. init the setup and gets config;\n 4. throws when double init;\n", async () => {
+it('1. throws without init;\n 2. throws only init partially;\n 3. init the setup and gets config;\n 4. throws when double init;\n', async () => {
   expect(() => ConfigContext.registry).toThrow();
   expect(() => ConfigContext.configFile).toThrow();
 
-  const file = path.join(__dirname, "../../../__fixtures__", "config.yaml");
+  const file = path.join(__dirname, '../../../__fixtures__', 'config.yaml');
 
   ConfigContext.setConfigFile(file);
 
