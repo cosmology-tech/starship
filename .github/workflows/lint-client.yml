@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  starshipjs-tests:
+  linter:
     runs-on: ubuntu-latest
 
     defaults:
