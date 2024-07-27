@@ -1,0 +1,10 @@
+{
+  "name": "neutron",
+  "version": "1.0.0",
+  "description": "Neutron Starship example and integration",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@starship-ci/cli": "^2.10.0"
+  }
+}
