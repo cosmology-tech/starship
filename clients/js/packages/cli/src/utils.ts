@@ -48,8 +48,6 @@ export const loadConfig = (argv: any): Config => {
   } as StarshipContext;
   let starship: StarshipConfig = {} as StarshipConfig;
 
-  console.log('context', context);
-
   // Override context with command-line arguments dynamically based on StarshipContext keys
   params.forEach((key) => {
     if (argv[key] !== undefined) {
@@ -63,8 +61,6 @@ export const loadConfig = (argv: any): Config => {
     context.config = resolvePath(context.config);
     starship = loadYaml(context.config) as StarshipConfig;
   }
-
-  console.log('starship: ', starship);
 
   return { context, starship };
 };
@@ -97,12 +93,15 @@ Command-line Options:
 Examples:
   $ starship start --config ./config/two-chain.yaml
   $ starship stop --config ./config/two-chain.yaml
-  
+
+If you want to setup starship for the first time
+  $ starship setup
+
 If you want to run the deployment step by step
-    $ starship deploy --config ./config/two-chain.yaml
-    $ starship start-ports --config ./config/two-chain.yaml
-    $ starship stop-ports --config ./config/two-chain.yaml
-    $ starship stop --config ./config/two-chain.yaml
+  $ starship deploy --config ./config/two-chain.yaml
+  $ starship start-ports --config ./config/two-chain.yaml
+  $ starship stop-ports --config ./config/two-chain.yaml
+  $ starship delete --config ./config/two-chain.yaml
 
 Additional Help:
   $ starship help          Display this help information.
