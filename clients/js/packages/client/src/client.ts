@@ -9,7 +9,7 @@ import * as shell from 'shelljs';
 
 import { Chain, Relayer, StarshipConfig } from './config';
 import { Ports } from './config';
-import { dependencies as defaultDependencies, Dependency } from "./deps";
+import { dependencies as defaultDependencies, Dependency } from './deps';
 import { readAndParsePackageJson } from './package';
 
 export interface StarshipContext {
@@ -30,24 +30,24 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   repoUrl: 'https://cosmology-tech.github.io/starship/',
   chart: 'starship/devnet',
   namespace: '',
-  version: '',
+  version: ''
 };
 
 export interface PodPorts {
-  registry?: Ports,
-  explorer?: Ports,
+  registry?: Ports;
+  explorer?: Ports;
   chains?: {
-    defaultPorts?: Ports,
-    [chainName: string]: Ports
-  },
+    defaultPorts?: Ports;
+    [chainName: string]: Ports;
+  };
   relayers?: {
-    defaultPorts?: Ports,
-    [relayerName: string]: Ports
-  },
+    defaultPorts?: Ports;
+    [relayerName: string]: Ports;
+  };
 }
 
-const defaultName: string = "starship"
-const defaultVersion: string = "v0.2.10"
+const defaultName: string = 'starship';
+const defaultVersion: string = 'v0.2.10';
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -65,13 +65,13 @@ const defaultPorts: PodPorts = {
       rest: 1317,
       exposer: 8081,
       faucet: 8000,
-      cometmock: 22331,
+      cometmock: 22331
     }
   },
   relayers: {
     defaultPorts: {
       rest: 3000,
-      exposer: 8081,
+      exposer: 8081
     }
   }
 };
@@ -81,8 +81,8 @@ export interface StarshipClientI {
   dependencies: Dependency[];
   depsChecked: boolean;
   config: StarshipConfig;
-  podPorts: PodPorts
-};
+  podPorts: PodPorts;
+}
 
 export interface PodStatus {
   phase: string;
@@ -100,8 +100,8 @@ export interface ExecOptions {
 const defaultExecOptions: ExecOptions = {
   log: true,
   silent: false,
-  ignoreError: true,
-}
+  ignoreError: true
+};
 
 export const formatChainID = (input: string): string => {
   // Replace underscores with hyphens
@@ -134,8 +134,11 @@ export class StarshipClient implements StarshipClientI {
     this.version = readAndParsePackageJson().version;
   }
 
-  private exec(cmd: string[], options: Partial<ExecOptions> = {}): shell.ShellString {
-    const opts = {...defaultExecOptions, ...options};
+  private exec(
+    cmd: string[],
+    options: Partial<ExecOptions> = {}
+  ): shell.ShellString {
+    const opts = { ...defaultExecOptions, ...options };
     this.checkDependencies();
     const str = cmd.join(' ');
     if (opts.log) this.log(str);
@@ -166,15 +169,17 @@ export class StarshipClient implements StarshipClientI {
     const platform = process.env.NODE_ENV === 'test' ? 'linux' : os.platform();
     const messages: string[] = [];
     const depMessages: string[] = [];
-    const missingDependencies = this.dependencies.filter(dep => !dep.installed);
+    const missingDependencies = this.dependencies.filter(
+      (dep) => !dep.installed
+    );
 
     if (!missingDependencies.length) {
       this.depsChecked = true;
       return;
     }
 
-    this.dependencies.forEach(dep => {
-      if (missingDependencies.find(d => d.name === dep.name)) {
+    this.dependencies.forEach((dep) => {
+      if (missingDependencies.find((d) => d.name === dep.name)) {
         depMessages.push(`${chalk.red('x')}${dep.name}`);
       } else {
         depMessages.push(`${chalk.green('✓')}${dep.name}`);
@@ -183,21 +188,35 @@ export class StarshipClient implements StarshipClientI {
 
     messages.push('\n'); // Adding a newline for better readability
 
-    missingDependencies.forEach(dep => {
+    missingDependencies.forEach((dep) => {
       messages.push(chalk.bold.white(dep.name + ': ') + chalk.cyan(dep.url));
 
       if (dep.name === 'helm' && platform === 'darwin') {
-        messages.push(chalk.gray("Alternatively, you can install using brew: ") + chalk.white.bold("`brew install helm`"));
+        messages.push(
+          chalk.gray('Alternatively, you can install using brew: ') +
+            chalk.white.bold('`brew install helm`')
+        );
       }
 
       if (dep.name === 'kubectl' && platform === 'darwin') {
-        messages.push(chalk.gray("Alternatively, you can install Docker for Mac which includes Kubernetes: ") + chalk.white.bold(dep.macUrl));
+        messages.push(
+          chalk.gray(
+            'Alternatively, you can install Docker for Mac which includes Kubernetes: '
+          ) + chalk.white.bold(dep.macUrl)
+        );
       }
 
       if (dep.name === 'docker' && platform === 'darwin') {
-        messages.push(chalk.gray("For macOS, you may also consider Docker for Mac: ") + chalk.white.bold(dep.macUrl));
+        messages.push(
+          chalk.gray('For macOS, you may also consider Docker for Mac: ') +
+            chalk.white.bold(dep.macUrl)
+        );
       } else if (dep.name === 'docker') {
-        messages.push(chalk.gray("For advanced Docker usage and installation on other platforms, see: ") + chalk.white.bold(dep.url));
+        messages.push(
+          chalk.gray(
+            'For advanced Docker usage and installation on other platforms, see: '
+          ) + chalk.white.bold(dep.url)
+        );
       }
 
       messages.push('\n'); // Adding a newline for separation between dependencies
@@ -214,13 +233,17 @@ export class StarshipClient implements StarshipClientI {
   }
 
   private loadYaml(filename: string): any {
-    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
+    const path = filename.startsWith('/')
+      ? filename
+      : resolve((process.cwd(), filename));
     const fileContents = readFileSync(path, 'utf8');
     return yaml.load(fileContents);
   }
 
   private saveYaml(filename: string, obj: any): any {
-    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
+    const path = filename.startsWith('/')
+      ? filename
+      : resolve((process.cwd(), filename));
     const yamlContent = yaml.dump(obj);
     mkdirp.sync(dirname(path));
     writeFileSync(path, yamlContent, 'utf8');
@@ -273,11 +296,17 @@ export class StarshipClient implements StarshipClientI {
 
     // Use default name and version if not provided
     if (!this.config.name) {
-      this.log(chalk.yellow("No name specified, using default name: " + defaultName));
+      this.log(
+        chalk.yellow('No name specified, using default name: ' + defaultName)
+      );
       this.config.name = defaultName;
     }
     if (!this.config.version) {
-      this.log(chalk.yellow("No version specified, using default version: " + defaultVersion));
+      this.log(
+        chalk.yellow(
+          'No version specified, using default version: ' + defaultVersion
+        )
+      );
       this.config.version = defaultVersion;
     }
 
@@ -326,26 +355,27 @@ export class StarshipClient implements StarshipClientI {
   }
 
   public setupHelm(): void {
-    this.exec([
-      'helm',
-      'repo',
-      'add',
-      this.ctx.repo,
-      this.ctx.repoUrl
-    ], { ignoreError: false });
+    this.exec(['helm', 'repo', 'add', this.ctx.repo, this.ctx.repoUrl], {
+      ignoreError: false
+    });
     this.exec(['helm', 'repo', 'update'], { ignoreError: false });
-    this.exec([
-      'helm',
-      'search',
-      'repo',
-      this.ctx.chart,
-      '--version',
-      this.config.version
-    ], { ignoreError: false });
+    this.exec(
+      [
+        'helm',
+        'search',
+        'repo',
+        this.ctx.chart,
+        '--version',
+        this.config.version
+      ],
+      { ignoreError: false }
+    );
   }
 
   private ensureFileExists(filename: string): void {
-    const path = filename.startsWith('/') ? filename : resolve((process.cwd(), filename))
+    const path = filename.startsWith('/')
+      ? filename
+      : resolve((process.cwd(), filename));
     if (!existsSync(path)) {
       throw new Error(`Configuration file not found: ${filename}`);
     }
@@ -353,7 +383,7 @@ export class StarshipClient implements StarshipClientI {
 
   public deploy(options: string[] = []): void {
     this.ensureFileExists(this.ctx.config);
-    this.log("Installing the helm chart. This is going to take a while.....");
+    this.log('Installing the helm chart. This is going to take a while.....');
 
     const cmd: string[] = [
       'helm',
@@ -365,7 +395,7 @@ export class StarshipClient implements StarshipClientI {
       '--version',
       this.config.version,
       ...this.getDeployArgs(),
-      ...options,
+      ...options
     ];
 
     // Determine the data directory of the config file
@@ -374,18 +404,20 @@ export class StarshipClient implements StarshipClientI {
     // Iterate through each chain to add script arguments
     this.config.chains.forEach((chain, chainIndex) => {
       if (chain.scripts) {
-        Object.keys(chain.scripts).forEach(scriptKey => {
+        Object.keys(chain.scripts).forEach((scriptKey) => {
           const script = chain.scripts?.[scriptKey as keyof Chain['scripts']];
           if (script && script.file) {
             const scriptPath = resolve(datadir, script.file);
-            cmd.push(`--set-file chains[${chainIndex}].scripts.${scriptKey}.data=${scriptPath}`);
+            cmd.push(
+              `--set-file chains[${chainIndex}].scripts.${scriptKey}.data=${scriptPath}`
+            );
           }
         });
       }
     });
 
     this.exec(cmd, { ignoreError: false });
-    this.log("Run \"starship get-pods\" to check the status of the cluster");
+    this.log('Run "starship get-pods" to check the status of the cluster');
   }
 
   public debug(): void {
@@ -399,39 +431,53 @@ export class StarshipClient implements StarshipClientI {
 
   public getPods(): void {
     this.exec([
-      "kubectl",
-      "get pods",
-      ...this.getArgs(),
+      'kubectl',
+      'get pods',
+      ...this.getArgs()
       // "--all-namespaces"
     ]);
   }
 
   public checkConnection(): void {
-    const result = this.exec(['kubectl', 'get', 'nodes'], { log: false, silent: true });
+    const result = this.exec(['kubectl', 'get', 'nodes'], {
+      log: false,
+      silent: true
+    });
 
     if (result.code !== 0) {
-      this.log(chalk.red('Error: Unable to connect to the Kubernetes cluster.'));
-      this.log(chalk.red('Please ensure that the Kubernetes cluster is configured correctly.'));
+      this.log(
+        chalk.red('Error: Unable to connect to the Kubernetes cluster.')
+      );
+      this.log(
+        chalk.red(
+          'Please ensure that the Kubernetes cluster is configured correctly.'
+        )
+      );
       this.exit(1);
     } else {
-      this.log(chalk.green('Kubernetes cluster connection is working correctly.'));
+      this.log(
+        chalk.green('Kubernetes cluster connection is working correctly.')
+      );
     }
   }
 
   private getPodNames(): string[] {
-    const result = this.exec([
-      'kubectl',
-      'get',
-      'pods',
-      '--no-headers',
-      '-o',
-      'custom-columns=:metadata.name',
-      ...this.getArgs(),
-    ], { log: false, silent: true })
-  
+    const result = this.exec(
+      [
+        'kubectl',
+        'get',
+        'pods',
+        '--no-headers',
+        '-o',
+        'custom-columns=:metadata.name',
+        ...this.getArgs()
+      ],
+      { log: false, silent: true }
+    );
+
     // Split the output by new lines and filter out any empty lines
-    const podNames = result.split('\n').filter(name => name.trim() !== '');
-  
+    const podNames = result.split('\n').filter((name) => name.trim() !== '');
+
     return podNames;
   }
 
@@ -446,25 +492,37 @@ export class StarshipClient implements StarshipClientI {
   }
 
   private checkPodStatus(podName: string): void {
-    const result = this.exec([
-      'kubectl',
-      'get',
-      'pods',
-      podName,
-      '--no-headers',
-      '-o',
-      'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].restartCount,:status.containerStatuses[*].state.waiting.reason',
-      ...this.getArgs(),
-    ], { log: false, silent: true }).trim();
+    const result = this.exec(
+      [
+        'kubectl',
+        'get',
+        'pods',
+        podName,
+        '--no-headers',
+        '-o',
+        'custom-columns=:status.phase,:status.containerStatuses[*].ready,:status.containerStatuses[*].restartCount,:status.containerStatuses[*].state.waiting.reason',
+        ...this.getArgs()
+      ],
+      { log: false, silent: true }
+    ).trim();
 
     const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
-    const ready = readyList.split(',').every(state => state === 'true');
-    const restarts = restartCountList.split(',').reduce((acc, count) => acc + parseInt(count, 10), 0);
+    const ready = readyList.split(',').every((state) => state === 'true');
+    const restarts = restartCountList
+      .split(',')
+      .reduce((acc, count) => acc + parseInt(count, 10), 0);
 
-    this.podStatuses.set(podName, { phase, ready, restartCount: restarts, reason });
+    this.podStatuses.set(podName, {
+      phase,
+      ready,
+      restartCount: restarts,
+      reason
+    });
 
     if (restarts > this.RESTART_THRESHOLD) {
-      this.log(`${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`);
+      this.log(
+        `${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`
+      );
       this.exit(1);
     }
   }
@@ -473,19 +531,19 @@ export class StarshipClient implements StarshipClientI {
     const podNames = this.getPodNames();
 
     // Check the status of each pod retrieved
-    podNames.forEach(podName => {
+    podNames.forEach((podName) => {
       this.checkPodStatus(podName);
     });
 
     this.displayPodStatuses();
 
     if (!this.areAllPodsRunning()) {
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      await new Promise((resolve) => setTimeout(resolve, 2500));
       await this.waitForPods(); // Recursive call
     } else {
       this.log(chalk.green('All pods are running!'));
       // once the pods are in running state, wait for 10 more seconds
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
 
@@ -503,63 +561,107 @@ export class StarshipClient implements StarshipClientI {
         statusColor = chalk.red(status.phase);
       }
 
-      console.log(`[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`);
+      console.log(
+        `[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`
+      );
     });
   }
 
-  private forwardPort(chain: Chain, localPort: number, externalPort: number): void {
+  private forwardPort(
+    chain: Chain,
+    localPort: number,
+    externalPort: number
+  ): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
-        "kubectl", "port-forward",
+        'kubectl',
+        'port-forward',
         `pods/${formatChainID(chain.id)}-genesis-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
-        ">", "/dev/null",
-        "2>&1", "&"
+        '>',
+        '/dev/null',
+        '2>&1',
+        '&'
       ]);
-      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(
+        chalk.yellow(
+          `Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`
+        )
+      );
     }
   }
 
-  private forwardPortCometmock(chain: Chain, localPort: number, externalPort: number): void {
+  private forwardPortCometmock(
+    chain: Chain,
+    localPort: number,
+    externalPort: number
+  ): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
-        "kubectl", "port-forward",
+        'kubectl',
+        'port-forward',
         `pods/${formatChainID(chain.id)}-cometmock-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
-        ">", "/dev/null",
-        "2>&1", "&"
+        '>',
+        '/dev/null',
+        '2>&1',
+        '&'
       ]);
-      this.log(chalk.yellow(`Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(
+        chalk.yellow(
+          `Forwarded ${formatChainID(chain.id)}: local ${localPort} -> target (host) ${externalPort}`
+        )
+      );
     }
   }
 
-  private forwardPortRelayer(relayer: Relayer, localPort: number, externalPort: number): void {
+  private forwardPortRelayer(
+    relayer: Relayer,
+    localPort: number,
+    externalPort: number
+  ): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
-        "kubectl", "port-forward",
+        'kubectl',
+        'port-forward',
         `pods/${relayer.type}-${relayer.name}-0`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
-        ">", "/dev/null",
-        "2>&1", "&"
+        '>',
+        '/dev/null',
+        '2>&1',
+        '&'
       ]);
-      this.log(chalk.yellow(`Forwarded ${relayer.name}: local ${localPort} -> target (host) ${externalPort}`));
+      this.log(
+        chalk.yellow(
+          `Forwarded ${relayer.name}: local ${localPort} -> target (host) ${externalPort}`
+        )
+      );
     }
   }
 
-  private forwardPortService(serviceName: string, localPort: number, externalPort: number): void {
+  private forwardPortService(
+    serviceName: string,
+    localPort: number,
+    externalPort: number
+  ): void {
     if (localPort !== undefined && externalPort !== undefined) {
       this.exec([
-        "kubectl", "port-forward",
+        'kubectl',
+        'port-forward',
         `service/${serviceName}`,
         `${localPort}:${externalPort}`,
         ...this.getArgs(),
-        ">", "/dev/null",
-        "2>&1", "&"
+        '>',
+        '/dev/null',
+        '2>&1',
+        '&'
       ]);
-      this.log(`Forwarded ${serviceName} on port ${localPort} to target port ${externalPort}`);
+      this.log(
+        `Forwarded ${serviceName} on port ${localPort} to target port ${externalPort}`
+      );
     }
   }
 
@@ -567,65 +669,110 @@ export class StarshipClient implements StarshipClientI {
     if (!this.config) {
       throw new Error('no config!');
     }
-    this.log("Attempting to stop any existing port-forwards...");
+    this.log('Attempting to stop any existing port-forwards...');
     this.stopPortForward();
-    this.log("Starting new port forwarding...");
+    this.log('Starting new port forwarding...');
 
-    this.config.chains?.forEach(chain => {
-      const chainPodPorts = this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
+    this.config.chains?.forEach((chain) => {
+      const chainPodPorts =
+        this.podPorts.chains[chain.name] || this.podPorts.chains.defaultPorts;
 
       if (chain.cometmock?.enabled) {
-        if (chain.ports?.rpc) this.forwardPortCometmock(chain, chain.ports.rpc, chainPodPorts.cometmock);
+        if (chain.ports?.rpc)
+          this.forwardPortCometmock(
+            chain,
+            chain.ports.rpc,
+            chainPodPorts.cometmock
+          );
       } else {
-        if (chain.ports?.rpc) this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
+        if (chain.ports?.rpc)
+          this.forwardPort(chain, chain.ports.rpc, chainPodPorts.rpc);
       }
-      if (chain.ports?.rest) this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
-      if (chain.ports?.grpc) this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
-      if (chain.ports?.exposer) this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
-      if (chain.ports?.faucet) this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
+      if (chain.ports?.rest)
+        this.forwardPort(chain, chain.ports.rest, chainPodPorts.rest);
+      if (chain.ports?.grpc)
+        this.forwardPort(chain, chain.ports.grpc, chainPodPorts.grpc);
+      if (chain.ports?.exposer)
+        this.forwardPort(chain, chain.ports.exposer, chainPodPorts.exposer);
+      if (chain.ports?.faucet)
+        this.forwardPort(chain, chain.ports.faucet, chainPodPorts.faucet);
     });
 
-    this.config.relayers?.forEach(relayer => {
-        const relayerPodPorts = this.podPorts.relayers[relayer.name] || this.podPorts.relayers.defaultPorts;
-        if (relayer.ports?.rest) this.forwardPortRelayer(relayer, relayer.ports.rest, relayerPodPorts.rest);
-        if (relayer.ports?.exposer) this.forwardPortRelayer(relayer, relayer.ports.exposer, relayerPodPorts.exposer);
+    this.config.relayers?.forEach((relayer) => {
+      const relayerPodPorts =
+        this.podPorts.relayers[relayer.name] ||
+        this.podPorts.relayers.defaultPorts;
+      if (relayer.ports?.rest)
+        this.forwardPortRelayer(
+          relayer,
+          relayer.ports.rest,
+          relayerPodPorts.rest
+        );
+      if (relayer.ports?.exposer)
+        this.forwardPortRelayer(
+          relayer,
+          relayer.ports.exposer,
+          relayerPodPorts.exposer
+        );
     });
 
     if (this.config.registry?.enabled) {
-      this.forwardPortService("registry", this.config.registry.ports.rest, this.podPorts.registry.rest);
-      this.forwardPortService("registry", this.config.registry.ports.grpc, this.podPorts.registry.grpc);
+      this.forwardPortService(
+        'registry',
+        this.config.registry.ports.rest,
+        this.podPorts.registry.rest
+      );
+      this.forwardPortService(
+        'registry',
+        this.config.registry.ports.grpc,
+        this.podPorts.registry.grpc
+      );
     }
 
     if (this.config.explorer?.enabled) {
-      this.forwardPortService("explorer", this.config.explorer.ports.rest, this.podPorts.explorer.rest);
+      this.forwardPortService(
+        'explorer',
+        this.config.explorer.ports.rest,
+        this.podPorts.explorer.rest
+      );
     }
   }
 
   private getForwardPids(): string[] {
     const result = this.exec([
-      "ps", "-ef",
-      "|", "grep", "-i", "'kubectl port-forward'",
-      "|", "grep", "-v", "'grep'",
-      "|", "awk", "'{print $2}'"
+      'ps',
+      '-ef',
+      '|',
+      'grep',
+      '-i',
+      "'kubectl port-forward'",
+      '|',
+      'grep',
+      '-v',
+      "'grep'",
+      '|',
+      'awk',
+      "'{print $2}'"
     ]);
-    const pids = (result || '').split('\n').map(pid => pid.trim()).filter(a => a !== '')
+    const pids = (result || '')
+      .split('\n')
+      .map((pid) => pid.trim())
+      .filter((a) => a !== '');
     return pids;
   }
 
   public stopPortForward(): void {
-    this.log(chalk.green("Trying to stop all port-forward, if any...."));
+    this.log(chalk.green('Trying to stop all port-forward, if any....'));
     const pids = this.getForwardPids();
-    pids.forEach(pid => {
-      this.exec([
-        "kill", "-15", pid
-      ]);
+    pids.forEach((pid) => {
+      this.exec(['kill', '-15', pid]);
     });
     this.exec(['sleep', '2']);
   }
 
   public printForwardPids(): void {
     const pids = this.getForwardPids();
-    pids.forEach(pid => {
+    pids.forEach((pid) => {
       console.log(pid);
     });
   }

@@ -1,4 +1,8 @@
-import { defaultStarshipContext, StarshipConfig, StarshipContext } from '@starship-ci/client'; // Adjust the import path as necessary
+import {
+  defaultStarshipContext,
+  StarshipConfig,
+  StarshipContext
+} from '@starship-ci/client'; // Adjust the import path as necessary
 import chalk from 'chalk';
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
@@ -20,11 +24,11 @@ const loadYaml = (filename: string): any => {
   const path = resolvePath(filename);
   const fileContents = readFileSync(path, 'utf8');
   return yaml.load(fileContents);
-}
+};
 
 export interface Config {
-  context: StarshipContext,
-  starship: StarshipConfig
+  context: StarshipContext;
+  starship: StarshipConfig;
 }
 
 export const params: string[] = [
@@ -34,32 +38,34 @@ export const params: string[] = [
   'repo',
   'repoUrl',
   'chart',
-  'namespace',
-]
+  'namespace'
+];
 
 export const loadConfig = (argv: any): Config => {
-  console.log("argv: ", argv);
-  let context: StarshipContext = { ...defaultStarshipContext } as StarshipContext;
+  console.log('argv: ', argv);
+  const context: StarshipContext = {
+    ...defaultStarshipContext
+  } as StarshipContext;
   let starship: StarshipConfig = {} as StarshipConfig;
 
   // Override context with command-line arguments dynamically based on StarshipContext keys
-  params.forEach(key => {
+  params.forEach((key) => {
     if (argv[key] !== undefined) {
-      console.log("key: ", key, " argv[key]: ", argv[key]);
-      // @ts-ignore
+      console.log('key: ', key, ' argv[key]: ', argv[key]);
+      // @ts-expect-error - dynamic assignment
       context[key] = argv[key];
     }
   });
 
   if (context.config) {
     context.config = resolvePath(context.config);
-    starship = loadYaml(context.config) as StarshipConfig
+    starship = loadYaml(context.config) as StarshipConfig;
   }
 
-  return {context, starship};
-}
+  return { context, starship };
+};
 
-export const usageText =`
+export const usageText = `
 Usage: starship <command> [options]
 
 Commands:

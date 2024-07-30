@@ -22,10 +22,18 @@ export class Inquirerer {
   }
 
   // Method to prompt for missing parameters
-  public async prompt<T extends object>(params: T, questions: Question[], usageText?: string): Promise<T> {
+  public async prompt<T extends object>(
+    params: T,
+    questions: Question[],
+    usageText?: string
+  ): Promise<T> {
     const obj: any = { ...params };
 
-    if (usageText && Object.values(params).some(value => value === undefined) && !this.noTty) {
+    if (
+      usageText &&
+      Object.values(params).some((value) => value === undefined) &&
+      !this.noTty
+    ) {
       console.log(usageText);
     }
 
@@ -37,7 +45,9 @@ export class Inquirerer {
               this.rl.question(`Enter ${question.name}: `, resolve);
             });
           } else {
-            throw new Error("No TTY available and a readline interface is missing.");
+            throw new Error(
+              'No TTY available and a readline interface is missing.'
+            );
           }
         } else {
           // Optionally handle noTty cases, e.g., set defaults or throw errors
