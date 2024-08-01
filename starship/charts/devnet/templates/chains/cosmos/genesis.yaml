@@ -341,7 +341,6 @@ spec:
             - "-c"
             - |
               export FAUCET_TOKENS=$(printf '%s\n' ${COINS//[[:digit:]]/})
-
               for coin in ${COINS//,/ }
               do
                   var="FAUCET_CREDIT_AMOUNT_$(printf '%s\n' ${coin//[[:digit:]]/} | tr '[:lower:]' '[:upper:]')"
@@ -413,11 +412,11 @@ spec:
 
                   # Calculate the order of magnitude
                   if [ ${#amt} -gt 18 ]; then
-                    creditAmt=$(echo $amt | sed -e "s/000000000$//")
-                    feesAmt=$(echo $amt | sed -e "s/000000000000$//")
+                    creditAmt=$(echo $amt | sed -e "s/000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/0000000000000$//")
                   else
                     creditAmt=$(echo $amt | sed -e "s/0000$//")
-                    feesAmt=$(echo $amt | sed -e "s/000000$//")
+                    feesAmt=$(echo $amt | sed -e "s/00000000$//")
                   fi
 
                   if [[ $CREDIT_COINS == "" ]]
