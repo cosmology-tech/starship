@@ -9,7 +9,7 @@ In this repo we only spin up the infra, so tests can be run against this infra f
 In the `examples/neutron` dir, run
 
 ```bash
-make setup-deps ## Installs dependencies for Starship
+yarn
 ```
 
 ### Manul install (alternate)
@@ -22,12 +22,6 @@ Alternatively to the setup script one can just install the deps directly:
 
 ## Connect to a kubernetes cluster
 ### Spinup local cluster
-On Linux:
-```bash
-make setup-kind
-```
-
-On Mac:
 Use Docker Desktop to setup kubernetes cluster: https://docs.docker.com/desktop/kubernetes/#turn-on-kubernetes
 
 ### Connect to a remote cluster (alternate)
