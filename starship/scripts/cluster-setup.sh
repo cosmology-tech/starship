@@ -23,7 +23,7 @@ release_exists() {
 
 # Function to check if cert-manager is installed
 cert_manager_installed() {
-    kubectl get pods --namespace cert-manager &> /dev/null
+    namespace_exists cert-manager && kubectl get pods --namespace cert-manager &> /dev/null
 }
 
 # Function to install and setup ingress
@@ -45,7 +45,15 @@ setup_cert_manager() {
         color yellow "Cert-manager is already installed. Skipping cert-manager setup."
     else
         color blue "Setting up cert-manager..."
-        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.yaml
+        helm repo add jetstack https://charts.jetstack.io --force-update
+        helm repo update
+        helm install \
+          cert-manager jetstack/cert-manager \
+          --namespace cert-manager \
+          --create-namespace \
+          --version v1.15.2 \
+          --set crds.enabled=true \
+          --set prometheus.enabled=false
         color green "Cert-manager setup completed."
     fi
 }
@@ -62,11 +70,7 @@ main() {
     fi
 
     # Setup cert-manager
-    if cert_manager_installed; then
-        color yellow "Cert-manager is already installed. Skipping cert-manager setup."
-    else
-        setup_cert_manager
-    fi
+    setup_cert_manager
 
     color green "Cluster setup completed successfully."
 }
