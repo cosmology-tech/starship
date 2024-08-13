@@ -5,14 +5,14 @@ describe('StarshipClient', () => {
   it('setup', () => {
     const { client, ctx } = createClient();
 
-    client.dependencies.forEach(dep => dep.installed = true);
+    client.dependencies.forEach((dep) => (dep.installed = true));
 
     client.setConfig(config.config);
 
     // helm
     client.setup();
     client.deploy();
-    
+
     client.startPortForward();
 
     // remove helm chart

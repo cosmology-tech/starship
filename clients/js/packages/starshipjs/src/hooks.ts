@@ -5,7 +5,9 @@ import fetch from 'node-fetch';
 
 import { type ChainConfig, ConfigContext } from './config';
 
-export const useRegistry = async (configFile: string): Promise<ChainRegistryFetcher> => {
+export const useRegistry = async (
+  configFile: string
+): Promise<ChainRegistryFetcher> => {
   const config = yaml.load(fs.readFileSync(configFile, 'utf8')) as ChainConfig;
   const registryUrl = `http://localhost:${config.registry.ports.rest}`;
 
@@ -63,7 +65,10 @@ export const useChain = (chainName: string) => {
     return chainInfo.fetcher.getChainAssetList(chainName).assets[0];
   };
 
-  const creditFromFaucet = async (address: string, denom: string | null = null) => {
+  const creditFromFaucet = async (
+    address: string,
+    denom: string | null = null
+  ) => {
     const faucetEndpoint = `http://localhost:${
       config.chains.find((chain) => chain.id === chainID)!.ports.faucet
     }/credit`;

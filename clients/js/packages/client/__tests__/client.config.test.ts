@@ -7,13 +7,13 @@ describe('StarshipClient', () => {
   it('setup', () => {
     const { client, ctx } = createClient();
 
-    client.dependencies.forEach(dep => dep.installed = true);
+    client.dependencies.forEach((dep) => (dep.installed = true));
 
     client.setConfig(config.config);
     const helmFile = client.ctx.config;
     client.ctx.config = join(outputDir, 'my-config.yaml');
-    client.ctx.config = relative(process.cwd(), client.ctx.chart)
-    // @ts-ignore
+    client.ctx.config = relative(process.cwd(), client.ctx.chart);
+    // @ts-expect-error - Ignore lint error
     client.saveYaml = () => {};
     client.saveConfig();
     client.ctx.config = helmFile;
@@ -25,7 +25,7 @@ describe('StarshipClient', () => {
     // helm
     client.setup();
     client.deploy();
-    
+
     client.startPortForward();
 
     client.stop();

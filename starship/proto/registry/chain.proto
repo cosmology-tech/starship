@@ -22,7 +22,10 @@ message Staking_tokens {
 }
 
 message Lock_duration {
-  string time = 1 [json_name = "time"];
+  oneof duration {
+    uint32 blocks = 1 [json_name = "blocks"];
+    string time = 2 [json_name = "time"];
+  }
 }
 
 message Staking {
@@ -33,29 +36,59 @@ message Staking {
 message Genesis {
   string name = 1 [json_name = "name"];
   string genesis_url = 2 [json_name = "genesis_url"];
+  optional string ics_ccv_url = 3 [json_name = "ics_ccv_url"];
 }
 
 message Versions {
   string name = 1 [json_name = "name"];
   string tag = 2 [json_name = "tag"];
   uint32 height = 3 [json_name = "height"];
-  optional string next_version_name = 4 [json_name = "next_version_name"];
+  optional string proposal = 4 [json_name = "proposal"];
+  optional string previous_version_name = 5 [json_name = "previous_version_name"];
+  optional string next_version_name = 6 [json_name = "next_version_name"];
+  optional string recommended_version = 7 [json_name = "recommended_version"];
+  optional string go_version = 8 [json_name = "go_version"];
+  repeated string compatible_versions = 9 [json_name = "compatible_versions"];
+  optional string cosmos_sdk_version = 10 [json_name = "cosmos_sdk_version"];
+  message Consensus {
+    string type = 1 [json_name = "type"];
+    optional string version = 2 [json_name = "version"];
+  }
+  optional Consensus consensus = 11 [json_name = "consensus"];
+  optional string cosmwasm_version = 12 [json_name = "cosmwasm_version"];
+  optional bool cosmwasm_enabled = 13 [json_name = "cosmwasm_enabled"];
+  optional string cosmwasm_path = 14 [json_name = "cosmwasm_path"];
+  optional string ibc_go_version = 15 [json_name = "ibc_go_version"];
+  repeated string ics_enabled = 16 [json_name = "ics_enabled"];
+  message Binaries {
+    optional string linux_amd64 = 1 [json_name = "linux/amd64"];
+    optional string linux_arm64 = 2 [json_name = "linux/arm64"];
+    optional string darwin_amd64 = 3 [json_name = "darwin/amd64"];
+    optional string darwin_arm64 = 4 [json_name = "darwin/arm64"];
+    optional string windows_amd64 = 5 [json_name = "windows/amd64"];
+    optional string windows_arm64 = 6 [json_name = "windows/arm64"];
+  }
+  optional Binaries binaries = 17 [json_name = "binaries"];
 }
 
 message Codebase {
   string git_repo = 1 [json_name = "git_repo"];
   optional string recommended_version = 2 [json_name = "recommended_version"];
   repeated string compatible_versions = 3 [json_name = "compatible_versions"];
-  map<string,string> binaries = 4 [json_name = "binaries"];
+  optional Versions.Binaries binaries = 4 [json_name = "binaries"];
   optional string cosmos_sdk_version = 5 [json_name = "cosmos_sdk_version"];
-  optional string tendermint_version = 6 [json_name = "tendermint_version"];
+  message Consensus {
+    string type = 1 [json_name = "type"];
+    optional string version = 2 [json_name = "version"];
+  }
+  optional Consensus consensus = 6 [json_name = "consensus"];
   optional string cosmwasm_version = 7 [json_name = "cosmwasm_version"];
   optional bool cosmwasm_enabled = 8 [json_name = "cosmwasm_enabled"];
-  optional string ibc_go_version = 9 [json_name = "ibc_go_version"];
-  repeated string ics_enabled = 10 [json_name = "ics_enabled"];
-  optional Genesis genesis = 11 [json_name = "genesis"];
-  repeated Versions versions = 12 [json_name = "versions"];
-  map<string,string> consensus = 13 [json_name = "consensus"];
+  optional string cosmwasm_path = 9 [json_name = "cosmwasm_path"];
+  optional string ibc_go_version = 10 [json_name = "ibc_go_version"];
+  repeated string ics_enabled = 11 [json_name = "ics_enabled"];
+  optional Genesis genesis = 12 [json_name = "genesis"];
+  repeated Versions versions = 13 [json_name = "versions"];
 }
 
 message LogoURIs {
@@ -83,11 +116,15 @@ message APIs {
   message API {
     string address = 1 [json_name = "address"];
     string provider = 2 [json_name = "provider"];
+    optional bool archive = 3 [json_name = "archive"];
   }
 
   repeated API rpc = 1 [json_name = "rpc"];
   repeated API rest = 2 [json_name = "rest"];
   repeated API grpc = 3 [json_name = "grpc"];
+  repeated API wss = 4 [json_name = "wss"];
+  repeated API grpc_web = 5 [json_name = "grpc-web"];
+  repeated API evm_http_jsonrpc = 6 [json_name = "evm-http-jsonrpc"];
 }
 
 message Explorer {
@@ -95,33 +132,49 @@ message Explorer {
   string url = 2 [json_name = "url"];
   optional string tx_page = 3 [json_name = "tx_page"];
   optional string account_page = 4 [json_name = "account_page"];
+  optional string validator_page = 5 [json_name = "validator_page"];
+  optional string proposal_page = 6 [json_name = "proposal_page"];
+  optional string block_page = 7 [json_name = "block_page"];
 }
 
 message ChainRegistry {
   string schema = 1 [json_name = "$schema"];
   string chain_name = 2 [json_name = "chain_name"];
   string chain_id = 3 [json_name = "chain_id"];
-  string pretty_name = 4 [json_name = "pretty_name"];
-  optional string status = 5 [json_name = "status"];
-  optional string network_type = 6 [json_name = "network_type"];
-  optional string website = 7 [json_name = "website"];
-  optional string bech32_prefix = 8 [json_name = "bech32_prefix"];
-  optional string daemon_name = 9 [json_name = "daemon_name"];
-  optional string node_home = 10 [json_name = "node_home"];
-  repeated string key_algos = 11 [json_name = "key_algos"];
-  uint32 slip44 = 12 [json_name = "slip44"];
-  optional Fees fees = 13 [json_name = "fees"];
-  optional Staking staking = 14 [json_name = "staking"];
-  optional Codebase codebase = 15 [json_name = "codebase"];
-  optional LogoURIs logo_URIs = 16 [json_name = "logo_URIs"];
-  repeated Image images = 17 [json_name = "images"];
-  optional Peers peers = 18 [json_name = "peers"];
-  optional APIs apis = 19 [json_name = "apis"];
-  repeated Explorer explorers = 20 [json_name = "explorers"];
-  repeated string keywords = 21 [json_name = "keywords"];
-  optional string update_link = 22 [json_name = "update_link"];
+  optional string pre_fork_chain_name = 4 [json_name = "pre_fork_chain_name"];
+  string pretty_name = 5 [json_name = "pretty_name"];
+  optional string website = 6 [json_name = "website"];
+  optional string update_link = 7 [json_name = "update_link"];
+  string status = 8 [json_name = "status"];
+  string network_type = 9 [json_name = "network_type"];
+  string bech32_prefix = 10 [json_name = "bech32_prefix"];
+  message Bech32Config {
+    optional string bech32PrefixAccAddr = 1 [json_name = "bech32PrefixAccAddr"];
+    optional string bech32PrefixAccPub = 2 [json_name = "bech32PrefixAccPub"];
+    optional string bech32PrefixValAddr = 3 [json_name = "bech32PrefixValAddr"];
+    optional string bech32PrefixValPub = 4 [json_name = "bech32PrefixValPub"];
+    optional string bech32PrefixConsAddr = 5 [json_name = "bech32PrefixConsAddr"];
+    optional string bech32PrefixConsPub = 6 [json_name = "bech32PrefixConsPub"];
+  }
+  optional Bech32Config bech32_config = 11 [json_name = "bech32_config"];
+  string daemon_name = 12 [json_name = "daemon_name"];
+  string node_home = 13 [json_name = "node_home"];
+  repeated string key_algos = 14 [json_name = "key_algos"];
+  uint32 slip44 = 15 [json_name = "slip44"];
+  repeated uint32 alternative_slip44s = 16 [json_name = "alternative_slip44s"];
+  optional Fees fees = 17 [json_name = "fees"];
+  optional Staking staking = 18 [json_name = "staking"];
+  optional Codebase codebase = 19 [json_name = "codebase"];
+  optional LogoURIs logo_URIs = 20 [json_name = "logo_URIs"];
+  repeated Image images = 21 [json_name = "images"];
+  optional Peers peers = 22 [json_name = "peers"];
+  optional APIs apis = 23 [json_name = "apis"];
+  repeated Explorer explorers = 24 [json_name = "explorers"];
+  repeated string keywords = 25 [json_name = "keywords"];
+  repeated string extra_codecs = 26 [json_name = "extra_codecs"];
 }
 
+// DenomUnit and ChainAsset messages
 message DenomUnit {
   string denom = 1 [json_name = "denom"];
   int32 exponent = 2 [json_name = "exponent"];

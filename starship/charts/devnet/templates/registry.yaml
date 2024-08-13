@@ -127,25 +127,25 @@ data:
       "assets": {{ toJson $chain.assets }}
       {{- else }}
       "assets": [
-        {
-          "description": "The denom for token {{ $chain.denom }}",
-          "base": "{{ $chain.denom }}",
-          "name": "{{ $chain.denom }}",
-          "display": "{{ $chain.denom }}",
-          "symbol": "{{ $chain.denom | upper }}",
-          "denom_units": [
-            {
-              "denom": "{{ $chain.denom }}",
-              "exponent": 0
-            },
-            {
-              "denom": "{{ $chain.denom }}",
-              "exponent": 6
-            }
-          ],
-          "coingecko_id": "{{ $chain.name }}"
-        }
-      ]
+      {
+        "description": "The denom for token {{ $chain.denom }}",
+        "base": "{{ $chain.denom }}",
+        "name": "{{ $chain.denom }}",
+        "display": "{{ $chain.denom }}",
+        "symbol": "{{ $chain.denom | upper }}",
+        "denom_units": [
+          {
+            "denom": "{{ $chain.denom }}",
+            "exponent": 0
+          },
+          {
+            "denom": "{{ $chain.denom }}",
+            "exponent": 6
+          }
+        ],
+        "coingecko_id": "{{ $chain.name }}"
+      }
+    ]
       {{- end }}
     }
   chain.json: |-
@@ -157,9 +157,9 @@ data:
       "chain_name": "{{ $chain.name }}",
       {{- end }}
       "status": "live",
-      "network_type": "mainnet",
+      "network_type": "devnet",
       "chain_id": "{{ $chain.id }}",
-      "pretty_name": "{{ $chain.prettyName }}",
+      "pretty_name": "{{ $chain.prettyName }} Devnet",
       "bech32_prefix": "{{ $chain.prefix }}",
       "daemon_name": "{{ $chain.binary }}",
       "node_home": "{{ $chain.home }}",
@@ -189,7 +189,14 @@ data:
         }
       },
       "codebase": {
-        "git_repo": "{{ $chain.repo }}"
+        "git_repo": "{{ $chain.repo }}",
+        "compatible_versions": [],
+        "binaries": {},
+        "ics_enabled": [],
+        "versions": [],
+        "consensus": {
+          "type": "tendermint"
+        }
       },
       {{- if $.Values.explorer.enabled }}
       "explorers": [
