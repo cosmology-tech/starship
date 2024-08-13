@@ -35,23 +35,29 @@ func extractTxHash(output string) (string, error) {
 	return match[1], nil
 }
 
-// hasEvent from txResults txMap. Returns nil if the event is found, otherwise an error
+// hasEvent checks for a specific event type in the transaction results.
+// It first tries to fetch the events either from txMap["events"] or from txMap["logs"] and then checks for the event type.
 func hasEvent(txResults map[string]interface{}, eventType string) error {
-	// Check for the "transfer" event
-	logs, ok := txResults["logs"].([]interface{})
-	if !ok || len(logs) == 0 {
-		return fmt.Errorf("no logs found in transaction")
+	var events []interface{}
+
+	// Attempt to fetch events directly from txMap["events"]
+	if directEvents, ok := txResults["events"].([]interface{}); ok && len(directEvents) > 0 {
+		events = directEvents
+	} else if logs, ok := txResults["logs"].([]interface{}); ok && len(logs) > 0 {
+		// If no direct events, attempt to fetch events from logs
+		for _, log := range logs {
+			logMap, ok := log.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			if logEvents, ok := logMap["events"].([]interface{}); ok && len(logEvents) > 0 {
+				events = append(events, logEvents...)
+			}
+		}
 	}
 
-	for _, log := range logs {
-		logMap, ok := log.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		events, ok := logMap["events"].([]interface{})
-		if !ok {
-			continue
-		}
+	// If events are found, check for the specific eventType
+	if len(events) > 0 {
 		for _, event := range events {
 			eventMap, ok := event.(map[string]interface{})
 			if !ok {
@@ -61,7 +67,9 @@ func hasEvent(txResults map[string]interface{}, eventType string) error {
 				return nil
 			}
 		}
+		return fmt.Errorf("event %s not found in transaction events", eventType)
 	}
 
-	return fmt.Errorf("event %s not found in transaction", eventType)
+	// If no events were found in either place
+	return fmt.Errorf("no events found in transaction")
 }
