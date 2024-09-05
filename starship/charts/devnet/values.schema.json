@@ -535,6 +535,24 @@
               "enabled",
               "provider"
             ]
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "address",
+                "amount"
+              ]
+            }
           }
         },
         "additionalProperties": false,
