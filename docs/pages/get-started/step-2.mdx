@@ -7,7 +7,7 @@ By the end of this tutorial you should be able to run `kubectl get nodes` and se
 
 Please **follow any one of the following** sections to setup a Kubernetes cluster.
 
-## 2.1.1) Recommended: Setup with Docker Desktop
+## 2.1) Setup with Docker Desktop
 Docker Desktop includes a standalone Kubernetes server and client, as well as Docker CLI integration that runs on your machine.
 
 ### Enable kubernetes
@@ -30,33 +30,6 @@ kubectl config use-context docker-desktop
 ```
 
 Detailed Reference: https://docs.docker.com/desktop/kubernetes/
-
-## 2.1.2) Alternative: Setup with Kind Cluster
-
-### Install Kind
-Follow the steps in the official documentation to install kind: https://kind.sigs.k8s.io/docs/user/quick-start/
-
-Make sure kind is installed
-```bash
-kind version
-#
-# kind v0.18.0 go1.20.2 linux/amd64
-```
-
-Make sure docker is running, and you have access to it.
-```bash
-docker ps
-```
-
-### Create kind cluster
-Run
-```bash
-kind create cluster --name starship
-```
-
-Note: Kind will create an entry in the kubeconfig file and set the context to the new cluster.
-
-Detailed Reference: https://kind.sigs.k8s.io/docs/user/quick-start/#creating-a-cluster
 
 ## 2.2) Check Access to kubernetes
 
