@@ -23,6 +23,7 @@ function stop_port_forward() {
 CHAIN_RPC_PORT=26657
 CHAIN_COMETMOCK_PORT=22331
 CHAIN_GRPC_PORT=9090
+CHAIN_GRPCWEB_PORT=9091
 CHAIN_LCD_PORT=1317
 CHAIN_EXPOSER_PORT=8081
 CHAIN_FAUCET_PORT=8000
@@ -62,6 +63,7 @@ if [[ $num_chains -gt -1 ]]; then
     chain=${chain/_/"-"}
     localrpc=$(yq -r ".chains[$i].ports.rpc" ${CONFIGFILE} )
     localgrpc=$(yq -r ".chains[$i].ports.grpc" ${CONFIGFILE} )
+    localgrpcweb=$(yq -r ".chains[$i].ports.grpc-web" ${CONFIGFILE} )
     locallcd=$(yq -r ".chains[$i].ports.rest" ${CONFIGFILE} )
     localexp=$(yq -r ".chains[$i].ports.exposer" ${CONFIGFILE})
     localfaucet=$(yq -r ".chains[$i].ports.faucet" ${CONFIGFILE})
@@ -73,6 +75,7 @@ if [[ $num_chains -gt -1 ]]; then
       [[ "$localrpc" != "null" ]] && color yellow "    rpc to http://localhost:$localrpc" && kubectl port-forward pods/$chain-genesis-0 $localrpc:$CHAIN_RPC_PORT > /dev/null 2>&1 &
     fi
     [[ "$localgrpc" != "null" ]] && color yellow "    grpc to http://localhost:$localgrpc" && kubectl port-forward pods/$chain-genesis-0 $localgrpc:$CHAIN_GRPC_PORT > /dev/null 2>&1 &
+    [[ "$localgrpcweb" != "null" ]] && color yellow "    grpc to http://localhost:$localgrpcweb" && kubectl port-forward pods/$chain-genesis-0 $localgrpcweb:$CHAIN_GRPCWEB_PORT > /dev/null 2>&1 &
     [[ "$locallcd" != "null" ]] && color yellow "    lcd to http://localhost:$locallcd" && kubectl port-forward pods/$chain-genesis-0 $locallcd:$CHAIN_LCD_PORT > /dev/null 2>&1 &
     [[ "$localexp" != "null" ]] && color yellow "    exposer to http://localhost:$localexp" && kubectl port-forward pods/$chain-genesis-0 $localexp:$CHAIN_EXPOSER_PORT > /dev/null 2>&1 &
     [[ "$localfaucet" != "null" ]] && color yellow "    faucet to http://localhost:$localfaucet" && kubectl port-forward pods/$chain-genesis-0 $localfaucet:$CHAIN_FAUCET_PORT > /dev/null 2>&1 &
