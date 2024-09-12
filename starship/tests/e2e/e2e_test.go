@@ -132,3 +132,40 @@ func (s *TestSuite) TestRelayers_State() {
 		s.Require().Equal("success", data["status"].(string))
 	}
 }
+
+func (s *TestSuite) TestChains_Balances() {
+	if s.config.Chains[0].Ports.Rest == 0 {
+		s.T().Skip("skip staking params test for non-rest endpoint")
+	}
+	s.T().Log("running test for /cosmos/bank/v1beta1/balances/{address} endpoint for each chain")
+	if s.configFile != "configs/one-chain.yaml" {
+		s.T().Skip("skip tests for checking custom balances")
+	}
+
+	for _, chain := range s.config.Chains {
+		for _, balance := range chain.Balances {
+			url := fmt.Sprintf("http://0.0.0.0:%d/cosmos/bank/v1beta1/balances/%s", chain.Ports.Rest, balance.Address)
+
+			req, err := http.NewRequest(http.MethodGet, url, nil)
+			s.Require().NoError(err)
+
+			body := s.MakeRequest(req, 200)
+
+			// Parse the response body
+			data := map[string]interface{}{}
+			err = json.NewDecoder(body).Decode(&data)
+			s.Require().NoError(err)
+
+			// Check for exactly one balance in the response
+			balances, ok := data["balances"].([]interface{})
+			s.Require().True(ok, "balances should be an array")
+			s.Require().Len(balances, 1, "there should be exactly one balance")
+
+			// Check that the amount and denom match the `coins` in the config
+			balanceMap, ok := balances[0].(map[string]interface{})
+			s.Require().True(ok, "balance should be a map")
+			coins := fmt.Sprintf("%s%s", balanceMap["amount"], balanceMap["denom"])
+			s.Require().Equal(balance.Amount, coins, "balance mismatch for address %s", balance.Address)
+		}
+	}
+}

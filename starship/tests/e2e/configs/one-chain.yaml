@@ -13,6 +13,11 @@ chains:
       memory: 500M
     faucet:
       concurrency: 2
+    balances:
+    - address: osmo1e9ucjn5fjmetky5wezzcsccp7hqcwzrrhthpf5
+      amount: "2000000000000uosmo"
+    - address: osmo10eykchznjdn8jdlwaj5v9wvlmdsp6kxx7u0hv9
+      amount: "2000000000000uosmo"
     genesis:
       app_state:
         staking:

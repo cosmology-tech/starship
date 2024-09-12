@@ -8,6 +8,7 @@ type Chain struct {
 	Faucet        *Feature               `name:"faucet" json:"faucet" yaml:"faucet"`
 	Ports         Port                   `name:"ports" json:"ports" yaml:"ports"`
 	Genesis       map[string]interface{} `name:"genesis" json:"genesis" yaml:"genesis"`
+	Balances      []Balance              `name:"balances" json:"balances" yaml:"balances"`
 }
 
 type Port struct {
@@ -16,6 +17,11 @@ type Port struct {
 	Grpc    int `name:"grpc" json:"grpc" yaml:"grpc"`
 	Exposer int `name:"exposer" json:"exposer" yaml:"exposer"`
 	Faucet  int `name:"faucet" json:"faucet" yaml:"faucet"`
+}
+
+type Balance struct {
+	Address string `name:"address" json:"address" yaml:"address"`
+	Amount  string `name:"amount" json:"amount" yaml:"amount"`
 }
 
 type Relayer struct {
