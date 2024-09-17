@@ -342,6 +342,9 @@
               "grpc": {
                 "type": "number"
               },
+              "grpc-web": {
+                "type": "number"
+              },
               "exposer": {
                 "type": "number"
               },

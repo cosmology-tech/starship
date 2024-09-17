@@ -2,6 +2,7 @@ export interface Ports {
   rest?: number;
   rpc?: number;
   grpc?: number;
+  "grpc-web"?: number;
   exposer?: number;
   faucet?: number;
   prometheus?: number;
