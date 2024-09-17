@@ -75,7 +75,7 @@ if [[ $num_chains -gt -1 ]]; then
       [[ "$localrpc" != "null" ]] && color yellow "    rpc to http://localhost:$localrpc" && kubectl port-forward pods/$chain-genesis-0 $localrpc:$CHAIN_RPC_PORT > /dev/null 2>&1 &
     fi
     [[ "$localgrpc" != "null" ]] && color yellow "    grpc to http://localhost:$localgrpc" && kubectl port-forward pods/$chain-genesis-0 $localgrpc:$CHAIN_GRPC_PORT > /dev/null 2>&1 &
-    [[ "$localgrpcweb" != "null" ]] && color yellow "    grpc to http://localhost:$localgrpcweb" && kubectl port-forward pods/$chain-genesis-0 $localgrpcweb:$CHAIN_GRPCWEB_PORT > /dev/null 2>&1 &
+    [[ "$localgrpcweb" != "null" ]] && color yellow "    grpc-web to http://localhost:$localgrpcweb" && kubectl port-forward pods/$chain-genesis-0 $localgrpcweb:$CHAIN_GRPCWEB_PORT > /dev/null 2>&1 &
     [[ "$locallcd" != "null" ]] && color yellow "    lcd to http://localhost:$locallcd" && kubectl port-forward pods/$chain-genesis-0 $locallcd:$CHAIN_LCD_PORT > /dev/null 2>&1 &
     [[ "$localexp" != "null" ]] && color yellow "    exposer to http://localhost:$localexp" && kubectl port-forward pods/$chain-genesis-0 $localexp:$CHAIN_EXPOSER_PORT > /dev/null 2>&1 &
     [[ "$localfaucet" != "null" ]] && color yellow "    faucet to http://localhost:$localfaucet" && kubectl port-forward pods/$chain-genesis-0 $localfaucet:$CHAIN_FAUCET_PORT > /dev/null 2>&1 &
