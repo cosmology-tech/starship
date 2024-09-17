@@ -335,3 +335,19 @@ chains:
 ```
 
 > Note: To complete the ICS setup one also needs to setup the relayer with ics enabled. Have a look at the [relayer](https://docs.cosmology.zone/starship/config/relayers#ics)
+
+## `balances` (optional)
+The `balances` directive allows you to set the initial balances for the chain addresses. This is useful when you want to test a chain with specific initial balances.
+
+```yaml
+chains:
+- id: osmosis-1
+  name: osmosis
+  numValidators: 1
+  balances:
+    - address: cosmos1xv9tklw7d82sezh9haa573wufgy59vmwe6xxe5
+      coins: 100000000000000uosmo
+    - address: cosmos1xv9tklw7d82sezh9haa573wufgy59vmwe6xxe5
+      coins: 100000000000000uion
+```
+
