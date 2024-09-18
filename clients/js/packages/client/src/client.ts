@@ -62,7 +62,7 @@ const defaultPorts: PodPorts = {
     defaultPorts: {
       rpc: 26657,
       grpc: 9090,
-      "grpc-web": 9091,
+      'grpc-web': 9091,
       rest: 1317,
       exposer: 8081,
       faucet: 8000,
