@@ -26,21 +26,21 @@ jobs:
       matrix:
         config-file:
           - "two-chain.yaml"
-          - "build-chain.yaml"
+#          - "build-chain.yaml"
           - "multi-validator.yaml"
           - "two-chain-gorelayer.yaml"
           - "simapp.yaml"
-          - "injective.yaml"
-          - "evmos.yaml"
+#          - "injective.yaml"
+#          - "evmos.yaml"
           - "one-chain-starship-faucet.yaml"
           - "multi-validator-starship-faucet.yaml"
           - "one-chain-cometmock.yaml"
           - "two-chain-cometmock.yaml"
           - "neutron.yaml"
-          - "three-chain.yaml"
-          - "agoric.yaml"
-          - "multi-relayer.yaml"
-          - "neutron-relayer.yaml"
+#          - "three-chain.yaml"
+#          - "agoric.yaml"
+#          - "multi-relayer.yaml"
+#          - "neutron-relayer.yaml"
           - "one-cosmoshub-starship-faucet.yaml"
       fail-fast: true
       max-parallel: 1

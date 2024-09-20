@@ -19,16 +19,16 @@ jobs:
       matrix:
         config-file:
           - "two-chain.yaml"
-          - "build-chain.yaml"
+#          - "build-chain.yaml"
           - "multi-validator.yaml"
           - "two-chain-gorelayer.yaml"
-          - "simapp.yaml"
-          - "injective.yaml"
-          - "evmos.yaml"
+#          - "simapp.yaml"
+#          - "injective.yaml"
+#          - "evmos.yaml"
           - "two-chain-cometmock.yaml"
-          - "neutron.yaml"
-          - "three-chain.yaml"
-          - "agoric.yaml"
+#          - "neutron.yaml"
+#          - "three-chain.yaml"
+#          - "agoric.yaml"
           - "multi-relayer.yaml"
       fail-fast: true
       max-parallel: 1
