@@ -10,6 +10,16 @@ on:
       - "!starship/docker/**"
       - ".github/workflows/pr-tests.yaml"
     types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches:
+      - main
+      - release/*
+    paths:
+      - "starship/**"
+      - ".github/workflows/e2e-tests.yaml"
+  # Run every day at 18:00 UTC
+  schedule:
+    - cron: '0 18 * * *'
   workflow_dispatch: {}
 
 concurrency:
