@@ -68,17 +68,21 @@ done
 
 echo "Port forward services"
 
-if [[ $(yq -r ".registry.enabled" $CONFIGFILE) == "true" ]];
-then
-  kubectl port-forward service/registry 8081:$REGISTRY_LCD_PORT > /dev/null 2>&1 &
-  kubectl port-forward service/registry 9091:$REGISTRY_GRPC_PORT > /dev/null 2>&1 &
+if [[ $(yq -r ".registry.enabled" $CONFIGFILE) == "true" ]]; then
+  registry_lcd_port=$(yq -r ".registry.ports.rest" $CONFIGFILE)
+  registry_grpc_port=$(yq -r ".registry.ports.grpc" $CONFIGFILE)
+  registry_lcd_port=${registry_lcd_port:-$REGISTRY_LCD_PORT}
+  registry_grpc_port=${registry_grpc_port:-$REGISTRY_GRPC_PORT}
+  kubectl port-forward service/registry ${registry_lcd_port}:$REGISTRY_LCD_PORT > /dev/null 2>&1 &
+  kubectl port-forward service/registry ${registry_grpc_port}:$REGISTRY_GRPC_PORT > /dev/null 2>&1 &
   sleep 1
-  color yellow "registry: forwarded registry lcd to grpc http://localhost:8081, to http://localhost:9091"
+  color yellow "registry: forwarded registry lcd to http://localhost:${registry_lcd_port}, grpc to http://localhost:${registry_grpc_port}"
 fi
 
-if [[ $(yq -r ".explorer.enabled" $CONFIGFILE) == "true" ]];
-then
-  kubectl port-forward service/explorer 8080:$EXPLORER_LCD_PORT > /dev/null 2>&1 &
+if [[ $(yq -r ".explorer.enabled" $CONFIGFILE) == "true" ]]; then
+  explorer_port=$(yq -r ".explorer.ports.rest" $CONFIGFILE)
+  explorer_port=${explorer_port:-$EXPLORER_LCD_PORT}
+  kubectl port-forward service/explorer ${explorer_port}:$EXPLORER_LCD_PORT > /dev/null 2>&1 &
   sleep 1
-  color green "Open the explorer to get started.... http://localhost:8080"
+  color green "Open the explorer to get started.... http://localhost:${explorer_port}"
 fi
