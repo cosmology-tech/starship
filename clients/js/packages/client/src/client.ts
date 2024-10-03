@@ -32,7 +32,7 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   chart: 'starship/devnet',
   namespace: '',
   version: '',
-  timeout: '10m',
+  timeout: '10m'
 };
 
 export interface PodPorts {
