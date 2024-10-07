@@ -287,10 +287,10 @@ spec:
             httpGet:
               path: /status
               port: 26657
-            {{- end }}
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 15
+            {{- end }}
           {{- end }}
         - name: exposer
           image: {{ $.Values.exposer.image }}
