@@ -351,3 +351,22 @@ chains:
       coins: 100000000000000uion
 ```
 
+## `readinessProbe` (optional)
+The `readinessProbe` directive allows you to set the readiness probe for the chain pods. This is useful when you want to test a chain with specific readiness probe settings.
+Note, this is the same as the [kubernetes readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+
+```yaml
+chains:
+- id: osmosis-1
+  name: osmosis
+  numValidators: 1
+  readinessProbe:
+    exec:
+      command:
+      - bash
+      - -c
+      - |
+        $CHAIN_BIN status 2>&1 | jq -e '.SyncInfo.catching_up == false'
+    initialDelaySeconds: 60
+    periodSeconds: 20
+```
