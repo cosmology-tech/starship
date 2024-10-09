@@ -556,6 +556,9 @@
                 "amount"
               ]
             }
+          },
+          "readinessProbe": {
+            "type": "object"
           }
         },
         "additionalProperties": false,

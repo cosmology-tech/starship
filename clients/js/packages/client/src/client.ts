@@ -22,6 +22,7 @@ export interface StarshipContext {
   namespace?: string;
   verbose?: boolean;
   curdir?: string;
+  timeout?: string;
 }
 
 export const defaultStarshipContext: Partial<StarshipContext> = {
@@ -30,7 +31,8 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   repoUrl: 'https://cosmology-tech.github.io/starship/',
   chart: 'starship/devnet',
   namespace: '',
-  version: ''
+  version: '',
+  timeout: '10m'
 };
 
 export interface PodPorts {
@@ -47,7 +49,7 @@ export interface PodPorts {
 }
 
 const defaultName: string = 'starship';
-const defaultVersion: string = 'v0.2.13';
+const defaultVersion: string = 'v0.2.14';
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -395,6 +397,8 @@ export class StarshipClient implements StarshipClientI {
       this.ctx.chart,
       '--version',
       this.config.version,
+      '--timeout',
+      this.ctx.timeout,
       ...this.getDeployArgs(),
       ...options
     ];
@@ -507,11 +511,34 @@ export class StarshipClient implements StarshipClientI {
       { log: false, silent: true }
     ).trim();
 
-    const [phase, readyList, restartCountList, reason] = result.split(/\s+/);
+    // Ensure the output contains valid fields to split
+    const parts = result.split(/\s+/);
+    if (parts.length < 3) {
+      this.log(
+        chalk.red(`Unexpected pod status output for ${podName}: ${result}`)
+      );
+      return;
+    }
+
+    const [phase, readyList, restartCountList, reason] = parts;
+
+    // Validate readyList and restartCountList before applying split
+    if (!readyList || !restartCountList) {
+      this.log(
+        chalk.red(
+          `Invalid ready or restart count for pod ${podName}: ${result}`
+        )
+      );
+      return;
+    }
+
     const ready = readyList.split(',').every((state) => state === 'true');
     const restarts = restartCountList
       .split(',')
       .reduce((acc, count) => acc + parseInt(count, 10), 0);
+
+    // check for repeated image pull errors
+    this.checkImagePullFailures(podName);
 
     this.podStatuses.set(podName, {
       phase,
@@ -566,6 +593,74 @@ export class StarshipClient implements StarshipClientI {
         `[${chalk.blue(podName)}]: ${statusColor}, ${chalk.gray(`Ready: ${status.ready}, Restarts: ${status.restartCount}`)}`
       );
     });
+  }
+
+  public checkImagePullFailures(podName: string): void {
+    // Fetch events from kubectl describe for the given pod
+    const eventLines = this.getPodEventsFromDescribe(podName);
+    const errorPattern = /Failed to pull image/;
+    const imageErrors: { [image: string]: number } = {};
+
+    // Parse through event lines to identify image pull failures
+    eventLines.forEach((line) => {
+      const message = line || '';
+      if (errorPattern.test(message)) {
+        const imageMatch = message.match(/image "(.*?)"/);
+        if (imageMatch && imageMatch[1]) {
+          const imageName = imageMatch[1];
+          imageErrors[imageName] = (imageErrors[imageName] || 0) + 1;
+        }
+      }
+    });
+
+    // Log errors for images that have failed more than twice
+    Object.entries(imageErrors).forEach(([imageName, errorCount]) => {
+      if (errorCount >= 3) {
+        this.log(
+          `${chalk.red(
+            `
+            Error: Image '${imageName}' failed to pull ${errorCount} times for pod ${podName}.
+            Please check the image name and ensure it is correct.
+            Run "starship stop" to stop the deployment which would be in stuck state.
+            `
+          )}`
+        );
+        this.exit(1);
+      }
+    });
+  }
+
+  private getPodEventsFromDescribe(podName: string): string[] {
+    // Execute the 'kubectl describe pod' command
+    const result = this.exec(
+      ['kubectl', 'describe', 'pod', podName, ...this.getArgs()],
+      { log: false, silent: true }
+    );
+
+    // Check if the command was successful
+    if (result.code !== 0) {
+      this.log(
+        chalk.red(`Failed to describe pod ${podName}: ${result.stderr}`)
+      );
+      return [];
+    }
+
+    const describeOutput = result.stdout;
+
+    // Extract the 'Events' section from the describe output
+    const eventsSection = describeOutput.split('Events:')[1];
+    if (!eventsSection) {
+      this.log(chalk.yellow(`No events found for pod ${podName}`));
+      return [];
+    }
+
+    // Split the events section into individual lines
+    const eventLines = eventsSection
+      .split('\n')
+      .filter((line) => line.trim() !== '');
+    this.log(`event lints: ${eventLines.join('\n')}`);
+
+    return eventLines;
   }
 
   private forwardPort(

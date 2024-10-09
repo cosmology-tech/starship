@@ -689,6 +689,9 @@ defaultChains:
             trap 'kill $killer 2>/dev/null' EXIT
             # Return the test's exit code, whether it succeeded, failed, or was killed.
             wait $tester
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
   kujira:
     image: ghcr.io/cosmology-tech/starship/kujira:v1.1.0
     home: /root/.kujira
