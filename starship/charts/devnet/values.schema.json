@@ -144,7 +144,8 @@
               "virtual",
               "akash",
               "agoric",
-              "kujira"
+              "kujira",
+              "hyperweb"
             ]
           },
           "numValidators": {
