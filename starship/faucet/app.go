@@ -208,7 +208,12 @@ func (a *AppServer) Run() error {
 		}
 	}()
 
-	// start distributor
+	// start distributor if distrubutor.Addrs is not empty
+	if a.distributor.Addrs == nil {
+		a.logger.Info("no distributor addresses provided")
+		return nil
+	}
+
 	go func() {
 		for {
 			disStatus, err := a.distributor.Status()
