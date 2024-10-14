@@ -719,6 +719,42 @@ defaultChains:
             exponent: 6
         coingecko_id: kujira
         keywords: [ "kujira" ]
+  hyperweb:
+    image: ghcr.io/cosmology-tech/jsd:0.1.1
+    home: /root/.jsd
+    binary: jsdd
+    prefix: hyper
+    denom: uhyper
+    prettyName: Hyperweb
+    coins: 100000000000000uhyper,100000000000000uweb
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmology-tech/jsd
+    assets:
+      - base: uweb
+        description: "The native staking and governance token of the Hyperweb chain."
+        name: Web
+        display: web
+        symbol: WEB
+        denom_units:
+          - denom: uweb
+            exponent: 0
+          - denom: web
+            exponent: 6
+        coingecko_id: web
+        keywords: [ "web" ]
+      - base: uhyper
+        description: "The meme coin for Hyperweb chain."
+        name: Hyper
+        display: hyper
+        symbol: HYPR
+        denom_units:
+          - denom: uhyper
+            exponent: 0
+          - denom: hyper
+            exponent: 6
+        coingecko_id: hyper
+        keywords: [ "hyper" ]
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
