@@ -905,7 +905,7 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
   starship:
-    image: ghcr.io/cosmology-tech/starship/faucet:20240618-3879943
+    image: ghcr.io/cosmology-tech/starship/faucet:20241017-a4579e1
     concurrency: 5
 
 defaultCometmock:
