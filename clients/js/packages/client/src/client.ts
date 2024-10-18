@@ -49,7 +49,7 @@ export interface PodPorts {
 }
 
 const defaultName: string = 'starship';
-const defaultVersion: string = 'v0.2.14';
+const defaultVersion: string = 'v0.2.19';
 
 // TODO talk to Anmol about moving these into yaml, if not already possible?
 const defaultPorts: PodPorts = {
@@ -558,6 +558,13 @@ export class StarshipClient implements StarshipClientI {
   public async waitForPods(): Promise<void> {
     const podNames = this.getPodNames();
 
+    // Remove pods that are no longer active from the podStatuses map
+    this.podStatuses.forEach((_value, podName) => {
+      if (!podNames.includes(podName)) {
+        this.podStatuses.delete(podName);
+      }
+    });
+
     // Check the status of each pod retrieved
     podNames.forEach((podName) => {
       this.checkPodStatus(podName);
@@ -658,7 +665,6 @@ export class StarshipClient implements StarshipClientI {
     const eventLines = eventsSection
       .split('\n')
       .filter((line) => line.trim() !== '');
-    this.log(`event lints: ${eventLines.join('\n')}`);
 
     return eventLines;
   }
