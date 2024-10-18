@@ -1,6 +1,6 @@
 {
   "name": "@starship-ci/client",
-  "version": "2.9.2",
+  "version": "2.10.0",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "description": "Starship CI Client",
   "main": "index.js",
