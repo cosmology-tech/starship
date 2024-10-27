@@ -52,8 +52,6 @@ chains:
   - name: gaia
     base: ghcr.io/strangelove-ventures/heighliner/gaia
     tags:
-      - v20.0.1
-      - v20.0.0
       - v19.2.0
       - v19.1.0
       - v18.1.0
