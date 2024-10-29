@@ -474,6 +474,7 @@ func local_request_Registry_GetIBCInfo_0(ctx context.Context, marshaler runtime.
 // UnaryRPC     :call RegistryServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterRegistryHandlerFromEndpoint instead.
+// GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterRegistryHandlerServer(ctx context.Context, mux *runtime.ServeMux, server RegistryServer) error {
 
 	mux.Handle("GET", pattern_Registry_ListChainIDs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
@@ -764,7 +765,7 @@ func RegisterRegistryHandler(ctx context.Context, mux *runtime.ServeMux, conn *g
 // to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "RegistryClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "RegistryClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "RegistryClient" to call the correct interceptors.
+// "RegistryClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterRegistryHandlerClient(ctx context.Context, mux *runtime.ServeMux, client RegistryClient) error {
 
 	mux.Handle("GET", pattern_Registry_ListChainIDs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {

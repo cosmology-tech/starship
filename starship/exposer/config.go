@@ -38,6 +38,8 @@ type Config struct {
 	NodeKeyFile string `name:"node-key-file" json:"node_key_file" env:"NODE_KEY_FILE" usage:"Path of node_key.json file for node"`
 	// StatusURL is used to fetch status info from blockchain node
 	StatusURL string `name:"status-url" json:"status_url" env:"STATUS_URL" usage:"URL to fetch chain status"`
+	// ChainIDs is the list of chain ids, comma separated
+	ChainIDs string `name:"chain-ids" json:"chain_ids" env:"CHAIN_IDS" usage:"Comma separated list of chain ids"`
 	// Verbose switches on debug logging
 	Verbose bool `name:"verbose" json:"verbose" usage:"switch on debug / verbose logging"`
 	// OnlyFatalLog set log level as fatal to ignore logs
