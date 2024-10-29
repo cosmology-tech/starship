@@ -52,7 +52,7 @@ func (a *AppServer) getClients(chainID string) ([]string, error) {
 	a.logger.Debug("output from get clients:", zap.ByteString("cmdOutput", output))
 
 	// Regular expression to match the client_id in the output
-	re := regexp.MustCompile(`client_id:\s*ClientId\(\s*"([^"]+)"\s*\)`)
+	re := regexp.MustCompile(`(?m)^\s*client_id:\s*ClientId\(\s*"([^"]+)"`)
 	matches := re.FindAllStringSubmatch(string(output), -1)
 
 	var clients []string
