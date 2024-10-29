@@ -81,7 +81,7 @@ func (a *AppServer) GetClients(ctx context.Context, req *pb.RequestGetClients) (
 
 func (a *AppServer) updateClient(ctx context.Context, chainID, clientID string) (string, error) {
 	// note: for cli one time txn, use `config-cli.toml` file
-	updateCmd := fmt.Sprintf("hermes --config /root/.hermes/config-cli.toml update client --host-chain %s --client-id %s", chainID, clientID)
+	updateCmd := fmt.Sprintf("hermes --config /root/.hermes/config-cli.toml update client --host-chain %s --client %s", chainID, clientID)
 	a.logger.Debug("running command:", zap.String("cmd", updateCmd))
 
 	output, err := runCommand(updateCmd)
