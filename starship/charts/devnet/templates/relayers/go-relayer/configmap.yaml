@@ -36,7 +36,7 @@ data:
         "gas-prices": "0.025{{ $fullchain.denom }}",
         "min-gas-amount": 1,
         "debug": true,
-        "timeout": "20s",
+        "timeout": "600s",
         "output-format": "json",
         "sign-mode": "direct"
       }
