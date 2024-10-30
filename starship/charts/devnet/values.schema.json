@@ -145,7 +145,8 @@
               "akash",
               "agoric",
               "kujira",
-              "hyperweb"
+              "hyperweb",
+              "noble"
             ]
           },
           "numValidators": {
