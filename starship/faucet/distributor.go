@@ -163,8 +163,13 @@ func (d *Distributor) Status() ([]AccountBalances, error) {
 
 // SendTokens will transfer tokens to the given address and denom from one of distributor addresses
 func (d *Distributor) SendTokens(address string, denom string) error {
-	randIndex := rand.Intn(len(d.Addrs))
 	amount := d.CreditCoins.GetDenomAmount(denom)
+
+	if d.Addrs == nil {
+		return d.Holder.SendTokens(address, denom, amount)
+	}
+
+	randIndex := rand.Intn(len(d.Addrs))
 	if amount == "" {
 		return fmt.Errorf("invalid denom: %s, expected denoms: %s", denom, d.CreditCoins.GetDenoms())
 	}

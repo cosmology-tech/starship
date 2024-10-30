@@ -145,7 +145,7 @@ data:
         ],
         "coingecko_id": "{{ $chain.name }}"
       }
-    ]
+      ]
       {{- end }}
     }
   chain.json: |-

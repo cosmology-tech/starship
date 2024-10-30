@@ -286,11 +286,16 @@ spec:
               name: scripts
           {{- if not ($chain.cometmock.enabled) }}
           readinessProbe:
+            {{- if hasKey $chain "readinessProbe" }}
+            {{- $chain.readinessProbe | toYaml | nindent 12 }}
+            {{- else }}
             httpGet:
               path: /status
               port: 26657
             initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 15
+            {{- end }}
           {{- end }}
         - name: exposer
           image: {{ $.Values.exposer.image }}

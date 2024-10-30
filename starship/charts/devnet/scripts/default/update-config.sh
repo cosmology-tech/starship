@@ -46,6 +46,9 @@ sed -i -e "${line_number}s#address = \".*\"#address = \"tcp://0.0.0.0:1317\"#g" 
 line_number=$(get_next_line_number "Address defines the gRPC server address to bind to." $CHAIN_DIR/config/app.toml)
 sed -i -e "${line_number}s#address = \".*\"#address = \"0.0.0.0:9090\"#g" $CHAIN_DIR/config/app.toml
 
+line_number=$(get_next_line_number "Address defines the gRPC-web server address to bind to." $CHAIN_DIR/config/app.toml)
+sed -i -e "${line_number}s#address = \".*\"#address = \"0.0.0.0:9091\"#g" $CHAIN_DIR/config/app.toml
+
 if [ "$METRICS" == "true" ]; then
   sed -i -e "s/prometheus = false/prometheus = true/g" $CHAIN_DIR/config/config.toml
 

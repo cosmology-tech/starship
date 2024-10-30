@@ -144,7 +144,8 @@
               "virtual",
               "akash",
               "agoric",
-              "kujira"
+              "kujira",
+              "hyperweb"
             ]
           },
           "numValidators": {
@@ -342,6 +343,9 @@
               "grpc": {
                 "type": "number"
               },
+              "grpc-web": {
+                "type": "number"
+              },
               "exposer": {
                 "type": "number"
               },
@@ -535,6 +539,27 @@
               "enabled",
               "provider"
             ]
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "address",
+                "amount"
+              ]
+            }
+          },
+          "readinessProbe": {
+            "type": "object"
           }
         },
         "additionalProperties": false,

@@ -673,6 +673,25 @@ defaultChains:
             exponent: 6
         coingecko_id: inter-stable-token
         keywords: [ "inter-stable-token" ]
+    readinessProbe:
+      exec:
+        command:
+          - bash
+          - -c
+          - |
+            # Try to see if the node is still catching up.
+            ([[ $($CHAIN_BIN status 2>&1 | jq -r .SyncInfo.catching_up) == false ]]) &
+            tester=$!
+            # Kill the test if it takes longer than we expect.
+            (sleep 5; kill $tester 2>/dev/null) &
+            killer=$!
+            # Kill the killer before exiting.
+            trap 'kill $killer 2>/dev/null' EXIT
+            # Return the test's exit code, whether it succeeded, failed, or was killed.
+            wait $tester
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
   kujira:
     image: ghcr.io/cosmology-tech/starship/kujira:v1.1.0
     home: /root/.kujira
@@ -700,6 +719,33 @@ defaultChains:
             exponent: 6
         coingecko_id: kujira
         keywords: [ "kujira" ]
+  hyperweb:
+    image: ghcr.io/cosmology-tech/jsd:0.1.1
+    home: /root/.jsd
+    binary: jsdd
+    prefix: hyper
+    denom: uhyper
+    prettyName: Hyperweb
+    coins: 100000000000000uhyper
+    hdPath: m/44'/118'/0'/0/0
+    coinType: 118
+    repo: https://github.com/cosmology-tech/jsd
+    assets:
+      - base: uhyper
+        description: "The meme coin for Hyperweb chain."
+        name: Hyper
+        display: hyper
+        symbol: HYPR
+        logo_URIs:
+          png: "https://gist.githubusercontent.com/Anmol1696/bea1b3835dfb0fce3ab9ed993f5a0792/raw/7065493384a51c888752284be7c1afbf6135b50a/logo-png.png"
+          svg: "https://gist.githubusercontent.com/Anmol1696/bea1b3835dfb0fce3ab9ed993f5a0792/raw/7065493384a51c888752284be7c1afbf6135b50a/logo-svg.svg"
+        denom_units:
+          - denom: uhyper
+            exponent: 0
+          - denom: hyper
+            exponent: 6
+        coingecko_id: hyper
+        keywords: [ "hyper" ]
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
@@ -859,7 +905,7 @@ defaultFaucet:
     image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.1
     concurrency: 5
   starship:
-    image: ghcr.io/cosmology-tech/starship/faucet:20240618-3879943
+    image: ghcr.io/cosmology-tech/starship/faucet:20241017-a4579e1
     concurrency: 5
 
 defaultCometmock:

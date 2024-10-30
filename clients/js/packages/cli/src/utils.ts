@@ -38,7 +38,8 @@ export const params: string[] = [
   'repo',
   'repoUrl',
   'chart',
-  'namespace'
+  'namespace',
+  'timeout'
 ];
 
 export const loadConfig = (argv: any): Config => {
@@ -89,6 +90,8 @@ Command-line Options:
                         Will overide config file settings for name.
   --version <ver>   Specify the version of the Helm chart, default: v0.2.6.
                         Will overide config file settings for version.
+  --timeout <time>  Specify the timeout for the Helm operations, default: 10m.
+                        Will overide config file settings for timeout.
 
 Examples:
   $ starship start --config ./config/two-chain.yaml
