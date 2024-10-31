@@ -23,6 +23,7 @@ export interface StarshipContext {
   verbose?: boolean;
   curdir?: string;
   timeout?: string;
+  restartThreshold?: number;
 }
 
 export const defaultStarshipContext: Partial<StarshipContext> = {
@@ -32,7 +33,8 @@ export const defaultStarshipContext: Partial<StarshipContext> = {
   chart: 'starship/devnet',
   namespace: '',
   version: '',
-  timeout: '10m'
+  timeout: '10m',
+  restartThreshold: 3
 };
 
 export interface PodPorts {
@@ -127,9 +129,6 @@ export class StarshipClient implements StarshipClientI {
   podPorts: PodPorts = defaultPorts;
 
   private podStatuses = new Map<string, PodStatus>(); // To keep track of pod statuses
-
-  // Define a constant for the restart threshold
-  private readonly RESTART_THRESHOLD = 3;
 
   constructor(ctx: StarshipContext) {
     this.ctx = deepmerge(defaultStarshipContext, ctx);
@@ -547,9 +546,9 @@ export class StarshipClient implements StarshipClientI {
       reason
     });
 
-    if (restarts > this.RESTART_THRESHOLD) {
+    if (restarts > this.ctx.restartThreshold) {
       this.log(
-        `${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.RESTART_THRESHOLD} times.`
+        `${chalk.red('Error:')} Pod ${podName} has restarted more than ${this.ctx.restartThreshold} times.`
       );
       this.exit(1);
     }
