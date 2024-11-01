@@ -757,6 +757,11 @@ defaultChains:
     hdPath: m/44'/118'/0'/0/0
     coinType: 118
     repo: https://github.com/noble-assets/noble
+    scripts:
+      createGenesis:
+        file: scripts/noble/create-genesis.sh
+      updateGenesis:
+        file: scripts/noble/update-genesis.sh
     assets:
       - base: uusdc
         description: "USD Coin"
