@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/cosmology-tech/starship/compare/@starship-ci/cli@2.11.0...@starship-ci/cli@2.12.0) (2024-11-02)
+
+**Note:** Version bump only for package @starship-ci/cli
+
 # [2.11.0](https://github.com/cosmology-tech/starship/compare/@starship-ci/cli@2.10.2...@starship-ci/cli@2.11.0) (2024-10-18)
 
 **Note:** Version bump only for package @starship-ci/cli

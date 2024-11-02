@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/cosmology-tech/starship/compare/@starship-ci/client@2.10.0...@starship-ci/client@2.11.0) (2024-11-02)
+
+### Features
+
+- **client:** expose `restartThreshold` via `StarshipContext` ([#577](https://github.com/cosmology-tech/starship/issues/577)) ([afaef4e](https://github.com/cosmology-tech/starship/commit/afaef4e8a1a9bfb1856831a0b036aaa003944e34))
+
 # [2.10.0](https://github.com/cosmology-tech/starship/compare/@starship-ci/client@2.9.2...@starship-ci/client@2.10.0) (2024-10-18)
 
 **Note:** Version bump only for package @starship-ci/client
