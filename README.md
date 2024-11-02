@@ -18,20 +18,84 @@ Universal interchain development environment in k8s. The vision of this project
 is to have a single easy to use developer environment with full testing support
 for multichain use cases
 
-## Installation
-In order to get started with starship, one needs to install the following
-* `kubectl`: https://kubernetes.io/docs/tasks/tools/ (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) for simple install)
-* `helm`: https://helm.sh/docs/intro/install/
+## Prerequisites
+To get started, you’ll need:
+
+* Kubernetes setup (recommended: Docker Desktop with kubernetes support for local setups): [Docker Desktop](https://www.docker.com/products/docker-desktop/
+* `kubectl`: [Installation Guide](https://kubernetes.io/docs/tasks/tools/)
+* `helm`: [Installation Guide](https://helm.sh/docs/intro/install/)
+
+For further information, refer to the [Starship Documentation](https://docs.cosmology.zone/starship/get-started/step-2) on kubernetes setup and configuration.
 
 ## Install
 
-Install the test utilities `starshipjs` and the CLI `@starship-ci/cli`:
+Install the CLI `@starship-ci/cli`:
 
 ```sh
-yarn add --dev starshipjs @starship-ci/cli
+npm install -g @starship-ci/cli
 ```
 
-### Recommended Usage 📘
+## Configuration
+To configure Starship for multichain support, create a configuration file (e.g., `config.yaml`).
+Here’s a sample configuration:
+
+```yaml
+name: starship-localnet
+version: 0.2.20
+
+chains:
+- id: osmosis-1
+  name: osmosis
+  numValidators: 2
+  ports:
+    rest: 1313
+    rpc: 26653
+    faucet: 8003
+- id: cosmoshub-4
+  name: cosmoshub
+  numValidators: 2
+  ports:
+    rest: 1317
+    rpc: 26657
+    faucet: 8007
+
+relayers:
+- name: osmos-cosmos
+  type: hermes
+  replicas: 1
+  chains:
+    - osmosis-1
+    - cosmoshub-4
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+```
+
+For more details on the configuration options and directives available, refer to the [Starship Config](https://docs.cosmology.zone/starship/config).
+
+## Running Starship
+
+### Deploying 🚀
+
+```sh
+yarn starship start --config config.yaml
+```
+
+### Teardown 🛠️
+
+```sh
+# stop ports and delete deployment
+yarn starship stop --config config.yaml
+```
+
+## Recommended Usage 📘
 
 Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most recommended setup. Consider everything else after this section "advanced setup".
 
@@ -40,32 +104,6 @@ Stay tuned for a `create-cosmos-app` boilerplate! For now, this is the most reco
 - Add your workflows for GitHub Actions [like this](https://github.com/osmosis-labs/osmojs/blob/main/.github/workflows/e2e-tests.yaml)
 - Add `yarn starship` commands to your package.json scripts [like this](https://github.com/osmosis-labs/osmojs/blob/c456184666eda55cd6fee5cd09ba6c05c898d55c/packages/osmojs/package.json#L31-L34)
 — Note the jest configurations in the [osmojs package](https://github.com/osmosis-labs/osmojs/tree/main/packages/osmojs)
-
-
-This will allow you to run `yarn starship` to `start`, `setup`, `deploy`, `stop` and other `starship` commands:
-
-#### Deploying `Starship` 🚀
-
-```sh
-yarn starship start
-```
-
-#### Running End-to-End Tests 🧪
-
-```sh
-# test
-yarn starship:test
-
-# watch 
-yarn starship:watch
-```
-
-#### Teardown 🛠️
-
-```sh
-# stop ports and delete deployment
-yarn starship stop
-```
 
 ## Related
 
