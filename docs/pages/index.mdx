@@ -50,16 +50,93 @@ and write end-to-end test cases
 
 Go to the [Official Project](https://github.com/cosmology-tech/starship) (👷‍♀️in progress...).
 
-## Get Started
+## Quick Start Guide
+### Prerequisites
+To get started, you'll need:
+* Kubernetes setup (recommended: Docker Desktop with Kubernetes support for local setups): [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* `kubectl`: [Installation Guide](https://kubernetes.io/docs/tasks/tools/)
+* `helm`: [Installation Guide](https://helm.sh/docs/intro/install/)
 
-⚡️ How to use Starship?
-Follow the Steps 1 to 4 in Get Started section
+For further information, refer to the [Starship Documentation](https://docs.cosmology.zone/starship/get-started/step-2) on Kubernetes setup and configuration.
 
-## Projects using Starship
+### Install
+Install the CLI @starship-ci/cli:
+
+```bash
+npm install -g @starship-ci/cli
+```
+
+
+### Configuration
+To configure Starship for multichain support, create a configuration file (e.g., `config.yaml`).
+Here’s a sample configuration:
+
+```yaml
+name: starship-localnet
+version: 0.2.20
+
+chains:
+- id: osmosis-1
+  name: osmosis
+  numValidators: 2
+  ports:
+    rest: 1313
+    rpc: 26653
+    faucet: 8003
+- id: cosmoshub-4
+  name: cosmoshub
+  numValidators: 2
+  ports:
+    rest: 1317
+    rpc: 26657
+    faucet: 8007
+
+relayers:
+- name: osmos-cosmos
+  type: hermes
+  replicas: 1
+  chains:
+    - osmosis-1
+    - cosmoshub-4
+
+explorer:
+  enabled: true
+  ports:
+    rest: 8080
+
+registry:
+  enabled: true
+  ports:
+    rest: 8081
+```
+
+For more details on the configuration options and directives available, refer to the [Starship Config](https://docs.cosmology.zone/starship/config).
+
+### Running Starship
+
+#### Deploying 🚀
+
+```sh
+yarn starship start --config config.yaml
+```
+
+#### Teardown 🛠️
+
+```sh
+# stop ports and delete deployment
+yarn starship stop --config config.yaml
+```
+
+## Who is using Starship?
 
 ### [Cosmos-sdk](https://github.com/cosmos/cosmos-sdk/tree/main/tests/starship)
 
 Cosmos-SDK is running Starship for testing out the latest simapp. Runs in [CI/CD](https://github.com/cosmos/cosmos-sdk/actions/workflows/starship-tests.yml)
+
+### [Agoric SDK](https://github.com/Agoric/agoric-sdk/tree/master/multichain-testing)
+
+Agoric SDK is using Starship to run end-to-end tests for Agoric chain. Runs in CI/CD.
+Running 4 chains and relayers between them, then using JS based custom e2e testing system that they built.
 ### [Mesh-Security](https://github.com/osmosis-labs/mesh-security-sdk/tree/main/tests/starship)
 
 For mesh-security development, Starship is being used to create a dev environment in a cloud cluster to
