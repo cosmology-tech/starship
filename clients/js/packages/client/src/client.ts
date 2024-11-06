@@ -345,7 +345,7 @@ export class StarshipClient implements StarshipClientI {
 
   public async stop(): Promise<void> {
     this.stopPortForward();
-    this.setPodStatues();  // set pod statues before deleting the helm
+    this.setPodStatues(); // set pod statues before deleting the helm
     this.deleteHelm();
     await this.waitForPodsTermination();
   }
@@ -560,7 +560,7 @@ export class StarshipClient implements StarshipClientI {
     const podNames = this.getPodNames();
 
     podNames.forEach((podName) => {
-      this.checkPodStatus(podName, false);  // set exitEarly to false, only set the this.PodStatuses
+      this.checkPodStatus(podName, false); // set exitEarly to false, only set the this.PodStatuses
     });
   }
 
@@ -639,7 +639,10 @@ export class StarshipClient implements StarshipClientI {
     });
   }
 
-  public checkImagePullFailures(podName: string, exitEarly: boolean = true): void {
+  public checkImagePullFailures(
+    podName: string,
+    exitEarly: boolean = true
+  ): void {
     // Fetch events from kubectl describe for the given pod
     const eventLines = this.getPodEventsFromDescribe(podName);
     const errorPattern = /Failed to pull image/;
@@ -878,21 +881,24 @@ export class StarshipClient implements StarshipClientI {
   }
 
   private getForwardPids(): string[] {
-    const result = this.exec([
-      'ps',
-      '-ef',
-      '|',
-      'grep',
-      '-i',
-      "'kubectl port-forward'",
-      '|',
-      'grep',
-      '-v',
-      "'grep'",
-      '|',
-      'awk',
-      "'{print $2}'"
-    ], { log: false, silent: true });
+    const result = this.exec(
+      [
+        'ps',
+        '-ef',
+        '|',
+        'grep',
+        '-i',
+        "'kubectl port-forward'",
+        '|',
+        'grep',
+        '-v',
+        "'grep'",
+        '|',
+        'awk',
+        "'{print $2}'"
+      ],
+      { log: false, silent: true }
+    );
     const pids = (result || '')
       .split('\n')
       .map((pid) => pid.trim())
