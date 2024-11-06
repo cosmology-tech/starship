@@ -104,7 +104,10 @@ async function main() {
       client.stopPortForward();
       break;
     case 'stop':
-      client.stop();
+      client.stop().catch((err: any) => {
+        console.error('An error occurred during stop:', err);
+        process.exit(1);
+      });
       break;
     case 'undeploy':
       client.deleteHelm();
