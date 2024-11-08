@@ -43,7 +43,6 @@ export const params: string[] = [
 ];
 
 export const loadConfig = (argv: any): Config => {
-  console.log('argv: ', argv);
   const context: StarshipContext = {
     ...defaultStarshipContext
   } as StarshipContext;
@@ -52,7 +51,7 @@ export const loadConfig = (argv: any): Config => {
   // Override context with command-line arguments dynamically based on StarshipContext keys
   params.forEach((key) => {
     if (argv[key] !== undefined) {
-      console.log('key: ', key, ' argv[key]: ', argv[key]);
+      console.log('argv:', key, ':', argv[key]);
       // @ts-expect-error - dynamic assignment
       context[key] = argv[key];
     }

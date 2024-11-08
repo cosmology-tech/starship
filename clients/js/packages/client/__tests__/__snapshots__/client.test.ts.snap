@@ -37,7 +37,10 @@ Call: stop()
 Log: Trying to stop all port-forward, if any....
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
-helm delete osmojs"
+kubectl get pods --no-headers -o custom-columns=:metadata.name
+helm delete osmojs
+kubectl get pods --no-headers -o custom-columns=:metadata.name
+Log: All pods have been sucessfully terminated!"
 `;
 
 exports[`StarshipClient setup 2`] = `
@@ -57,5 +60,7 @@ kubectl port-forward service/registry 8081:8080 > /dev/null 2>&1 &
 kubectl port-forward service/registry 9091:9090 > /dev/null 2>&1 &
 ps -ef | grep -i 'kubectl port-forward' | grep -v 'grep' | awk '{print $2}'
 sleep 2
-helm delete osmojs"
+kubectl get pods --no-headers -o custom-columns=:metadata.name
+helm delete osmojs
+kubectl get pods --no-headers -o custom-columns=:metadata.name"
 `;
