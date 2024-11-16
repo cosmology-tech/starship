@@ -1,3 +1,6 @@
+name: starship-e2e-tests
+version: 0.2.20
+
 chains:
   - id: evmos_9000-1
     name: evmos
