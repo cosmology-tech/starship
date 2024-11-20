@@ -47,6 +47,21 @@ service Exposer {
   rpc CreateChannel(RequestCreateChannel) returns (ResponseCreateChannel) {
     option (google.api.http) = { post: "/create_channel", body: "*" };
   }
+
+  // UpdateAllClients updates the clients of the chain
+  rpc UpdateAllClients(RequestUpdateAllClients) returns (ResponseUpdateAllClients) {
+    option (google.api.http) = { post: "/clients", body: "*" };
+  }
+
+  // GetClient updates the clients of the chain
+  rpc GetClients(RequestGetClients) returns (ResponseGetClients) {
+    option (google.api.http) = { get: "/clients/{chain_id}" };
+  }
+
+  // UpdateClient update the clients of the chain
+  rpc UpdateClients(RequestUpdateClients) returns (ResponseUpdateClients) {
+    option (google.api.http) = { post: "/clients/{chain_id}", body: "*" };
+  }
 }
 
 message ResponseNodeID {
@@ -75,5 +90,27 @@ message RequestCreateChannel {
 }
 
 message ResponseCreateChannel {
+  string status = 1;
+}
+
+message RequestGetClients {
+  string chain_id = 1 [ json_name = "chain_id" ];
+}
+
+message ResponseGetClients {
+  repeated string clients = 1;
+}
+
+message RequestUpdateClients {
+  string chain_id = 1 [ json_name = "chain_id" ];
+}
+
+message ResponseUpdateClients {
+  string status = 1;
+}
+
+message RequestUpdateAllClients {}
+
+message ResponseUpdateAllClients {
   string status = 1;
 }

@@ -124,7 +124,7 @@ data:
     max_tx_size = {{ $chainConfig.max_tx_size | default 2097152 }}
     clock_drift = "{{ $chainConfig.clock_drift | default "5s" }}"
     max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
-    trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
+    trusting_period = "{{ $chainConfig.trusting_period | default "600s" }}"
     trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default "2" }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default "3" }}" }
     {{- if eq $fullchain.name "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
@@ -253,7 +253,7 @@ data:
     max_tx_size = {{ $chainConfig.max_tx_size | default 2097152 }}
     clock_drift = "{{ $chainConfig.clock_drift | default "5s" }}"
     max_block_time = "{{ $chainConfig.max_block_time | default "30s" }}"
-    trusting_period = "{{ $chainConfig.trusting_period | default "75s" }}"
+    trusting_period = "{{ $chainConfig.trusting_period | default "600s" }}"
     trust_threshold = { numerator = "{{ ($chainConfig.trust_threshold | default dict).numerator | default "2" }}", denominator = "{{ ($chainConfig.trust_threshold | default dict).denominator | default "3" }}" }
     {{- if eq $fullchain.name "evmos" }}
     address_type = { derivation = 'ethermint', proto_type = { pk_type = '/ethermint.crypto.v1.ethsecp256k1.PubKey' } }
