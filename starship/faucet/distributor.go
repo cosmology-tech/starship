@@ -276,6 +276,23 @@ func (a *Account) String() string {
 	return fmt.Sprintf("name: %s, addr: %s", a.Name, a.Address)
 }
 
+// queryTx queries the tx based on the txhash
+func (a *Account) queryTx(txhash string) (map[string]interface{}, error) {
+	cmdStr := fmt.Sprintf("%s q tx %s --output=json", a.config.ChainBinary, txhash)
+	output, err := runCommand(cmdStr)
+	if err != nil {
+		return nil, err
+	}
+
+	txMap := map[string]interface{}{}
+	err = json.Unmarshal(output, &txMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return txMap, nil
+}
+
 // sendTokens performs chain binary send txn from account
 func (a *Account) sendTokens(address string, denom string, amount string) error {
 	ok := a.mu.TryLock()
@@ -284,7 +301,7 @@ func (a *Account) sendTokens(address string, denom string, amount string) error 
 	}
 	defer a.mu.Unlock()
 
-	args := fmt.Sprintf("--chain-id=%s --fees=%s --keyring-backend=test --gas=auto --gas-adjustment=1.5 --yes --node=%s", a.config.ChainId, a.config.ChainFees, a.config.ChainRPCEndpoint)
+	args := fmt.Sprintf("--chain-id=%s --fees=%s --keyring-backend=test --gas=auto --gas-adjustment=1.5 --output=json --yes --node=%s", a.config.ChainId, a.config.ChainFees, a.config.ChainRPCEndpoint)
 	cmdStr := fmt.Sprintf("%s tx bank send %s %s %s%s %s", a.config.ChainBinary, a.Address, address, amount, denom, args)
 	output, err := runCommand(cmdStr)
 	if err != nil {
@@ -292,6 +309,30 @@ func (a *Account) sendTokens(address string, denom string, amount string) error 
 		return err
 	}
 	a.logger.Info("ran cmd to send tokens", zap.String("cmd", cmdStr), zap.String("stdout", string(output)))
+
+	// Find the JSON line and extract the txhash using a regular expression
+	txhash, err := extractTxHash(string(output))
+	if err != nil {
+		a.logger.Error("failed to extract txhash", zap.Error(err))
+		return err
+	}
+
+	a.logger.Debug("send tokens txhash", zap.String("txhash", txhash))
+
+	// query tx to check if the tx was successful
+	txMap, err := a.queryTx(txhash)
+	if err != nil {
+		return err
+	}
+
+	// check if the tx has the event
+	err = hasEvent(txMap, "transfer")
+	if err != nil {
+		a.logger.Error("transfer event not found in tx",
+			zap.String("txhash", txhash),
+			zap.Any("txMap", txMap))
+		return err
+	}
 
 	return nil
 }
