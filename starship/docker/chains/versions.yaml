@@ -137,4 +137,5 @@ chains:
   - name: noble
     base: ghcr.io/strangelove-ventures/heighliner/noble
     tags:
+      - v8.0.3
       - v7.0.0
