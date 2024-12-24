@@ -155,7 +155,7 @@ chains:
       - v5.2.0
   - name: ethereum-validator
     base: gcr.io/prysmaticlabs/prysm/validator
-    file: Dockerfile.base
+    file: Dockerfile.eth-validator
     tags:
       - stable
       - v5.2.0
