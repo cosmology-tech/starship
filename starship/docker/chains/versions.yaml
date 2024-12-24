@@ -137,4 +137,25 @@ chains:
   - name: noble
     base: ghcr.io/strangelove-ventures/heighliner/noble
     tags:
+      - v8.0.3
       - v7.0.0
+  - name: ethereum/client-go
+    base: ethereum/client-go
+    file: Dockerfile.base
+    tags:
+      - latest
+      - stable
+      - v1.14.12
+      - v1.14.11
+  - name: prysm/beacon-chain
+    base: gcr.io/prysmaticlabs/prysm/beacon-chain
+    file: Dockerfile.eth-beacon
+    tags:
+      - stable
+      - v5.2.0
+  - name: prysm/validator
+    base: gcr.io/prysmaticlabs/prysm/validator
+    file: Dockerfile.eth-validator
+    tags:
+      - stable
+      - v5.2.0

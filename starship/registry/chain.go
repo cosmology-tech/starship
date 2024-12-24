@@ -209,7 +209,7 @@ func (c *ChainClient) GetChainKeys(ctx context.Context) (*pb.Keys, error) {
 	return keys, nil
 }
 
-// getChannelPort returns the chains and the counterparty info
+// getChannelsPorts returns the chains and the counterparty info
 func (c *ChainClient) getChannelsPorts() ([]ChannelsInfo, error) {
 	querier := query.Query{Client: c.client, Options: query.DefaultOptions()}
 
