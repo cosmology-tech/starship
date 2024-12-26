@@ -1,0 +1,8 @@
+chains:
+  - id: ethereum-execution
+    name: ethereum-execution
+    image: ghcr.io/cosmology-tech/starship/ethereum/client-go:latest
+    numValidators: 1
+    ports:
+      rest: 8545
+      rpc: 8551

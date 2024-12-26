@@ -146,7 +146,8 @@
               "agoric",
               "kujira",
               "hyperweb",
-              "noble"
+              "noble",
+              "ethereum-execution"
             ]
           },
           "numValidators": {
