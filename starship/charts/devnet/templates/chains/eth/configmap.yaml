@@ -1,0 +1,32 @@
+{{- range $chain := .Values.chains }}
+{{- if hasPrefix "ethereum" $chain.name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: genesis-{{ $chain.name }}
+data:
+  genesis.json: |-
+    {
+      "config": {
+        "chainId": 1337,
+        "homesteadBlock": 0,
+        "eip150Block": 0,
+        "eip155Block": 0,
+        "eip158Block": 0,
+        "byzantiumBlock": 0,
+        "constantinopleBlock": 0,
+        "petersburgBlock": 0,
+        "istanbulBlock": 0
+      },
+      "difficulty": "0x1",
+      "gasLimit": "0x47b760",
+      "alloc": {
+        "0x0000000000000000000000000000000000000001": {
+          "balance": "0xde0b6b3a7640000"
+        }
+      }
+    }
+---
+{{- end }}
+{{- end }}
