@@ -147,7 +147,8 @@
               "kujira",
               "hyperweb",
               "noble",
-              "ethereum-execution"
+              "ethereum-execution",
+              "ethereum-beacon"
             ]
           },
           "numValidators": {
@@ -562,6 +563,9 @@
           },
           "readinessProbe": {
             "type": "object"
+          },
+          "beacon": {
+            "type": "string"
           }
         },
         "additionalProperties": false,

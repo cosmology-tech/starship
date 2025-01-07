@@ -97,7 +97,7 @@ spec:
         volumes:
           - name: config
             configMap:
-              name: config-{{ $chain.name }}
+              name: config-execution
           - name: ethereum
             emptyDir: { }
           - name: secrets
