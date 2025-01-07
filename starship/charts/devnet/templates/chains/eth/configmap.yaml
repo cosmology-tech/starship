@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: genesis-{{ $chain.name }}
+  name: config-{{ $chain.name }}
 data:
   genesis.json: |-
     {
@@ -17,16 +17,19 @@ data:
         "byzantiumBlock": 0,
         "constantinopleBlock": 0,
         "petersburgBlock": 0,
-        "istanbulBlock": 0
+        "istanbulBlock": 0,
+        "terminalTotalDifficulty": 0
       },
       "difficulty": "0x1",
       "gasLimit": "0x47b760",
       "alloc": {
         "0x0000000000000000000000000000000000000001": {
-          "balance": "0xde0b6b3a7640000"
+          "balance": "1000000000000000000000"
         }
       }
     }
+  jwt.hex: |-
+    3fe89f53368415a79e065f3c885b7273b41540d5598488ef475cfdc4009850a4
 ---
 {{- end }}
 {{- end }}

@@ -1,6 +1,6 @@
 {{ $portMap := dict "http" 8545 "ws" 8546 "rpc" 8551 }}
 {{- range $chain := .Values.chains }}
-{{- if hasPrefix "ethereum-beacon" $chain.name }}
+{{- if hasPrefix "ethereum-execution" $chain.name }}
 {{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
 
 {{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}

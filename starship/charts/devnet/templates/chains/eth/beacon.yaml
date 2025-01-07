@@ -1,0 +1,92 @@
+{{- range $chain := .Values.chains }}
+{{- if hasPrefix "ethereum-beacon" $chain.name }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $chain.name }}-beacon-chain
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $chain.name }}-beacon-chain
+spec:
+    serviceName: {{ $chain.name }}-beacon-chain
+    replicas: {{ $chain.replicas }}
+    selector:
+        matchLabels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.id }}-genesis
+    template:
+      metadata:
+        annotations:
+          quality: release
+          role: api-gateway
+          sla: high
+          tier: gateway
+        labels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/type: {{ $chain.id }}
+          app.kubernetes.io/name: {{ $chain.id }}-beacon
+          app.kubernetes.io/rawname: {{ $chain.id }}
+          app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+      spec:
+        {{- include "imagePullSecrets" $chain | indent 6 }}
+        initContainers:
+        - name: init-genesis
+          image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Initializing genesis"
+
+
+              echo "Copy secrets over"
+              cp /config/jwt.hex /etc/secrets/jwt.hex
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /etc/secrets
+            - name: config
+              mountPath: /config
+            - name: ethereum
+              mountPath: /ethereum/consensus
+        containers:
+        - name: node
+          image: {{ $chain.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: HTTP_PORT
+            value: "8545"
+          - name: WS_PORT
+            value: "8546"
+          - name: RPC_PORT
+            value: "8551"
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Starting consensus chain"
+              beacon-chain \
+                --execution-endpoint=http://localhost:8551 \
+                --jwt-secret=/etc/secrets/jwt.hex
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum/execution
+            - name: secrets
+              mountPath: /etc/secrets
+        volumes:
+          - name: config
+            configMap:
+              name: config-{{ $chain.name }}
+          - name: ethereum
+            emptyDir: { }
+          - name: secrets
+            emptyDir: { }
+---
+{{- end }}
+{{- end }}

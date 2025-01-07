@@ -42,12 +42,15 @@ spec:
             - "-c"
             - |
               echo "Initializing genesis"
-              cp /genesis/genesis.json /ethereum/execution/genesis.json
+              cp /config/genesis.json /ethereum/execution/genesis.json
+              cp /config/jwt.hex /etc/secrets/jwt.hex
               geth --datadir /ethereum/execution init /ethereum/execution/genesis.json
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
-            - name: genesis
-              mountPath: /genesis
+            - name: secrets
+              mountPath: /etc/secrets
+            - name: config
+              mountPath: /config
             - name: ethereum
               mountPath: /ethereum/execution
         containers:
@@ -55,12 +58,6 @@ spec:
           image: {{ $chain.image }}
           imagePullPolicy: IfNotPresent
           env:
-          - name: NETWORK
-            value: {{ $chain.network }}
-          - name: LOG_LEVEL
-            value: {{ $chain.logLevel }}
-          - name: DATA_DIR
-            value: {{ $chain.dataDir }}
           - name: HTTP_PORT
             value: "8545"
           - name: WS_PORT
@@ -90,16 +87,20 @@ spec:
                 --unlock=0x123463a4B065722E99115D6c222f267d9cABb524 \
                 --password=/dev/null \
                 --syncmode=full \
-                --networkid=32382
+                --networkid=1337
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - name: ethereum
               mountPath: /ethereum/execution
+            - name: secrets
+              mountPath: /etc/secrets
         volumes:
-          - name: genesis
+          - name: config
             configMap:
-              name: genesis-{{ $chain.name }}
+              name: config-{{ $chain.name }}
           - name: ethereum
+            emptyDir: { }
+          - name: secrets
             emptyDir: { }
 ---
 {{- end }}
