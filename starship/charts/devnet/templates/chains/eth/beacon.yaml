@@ -35,7 +35,7 @@ spec:
         {{- include "imagePullSecrets" $chain | indent 6 }}
         initContainers:
         - name: init-genesis
-          image: ghcr.io/cosmology-tech/starship/prysm/cmd/prysmctl:stable
+          image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl:stable
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -43,10 +43,10 @@ spec:
             - |
               mkdir -p /ethereum/consensus /ethereum/execution
               cp /config-execution/genesis.json /ethereum/execution/genesis.json
-              cp /config-consensus/config.yaml /ethereum/consensus/config.yaml
+              cp /config-beacon/config.yaml /ethereum/consensus/config.yaml
 
               echo "Initializing genesis"
-              prysmctl testnet generate-genesis \
+              ./prysmctl testnet generate-genesis \
                 --fork=capella \
                 --num-validators=64 \
                 --genesis-time-delay=15 \
@@ -83,7 +83,6 @@ spec:
             - "-c"
             - |
               echo "Starting consensus chain"
-              sleep infinity
 
               beacon-chain \
                 --execution-endpoint=http://localhost:8551 \
