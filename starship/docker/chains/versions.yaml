@@ -159,3 +159,8 @@ chains:
     tags:
       - stable
       - v5.2.0
+  - name: prysm/cmd/prysmctl
+    base: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
+    tags:
+      - stable
+      - v5.2.0
