@@ -50,39 +50,42 @@ build_chain_tag() {
   local push_image=$3
 
   local base=$(yq -r ".chains[] | select(.name==\"$chain\") | .base" versions.yaml)
-  local dockerfile=$(yq -r ".chains[] | select(.name==\"$chain\") | .file // \"Dockerfile\"" versions.yaml)
+  local copy=$(yq -r ".chains[] | select(.name==\"$chain\") | .copy[]" versions.yaml)
+  local dockerfile="Dockerfile"
+  local temp_dockerfile="Dockerfile.generated"
 
-  if [[ "$FORCE" -ne 1 ]]; then
-    if image_tag_exists $DOCKER_REPO/$chain $tag; then
-      color yellow "image $DOCKER_REPO/$chain:$tag already exists, skipping docker build"
-      return 0
-    fi
-    color green "image not found remote, will build docker image $DOCKER_REPO/$chain:$tag"
+  # Check if `copy` exists and generate a temporary Dockerfile if needed
+  if [[ -n "$copy" && "$copy" != "null" ]]; then
+    local copy_instructions=""
+    echo "$copy" | jq -c '.[]' | while read entry; do
+      src=$(echo "$entry" | jq -r '.src')
+      dst=$(echo "$entry" | jq -r '.dst')
+      copy_instructions+="COPY --from=source $src $dst\n"
+    done
+
+    # Create a temporary Dockerfile with dynamic COPY instructions
+    sed "s|# __COPY_INSTRUCTIONS__|$copy_instructions|g" $dockerfile > $temp_dockerfile
+    dockerfile=$temp_dockerfile
   fi
 
-  # Push docker image, if feature flags set
   local buildx_args=""
   if [[ "$push_image" == "push" || "$push_image" == "push-only" ]]; then
-    color green "will pushing docker image $DOCKER_REPO/$chain:$tag"
     buildx_args="--push"
   fi
 
-  color yellow "building docker image $DOCKER_REPO/$chain:$tag for chain $chain"
-  for n in {1..3}; do
-    docker buildx build \
-      --platform linux/amd64,linux/arm64 \
-      -t "$DOCKER_REPO/$chain:$tag" \
-      . -f $dockerfile \
-      --build-arg BASE_IMAGE=$base \
-      --build-arg VERSION=$tag \
-      $buildx_args && break
-    color red "failed to build docker image, retrying in 5 seconds, retry: $n"
-    sleep 5
-    if [[ "$n" == "3" ]]; then
-      color red "failed to build docker image, exiting"
-      exit 1
-    fi
-  done
+  # Build the image
+  docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    -t "$DOCKER_REPO/$chain:$tag" \
+    . -f $dockerfile \
+    --build-arg BASE_IMAGE=$base \
+    --build-arg VERSION=$tag \
+    $buildx_args
+
+  # Clean up the temporary Dockerfile if it was created
+  if [[ "$dockerfile" == "$temp_dockerfile" ]]; then
+    rm $temp_dockerfile
+  fi
 }
 
 build_all_tags() {
