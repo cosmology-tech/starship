@@ -56,15 +56,15 @@ build_chain_tag() {
 
   # Check if `copy` exists and generate a temporary Dockerfile if needed
   if [[ -n "$copy" && "$copy" != "null" ]]; then
-    local copy_instructions=""
+    cp $dockerfile $temp_dockerfile
+
+    # Generate and append COPY instructions
     echo "$copy" | jq -c '.[]' | while read entry; do
       src=$(echo "$entry" | jq -r '.src')
       dst=$(echo "$entry" | jq -r '.dst')
-      copy_instructions+="COPY --from=source $src $dst\n"
+      echo "COPY --from=source $src $dst" >> $temp_dockerfile
     done
 
-    # Create a temporary Dockerfile with dynamic COPY instructions
-    sed "s|# __COPY_INSTRUCTIONS__|$copy_instructions|g" $dockerfile > $temp_dockerfile
     dockerfile=$temp_dockerfile
   fi
 
