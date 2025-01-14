@@ -1,5 +1,7 @@
 base: ghcr.io/cosmos/relayer
 versions:
+  - v2.6.0
+  - v2.5.3
   - v2.5.2
   - v2.5.1
   - v2.5.0
