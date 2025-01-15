@@ -147,7 +147,7 @@ chains:
       - stable
       - v1.14.12
       - v1.14.11
-  - name: prysm/beacon-chain
+  - name: prysm-beacon-chain
     base: gcr.io/prysmaticlabs/prysm/beacon-chain
     file: Dockerfile.eth-beacon
     tags:
