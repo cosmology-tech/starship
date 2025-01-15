@@ -23,6 +23,3 @@ RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
     curl -LO https://github.com/prysmaticlabs/prysm/releases/download/${VERSION}/$BINARY_NAME && \
     chmod +x $BINARY_NAME && \
     mv $BINARY_NAME /usr/bin/validator
-
-# Verify installation
-RUN validator --version
