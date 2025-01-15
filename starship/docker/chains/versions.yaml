@@ -2,7 +2,6 @@ chains:
   - name: osmosis
     base: ghcr.io/strangelove-ventures/heighliner/osmosis
     tags:
-      - v28.0.0
       - v25.0.2
       - v25.0.0
       - v24.0.3
@@ -10,7 +9,6 @@ chains:
   - name: gaia
     base: ghcr.io/strangelove-ventures/heighliner/gaia
     tags:
-      - v21.0.1
       - v19.2.0
       - v19.1.0
       - v18.1.0
@@ -153,17 +151,14 @@ chains:
     base: gcr.io/prysmaticlabs/prysm/beacon-chain
     file: Dockerfile.eth-beacon
     tags:
-      - stable
       - v5.2.0
   - name: prysm/validator
     base: gcr.io/prysmaticlabs/prysm/validator
     file: Dockerfile.eth-validator
     tags:
-      - stable
       - v5.2.0
   - name: prysm/cmd/prysmctl
     base: gcr.io/prysmaticlabs/prysm/cmd/prysmctl
     file: Dockerfile.eth-prysmctl
     tags:
-      - stable
       - v5.2.0
