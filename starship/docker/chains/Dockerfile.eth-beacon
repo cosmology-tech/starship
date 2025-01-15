@@ -1,15 +1,10 @@
-ARG BASE_IMAGE
 ARG VERSION
-FROM ${BASE_IMAGE}:${VERSION} AS source
-
 FROM golang:1.22.0-bullseye
 
 LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
 
-COPY --from=source /beacon-chain /usr/bin
-
 # Set up dependencies
-ENV PACKAGES curl make bash jq sed build-essential
+ENV PACKAGES curl make bash jq sed
 
 # Install minimum necessary dependencies
 RUN apt-get update --yes && \
@@ -18,3 +13,15 @@ RUN apt-get update --yes && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
+
+# Download and install the beacon-chain binary
+RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
+    PLATFORM=$(uname -s | tr '[:upper:]' '[:lower:]') && \
+    BINARY_NAME="beacon-chain-${VERSION}-${PLATFORM}-${ARCH}" && \
+    echo "Downloading binary: $BINARY_NAME" && \
+    curl -LO https://github.com/prysmaticlabs/prysm/releases/download/${VERSION}/$BINARY_NAME && \
+    chmod +x $BINARY_NAME && \
+    mv $BINARY_NAME /usr/bin/beacon-chain
+
+# Verify installation
+RUN beacon-chain --version
