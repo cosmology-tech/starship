@@ -9,7 +9,7 @@ chains:
       rpc: 8551
   - id: ethereum-beacon
     name: ethereum-beacon
-    image: ghcr.io/cosmology-tech/starship/prysm/beacon-chain:stable
+    image: ghcr.io/cosmology-tech/starship/prysm/beacon-chain:v5.2.0
     numValidators: 1
     ports:
       rest: 4000

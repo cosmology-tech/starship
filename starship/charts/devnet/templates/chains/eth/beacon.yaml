@@ -7,17 +7,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-beacon-chain
+  name: {{ $chain.name }}
   namespace: {{ $.Release.Namespace }}
   labels:
-    app: {{ $chain.name }}-beacon-chain
+    app: {{ $chain.name }}
 spec:
-    serviceName: {{ $chain.name }}-beacon-chain
+    serviceName: {{ $chain.name }}
     replicas: {{ $chain.replicas }}
     selector:
         matchLabels:
           app.kubernetes.io/instance: {{ $chain.name }}
-          app.kubernetes.io/name: {{ $chain.id }}-beacon
+          app.kubernetes.io/name: {{ $chain.name }}
     template:
       metadata:
         annotations:
@@ -27,16 +27,16 @@ spec:
           tier: gateway
         labels:
           app.kubernetes.io/instance: {{ $chain.name }}
-          app.kubernetes.io/type: {{ $chain.id }}
-          app.kubernetes.io/name: {{ $chain.id }}-beacon
-          app.kubernetes.io/rawname: {{ $chain.id }}
+          app.kubernetes.io/type: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+          app.kubernetes.io/rawname: {{ $chain.name }}
           app.kubernetes.io/version: {{ $.Chart.AppVersion }}
       spec:
         {{- include "imagePullSecrets" $chain | indent 6 }}
         initContainers:
         - name: init-genesis
-          image: gcr.io/prysmaticlabs/prysm/cmd/prysmctl:stable
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/cosmology-tech/starship/prysm/cmd/prysmctl:v5.2.0
+          imagePullPolicy: Always
           command:
             - bash
             - "-c"
@@ -46,7 +46,7 @@ spec:
               cp /config-beacon/config.yaml /ethereum/consensus/config.yaml
 
               echo "Initializing genesis"
-              ./prysmctl testnet generate-genesis \
+              prysmctl testnet generate-genesis \
                 --fork=capella \
                 --num-validators=64 \
                 --genesis-time-delay=15 \
@@ -70,7 +70,7 @@ spec:
         containers:
         - name: node
           image: {{ $chain.image }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
           - name: HTTP_PORT
             value: "8545"
@@ -78,6 +78,10 @@ spec:
             value: "8546"
           - name: RPC_PORT
             value: "8551"
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           command:
             - bash
             - "-c"
@@ -85,8 +89,9 @@ spec:
               echo "Starting consensus chain"
 
               beacon-chain \
-                --execution-endpoint=http://localhost:8551 \
-                --jwt-secret=/etc/secrets/jwt.hex
+                --execution-endpoint=http://ethereum-execution-0.ethereum-execution.default.svc.cluster.local:8551 \
+                --jwt-secret=/etc/secrets/jwt.hex \
+                --accept-terms-of-use
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - name: ethereum

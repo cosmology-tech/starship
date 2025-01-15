@@ -7,17 +7,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $chain.name }}-execution-chain
+  name: {{ $chain.name }}
   namespace: {{ $.Release.Namespace }}
   labels:
-    app: {{ $chain.name }}-execution-chain
+    app: {{ $chain.name }}
 spec:
-    serviceName: {{ $chain.name }}-execution-chain
+    serviceName: {{ $chain.name }}
     replicas: {{ $chain.replicas }}
     selector:
         matchLabels:
           app.kubernetes.io/instance: {{ $chain.name }}
-          app.kubernetes.io/name: {{ $chain.id }}-genesis
+          app.kubernetes.io/name: {{ $chain.name }}
     template:
       metadata:
         annotations:
@@ -27,9 +27,9 @@ spec:
           tier: gateway
         labels:
           app.kubernetes.io/instance: {{ $chain.name }}
-          app.kubernetes.io/type: {{ $chain.id }}
-          app.kubernetes.io/name: {{ $chain.id }}-genesis
-          app.kubernetes.io/rawname: {{ $chain.id }}
+          app.kubernetes.io/type: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+          app.kubernetes.io/rawname: {{ $chain.name }}
           app.kubernetes.io/version: {{ $.Chart.AppVersion }}
       spec:
         {{- include "imagePullSecrets" $chain | indent 6 }}
@@ -75,6 +75,7 @@ spec:
                 --http.api=eth,net,web3,debug \
                 --ws --ws.addr=0.0.0.0 \
                 --ws.port=$WS_PORT \
+                --authrpc.addr=0.0.0.0 \
                 --authrpc.port=$RPC_PORT \
                 --nodiscover \
                 --http.corsdomain=* \
