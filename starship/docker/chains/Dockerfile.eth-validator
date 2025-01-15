@@ -1,4 +1,3 @@
-ARG VERSION
 FROM golang:1.22.0-bullseye
 
 LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
@@ -13,6 +12,8 @@ RUN apt-get update --yes && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
+
+ARG VERSION
 
 # Download and install the validator binary
 RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
