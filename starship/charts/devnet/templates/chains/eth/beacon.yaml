@@ -91,7 +91,8 @@ spec:
               beacon-chain \
                 --execution-endpoint=http://ethereum-execution-0.ethereum-execution.default.svc.cluster.local:8551 \
                 --jwt-secret=/etc/secrets/jwt.hex \
-                --accept-terms-of-use
+                --accept-terms-of-use \
+                --chain-id=1337
           resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
           volumeMounts:
             - name: ethereum
