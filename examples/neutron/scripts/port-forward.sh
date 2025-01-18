@@ -56,7 +56,7 @@ if [[ $num_chains -lt 0 ]]; then
 fi
 for i in $(seq 0 $num_chains); do
   # derive chain pod name from chain id
-  # https://github.com/cosmology-tech/starship/blob/main/charts/devnet/templates/_helpers.tpl#L56
+  # https://github.com/hyperweb-io/starship/blob/main/charts/devnet/templates/_helpers.tpl#L56
   chain=$(yq -r ".chains[$i].name" ${CONFIGFILE} )
   chain=${chain/_/"-"}
   localrpc=$(yq -r ".chains[$i].ports.rpc" ${CONFIGFILE} )

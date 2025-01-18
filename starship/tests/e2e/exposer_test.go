@@ -10,7 +10,7 @@ import (
 	"net/http"
 	urlpkg "net/url"
 
-	pb "github.com/cosmology-tech/starship/exposer/exposer"
+	pb "github.com/hyperweb-io/starship/exposer/exposer"
 )
 
 func (s *TestSuite) MakeExposerRequest(chain *Chain, req *http.Request, unmarshal proto.Message) {

@@ -49,10 +49,10 @@ export default {
     link: "https://discord.gg/6hy8KQ9aJY",
   },
   project: {
-    link: "https://github.com/cosmology-tech/starship",
+    link: "https://github.com/hyperweb-io/starship",
   },
   docsRepositoryBase:
-    "https://github.com/cosmology-tech/starship/tree/main/docs",
+    "https://github.com/hyperweb-io/starship/tree/main/docs",
   editLink: {
     text: "Edit this page on GitHub",
   },

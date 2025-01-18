@@ -1,7 +1,7 @@
 syntax = "proto3";
 package registry;
 
-option go_package = "github.com/cosmology-tech/starship/registry/registry";
+option go_package = "github.com/hyperweb-io/starship/registry/registry";
 
 message Mnemonic {
   string name = 1;

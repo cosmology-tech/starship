@@ -10,7 +10,7 @@ import "google/protobuf/descriptor.proto";
 import "exposer/mnemonic.proto";
 import "exposer/node.proto";
 
-option go_package = "github.com/cosmology-tech/starship/exposer/exposer";
+option go_package = "github.com/hyperweb-io/starship/exposer/exposer";
 
 // Interface for service
 service Exposer {

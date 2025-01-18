@@ -5,7 +5,7 @@ go 1.21
 replace github.com/strangelove-ventures/lens => github.com/Anmol1696/lens v0.1.1-0.20230331154219-5027f163133a
 
 require (
-	github.com/cosmology-tech/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c
+	github.com/hyperweb-io/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c
 	github.com/cosmos/cosmos-sdk v0.47.0-rc2
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
 	github.com/stretchr/testify v1.8.4
@@ -42,7 +42,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
-	github.com/cosmology-tech/starship/registry v0.0.0-20230502113025-a30015992e4d // indirect
+	github.com/hyperweb-io/starship/registry v0.0.0-20230502113025-a30015992e4d // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect

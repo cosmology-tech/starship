@@ -9,7 +9,7 @@ import "registry/chain.proto";
 import "registry/ibc.proto";
 import "registry/mnemonic.proto";
 
-option go_package = "github.com/cosmology-tech/starship/registry/registry";
+option go_package = "github.com/hyperweb-io/starship/registry/registry";
 
 // Interface for service
 service Registry {

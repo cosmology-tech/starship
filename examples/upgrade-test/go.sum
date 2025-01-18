@@ -315,10 +315,10 @@ github.com/coreos/go-systemd v0.0.0-20180511133405-39ca1b05acc7/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/cosmology-tech/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c h1:ObWS5y64vzXGIP4jQ5SKD9Z1VGAjzKlcEGyPZMPHm0w=
-github.com/cosmology-tech/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c/go.mod h1:pOACMYDjfEfJnu/mmWoE0cv9Zr1ynTHBCsSWkjJmB+E=
-github.com/cosmology-tech/starship/registry v0.0.0-20230502113025-a30015992e4d h1:ucGr+apIuMAa2IH48q3stxwYLJGK9WPhbeQJHfp/3dM=
-github.com/cosmology-tech/starship/registry v0.0.0-20230502113025-a30015992e4d/go.mod h1:MIVFVHuDlGz4OI6kDfUp/+cqGFrmeESBnuaaMSZJpjY=
+github.com/hyperweb-io/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c h1:ObWS5y64vzXGIP4jQ5SKD9Z1VGAjzKlcEGyPZMPHm0w=
+github.com/hyperweb-io/starship/clients/go/client v0.0.0-20230502170738-1ab63f187c7c/go.mod h1:pOACMYDjfEfJnu/mmWoE0cv9Zr1ynTHBCsSWkjJmB+E=
+github.com/hyperweb-io/starship/registry v0.0.0-20230502113025-a30015992e4d h1:ucGr+apIuMAa2IH48q3stxwYLJGK9WPhbeQJHfp/3dM=
+github.com/hyperweb-io/starship/registry v0.0.0-20230502113025-a30015992e4d/go.mod h1:MIVFVHuDlGz4OI6kDfUp/+cqGFrmeESBnuaaMSZJpjY=
 github.com/cosmos/btcutil v1.0.5 h1:t+ZFcX77LpKtDBhjucvnOH8C2l2ioGsBNEQ3jef8xFk=
 github.com/cosmos/btcutil v1.0.5/go.mod h1:IyB7iuqZMJlthe2tkIFL33xPyzbFYP0XVdS8P5lUPis=
 github.com/cosmos/cosmos-proto v1.0.0-beta.2 h1:X3OKvWgK9Gsejo0F1qs5l8Qn6xJV/AzgIWR2wZ8Nua8=

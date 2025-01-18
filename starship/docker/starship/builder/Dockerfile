@@ -1,6 +1,6 @@
 FROM golang:1.21-alpine3.17
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 # Set up dependencies
 ENV PACKAGES curl unzip make git libusb-dev libc-dev bash gcc linux-headers eudev-dev python3 musl-dev

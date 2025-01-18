@@ -1,11 +1,11 @@
 {
   "name": "starship-js",
   "version": "0.0.1",
-  "author": "Dan Lynch <pyramation@gmail.com>",
+  "author": "Hyperweb <developers@hyperweb.io>",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/cosmology-tech/starship"
+    "url": "https://github.com/hyperweb-io/starship"
   },
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {

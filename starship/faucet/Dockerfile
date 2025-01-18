@@ -1,6 +1,6 @@
 FROM golang:1.21-alpine3.17 AS builder
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 WORKDIR /usr/local/app
 

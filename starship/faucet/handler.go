@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "github.com/cosmology-tech/starship/faucet/faucet"
+	pb "github.com/hyperweb-io/starship/faucet/faucet"
 )
 
 func (a *AppServer) Status(ctx context.Context, _ *emptypb.Empty) (*pb.State, error) {

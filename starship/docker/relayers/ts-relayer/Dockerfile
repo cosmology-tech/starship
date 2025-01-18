@@ -2,7 +2,7 @@ ARG BASE_IMAGE
 ARG VERSION
 FROM ${BASE_IMAGE}
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 # Set up dependencies
 ENV PACKAGES curl make bash jq sed

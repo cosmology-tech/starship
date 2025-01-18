@@ -74,7 +74,7 @@ Present in `configs/`, are multiple versions of the similar infra, tweaked to be
 * `configs/devnet.yaml`: Supposed to be run on a larger k8s cluster, with more resources and number of validators
 * `configs/ci.yaml`: Limited resources on the GH-Action runner, can be adapted for with reducing cpu,memory allocated
 
-> Note: For running this in the CI, have a look at [starship-action](https://github.com/cosmology-tech/starship-action)
+> Note: For running this in the CI, have a look at [starship-action](https://github.com/hyperweb-io/starship-action)
 
 Examples of running Starship in the CI can be found here:
 * [cosmos-sdk](https://github.com/cosmos/cosmos-sdk/blob/main/.github/workflows/starship-tests.yml)
