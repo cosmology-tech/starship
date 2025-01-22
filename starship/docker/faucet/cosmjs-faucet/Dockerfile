@@ -6,7 +6,7 @@ ARG VERSION
 
 ENV CODE_REF="https://github.com/cosmos/cosmjs/archive/refs/tags/${VERSION}.tar.gz"
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 WORKDIR /app
 

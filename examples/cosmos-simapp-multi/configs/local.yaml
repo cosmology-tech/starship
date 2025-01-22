@@ -12,7 +12,7 @@ chains:
       type: starship
 
 exposer:
-  image: ghcr.io/cosmology-tech/starship/exposer:20230808-2333929
+  image: ghcr.io/hyperweb-io/starship/exposer:20230808-2333929
 
 registry:
   enabled: true

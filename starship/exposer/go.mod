@@ -1,4 +1,4 @@
-module github.com/cosmology-tech/starship/exposer
+module github.com/hyperweb-io/starship/exposer
 
 go 1.21
 

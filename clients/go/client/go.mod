@@ -1,14 +1,14 @@
-module github.com/cosmology-tech/starship/clients/go/client
+module github.com/hyperweb-io/starship/clients/go/client
 
 go 1.21
 
 replace (
-	github.com/cosmology-tech/starship/registry => ../../../starship/registry
+	github.com/hyperweb-io/starship/registry => ../../../starship/registry
 	github.com/strangelove-ventures/lens => github.com/Anmol1696/lens v0.1.1-0.20230331154219-5027f163133a
 )
 
 require (
-	github.com/cosmology-tech/starship/registry v0.0.0-20231216105442-4ce4f5ba3829
+	github.com/hyperweb-io/starship/registry v0.0.0-20231216105442-4ce4f5ba3829
 	github.com/cosmos/cosmos-sdk v0.47.0-rc2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/golang/protobuf v1.5.4

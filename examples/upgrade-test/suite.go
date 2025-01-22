@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 
-	starship "github.com/cosmology-tech/starship/clients/go/client"
+	starship "github.com/hyperweb-io/starship/clients/go/client"
 )
 
 var configFile = "./config.yaml"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 
-	pb "github.com/cosmology-tech/starship/exposer/exposer"
+	pb "github.com/hyperweb-io/starship/exposer/exposer"
 )
 
 // CreateChannel function runs the hermes command to create a channel between 2 given chains

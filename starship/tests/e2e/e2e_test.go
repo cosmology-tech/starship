@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 
-	pb "github.com/cosmology-tech/starship/exposer/exposer"
+	pb "github.com/hyperweb-io/starship/exposer/exposer"
 )
 
 var configEnvKey = "TEST_CONFIG_FILE"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "github.com/cosmology-tech/starship/registry/registry"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 	"sort"
 	"strings"
 )

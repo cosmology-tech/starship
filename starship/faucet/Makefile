@@ -22,7 +22,7 @@ build-arm:
 
 ## Need to be running osmosis node at localhost:1313 and 26653
 run-docker: build-arm
-	docker run --rm -v $(CURDIR)/build:/build -p 8800:8000 -it ghcr.io/cosmology-tech/starship/osmosis:v15.1.0 /build/faucet \
+	docker run --rm -v $(CURDIR)/build:/build -p 8800:8000 -it ghcr.io/hyperweb-io/starship/osmosis:v15.1.0 /build/faucet \
 		--mnemonic="razor dog gown public private couple ecology paper flee connect local robot diamond stay rude join sound win ribbon soup kidney glass robot vehicle" \
 		--chain-binary="osmosisd" \
 		--concurrency=11 \

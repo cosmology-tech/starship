@@ -1,7 +1,7 @@
 chains:
   - id: simapp
     name: custom
-    image: ghcr.io/cosmology-tech/starship/simapp:v0.47.3
+    image: ghcr.io/hyperweb-io/starship/simapp:v0.47.3
     numValidators: 2
     home: /root/.simapp
     binary: simd
@@ -15,7 +15,7 @@ chains:
       rest: 1317
       rpc: 26657
     faucet:
-      image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.31.0-alpha.2
+      image: ghcr.io/hyperweb-io/starship/cosmjs-faucet:v0.31.0-alpha.2
     resources:
       cpu: "1"
       memory: "2Gi"

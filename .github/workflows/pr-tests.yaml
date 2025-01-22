@@ -86,7 +86,7 @@ jobs:
 
       - name: Setup Test infra
         id: starship-action
-        uses: cosmology-tech/starship-action@0.5.6
+        uses: hyperweb-io/starship-action@0.5.6
         with:
           config: ${{ env.CONFIG_FILE }}
           chart: ./starship/charts/devnet

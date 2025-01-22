@@ -3,7 +3,7 @@ package registry;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/cosmology-tech/starship/registry/registry";
+option go_package = "github.com/hyperweb-io/starship/registry/registry";
 
 message IBCChain {
   string chain_name = 1 [json_name = "chain_name"];

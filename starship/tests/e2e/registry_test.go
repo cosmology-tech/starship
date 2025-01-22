@@ -9,7 +9,7 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 
-	pb "github.com/cosmology-tech/starship/registry/registry"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 )
 
 func (s *TestSuite) MakeRegistryRequest(req *http.Request, unmarshal proto.Message) {

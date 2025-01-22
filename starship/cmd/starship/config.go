@@ -16,7 +16,7 @@ func NewDefaultConfig() *Config {
 		HelmChartName: "devnet",
 		Verbose:       true,
 		Version:       "0.1.45",
-		HelmRepoURL:   "https://cosmology-tech.github.io/starship/",
+		HelmRepoURL:   "https://hyperweb-io.github.io/starship/",
 	}
 }
 

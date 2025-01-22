@@ -8,11 +8,11 @@ import (
 	"strings"
 	"sync"
 
-	pb "github.com/cosmology-tech/starship/registry/registry"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	"github.com/golang/protobuf/jsonpb"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 	lens "github.com/strangelove-ventures/lens/client"
 	"github.com/strangelove-ventures/lens/client/query"
 	"go.uber.org/zap"

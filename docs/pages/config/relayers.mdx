@@ -34,20 +34,20 @@ If one wants to use a specific version of the relayer we support,
 then it can be mentioned via this image directive.
 
 Supported version of relayers can be found:
-* [`hermes` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fhermes/versions?filters%5Bversion_type%5D=tagged)
-* [`ts-relayer` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fts-relayer/versions?filters%5Bversion_type%5D=tagged)
-* [`go-relayer` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fgo-relayer/versions?filters%5Bversion_type%5D=tagged)
-* [`neutron-query-relayer` versions](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fneutron-query-relayer/versions?filters%5Bversion_type%5D=tagged)
+* [`hermes` versions](https://github.com/hyperweb-io/starship/pkgs/container/starship%2Fhermes/versions?filters%5Bversion_type%5D=tagged)
+* [`ts-relayer` versions](https://github.com/hyperweb-io/starship/pkgs/container/starship%2Fts-relayer/versions?filters%5Bversion_type%5D=tagged)
+* [`go-relayer` versions](https://github.com/hyperweb-io/starship/pkgs/container/starship%2Fgo-relayer/versions?filters%5Bversion_type%5D=tagged)
+* [`neutron-query-relayer` versions](https://github.com/hyperweb-io/starship/pkgs/container/starship%2Fneutron-query-relayer/versions?filters%5Bversion_type%5D=tagged)
 
 ```yaml
 relayers:
 - name: hermes-osmo-juno
   type: hermes
-  image: ghcr.io/cosmology-tech/starship/hermes:1.10.0
+  image: ghcr.io/hyperweb-io/starship/hermes:1.10.0
   ...
 - name: ts-relayer-cosmos-juno
   type: ts-relayer
-  image: ghcr.io/cosmology-tech/starship/ts-relayer:0.9.0
+  image: ghcr.io/hyperweb-io/starship/ts-relayer:0.9.0
   ...
 ```
 
@@ -118,7 +118,7 @@ relayers:
       mode: "pull" # default is "push"
 ```
 
-All allowed config params can be found in the [default values](https://github.com/cosmology-tech/starship/pull/185/files#diff-b6d755bc9ec9f0229fa0fc7beff17964f31889df81dbd5a16764ed8cdecbfa96R286-R310)
+All allowed config params can be found in the [default values](https://github.com/hyperweb-io/starship/pull/185/files#diff-b6d755bc9ec9f0229fa0fc7beff17964f31889df81dbd5a16764ed8cdecbfa96R286-R310)
 (Basically everything in [config.toml](https://github.com/informalsystems/hermes/blob/master/config.toml#L8...L111) file for the hermes relayer)
 
 ## `ports` (optional, hermes only)
@@ -139,7 +139,7 @@ relayers:
 Available endpoints on
 * `rest` endpoints: https://hermes.informal.systems/documentation/rest-api.html?highlight=rest#rest-api
 * `exposer` endpoint
-  * `/create_channel` endpoint: Supports post request. Proto defination: https://github.com/cosmology-tech/starship/blob/main/starship/proto/exposer/service.proto#L47
+  * `/create_channel` endpoint: Supports post request. Proto defination: https://github.com/hyperweb-io/starship/blob/main/starship/proto/exposer/service.proto#L47
 
 One can use the exposer endpoint on the relayer to create channel from outside.
 Note: Still an experimental feature on exposer

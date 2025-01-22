@@ -55,7 +55,7 @@ jobs:
       max-parallel: 4
 
     env:
-      DOCKER_REPO: ghcr.io/cosmology-tech/starship
+      DOCKER_REPO: ghcr.io/hyperweb-io/starship
 
     steps:
       - name: Checkout
@@ -97,7 +97,7 @@ jobs:
       packages: write
 
     env:
-      DOCKER_REPO: ghcr.io/cosmology-tech/starship
+      DOCKER_REPO: ghcr.io/hyperweb-io/starship
 
     defaults:
       run:

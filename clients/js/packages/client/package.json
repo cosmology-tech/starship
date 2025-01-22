@@ -6,7 +6,7 @@
   "main": "index.js",
   "module": "esm/index.js",
   "types": "index.d.ts",
-  "homepage": "https://github.com/cosmology-tech/starship",
+  "homepage": "https://github.com/hyperweb-io/starship",
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
     "access": "public",
@@ -14,10 +14,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cosmology-tech/starship"
+    "url": "https://github.com/hyperweb-io/starship"
   },
   "bugs": {
-    "url": "https://github.com/cosmology-tech/starship/issues"
+    "url": "https://github.com/hyperweb-io/starship/issues"
   },
   "scripts": {
     "copy": "copyfiles -f ../../LICENSE README.md package.json dist",

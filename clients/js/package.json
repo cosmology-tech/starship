@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/cosmology-tech/starship"
+    "url": "https://github.com/hyperweb-io/starship"
   },
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {

@@ -20,7 +20,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/cosmology-tech/starship/registry/registry"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 )
 
 type AppServer struct {

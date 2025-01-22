@@ -1,10 +1,10 @@
-module github.com/cosmology-tech/starship/tests/e2e
+module github.com/hyperweb-io/starship/tests/e2e
 
 go 1.21
 
 require (
-	github.com/cosmology-tech/starship/exposer v0.0.0-20230413092908-7da9e8a24b31
-	github.com/cosmology-tech/starship/registry v0.0.0-20230411094226-129001b2f52a
+	github.com/hyperweb-io/starship/exposer v0.0.0-20230413092908-7da9e8a24b31
+	github.com/hyperweb-io/starship/registry v0.0.0-20230411094226-129001b2f52a
 	github.com/golang/protobuf v1.5.4
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.26.0
@@ -26,6 +26,6 @@ require (
 )
 
 replace (
-	github.com/cosmology-tech/starship/exposer => ../../exposer
-	github.com/cosmology-tech/starship/registry => ../../registry
+	github.com/hyperweb-io/starship/exposer => ../../exposer
+	github.com/hyperweb-io/starship/registry => ../../registry
 )

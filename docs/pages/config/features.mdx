@@ -22,8 +22,8 @@ registry:
   resources:
     cpu: 0.5
     memory: 200M
-  # Optional: image directive, default image:ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
-  image: ghcr.io/cosmology-tech/starship/registry:20230614-7173db2
+  # Optional: image directive, default image:ghcr.io/hyperweb-io/starship/registry:20230614-7173db2
+  image: ghcr.io/hyperweb-io/starship/registry:20230614-7173db2
 ```
 
 > Note: `registry.localhost` is set to true by default, meaning if the ports are specified in chains[].ports, then we set the various api endpoints of the chain registry to `localhost:<port>`. Make sure `rest`, `grpc`, `rpc` are set as [chain ports](https://starship.cosmology.tech/config/chains#ports). If set to false, then it is set to kubernetes internal DNS endpoints.
@@ -42,7 +42,7 @@ Here is a list of available endpoints and how to use them:
 | `/ibc`                        | List all ibc info for all chains
 | `/ibc/{chain_1}/{chain_2}`    | IBC information between the 2 chains specified
 
-Proto definition for the service is [here](https://github.com/cosmology-tech/starship/blob/main/starship/proto/registry/service.proto)
+Proto definition for the service is [here](https://github.com/hyperweb-io/starship/blob/main/starship/proto/registry/service.proto)
 
 ## Explorer
 In order to provide a full fledged emulation environment, we have
@@ -62,11 +62,11 @@ explorer:
   resources:
     cpu: 2
     memory: 4Gi
-  # Optional: image directive, default image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
-  image: ghcr.io/cosmology-tech/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
+  # Optional: image directive, default image: ghcr.io/hyperweb-io/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
+  image: ghcr.io/hyperweb-io/starship/ping-pub:6b7b0d096946b6bcd75d15350c7345da0d4576db
 ```
 
-Available versions for the explorer can be found [here](https://github.com/cosmology-tech/starship/pkgs/container/starship%2Fexposer/versions?filters%5Bversion_type%5D=tagged)
+Available versions for the explorer can be found [here](https://github.com/hyperweb-io/starship/pkgs/container/starship%2Fexposer/versions?filters%5Bversion_type%5D=tagged)
 
 ### Usage
 

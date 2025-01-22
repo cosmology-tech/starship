@@ -6,7 +6,7 @@ Log: config again: [object Object]
 Call: setPodPorts({"chains":{"osmosis":{"exposer":98988,"faucet":1000000,"grpc":909090,"rest":6767676}}})
 Call: savePodPorts("../../__output__/custom-pod-ports.yaml")
 Call: setup()
-helm repo add starship https://cosmology-tech.github.io/starship/
+helm repo add starship https://hyperweb-io.github.io/starship/
 helm repo update
 helm search repo starship/devnet --version v0.2.3
 Call: deploy()
@@ -44,7 +44,7 @@ Log: All pods have been sucessfully terminated!"
 `;
 
 exports[`StarshipClient setup 2`] = `
-"helm repo add starship https://cosmology-tech.github.io/starship/
+"helm repo add starship https://hyperweb-io.github.io/starship/
 helm repo update
 helm search repo starship/devnet --version v0.2.3
 helm install -f ../../__fixtures__/config.yaml osmojs starship/devnet --version v0.2.3 --timeout 10m
