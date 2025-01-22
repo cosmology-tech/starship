@@ -134,7 +134,7 @@ data:
     gas_price = { price = 2500000, denom = "{{ $fullchain.denom }}" }
     {{- else }}
     address_type = { derivation = 'cosmos' }
-    gas_price = { price = 0.25, denom = "{{ $fullchain.denom }}" }
+    gas_price = { price = 1.25, denom = "{{ $fullchain.denom }}" }
     {{- end }}
     {{- end }}
   # config-cli.toml is an additional config which is used for performing
