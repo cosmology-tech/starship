@@ -1,4 +1,4 @@
-base: golang:1.21-bullseye
+base: golang:1.22-bullseye
 versions:
   - refs/heads/main
   - refs/tags/v0.2.0
