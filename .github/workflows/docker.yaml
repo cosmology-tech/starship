@@ -71,8 +71,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: hyperweb-io
+          password: ${{ secrets.HYPERWEB_PAT }}
 
       - name: Build
         if: github.event_name == 'pull_request'
@@ -117,8 +117,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: hyperweb-io
+          password: ${{ secrets.HYPERWEB_PAT }}
 
       - name: Build chains
         if: github.event_name == 'pull_request'
