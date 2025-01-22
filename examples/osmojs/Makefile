@@ -30,7 +30,7 @@ clean: stop clean-kind
 
 .PHONY: setup-helm
 setup-helm:
-	helm repo add $(HELM_REPO) https://cosmology-tech.github.io/starship/
+	helm repo add $(HELM_REPO) https://hyperweb-io.github.io/starship/
 	helm repo update
 	helm search repo $(HELM_REPO)/$(HELM_CHART) --version $(HELM_VERSION)
 

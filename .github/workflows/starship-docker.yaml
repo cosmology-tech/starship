@@ -41,7 +41,7 @@ jobs:
         working-directory: starship
 
     env:
-      DOCKER_REPO: ghcr.io/cosmology-tech/starship
+      DOCKER_REPO: ghcr.io/hyperweb-io/starship
 
     steps:
       - name: Checkout
@@ -84,5 +84,5 @@ jobs:
         with:
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           context: starship/${{ matrix.type }}/
-          tags: ghcr.io/cosmology-tech/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
+          tags: ghcr.io/hyperweb-io/starship/${{ matrix.type }}:${{ steps.docker-tag.outputs.version }}
           platforms: linux/amd64,linux/arm64

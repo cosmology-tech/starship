@@ -21,7 +21,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/cosmology-tech/starship/faucet/faucet"
+	pb "github.com/hyperweb-io/starship/faucet/faucet"
 )
 
 type AppServer struct {

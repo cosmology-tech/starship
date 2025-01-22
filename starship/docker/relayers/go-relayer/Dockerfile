@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE}:${VERSION} as base
 
 FROM alpine:3.17
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 # Set up dependencies
 ENV PACKAGES --update ca-certificates curl make bash jq sed

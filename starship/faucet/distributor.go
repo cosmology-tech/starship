@@ -11,7 +11,7 @@ import (
 
 	"go.uber.org/zap"
 
-	pb "github.com/cosmology-tech/starship/faucet/faucet"
+	pb "github.com/hyperweb-io/starship/faucet/faucet"
 )
 
 // Distributor holds all functions for performing various actions

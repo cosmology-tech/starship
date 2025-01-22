@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	pb "github.com/cosmology-tech/starship/exposer/exposer"
+	pb "github.com/hyperweb-io/starship/exposer/exposer"
 )
 
 func fetchNodeStatus(url string) (*pb.Status, error) {

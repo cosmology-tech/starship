@@ -15,7 +15,7 @@ chains:
 ```
 
 ## `name`
-Type of chain is a short hand to use the default key values for a chain found [here](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/values.yaml#L54...#L244)
+Type of chain is a short hand to use the default key values for a chain found [here](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/values.yaml#L54...#L244)
 ```yaml
 chains:
 - id: osmosis-1
@@ -32,7 +32,7 @@ Here is how one can set the docker image of the default values
 chains:
 - id: osmosis-1
   name: osmosis
-  image: ghcr.io/cosmology-tech/starship/osmosis:v25.0.0
+  image: ghcr.io/hyperweb-io/starship/osmosis:v25.0.0
   coins: 100000000000000uosmo
   ...
 ```
@@ -44,7 +44,7 @@ trying setup a chain not supported in the `defaultChains`.
 chains:
 - id: osmosis-1
   name: custom
-  image: ghcr.io/cosmology-tech/starship/osmosis:v25.0.0
+  image: ghcr.io/hyperweb-io/starship/osmosis:v25.0.0
   home: /root/.osmosisd
   binary: osmosisd
   prefix: osmo
@@ -72,8 +72,8 @@ chains:
 > * Packages `curl,make,bash,jq,sed`
 > * Chain binaries installed in $PATH
 
-We create docker images with this [Dockerfile](https://github.com/cosmology-tech/starship/blob/main/starship/docker/chains/Dockerfile), using Heighliner base
-images. All supported docker images can be found [here](https://github.com/orgs/cosmology-tech/packages?repo_name=starship)
+We create docker images with this [Dockerfile](https://github.com/hyperweb-io/starship/blob/main/starship/docker/chains/Dockerfile), using Heighliner base
+images. All supported docker images can be found [here](https://github.com/orgs/hyperweb-io/packages?repo_name=starship)
 
 ## `numValidators`
 Number of validators to run for the chain. It must be greater than 1, can go up to as many resources available.
@@ -88,7 +88,7 @@ chains:
 > Note: The first node spun up is a `genesis` node, which spins up before all other validators. Once the genesis node starts
 > then all other validator nodes are spun up simultaneously
 
-If number of validators is more than the mnemonics available in the [`keys.json`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/configs/keys.json#L9) file
+If number of validators is more than the mnemonics available in the [`keys.json`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/configs/keys.json#L9) file
 which is 5, then other validators are created with random mnemonic on initialization.
 
 ## `ports`
@@ -107,7 +107,7 @@ chains:
 ```
 
 Available endpoints for extra services:
-* `exposer`: https://github.com/cosmology-tech/starship/blob/main/starship/proto/exposer/service.proto#L15
+* `exposer`: https://github.com/hyperweb-io/starship/blob/main/starship/proto/exposer/service.proto#L15
 * `faucet`: https://github.com/cosmos/cosmjs/blob/main/packages/faucet/README.md#using-the-faucet
 
 > Note: Make sure the ports are not overlapping in the config file
@@ -146,9 +146,9 @@ For more details on the resource directive have a look at [kubernetes resources]
 ## `faucet` (optional)
 Every genesis node runs a faucet. We support 2 types of faucet:
 * [cosmjs faucet](https://github.com/cosmos/cosmjs/tree/main/packages/faucet), by default
-* [starship faucet](https://github.com/cosmology-tech/starship/tree/main/starship/faucet)
+* [starship faucet](https://github.com/hyperweb-io/starship/tree/main/starship/faucet)
 
-Setting for cosmjs-faucet [here](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/values.yaml#L32...#L38) but can be
+Setting for cosmjs-faucet [here](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/values.yaml#L32...#L38) but can be
 overridden with this directive, specially for compatible cosmjs version with the chain version.
 
 ```yaml
@@ -159,7 +159,7 @@ chains:
   faucet:
     enabled: true           # optional, default is true, need to specify if want to disable faucet, set to false
     type: cosmjs            # default is cosmjs, allowed [cosmjs, starship]
-    image: ghcr.io/cosmology-tech/starship/cosmjs-faucet:v0.30.1  # optional, default image set if not specified
+    image: ghcr.io/hyperweb-io/starship/cosmjs-faucet:v0.30.1  # optional, default image set if not specified
     concurrency: 2          # optional, default is 5
     resources:
       cpu: "0.3"
@@ -177,7 +177,7 @@ then you can reduce the `concurrency` to a lower number.
 
 ## `build` (optional)
 With the `build` directive in the chain, one can basically build chain binaries on the fly before starting the chain.
-When the directive is `enabled`, then the docker image is set to a [`runner` docker image](https://github.com/cosmology-tech/starship/blob/main/starship/docker/starship/runner/Dockerfile)
+When the directive is `enabled`, then the docker image is set to a [`runner` docker image](https://github.com/hyperweb-io/starship/blob/main/starship/docker/starship/runner/Dockerfile)
 which is a basic alpine image with starship dependencies.
 ```yaml
 chains:
@@ -231,17 +231,17 @@ chains:
 
 ## `scripts` (optional)
 Scripts directive will replace the default scripts with the given scripts. In order to use this directive,
-one must use [`scripts/install.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/scripts/install.sh) script for running the helm chart.
+one must use [`scripts/install.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/scripts/install.sh) script for running the helm chart.
 
 > Since the local scripts are converted into configmaps that are then created in the kubernetes cluster, there is a limit of 1MBi
 
 Types of scripts that are allowed inside the `scripts` dir are:
-* `createGenesis`: Script used in the genesis node that will create the `genesis.json` file. Default: [`create-genesis.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/scripts/default/create-genesis.sh)
-* `updateGenesis`: Script used to make custom changes to the genesis file. Default: [`update-genesis.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/scripts/default/update-genesis.sh)
-* `updateConfig`: Script used to make custom changes to the config files. Default: [`update-config.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/scripts/default/update-config.sh)
-* `createValidator`: Script to run the `create-validator` txn on the validator nodes after spinup. Note this script is run as part of the `PostStartHook` of the validator pods. Default: [`create-validator.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/scripts/default/create-validator.sh)
-* `transferTokens`: Script run as part of the Starship glue code. This script is related to the faucet that we run. Default: [`transfer-tokens.sh`](https://github.com/cosmology-tech/starship/blob/main/charts/starship/devnet/scripts/default/transfer-tokens.sh)
-* `buildChain`: Script that builds chain binaries, based on the `build` directive. Default: [`build-chain.sh`](https://github.com/cosmology-tech/starship/blob/main/starship/charts/devnet/scripts/default/build-chain.sh)
+* `createGenesis`: Script used in the genesis node that will create the `genesis.json` file. Default: [`create-genesis.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/scripts/default/create-genesis.sh)
+* `updateGenesis`: Script used to make custom changes to the genesis file. Default: [`update-genesis.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/scripts/default/update-genesis.sh)
+* `updateConfig`: Script used to make custom changes to the config files. Default: [`update-config.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/scripts/default/update-config.sh)
+* `createValidator`: Script to run the `create-validator` txn on the validator nodes after spinup. Note this script is run as part of the `PostStartHook` of the validator pods. Default: [`create-validator.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/scripts/default/create-validator.sh)
+* `transferTokens`: Script run as part of the Starship glue code. This script is related to the faucet that we run. Default: [`transfer-tokens.sh`](https://github.com/hyperweb-io/starship/blob/main/charts/starship/devnet/scripts/default/transfer-tokens.sh)
+* `buildChain`: Script that builds chain binaries, based on the `build` directive. Default: [`build-chain.sh`](https://github.com/hyperweb-io/starship/blob/main/starship/charts/devnet/scripts/default/build-chain.sh)
 
 One can choose the sub-scripts that need to be overwritten, default scripts will be used instead.
 

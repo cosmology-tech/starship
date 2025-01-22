@@ -1,4 +1,4 @@
-module github.com/cosmology-tech/starship/faucet
+module github.com/hyperweb-io/starship/faucet
 
 go 1.21
 

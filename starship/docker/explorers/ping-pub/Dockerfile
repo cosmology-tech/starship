@@ -3,7 +3,7 @@ ARG VERSION
 
 FROM ${BASE_IMAGE}
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 ENV CODE_NAME="explorer"
 ENV VERSION=${VERSION:-"refs/heads/master"}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	pb "github.com/cosmology-tech/starship/registry/registry"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 	"net/http"
 	urlpkg "net/url"
 	"strconv"

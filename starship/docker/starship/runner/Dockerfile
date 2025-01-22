@@ -4,7 +4,7 @@ RUN go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
 
 FROM alpine:3.17
 
-LABEL org.opencontainers.image.source="https://github.com/cosmology-tech/starship"
+LABEL org.opencontainers.image.source="https://github.com/hyperweb-io/starship"
 
 COPY --from=go-builder /go/bin/cosmovisor /usr/bin/
 

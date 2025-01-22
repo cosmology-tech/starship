@@ -14,7 +14,7 @@ import (
 	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"go.uber.org/zap"
 
-	pb "github.com/cosmology-tech/starship/registry/registry"
+	pb "github.com/hyperweb-io/starship/registry/registry"
 )
 
 type ChainClients []*ChainClient

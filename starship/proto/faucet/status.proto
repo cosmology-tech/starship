@@ -3,7 +3,7 @@ package faucet;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/cosmology-tech/starship/faucet/faucet";
+option go_package = "github.com/hyperweb-io/starship/faucet/faucet";
 
 message Coin {
   string denom = 1 [json_name = "denom"];

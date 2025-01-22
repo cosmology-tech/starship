@@ -1,4 +1,4 @@
-module github.com/cosmology-tech/starship/registry
+module github.com/hyperweb-io/starship/registry
 
 go 1.21
 

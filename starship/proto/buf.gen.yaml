@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/cosmology-tech/starship
+    default: github.com/hyperweb-io/starship
     except:
       - buf.build/googleapis/googleapis
 plugins:

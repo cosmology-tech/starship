@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Clone docs repository
-        run: git clone https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/cosmology-tech/docs.git external-docs
+        run: git clone https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/hyperweb-io/docs.git external-docs
 
       - name: Sync the docs
         run: |

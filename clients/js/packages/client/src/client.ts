@@ -29,7 +29,7 @@ export interface StarshipContext {
 export const defaultStarshipContext: Partial<StarshipContext> = {
   name: '',
   repo: 'starship',
-  repoUrl: 'https://cosmology-tech.github.io/starship/',
+  repoUrl: 'https://hyperweb-io.github.io/starship/',
   chart: 'starship/devnet',
   namespace: '',
   version: '',
