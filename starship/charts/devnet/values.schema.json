@@ -146,7 +146,9 @@
               "agoric",
               "kujira",
               "hyperweb",
-              "noble"
+              "noble",
+              "ethereum-execution",
+              "ethereum-beacon"
             ]
           },
           "numValidators": {
@@ -561,6 +563,9 @@
           },
           "readinessProbe": {
             "type": "object"
+          },
+          "beacon": {
+            "type": "string"
           }
         },
         "additionalProperties": false,

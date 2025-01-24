@@ -1,0 +1,108 @@
+{{- range $chain := .Values.chains }}
+{{- if hasPrefix "ethereum-execution" $chain.name }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $chain.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $chain.name }}
+spec:
+    serviceName: {{ $chain.name }}
+    replicas: {{ $chain.replicas }}
+    selector:
+        matchLabels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+    template:
+      metadata:
+        annotations:
+          quality: release
+          role: api-gateway
+          sla: high
+          tier: gateway
+        labels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/type: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+          app.kubernetes.io/rawname: {{ $chain.name }}
+          app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+      spec:
+        {{- include "imagePullSecrets" $chain | indent 6 }}
+        initContainers:
+        - name: init-genesis
+          image: {{ $chain.image }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Initializing genesis"
+              cp /config/genesis.json /ethereum/execution/genesis.json
+              cp /config/jwt.hex /etc/secrets/jwt.hex
+              geth --datadir /ethereum/execution init /ethereum/execution/genesis.json
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /etc/secrets
+            - name: config
+              mountPath: /config
+            - name: ethereum
+              mountPath: /ethereum/execution
+        containers:
+        - name: node
+          image: {{ $chain.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: HTTP_PORT
+            value: "8545"
+          - name: WS_PORT
+            value: "8546"
+          - name: RPC_PORT
+            value: "8551"
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Starting execution chain"
+              geth --datadir /ethereum/execution --http \
+                --http.addr=0.0.0.0 \
+                --http.port=$HTTP_PORT \
+                --http.api=eth,net,web3,debug \
+                --ws --ws.addr=0.0.0.0 \
+                --ws.port=$WS_PORT \
+                --authrpc.addr=0.0.0.0 \
+                --authrpc.port=$RPC_PORT \
+                --nodiscover \
+                --http.corsdomain=* \
+                --ws.api=eth,net,web3 \
+                --ws.origins=* \
+                --http.vhosts=* \
+                --authrpc.vhosts=* \
+                --authrpc.jwtsecret=/etc/secrets/jwt.hex \
+                --allow-insecure-unlock \
+                --unlock=0x123463a4B065722E99115D6c222f267d9cABb524 \
+                --password=/dev/null \
+                --syncmode=full \
+                --networkid=1337
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum/execution
+            - name: secrets
+              mountPath: /etc/secrets
+        volumes:
+          - name: config
+            configMap:
+              name: config-execution
+          - name: ethereum
+            emptyDir: { }
+          - name: secrets
+            emptyDir: { }
+---
+{{- end }}
+{{- end }}

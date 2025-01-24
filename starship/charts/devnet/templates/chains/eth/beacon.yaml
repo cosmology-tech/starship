@@ -1,0 +1,115 @@
+{{- range $chain := .Values.chains }}
+{{- if hasPrefix "ethereum-beacon" $chain.name }}
+{{ $defaultFile := $.Files.Get "defaults.yaml" | fromYaml }}
+
+{{ $chain := include "devnet.fullchain" (dict "name" $chain.id "file" $defaultFile "context" $) | fromJson }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $chain.name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $chain.name }}
+spec:
+    serviceName: {{ $chain.name }}
+    replicas: {{ $chain.replicas }}
+    selector:
+        matchLabels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+    template:
+      metadata:
+        annotations:
+          quality: release
+          role: api-gateway
+          sla: high
+          tier: gateway
+        labels:
+          app.kubernetes.io/instance: {{ $chain.name }}
+          app.kubernetes.io/type: {{ $chain.name }}
+          app.kubernetes.io/name: {{ $chain.name }}
+          app.kubernetes.io/rawname: {{ $chain.name }}
+          app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+      spec:
+        {{- include "imagePullSecrets" $chain | indent 6 }}
+        initContainers:
+        - name: init-genesis
+          image: ghcr.io/cosmology-tech/starship/prysm/cmd/prysmctl:v5.2.0
+          imagePullPolicy: Always
+          command:
+            - bash
+            - "-c"
+            - |
+              mkdir -p /ethereum/consensus /ethereum/execution
+              cp /config-execution/genesis.json /ethereum/execution/genesis.json
+              cp /config-beacon/config.yaml /ethereum/consensus/config.yaml
+
+              echo "Initializing genesis"
+              prysmctl testnet generate-genesis \
+                --fork=capella \
+                --num-validators=64 \
+                --genesis-time-delay=15 \
+                --output-ssz=/ethereum/consensus/genesis.ssz \
+                --chain-config-file=/ethereum/consensus/config.yaml \
+                --geth-genesis-json-in=/ethereum/execution/genesis.json \
+                --geth-genesis-json-out=/ethereum/execution/genesis.json
+
+              echo "Copy secrets over"
+              cp /config-execution/jwt.hex /etc/secrets/jwt.hex
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /etc/secrets
+            - name: config-beacon
+              mountPath: /config-beacon
+            - name: config-execution
+              mountPath: /config-execution
+            - name: ethereum
+              mountPath: /ethereum
+        containers:
+        - name: node
+          image: {{ $chain.image }}
+          imagePullPolicy: Always
+          env:
+          - name: HTTP_PORT
+            value: "8545"
+          - name: WS_PORT
+            value: "8546"
+          - name: RPC_PORT
+            value: "8551"
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          command:
+            - bash
+            - "-c"
+            - |
+              echo "Starting consensus chain"
+
+              beacon-chain \
+                --execution-endpoint=http://ethereum-execution-0.ethereum-execution.default.svc.cluster.local:8551 \
+                --jwt-secret=/etc/secrets/jwt.hex \
+                --accept-terms-of-use \
+                --chain-id=1337
+          resources: {{- include "devnet.node.resources" ( dict "node" $chain "context" $ ) | trim | nindent 12 }}
+          volumeMounts:
+            - name: ethereum
+              mountPath: /ethereum
+            - name: secrets
+              mountPath: /etc/secrets
+        volumes:
+          - name: config-beacon
+            configMap:
+              name: config-beacon
+          - name: config-execution
+            configMap:
+              name: config-execution
+          - name: ethereum
+            emptyDir: { }
+          - name: secrets
+            emptyDir: { }
+---
+{{- end }}
+{{- end }}
