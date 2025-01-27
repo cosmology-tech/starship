@@ -22,9 +22,9 @@ on:
     - cron: '0 18 * * *'
   workflow_dispatch: {}
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-pr-tests
-  cancel-in-progress: true
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref }}-pr-tests
+#  cancel-in-progress: true
 
 jobs:
   pr-test:
@@ -37,14 +37,14 @@ jobs:
         config-file:
 #          - "one-chain-custom-scripts.yaml"
           - "one-chain.yaml"
-#          - "one-custom-chain.yaml"
+          - "one-custom-chain.yaml"
 #          - "multi-validator.yaml"
 #          - "simapp.yaml"
 #          - "one-chain-starship-faucet.yaml"
 #          - "multi-validator-starship-faucet.yaml"
 #          - "one-chain-cometmock.yaml"
 #          - "one-cosmoshub-starship-faucet.yaml"
-      fail-fast: true
+      #fail-fast: true
       max-parallel: 3
 
     env:

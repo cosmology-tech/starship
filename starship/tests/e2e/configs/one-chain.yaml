@@ -13,8 +13,8 @@ chains:
       faucet: 8003
       grpc-web: 9091
     resources:
-      cpu: "0.5"
-      memory: 500M
+      cpu: "0.4"
+      memory: 400M
     faucet:
       concurrency: 2
     balances:

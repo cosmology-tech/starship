@@ -20,8 +20,8 @@ chains:
       exposer: 38083
       faucet: 8003
     resources:
-      cpu: "0.5"
-      memory: 500M
+      cpu: "0.4"
+      memory: 400M
 
 registry:
   enabled: true
