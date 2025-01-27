@@ -37,6 +37,7 @@ resources:
     cpu: "0.1"
     memory: 100M
 
+exposer:
   resources:
     cpu: "0.3"
     memory: "300M"
