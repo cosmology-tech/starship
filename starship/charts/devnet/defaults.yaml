@@ -793,6 +793,28 @@ defaultChains:
             exponent: 6
         coingecko_id: stake
         keywords: [ "stake" ]
+  etherum-execution:
+    image: ghcr.io/cosmology-tech/starship/ethereum/client-go:latest
+    home: /ethereum/execution
+    binary: geth
+    prefix: eth
+    denom: ueth
+    prettyName: Ethereum Execution Chain
+    coins: 100000000000000eth
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/ethereum/go-ethereum
+  etherum-beacon:
+    image: ghcr.io/cosmology-tech/starship/ethereum/client-go:latest
+    home: /ethereum/execution
+    binary: geth
+    prefix: eth
+    denom: ueth
+    prettyName: Ethereum Execution Chain
+    coins: 100000000000000eth
+    hdPath: m/44'/60'/0'/0/0
+    coinType: 60
+    repo: https://github.com/ethereum/go-ethereum
   eth:
     storageClassName: hostpath
     genesisStateUrl: https://github.com/eth-clients/merge-testnets/blob/main/sepolia/genesis.ssz
